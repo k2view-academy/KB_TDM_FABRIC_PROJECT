@@ -1,0 +1,102 @@
+{
+  "name": "grSql2",
+  "children": [
+    {
+      "name": "get",
+      "type": "sqlNonPrepared",
+      "code": "get Customer.${input1}"
+    },
+    {
+      "name": "CUSTOMER_DATA",
+      "type": "sql",
+      "code": "Select  customer_id,ssn,first_name,last_name From CUSTOMER.Customer",
+      "serializerSettings": [
+        {
+          "set": "nice",
+          "value": "true"
+        }
+      ],
+      "children": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "variable",
+          "code": "CUSTOMER_ID"
+        },
+        {
+          "name": "SSN",
+          "type": "variable",
+          "code": "SSN"
+        },
+        {
+          "name": "FIRST_NAME",
+          "type": "variable",
+          "code": "FIRST_NAME"
+        },
+        {
+          "name": "LAST_NAME",
+          "type": "variable",
+          "code": "LAST_NAME"
+        }
+      ]
+    },
+    {
+      "name": "INVOICE_DATA",
+      "type": "sql",
+      "code": "Select INVOICE.*\nFrom Customer.INVOICE where SUBSCRIBER_ID = ${input2}",
+      "children": [
+        {
+          "name": "SUBSCRIBER_ID",
+          "type": "variable",
+          "code": "SUBSCRIBER_ID"
+        },
+        {
+          "name": "INVOICE_ID",
+          "type": "variable",
+          "code": "INVOICE_ID"
+        },
+        {
+          "name": "ISSUED_DATE",
+          "type": "variable",
+          "code": "ISSUED_DATE"
+        },
+        {
+          "name": "DUE_DATE",
+          "type": "variable",
+          "code": "DUE_DATE"
+        },
+        {
+          "name": "STATUS",
+          "type": "variable",
+          "code": "STATUS"
+        },
+        {
+          "name": "BALANCE",
+          "type": "variable",
+          "code": "BALANCE"
+        },
+        {
+          "name": "INVOICE_IMAGE",
+          "type": "variable",
+          "code": "INVOICE_IMAGE"
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "customer_id",
+      "dataType": "String",
+      "debugValue": "52"
+    },
+    {
+      "name": "input2",
+      "dataType": "String",
+      "debugValue": "2463"
+    },
+    {
+      "name": "input1",
+      "dataType": "String",
+      "debugValue": "1000"
+    }
+  ]
+}

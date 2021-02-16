@@ -1,0 +1,43 @@
+{
+  "name": "Root",
+  "type": "sqlNonPrepared",
+  "code": "get Customer.${customer_id}",
+  "children": [
+    {
+      "name": "CUSTOMER DATA",
+      "type": "sql",
+      "code": "Select  customer_id,ssn,first_name,last_name From CUSTOMER",
+      "children": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "variable",
+          "code": "CUSTOMER_ID"
+        }
+      ]
+    },
+    {
+      "name": "AVAILABLE AMOUNT",
+      "type": "sql",
+      "code": "Select SUM(available_amount) as availamount From BALANCE ",
+      "children": [
+        {
+          "name": "availamount",
+          "type": "variable",
+          "code": "availamount"
+        },
+        {
+          "name": "Customer Status",
+          "type": "function",
+          "code": "if (availamount>10000){\"VIP Customer\"}\nelse {\n  \tif (availamount>1000 && availamount<10000){\"Gold Customer\"}\n     }\n  "
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "customer_id",
+      "dataType": "String",
+      "debugValue": "1000"
+    }
+  ]
+}

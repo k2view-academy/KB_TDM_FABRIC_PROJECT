@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Employee_Lookup</Name>
+  <ID>tbl_Employee_Lookup</ID>
+  <EntityId>tblCol_558201b585794d67b8cb0cac0069869b</EntityId>
+  <Columns>
+    <Column name="EMP_ID" id="tblCol_07e4e0fa45b14d2aa7c6549961d6f9ae" index="0" datatype="text" />
+    <Column name="EMP_FIRST_NAME" id="tblCol_558201b585794d67b8cb0cac0069869b" index="1" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

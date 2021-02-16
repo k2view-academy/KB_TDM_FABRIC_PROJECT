@@ -1,0 +1,40 @@
+{
+  "type": "GetTableFieldsFromCassandra_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "cassandraInterface",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "tableName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "GetTableFieldsFromCassandra"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "result",
+      "schema": {
+        "type": "array"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

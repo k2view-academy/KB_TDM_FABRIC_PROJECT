@@ -1,0 +1,794 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Initiate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "This Flow is used to load each TDM Reference Table from Cassandra to Target.\nThis Flow follows the following:\n1. The tables were extracted from Source to Cassandra Interface DB_CASSANDRA\n2. The tables were loaded under keyspace k2view_tdm\n3. The task execution job, sets the value for field TDM_TASK_EXECUTION_ID based on dataflux indicator and job properties.\n4. The Reference tables in Cassandra will have 3 additional control fields:\n   a. source_env_name\n   b. tdm_task_execution_id\n   c. rec_id\n   This fields will not be loaded to target table.\n4. At the end the flow will update the TDMDB table TASK_REF_EXE_STATS\n\n\n\n",
+                    "actors": [
+                        {
+                            "name": "InitiateTDMReferenceLoad_Actor1",
+                            "actorType": {
+                                "parentType": "InitiateTDMReferenceLoad_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "selectedRefVersionTaskName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "selectedRefVersionDateTime",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Reference Table Details",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Elvis1",
+                            "actorType": {
+                                "parentType": "Elvis",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "ALL"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Details of Reference Table",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetRefTableData"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "schemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetSchemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Delete Data From Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Error Handler Of Deletion",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Delete Target Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "delete from ${@Schema}.${@refTableName}"
+                                    },
+                                    {
+                                        "name": "Schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Reference Data and Fields List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Get Data From Cassandra",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select * from k2view_tdm.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "selectedRefVersionTaskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "source_env_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "tdm_task_execution_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "rec_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "medication_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "medication_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Table Fields From Cassandra",
+                            "actorType": {
+                                "parentType": "GetTableFieldsFromCassandra_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "cassandraInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DB_CASSANDRA"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Initiate Counter",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.isNewTable = true;"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data to Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Error Handler Of Loading",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Insert Data To Target Table",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Count Records",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Count Loaded Records",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "if (flowArgs.isNewTable == true) {\r\n    flowArgs.isNewTable = false;\r\n    flowArgs.count = affected;\r\n} else {\r\n    flowArgs.count += affected;\r\n}\r\nflowArgs.count;",
+                                            "script": "if (flowArgs.isNewTable == true) {\n  flowArgs.isNewTable = false;\n  flowArgs.count = affected;\n} else {\n  flowArgs.count += affected;\n}\n\nflowArgs.count;"
+                                        }
+                                    },
+                                    {
+                                        "name": "affected",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update TDMDB Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Update TDMDB table for Reference Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "loadedRecCnt",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Entity Status to Success",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "completed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "PopulateTaskExecutionEntities_Actor1",
+                            "actorType": {
+                                "parentType": "PopulateTaskExecutionEntities_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "idType",
+                                        "const": "REFERENCE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Logger3",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Finished Loading Table: ${refTableName}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Elvis1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Data From Cassandra",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetSchemaName"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Delete Target Table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetSchemaName"
+            },
+            "rightPort": {
+                "actor": "Delete Target Table",
+                "name": "Schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Delete Target Table",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Data From Cassandra",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Fields From Cassandra",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "fields"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "affected"
+            },
+            "rightPort": {
+                "actor": "Count Loaded Records",
+                "name": "affected"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Loaded Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "loadedRecCnt"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "selectedRefVersionTaskName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "selectedRefVersionTaskName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "selectedRefVersionDateTime"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "selectedRefVersionDateTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "selectedRefVersionTaskExeId"
+            },
+            "rightPort": {
+                "actor": "Elvis1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Get Data From Cassandra",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "Get Data From Cassandra",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Get Table Fields From Cassandra",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Logger3",
+                "name": "refTableName"
+            }
+        }
+    ]
+}

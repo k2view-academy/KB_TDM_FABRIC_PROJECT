@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>pop_orders</ID>
+  <PopulationObjectName>pop_orders</PopulationObjectName>
+  <TableName>orders</TableName>
+  <RootItemID>f_8</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments>
+    <Arg name="input" id="fi_8.0" dataType="String" index="0" />
+  </InputArguments>
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_8" name="fnPop_orders" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="fnPop_orders.k2function.xml">
+      <InputsList>
+        <Input id="fi_8.0" name="input" />
+      </InputsList>
+      <OutputsList>
+        <Output id="fo_8.0" name="contract_id" />
+        <Output id="fo_8.1" name="order_id" />
+        <Output id="fo_8.2" name="order_type" />
+        <Output id="fo_8.3" name="order_date" />
+        <Output id="fo_8.4" name="order_status" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="15" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.0" toItemID="tbl_orders" toColID="tblCol_77deca91235c4ae4a12cf606258626e0" />
+    <Link partId="16" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.1" toItemID="tbl_orders" toColID="tblCol_0c82b2ffa4104b108a7aa6def18ed9d3" />
+    <Link partId="17" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.2" toItemID="tbl_orders" toColID="tblCol_08b6e9296efb4738a04152188cf99089" />
+    <Link partId="18" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.3" toItemID="tbl_orders" toColID="tblCol_478bb6a57aea4095ad1121003f7f6485" />
+    <Link partId="19" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.4" toItemID="tbl_orders" toColID="tblCol_66d8ebb7b35e4f6d82d93fe533dc91e2" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="orders.pop_orders.k2tablePop.xml" lastPartID="19">
+      <TableNode partID="0" name="orders" pos="336 0.7812538" width="252.999985" />
+      <FunctionMapNode id="0" L0="1" R0="2" R1="3" R2="4" R3="5" R4="6" partID="8" topLabel="fnPop_orders (8)" pos="10 10.2721405" size="206 85.45572" isRoot="true">
+        <KFunction>{"Name":"fnPop_orders","ID":"f_8","Category":"Root","Version":"6.4.1.7","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[{"Name":"input","ID":"fi_8.0","Index":0,"DataType":"String"}],"outputParams":[{"Name":"contract_id","ID":"fo_8.0","Index":0,"DataType":"Double"},{"Name":"order_id","ID":"fo_8.1","Index":1,"DataType":"Double"},{"Name":"order_type","ID":"fo_8.2","Index":2,"DataType":"String"},{"Name":"order_date","ID":"fo_8.3","Index":3,"DataType":"String"},{"Name":"order_status","ID":"fo_8.4","Index":4,"DataType":"String"}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="15" from="2" to="7" pointsArr="216 31.39974 226 31.39974 266 31 286 31 326 31.8177128 336 31.8177128" fromNodePartID="8" fromNodeColumnName="contract_id" toNodePartID="0" toNodeColumnName="contract_id" />
+      <Link partID="16" from="3" to="8" pointsArr="216 43.4726563 226 43.4726563 266 43 286 43 326 43.89063 336 43.89063" fromNodePartID="8" fromNodeColumnName="order_id" toNodePartID="0" toNodeColumnName="order_id" />
+      <Link partID="17" from="4" to="9" pointsArr="216 55.54557 226 55.54557 266 56 286 56 326 55.9635429 336 55.9635429" fromNodePartID="8" fromNodeColumnName="order_type" toNodePartID="0" toNodeColumnName="order_type" />
+      <Link partID="18" from="5" to="10" pointsArr="216 67.6184845 226 67.6184845 266 68 286 68 326 68.03645 336 68.03645" fromNodePartID="8" fromNodeColumnName="order_date" toNodePartID="0" toNodeColumnName="order_date" />
+      <Link partID="19" from="6" to="11" pointsArr="216 79.6914 226 79.6914 266 80 286 80 326 80.109375 336 80.109375" fromNodePartID="8" fromNodeColumnName="order_status" toNodePartID="0" toNodeColumnName="order_status" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

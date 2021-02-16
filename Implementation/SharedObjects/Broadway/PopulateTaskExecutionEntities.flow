@@ -1,0 +1,709 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Prepare the Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Task Exec ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get LU Type",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "LU_TYPE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Entity Status",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get IID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Target Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDM  Version Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_VERSION_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDM  Version DateTime",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_VERSION_DATETIME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Clone No",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "clone_id",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Continue Preparing",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Remove Decimal Point",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": ".0"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "string",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "If Target Entity ID is not set, use the source Entity ID",
+                            "minHeight": 260,
+                            "actorType": {
+                                "parentType": "Elvis",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Timing of Processing Start",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_START_DATETIME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Now1",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Calculate Fabric Get Duration and Total Duration",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Calculate Total Processing Duration",
+                            "minHeight": 540,
+                            "actorType": {
+                                "parentType": "DateDuration",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Format the Current Time",
+                            "minHeight": 451,
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "yyyy-MMM-dd HH:mm:ss.SSS"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "ENTITY"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Timing of Fabric Get",
+                            "minHeight": 111,
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_AFTER_GET_DATETIME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Calculate Fabric Get Duration",
+                            "actorType": {
+                                "parentType": "DateDuration",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data to Entities table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbCommand2",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "INSERT INTO PUBLIC.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_NAME, VERSION_DATETIME, FABRIC_GET_TIME, TOTAL_PROCESSING_TIME, CLONE_NO) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, L.SOURCE_ENV_NAME, Now(), ${entityStartTime}, ${entityEndTime},\r\nCOALESCE(${tdmVersionName}, '') AS VERSION_NAME, TO_TIMESTAMP(${tdmVersionDateTime}, 'YYYYMMDDHH24MISS') as VERSION_DATETIME, ${fabticTime}, ${totalTime}, ${cloneNo}\r\nFROM TASK_EXECUTION_LIST L, TASKS T\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "taskexecutionId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceEntityId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetEntityId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "executionStatus",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "entityStartTime",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "entityEndTime",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "fabticTime",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    {
+                                        "name": "totalTime",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    {
+                                        "name": "tdmVersionName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "tdmVersionDateTime",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "idType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "cloneNo",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "?column?": {},
+                                                    "environment_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "fabric_execution_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "source_env_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "task_title": {
+                                                        "type": "string"
+                                                    },
+                                                    "version_datetime": {
+                                                        "type": "date"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Remove Decimal Point",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Entity Status",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "executionStatus"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "sourceEntityId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Target Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDM  Version Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "tdmVersionName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDM  Version DateTime",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "tdmVersionDateTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Clone No",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "cloneNo"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Remove Decimal Point",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "taskexecutionId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "targetEntityId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Timing of Processing Start",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Total Processing Duration",
+                "name": "from"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Timing of Processing Start",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Fabric Get Duration",
+                "name": "from"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Timing of Processing Start",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "entityStartTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Now1",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format the Current Time",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Now1",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Calculate Total Processing Duration",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate Total Processing Duration",
+                "name": "millis"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "totalTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format the Current Time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "entityEndTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Timing of Fabric Get",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Fabric Get Duration",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate Fabric Get Duration",
+                "name": "millis"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "fabticTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "idType"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "idType"
+            },
+            "rightPort": {
+                "actor": "DbCommand2",
+                "name": "idType"
+            }
+        }
+    ]
+}

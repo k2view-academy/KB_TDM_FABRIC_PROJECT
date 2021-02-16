@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>query_main_USA_CoV19_cases_Oct2020</ID>
+  <PopulationObjectName>query_main_USA_CoV19_cases_Oct2020</PopulationObjectName>
+  <TableName>ref_USA_CoV19_cases_Oct2020</TableName>
+  <RootItemID>query_query_main_USA_CoV19_cases_Oct2020</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>true</SimpleObject>
+  <IidFinderProp />
+  <InputArguments>
+    <Arg name="State" id="queryCol_0" dataType="Text" index="0" />
+    <Arg name="totalCases" id="queryCol_1" dataType="Text" index="1" />
+    <Arg name="cases_last_7" id="queryCol_2" dataType="Text" index="2" />
+    <Arg name="cases_per_100K" id="queryCol_3" dataType="Text" index="3" />
+    <Arg name="fatalities_last_7" id="queryCol_4" dataType="Text" index="4" />
+    <Arg name="fatalities_per_100K" id="queryCol_5" dataType="Text" index="5" />
+  </InputArguments>
+  <ItemsList>
+    <Item xsi:type="DBQueryDataSave" id="query_query_main_USA_CoV19_cases_Oct2020" name="query_main_USA_CoV19_cases_Oct2020" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="BILLING_DB">
+      <OutputsList>
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="State" dataType="Text" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="totalCases" dataType="Text" index="1" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_2" name="cases_last_7" dataType="Text" index="2" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_3" name="cases_per_100K" dataType="Text" index="3" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_4" name="fatalities_last_7" dataType="Text" index="4" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_5" name="fatalities_per_100K" dataType="Text" index="5" />
+      </OutputsList>
+      <SQL><![CDATA[SELECT State, totalCases, cases_last_7, cases_per_100K, fatalities_last_7, fatalities_per_100K FROM main.USA_CoV19_cases_Oct2020]]></SQL>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="16" fromNodeOrder="0" fromItemID="query_query_main_USA_CoV19_cases_Oct2020" fromColID="queryCol_0" toItemID="tbl_ref_USA_CoV19_cases_Oct2020" toColID="tblCol_04a0dd0a50914cf995d07280f661bb77" />
+    <Link partId="17" fromNodeOrder="0" fromItemID="query_query_main_USA_CoV19_cases_Oct2020" fromColID="queryCol_1" toItemID="tbl_ref_USA_CoV19_cases_Oct2020" toColID="tblCol_eb612ab4540e4353bdbba23176ecce93" />
+    <Link partId="18" fromNodeOrder="0" fromItemID="query_query_main_USA_CoV19_cases_Oct2020" fromColID="queryCol_2" toItemID="tbl_ref_USA_CoV19_cases_Oct2020" toColID="tblCol_798f1f8e6c554121b2013b5eb67e91f7" />
+    <Link partId="19" fromNodeOrder="0" fromItemID="query_query_main_USA_CoV19_cases_Oct2020" fromColID="queryCol_3" toItemID="tbl_ref_USA_CoV19_cases_Oct2020" toColID="tblCol_71b4396cc6d04a0b8d9d2d6674c716f1" />
+    <Link partId="20" fromNodeOrder="0" fromItemID="query_query_main_USA_CoV19_cases_Oct2020" fromColID="queryCol_4" toItemID="tbl_ref_USA_CoV19_cases_Oct2020" toColID="tblCol_3030bf481393499a8ec72a403a81586a" />
+    <Link partId="21" fromNodeOrder="0" fromItemID="query_query_main_USA_CoV19_cases_Oct2020" fromColID="queryCol_5" toItemID="tbl_ref_USA_CoV19_cases_Oct2020" toColID="tblCol_8cfbffb7bb42483a9e6307d998511d83" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="ref_USA_CoV19_cases_Oct2020.query_main_USA_CoV19_cases_Oct2020.k2tablePop.xml" lastPartID="21">
+      <TableNode partID="0" name="ref_USA_CoV19_cases_Oct2020" pos="415.2461 5.74479675" width="252.999985" />
+      <DBQueryNode partID="9" name="BILLING_DB" pos="10 0.78125" size="285.2461 132.4375" isRoot="true">
+        <DBQuery>{"Name":"query_main_USA_CoV19_cases_Oct2020","ID":"query_query_main_USA_CoV19_cases_Oct2020","ConnName":"BILLING_DB","SQL":"SELECT State, totalCases, cases_last_7, cases_per_100K, fatalities_last_7, fatalities_per_100K FROM main.USA_CoV19_cases_Oct2020","ColumnsList":[{"ID":"queryCol_0","Name":"State","DataType":"Text","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"totalCases","DataType":"Text","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"cases_last_7","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"cases_per_100K","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"fatalities_last_7","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"fatalities_per_100K","DataType":"Text","Index":5,"IsInputArgument":true}]}</DBQuery>
+      </DBQueryNode>
+      <Link partID="16" from="0" to="1" pointsArr="295.2461 36.81771 305.2461 36.81771 345.2461 37 365.2461 37 405.2461 36.7812538 415.2461 36.7812538" fromNodePartID="9" fromNodeColumnName="State" toNodePartID="0" toNodeColumnName="State" />
+      <Link partID="17" from="2" to="3" pointsArr="295.2461 48.890625 305.2461 48.890625 345.2461 49 365.2461 49 405.2461 48.85417 415.2461 48.85417" fromNodePartID="9" fromNodeColumnName="totalCases" toNodePartID="0" toNodeColumnName="totalCases" />
+      <Link partID="18" from="4" to="5" pointsArr="295.2461 60.96354 305.2461 60.96354 345.2461 61 365.2461 61 405.2461 60.9270859 415.2461 60.9270859" fromNodePartID="9" fromNodeColumnName="cases_last_7" toNodePartID="0" toNodeColumnName="cases_last_7" />
+      <Link partID="19" from="6" to="7" pointsArr="295.2461 73.03645 305.2461 73.03645 345.2461 73 365.2461 73 405.2461 73 415.2461 73" fromNodePartID="9" fromNodeColumnName="cases_per_100K" toNodePartID="0" toNodeColumnName="cases_per_100K" />
+      <Link partID="20" from="8" to="9" pointsArr="295.2461 85.109375 305.2461 85.109375 345.2461 85 365.2461 85 405.2461 85.0729141 415.2461 85.0729141" fromNodePartID="9" fromNodeColumnName="fatalities_last_7" toNodePartID="0" toNodeColumnName="fatalities_last_7" />
+      <Link partID="21" from="10" to="11" pointsArr="295.2461 97.18228 305.2461 97.18228 345.2461 97 365.2461 97 405.2461 97.14583 415.2461 97.14583" fromNodePartID="9" fromNodeColumnName="fatalities_per_100K" toNodePartID="0" toNodeColumnName="fatalities_per_100K" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

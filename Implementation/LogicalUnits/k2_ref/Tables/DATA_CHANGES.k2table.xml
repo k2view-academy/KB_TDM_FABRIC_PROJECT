@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>DATA_CHANGES</Name>
+  <ID>tbl_DATA_CHANGES</ID>
+  <Columns>
+    <Column name="IID" id="tblCol_31fe8973d8c046348ec2e79699fec64a" index="0" datatype="text" />
+    <Column name="TABLE_NAME" id="tblCol_87cb425bf67f438b9bf86e8babf48a56" index="1" datatype="text" />
+    <Column name="OLD_VALUES" id="tblCol_a43a01ea98f7491cac2eca1a0e8a3562" index="2" datatype="text" />
+    <Column name="NEW_VALUES" id="tblCol_2fd5f2a2b5e94b939175abd23df3cb2c" index="3" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

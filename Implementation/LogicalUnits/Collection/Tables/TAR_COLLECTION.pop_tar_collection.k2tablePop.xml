@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>pop_tar_collection</ID>
+  <PopulationObjectName>pop_tar_collection</PopulationObjectName>
+  <TableName>TAR_COLLECTION</TableName>
+  <RootItemID>query_query_main_collection</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>true</SimpleObject>
+  <IidFinderProp />
+  <InputArguments>
+    <Arg name="customer_id" id="queryCol_0" dataType="Integer" index="0" />
+  </InputArguments>
+  <ItemsList>
+    <Item xsi:type="DBQueryDataSave" id="query_query_main_collection" name="query_main_collection" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="COLLECTION_DB">
+      <OutputsList>
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="customer_id" dataType="Integer" index="0" />
+      </OutputsList>
+      <SQL><![CDATA[Select customer_id
+From main.collection]]></SQL>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="9" fromNodeOrder="0" fromItemID="query_query_main_collection" fromColID="queryCol_0" toItemID="tbl_TAR_COLLECTION" toColID="tblCol_29cbdbf8b1684994973ad7163bfac575" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="TAR_COLLECTION.pop_tar_collection.k2tablePop.xml" lastPartID="9">
+      <TableNode partID="0" name="TAR_COLLECTION" pos="404 30" width="253" />
+      <DBQueryNode partID="4" name="COLLECTION_DB" pos="36 26.5091171" size="253.988159 72.0729141" isRoot="true">
+        <DBQuery>{"Name":"query_main_collection","ID":"query_query_main_collection","ConnName":"COLLECTION_DB","SQL":"Select customer_id\r\nFrom main.collection","ColumnsList":[{"ID":"queryCol_0","Name":"customer_id","DataType":"Integer","Index":0,"IsInputArgument":true}]}</DBQuery>
+      </DBQueryNode>
+      <Link partID="9" from="0" to="1" pointsArr="289.988159 62.5455742 299.988159 62.5455742 394 61.0364571 404 61.0364571" fromNodePartID="4" fromNodeColumnName="customer_id" toNodePartID="0" toNodeColumnName="customer_id" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

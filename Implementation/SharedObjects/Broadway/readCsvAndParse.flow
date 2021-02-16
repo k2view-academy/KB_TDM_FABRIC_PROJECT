@@ -1,0 +1,203 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileRead1",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CsvParser1",
+                            "actorType": {
+                                "parentType": "CsvParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "CNTRY_CD": {
+                                                        "type": "string"
+                                                    },
+                                                    "NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "AREA_CD": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "JavaScript1",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "if (input1.CNTRY_CD == \"ISR\") {\r\n    contextLoop.stop();\r\n    input1.AREA_CD;\r\n}\r\n    ",
+                                            "script": "if (input1.CNTRY_CD == \"ISR\") {\n  contextLoop.stop();\n  input1.AREA_CD;\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "input1",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CNTRY_CD": {
+                                                    "type": "string"
+                                                },
+                                                "NAME": {
+                                                    "type": "string"
+                                                },
+                                                "S_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "AREA_CD": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "*-* The required area code is: ${0}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "warning"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "FileRead1",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "CsvParser1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CsvParser1",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "input1"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "path"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "path"
+            }
+        }
+    ]
+}

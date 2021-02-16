@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>ADDRESS</Name>
+  <ID>tbl_ADDRESS</ID>
+  <Columns>
+    <Column name="CUSTOMER_ID" id="tblCol_201fcee2200d46c4b7364e709e43868b" index="0" datatype="Real" />
+    <Column name="ADDRESS_ID" id="tblCol_a63d983e43bf41c6b2ba931afd8b1056" index="1" datatype="Real" mandatory="true" />
+    <Column name="STREET_ADDRESS_1" id="tblCol_6a5b9823c06243dd829fb912e7f2db3a" index="2" datatype="Text" />
+    <Column name="STREET_ADDRESS_2" id="tblCol_566726b3738040eb9053c223d414ea6d" index="3" datatype="Text" />
+    <Column name="CITY" id="tblCol_0f794cd3474f4a6fb389c2b08e7631f8" index="4" datatype="Text" />
+    <Column name="ZIP" id="tblCol_adae67afc43e4e31afc9db8e73eeb748" index="5" datatype="Text" />
+    <Column name="STATE" id="tblCol_d29b281638cf4aba83afc18275c9b7f2" index="6" datatype="Text" />
+    <Column name="COUNTRY" id="tblCol_89dd748379e44ee1a61d0e2e3d8d21a5" index="7" datatype="Text" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_a63d983e43bf41c6b2ba931afd8b1056" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>

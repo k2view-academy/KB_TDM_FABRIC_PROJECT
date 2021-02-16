@@ -1,0 +1,25 @@
+{
+  "type": "CheckNegative_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "a",
+      "schema": {
+        "type": "number"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "CheckNegative"
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "validatationChecks"
+  ]
+}

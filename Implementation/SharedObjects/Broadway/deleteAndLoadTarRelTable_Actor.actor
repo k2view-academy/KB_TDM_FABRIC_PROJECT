@@ -1,0 +1,46 @@
+{
+  "type": "deleteAndLoadTarRelTable_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "lu_type_1",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "lu_type_2",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "lu_type1_eid",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "lu_type2_eid",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "deleteAndLoadTarRelTable"
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ]
+}

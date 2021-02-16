@@ -1,0 +1,320 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Const2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MathMax1",
+                            "actorType": {
+                                "parentType": "MathMax",
+                                "inputs": [
+                                    {
+                                        "name": "input1",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    {
+                                        "name": "input2",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MathMin1",
+                            "actorType": {
+                                "parentType": "MathMin",
+                                "inputs": [
+                                    {
+                                        "name": "input1",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    {
+                                        "name": "input2",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CheckZeroDiv_Actor1",
+                            "actorType": {
+                                "parentType": "CheckZeroDiv_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CheckNegative_Actor1",
+                            "actorType": {
+                                "parentType": "CheckNegative_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CheckNegative_Actor2",
+                            "actorType": {
+                                "parentType": "CheckNegative_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MathDivide1",
+                            "actorType": {
+                                "parentType": "MathDivide",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JavaScript1",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "print(\"8-8-8-8\" + this);",
+                                            "script": "print(\"8-8-8-8\" + void 0);"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MathMax1",
+                "name": "input1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MathMin1",
+                "name": "input1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MathMax1",
+                "name": "input2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MathMin1",
+                "name": "input2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathMax1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MathDivide1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathMax1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CheckNegative_Actor1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathMin1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MathDivide1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathMin1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CheckZeroDiv_Actor1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathMin1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CheckNegative_Actor2",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "value2"
+            },
+            "rightPort": {
+                "actor": "Const2",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathDivide1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "div_result"
+            }
+        }
+    ]
+}

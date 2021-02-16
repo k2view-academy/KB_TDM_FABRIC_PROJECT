@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.7">
+  <Name>vdb</Name>
+  <RootView>FABRIC_TDM_ROOT</RootView>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
+  <EventsList />
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+    <OrderValidationTime>00:05:00</OrderValidationTime>
+    <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
+    <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
+    <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
+  </IidFinderProp>
+  <Tables>
+    <Table>ACTIVITY</Table>
+    <Table>ADDRESS</Table>
+    <Table>CASE_NOTE</Table>
+    <Table>CASES</Table>
+    <Table>CONTRACT</Table>
+    <Table>CUSTOMER</Table>
+    <Table>FABRIC_TDM_ROOT</Table>
+    <Table>INSTANCE_TABLE_COUNT</Table>
+    <Table>LU_PARAMS</Table>
+    <Table>orders</Table>
+    <Table>TAR_ACTIVITY</Table>
+    <Table>TAR_CASES</Table>
+    <Table>TAR_CUSTOMER</Table>
+    <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
+    <Table>TDM_LU_TYPE_RELATION_EID</Table>
+  </Tables>
+  <TablesProperties>
+    <TableProperties name="ACTIVITY">
+      <Populations>
+        <Population name="query_main_ACTIVITY" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="ADDRESS">
+      <Populations>
+        <Population name="query_main_ADDRESS" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="CASES">
+      <Populations>
+        <Population name="query_main_CASES" order="4" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="CASE_NOTE">
+      <Populations>
+        <Population name="query_main_CASE_NOTE" order="5" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="CONTRACT">
+      <Populations>
+        <Population name="query_CONTRACT" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="CUSTOMER">
+      <Populations>
+        <Population name="popCustomer" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="FABRIC_TDM_ROOT">
+      <Populations>
+        <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="INSTANCE_TABLE_COUNT">
+      <Populations>
+        <Population name="query_INSTANCE_TABLE_COUNT" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="LU_PARAMS">
+      <Populations>
+        <Population name="populate_LU_PARAMS" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="orders">
+      <Populations>
+        <Population name="query_main_orders" order="4" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_ACTIVITY">
+      <Populations>
+        <Population name="pop_tar_activity" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_CASES">
+      <Populations>
+        <Population name="pop_tar_cases" order="4" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_CUSTOMER">
+      <Populations>
+        <Population name="populationTarCustomer.flow" order="2" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TDM_LU_TYPE_RELATION_EID">
+      <Populations>
+        <Population name="pop_TDM_LU_TYPE_RELATION_EID" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TDM_LU_TYPE_REL_TAR_EID">
+      <Populations>
+        <Population name="popTDM_LU_TYPE_REL_TAR_EID.flow" order="2" disabled="true" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+    <Item order="1" active="true" name="FABRIC_TDM_ROOT" columnName="fnCheckInsFound" type="Table" />
+    <Item order="2" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
+    <Item order="3" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
+    <Item order="4" active="true" name="FABRIC_TDM_ROOT" columnName="fnEnrichmentChildLink" type="Table" />
+  </EnrichmentsOrderList>
+  <ReferencesList />
+  <Relations />
+  <DatabaseRelations>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TDM_LU_TYPE_RELATION_EID" populationObjectName="pop_TDM_LU_TYPE_RELATION_EID" column="dummy_input" columnId="fi_9.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="INSTANCE_TABLE_COUNT" populationObjectName="query_INSTANCE_TABLE_COUNT" column="input" columnId="fi_7.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="LU_PARAMS" populationObjectName="populate_LU_PARAMS" column="ENTITY_ID" columnId="fi_80.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="popCustomer" column="input" columnId="fi_7.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TDM_LU_TYPE_REL_TAR_EID" populationObjectName="popTDM_LU_TYPE_REL_TAR_EID.flow" column="CUSTOMER_ID" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TAR_CUSTOMER" populationObjectName="populationTarCustomer.flow" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="TAR_ACTIVITY" populationObjectName="pop_tar_activity" column="CUSTOMER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
+      <To tableType="TableObject" table="TAR_CASES" populationObjectName="pop_tar_cases" column="ACTIVITY_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="CASES" column="CASE_ID" columnId="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
+      <To tableType="TableObject" table="CASE_NOTE" populationObjectName="query_main_CASE_NOTE" column="CASE_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
+      <To tableType="TableObject" table="CASES" populationObjectName="query_main_CASES" column="ACTIVITY_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="CONTRACT" column="CONTRACT_ID" columnId="tblCol_1649524d4e5949648d3c604eeb51c7b1" />
+      <To tableType="TableObject" table="orders" populationObjectName="query_main_orders" column="contract_id" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="CONTRACT" populationObjectName="query_CONTRACT" column="CUSTOMER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="ACTIVITY" populationObjectName="query_main_ACTIVITY" column="CUSTOMER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="ADDRESS" populationObjectName="query_main_ADDRESS" column="CUSTOMER_ID" columnId="queryCol_0" />
+    </Relation>
+  </DatabaseRelations>
+  <PreVCsSqlScript />
+  <PostVCsSqlScript />
+  <Indexes />
+  <LudbProperties />
+  <DiagramGraph>
+    <Graph version="6.4.1.7" name="vdb.k2vdb.xml">
+      <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="TDM Tables" pos="354 28.4544334" size="265 759.0912" wasexpanded="false" expanded="true">
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="358 47.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="358 247.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="INSTANCE_TABLE_COUNT" pos="358 447.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="LU_PARAMS" pos="358 647.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+      <Group name="Target Tables for Delete" pos="650 643.9544" size="869 184.091125" wasexpanded="false" expanded="true">
+        <Node name="TAR_CUSTOMER" pos="654 663.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_ACTIVITY" pos="956 663.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_CASES" pos="1258 688.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+      <Group name="Source Tables" pos="649 46.4544334" size="1171 559.0912" wasexpanded="false" expanded="true">
+        <Node name="ADDRESS" pos="955 465.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CASE_NOTE" pos="1559 315.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CASES" pos="1257 290.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="orders" pos="1257 90.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CONTRACT" pos="955 65.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="ACTIVITY" pos="955 265.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CUSTOMER" pos="653 240.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

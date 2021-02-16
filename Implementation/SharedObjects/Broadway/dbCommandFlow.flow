@@ -1,0 +1,153 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Denver"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbCommand1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "CRM_DB"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select * From ADDRESS\r\nWhere ADDRESS.CITY = ${city_name}"
+                                    },
+                                    {
+                                        "name": "city_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "CUSTOMER_ID": {
+                                                        "type": "number"
+                                                    },
+                                                    "ADDRESS_ID": {
+                                                        "type": "number"
+                                                    },
+                                                    "STREET_ADDRESS_1": {
+                                                        "type": "string"
+                                                    },
+                                                    "STREET_ADDRESS_2": {
+                                                        "type": "string"
+                                                    },
+                                                    "CITY": {
+                                                        "type": "string"
+                                                    },
+                                                    "ZIP": {
+                                                        "type": "string"
+                                                    },
+                                                    "STATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "COUNTRY": {
+                                                        "type": "string"
+                                                    },
+                                                    "TRIAL474": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "city_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "message"
+            },
+            "iterate": "Iterate"
+        }
+    ]
+}

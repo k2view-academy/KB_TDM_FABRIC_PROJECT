@@ -1,0 +1,865 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Init Ran Indicator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "The initiation includes the following steps:\n1. Set Environment to source Environment, in case entity should be synced from source\n2. Set Sync Mode based on task's parameters\n3. Get Entity from Fabric\n4. Set Environment to Target Environment\n5. Set task parameters as session variables:\n5.1 Source Environment\n5.2 Target Environment\n5.3 Sync Mode\n5.4 Delete Before Load Indicator\n5.5 Insert To Target Indicator\n5.6 Replace Sequence Indicator\n5.7 Masking Indicator\n5.8 Data Flux Indicator\n5.9 Hierarchy Indicator\n5.10 Root Indicator\n5.11 Parent LU Type\n5.12 Clone Indicator\n6. Set the given Globals\n7. In case of Cloning handle the Clone Number\n",
+                    "actors": [
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SCOPE_INITIATED",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check If Init Did Not Run",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IsNull1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Print Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PrintInputs",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "BF4TDM --> Handling task, TaskExecutionId: ${TaskExecutionId}, with following parameters: iid: ${iid}, luType: ${luType}, SourceEnv: ${SourceEnv}, TargetEnv: ${TargetEnv}, \\\r\nCloneInd: ${CloneInd}, SyncMode: ${SyncMode}, DeleteBeforeLoad: ${DeleteBeforeLoad}, InsertToTarget: ${InsertToTarget}, ReplaceSequence: ${ReplaceSequence}, \\\r\nMaskingFlag: ${MaskingFlag}, RootInd: ${RootInd}, HiararchyInd: ${HiararchyInd}, DataFluxInd: ${DataFluxInd}, ParentLuType: ${ParentLuType}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "SourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "TargetEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "DeleteBeforeLoad",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "TaskExecutionId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "ReplaceSequence",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "InsertToTarget",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "SyncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "MaskingFlag",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "RootInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "HierarchyInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "DataFluxInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "ParentLuType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "CloneInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "FabricSet1",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SCOPE_INITIATED"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "1"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "SetTDMSessionVariables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "SetSyncMode",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "sync",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "ON"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetSourceEnv",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENV",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetTargetEnv",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TARGET_ENV",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetTaskExecutionID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "execution_id",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetReplaceSequenceInd",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetDataFluxInd",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DATAFLUX_IND",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetMaskingFlag",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetDelBeforeLoad",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_BEFORE_LOAD",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetInsertToTarget",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_INSERT_TO_TARGET",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetRootInd",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_ROOT_IND",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetHierarchyInd",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_HIERARCHY_IND",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SetCloneInd",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_CLONE_IND",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set The given Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "remark": "If the task includes a set of  Globals, these Globals will be set at this stage to impact the run of the Entity loading.",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Handle Clone Number",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "remark": "Check the CloneInd, and if it is true, check if the Clone number is defined in Redis (key task execution ID + IID).\nIf it exists add one to it, if not add it with value one.",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "SetEnv2Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "FabricSetSrcEnv",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "GetInstanceFromFabric",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "GetEntity",
+                            "actorType": {
+                                "parentType": "FabricGet",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "SetEnv2Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "FabricSetTrgtEnv",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SourceEnv"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "SourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TargetEnv"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "TargetEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DeleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "DeleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TaskExecutionId"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "TaskExecutionId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ReplaceSequence"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "ReplaceSequence"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "InsertToTarget"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "InsertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SyncMode"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "SyncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "MaskingFlag"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "MaskingFlag"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "RootInd"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "RootInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "HierarchyInd"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "HierarchyInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DataFluxInd"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "DataFluxInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ParentLuType"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "ParentLuType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "CloneInd"
+            },
+            "rightPort": {
+                "actor": "PrintInputs",
+                "name": "CloneInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SyncMode"
+            },
+            "rightPort": {
+                "actor": "SetSyncMode",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SourceEnv"
+            },
+            "rightPort": {
+                "actor": "SetSourceEnv",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TargetEnv"
+            },
+            "rightPort": {
+                "actor": "SetTargetEnv",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TaskExecutionId"
+            },
+            "rightPort": {
+                "actor": "SetTaskExecutionID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ReplaceSequence"
+            },
+            "rightPort": {
+                "actor": "SetReplaceSequenceInd",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DataFluxInd"
+            },
+            "rightPort": {
+                "actor": "SetDataFluxInd",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "MaskingFlag"
+            },
+            "rightPort": {
+                "actor": "SetMaskingFlag",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DeleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "SetDelBeforeLoad",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "InsertToTarget"
+            },
+            "rightPort": {
+                "actor": "SetInsertToTarget",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "RootInd"
+            },
+            "rightPort": {
+                "actor": "SetRootInd",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "HierarchyInd"
+            },
+            "rightPort": {
+                "actor": "SetHierarchyInd",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "CloneInd"
+            },
+            "rightPort": {
+                "actor": "SetCloneInd",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SourceEnv"
+            },
+            "rightPort": {
+                "actor": "FabricSetSrcEnv",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "GetEntity",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "GetEntity",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TargetEnv"
+            },
+            "rightPort": {
+                "actor": "FabricSetTrgtEnv",
+                "name": "value"
+            }
+        }
+    ]
+}

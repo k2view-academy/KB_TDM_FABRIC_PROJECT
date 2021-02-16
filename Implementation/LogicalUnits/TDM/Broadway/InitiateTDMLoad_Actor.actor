@@ -1,0 +1,123 @@
+{
+  "type": "InitiateTDMLoad_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "SourceEnv",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "SyncMode",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "DataFluxInd",
+      "schema": {
+        "type": "boolean"
+      },
+      "const": null
+    },
+    {
+      "name": "MaskingFlag",
+      "schema": {
+        "type": "boolean"
+      },
+      "const": null
+    },
+    {
+      "name": "TargetEnv",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "InsertToTarget",
+      "schema": {
+        "type": "boolean"
+      },
+      "const": null
+    },
+    {
+      "name": "RootInd",
+      "schema": {
+        "type": "boolean"
+      },
+      "const": null
+    },
+    {
+      "name": "iid",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "luType",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "DeleteBeforeLoad",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "TaskExecutionId",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "ReplaceSequence",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "HierarchyInd",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "ParentLuType",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "CloneInd",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "InitiateTDMLoad"
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ]
+}

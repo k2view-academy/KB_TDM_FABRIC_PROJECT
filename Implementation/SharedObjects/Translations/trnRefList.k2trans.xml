@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>trnRefList</Name>
+  <InputNotFoundAction>Use_Default</InputNotFoundAction>
+  <SchemaColumns>
+    <Column>
+      <Title>lu_name</Title>
+      <ColumnName>lu_name</ColumnName>
+      <Direction>Input</Direction>
+      <Type>LU NAME</Type>
+      <Length>80</Length>
+      <Format />
+      <Index>0</Index>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="120" />
+    </Column>
+    <Column>
+      <Title>id</Title>
+      <ColumnName>id</ColumnName>
+      <Direction>Input</Direction>
+      <Type>Integer</Type>
+      <Length>6</Length>
+      <Format />
+      <Index>1</Index>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="81" />
+    </Column>
+    <Column>
+      <Title>reference_table_name</Title>
+      <ColumnName>reference_table_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>0</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="142" />
+    </Column>
+    <Column>
+      <Title>schema_name</Title>
+      <ColumnName>schema_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>1</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="100" />
+    </Column>
+    <Column>
+      <Title>interface_name</Title>
+      <ColumnName>interface_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>DB Interface</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>2</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="120" />
+    </Column>
+    <Column>
+      <Title>target_schema_name</Title>
+      <ColumnName>target_schema_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>3</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="130" />
+    </Column>
+    <Column>
+      <Title>target_interface_name</Title>
+      <ColumnName>target_interface_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>DB Interface</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>4</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="134" />
+    </Column>
+  </SchemaColumns>
+  <IsImportFromSQL>false</IsImportFromSQL>
+  <IsDynamicData>false</IsDynamicData>
+  <ColumnMapping />
+  <TranslationData>
+    <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+      <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="trnRefList" msdata:UseCurrentLocale="true">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="trnRefList">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="lu_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="80" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="id" type="xs:long" minOccurs="0" />
+                  <xs:element name="reference_table_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="schema_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="interface_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="target_schema_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="target_interface_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+      <DocumentElement>
+        <trnRefList diffgr:id="trnRefList1" msdata:rowOrder="0">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>1</id>
+          <reference_table_name>PRESCRIBED_MEDICATION</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList2" msdata:rowOrder="1">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>2</id>
+          <reference_table_name>MEDICATION_REFERENCE</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList3" msdata:rowOrder="2">
+          <lu_name>PATIENT_VISITS</lu_name>
+          <id>3</id>
+          <reference_table_name>VISITS</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList4" msdata:rowOrder="3">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>4</id>
+          <reference_table_name>REF_GIBRISH</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList5" msdata:rowOrder="4">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>5</id>
+          <reference_table_name>PATIENT_REF</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList6" msdata:rowOrder="5">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>6</id>
+          <reference_table_name>S_INVOICE_REF</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList7" msdata:rowOrder="6">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>7</id>
+          <reference_table_name>REF_COMPLEX</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList8" msdata:rowOrder="7">
+          <lu_name>PATIENT_VISITS</lu_name>
+          <id>8</id>
+          <reference_table_name>VISIT_REF</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>TARGET_DB</target_interface_name>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList9" msdata:rowOrder="8">
+          <lu_name>PATIENT_LU</lu_name>
+          <id>9</id>
+          <reference_table_name>ref_pg_complex</reference_table_name>
+          <schema_name>public</schema_name>
+          <interface_name>LIS_DB</interface_name>
+          <target_schema_name>public</target_schema_name>
+          <target_interface_name>TARGET_PG</target_interface_name>
+        </trnRefList>
+      </DocumentElement>
+    </diffgr:diffgram>
+  </TranslationData>
+  <DataRowsHeight>37</DataRowsHeight>
+</Translation>

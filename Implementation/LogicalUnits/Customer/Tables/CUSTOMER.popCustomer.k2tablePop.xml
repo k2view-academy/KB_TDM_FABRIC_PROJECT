@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>popCustomer</ID>
+  <PopulationObjectName>popCustomer</PopulationObjectName>
+  <TableName>CUSTOMER</TableName>
+  <RootItemID>f_7</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments>
+    <Arg name="input" id="fi_7.0" dataType="String" index="0" />
+  </InputArguments>
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_7" name="fnPop_CUSTOMER" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="fnPop_CUSTOMER.k2function.xml">
+      <InputsList>
+        <Input id="fi_7.0" name="input" />
+      </InputsList>
+      <OutputsList>
+        <Output id="fo_7.0" name="CUSTOMER_ID" />
+        <Output id="fo_7.1" name="SSN" />
+        <Output id="fo_7.2" name="FIRST_NAME" />
+        <Output id="fo_7.3" name="LAST_NAME" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="13" fromNodeOrder="0" fromItemID="f_7" fromColID="fo_7.0" toItemID="tbl_CUSTOMER" toColID="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+    <Link partId="14" fromNodeOrder="0" fromItemID="f_7" fromColID="fo_7.1" toItemID="tbl_CUSTOMER" toColID="tblCol_dfcc9ebe1c7f44d689384dbf2715a158" />
+    <Link partId="15" fromNodeOrder="0" fromItemID="f_7" fromColID="fo_7.2" toItemID="tbl_CUSTOMER" toColID="tblCol_b8742d50f67842b49c8e5d47f31cbad0" />
+    <Link partId="16" fromNodeOrder="0" fromItemID="f_7" fromColID="fo_7.3" toItemID="tbl_CUSTOMER" toColID="tblCol_d8ef6d3fc4ce4d01b7c5f9c52669616c" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="CUSTOMER.popCustomer.k2tablePop.xml" lastPartID="16">
+      <TableNode partID="0" name="CUSTOMER" pos="404 30" width="253" />
+      <FunctionMapNode id="0" L0="1" R0="2" R1="3" R2="4" R3="5" partID="7" topLabel="fnPop_CUSTOMER (7)" pos="62 25.509079" size="206 73.38281" isRoot="true">
+        <KFunction>{"Name":"fnPop_CUSTOMER","ID":"f_7","Category":"Root","Version":"6.4.1.7","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[{"Name":"input","ID":"fi_7.0","Index":0,"DataType":"String"}],"outputParams":[{"Name":"CUSTOMER_ID","ID":"fo_7.0","Index":0,"DataType":"Double"},{"Name":"SSN","ID":"fo_7.1","Index":1,"DataType":"String"},{"Name":"FIRST_NAME","ID":"fo_7.2","Index":2,"DataType":"String"},{"Name":"LAST_NAME","ID":"fo_7.3","Index":3,"DataType":"String"}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="13" from="2" to="6" pointsArr="268 46.6367035 278 46.6367035 394 61.0364571 404 61.0364571" fromNodePartID="7" fromNodeColumnName="CUSTOMER_ID" toNodePartID="0" toNodeColumnName="CUSTOMER_ID" />
+      <Link partID="14" from="3" to="7" pointsArr="268 58.70961 278 58.70961 394 73.109375 404 73.109375" fromNodePartID="7" fromNodeColumnName="SSN" toNodePartID="0" toNodeColumnName="SSN" />
+      <Link partID="15" from="4" to="8" pointsArr="268 70.78252 278 70.78252 394 85.18229 404 85.18229" fromNodePartID="7" fromNodeColumnName="FIRST_NAME" toNodePartID="0" toNodeColumnName="FIRST_NAME" />
+      <Link partID="16" from="5" to="9" pointsArr="268 82.85545 278 82.85545 394 97.2552 404 97.2552" fromNodePartID="7" fromNodeColumnName="LAST_NAME" toNodePartID="0" toNodeColumnName="LAST_NAME" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

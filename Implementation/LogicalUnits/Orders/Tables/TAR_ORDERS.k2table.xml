@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>TAR_ORDERS</Name>
+  <ID>tbl_TAR_ORDERS</ID>
+  <Columns>
+    <Column name="contract_id" id="tblCol_77deca91235c4ae4a12cf606258626e0" index="0" datatype="text" />
+    <Column name="order_id" id="tblCol_0c82b2ffa4104b108a7aa6def18ed9d3" index="1" datatype="text" mandatory="true" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_0c82b2ffa4104b108a7aa6def18ed9d3" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
+    <DecisionFunction>fnDecisionInsertToTarget</DecisionFunction>
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>

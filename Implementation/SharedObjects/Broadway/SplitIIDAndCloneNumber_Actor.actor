@@ -1,0 +1,68 @@
+{
+  "type": "SplitIIDAndCloneNumber_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "iid",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "SplitIIDAndCloneNumber"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "cloneNo",
+      "schema": {
+        "type": "integer"
+      },
+      "const": null
+    },
+    {
+      "name": "instanceID",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "envName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "versionName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "versiionDateTime",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "UID",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

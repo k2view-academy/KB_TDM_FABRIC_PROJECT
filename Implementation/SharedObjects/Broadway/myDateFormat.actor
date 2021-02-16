@@ -1,0 +1,18 @@
+{
+    "type": "myDateFormat",
+    "tags": [
+        "date/time"
+    ],
+    "parentType": "DateFormat",
+    "inputs": [
+        {
+            "name": "format",
+            "const": "E  dd-MM-yy HH:mm a"
+        },
+        {
+            "name": "tz",
+            "const": "Israel"
+        }
+    ],
+    "outputs": []
+}

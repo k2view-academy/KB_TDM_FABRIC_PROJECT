@@ -1,0 +1,66 @@
+{
+  "name": "Root",
+  "type": "sqlNonPrepared",
+  "code": "get Customer.${customer_id}",
+  "children": [
+    {
+      "name": "Customer Data",
+      "type": "sql",
+      "code": "Select  customer_name,city,cityID,LATLONG From ADDRESS",
+      "children": [
+        {
+          "name": "Customer Full Name",
+          "type": "variable",
+          "code": "CUSTOMER_NAME",
+          "serializerSettings": [
+            {
+              "set": "nice",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "Customer City",
+          "type": "variable",
+          "code": "CITY",
+          "serializerSettings": [
+            {
+              "set": "nice",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "City International ID",
+          "type": "variable",
+          "code": "CityID",
+          "serializerSettings": [
+            {
+              "set": "nice",
+              "value": "true"
+            }
+          ]
+        },
+        {
+          "name": "LAT/LONG",
+          "type": "variable",
+          "code": "LATLONG",
+          "children": [
+            {
+              "name": "splitter",
+              "type": "function",
+              "code": "\"LATLONG\";\nLATLONG.split('::')[0];\nLATLONG.split('::')[1];"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "customer_ID",
+      "dataType": "String",
+      "debugValue": "1234"
+    }
+  ]
+}

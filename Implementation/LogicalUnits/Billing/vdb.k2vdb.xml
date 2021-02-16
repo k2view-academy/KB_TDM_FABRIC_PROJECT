@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.7">
+  <Name>vdb</Name>
+  <RootView>FABRIC_TDM_ROOT</RootView>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
+  <EventsList />
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+    <OrderValidationTime>00:05:00</OrderValidationTime>
+    <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
+    <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
+    <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
+  </IidFinderProp>
+  <Tables>
+    <Table>BALANCE</Table>
+    <Table>FABRIC_TDM_ROOT</Table>
+    <Table>INSTANCE_TABLE_COUNT</Table>
+    <Table>INVOICE</Table>
+    <Table>LU_PARAMS</Table>
+    <Table>OFFER</Table>
+    <Table>PAYMENT</Table>
+    <Table>SUBSCRIBER</Table>
+    <Table>TAR_INVOICE</Table>
+    <Table>TAR_PAYMENT</Table>
+    <Table>TAR_SUBSCRIBER</Table>
+  </Tables>
+  <TablesProperties>
+    <TableProperties name="BALANCE">
+      <Populations>
+        <Population name="query_main_BALANCE" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="FABRIC_TDM_ROOT">
+      <Populations>
+        <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="INSTANCE_TABLE_COUNT">
+      <Populations>
+        <Population name="query_INSTANCE_TABLE_COUNT" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="INVOICE">
+      <Populations>
+        <Population name="query_main_INVOICE" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="LU_PARAMS">
+      <Populations>
+        <Population name="populate_LU_PARAMS" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="OFFER">
+      <Populations>
+        <Population name="query_main_OFFER" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="PAYMENT">
+      <Populations>
+        <Population name="query_main_PAYMENT" order="4" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="SUBSCRIBER">
+      <Populations>
+        <Population name="popSubscriber" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_INVOICE">
+      <Populations>
+        <Population name="popTar_Invoice" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_PAYMENT">
+      <Populations>
+        <Population name="pop_tar_payment" order="4" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_SUBSCRIBER">
+      <Populations>
+        <Population name="popTar_Subscriber" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+    <Item order="1" active="true" name="FABRIC_TDM_ROOT" columnName="fnCheckInsFound" type="Table" />
+    <Item order="2" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
+    <Item order="3" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
+  </EnrichmentsOrderList>
+  <ReferencesList />
+  <Relations />
+  <DatabaseRelations>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="INSTANCE_TABLE_COUNT" populationObjectName="query_INSTANCE_TABLE_COUNT" column="input" columnId="fi_7.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="LU_PARAMS" populationObjectName="populate_LU_PARAMS" column="ENTITY_ID" columnId="fi_80.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="SUBSCRIBER" populationObjectName="popSubscriber" column="input" columnId="fi_11.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="popTar_Subscriber" column="SUBSCRIBER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <To tableType="TableObject" table="BALANCE" populationObjectName="query_main_BALANCE" column="SUBSCRIBER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <To tableType="TableObject" table="INVOICE" populationObjectName="query_main_INVOICE" column="SUBSCRIBER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <To tableType="TableObject" table="OFFER" populationObjectName="query_main_OFFER" column="SUBSCRIBER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
+      <To tableType="TableObject" table="PAYMENT" populationObjectName="query_main_PAYMENT" column="INVOICE_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
+      <To tableType="TableObject" table="TAR_PAYMENT" populationObjectName="pop_tar_payment" column="INVOICE_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_d78b5d3e85764f2c918b40943907711e" />
+      <To tableType="TableObject" table="TAR_INVOICE" populationObjectName="popTar_Invoice" column="SUBSCRIBER_ID" columnId="queryCol_0" />
+    </Relation>
+  </DatabaseRelations>
+  <PreVCsSqlScript />
+  <PostVCsSqlScript />
+  <Indexes />
+  <LudbProperties />
+  <DiagramGraph>
+    <Graph version="6.4.1.7" name="vdb.k2vdb.xml">
+      <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="TDM Tables" pos="310 193.40892" size="267 315.091125" wasexpanded="false" expanded="true">
+        <Node name="LU_PARAMS" pos="316 212.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="INSTANCE_TABLE_COUNT" pos="314 368.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+      <Group name="Source Tables" pos="686 139.454437" size="869 559.0912" wasexpanded="false" expanded="true">
+        <Node name="SUBSCRIBER" pos="690 333.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="OFFER" pos="992 558.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="INVOICE" pos="992 358.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="BALANCE" pos="992 158.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
+        <Node name="PAYMENT" pos="1294 383.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+      <Group name="Target Tables for Delete" pos="312 774.621033" size="855.666748 167.4245" wasexpanded="false" expanded="true">
+        <Node name="TAR_PAYMENT" pos="906.6667 793.712158" size="257.000061 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_INVOICE" pos="618 802.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_SUBSCRIBER" pos="316 802.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

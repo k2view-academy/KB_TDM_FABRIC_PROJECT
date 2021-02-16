@@ -1,0 +1,25 @@
+{
+  "type": "PopulateTaskExecutionEntities_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "idType",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "PopulateTaskExecutionEntities"
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ]
+}

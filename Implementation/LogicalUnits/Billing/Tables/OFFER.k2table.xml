@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>OFFER</Name>
+  <ID>tbl_OFFER</ID>
+  <Columns>
+    <Column name="SUBSCRIBER_ID" id="tblCol_96e0c7746d764459b47b1289f894ee1e" index="0" datatype="Real" />
+    <Column name="OFFER_ID" id="tblCol_0d226e714b7e4dda81710bcd6e5185f3" index="1" datatype="Real" mandatory="true" />
+    <Column name="OFFER_REF_ID" id="tblCol_20f5fe044f58498e8ee8ee2e7ab51b34" index="2" datatype="Real" />
+    <Column name="OFFER_DESCRIPTION" id="tblCol_cfe4b092da07416fa5065a27f4dcfdb2" index="3" datatype="Text" />
+    <Column name="FROM_DATE" id="tblCol_6e791fd8b24e431bae5a6527bf76e3e0" index="4" datatype="Text" />
+    <Column name="TO_DATE" id="tblCol_62ff6d31c3f047fca59781ab8a5bb485" index="5" datatype="Text" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_0d226e714b7e4dda81710bcd6e5185f3" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>

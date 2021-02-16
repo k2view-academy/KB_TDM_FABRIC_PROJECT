@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>ACT_SUM</Name>
+  <ID>tbl_ACT_SUM</ID>
+  <Columns>
+    <Column name="CUSTOMER_ID" id="tblCol_3c3962c70c9f490794646896b957a49b" index="0" datatype="text" />
+    <Column name="NUM_OF_ACTIVITIES" id="tblCol_f3a0b4c93c1e4956b6c77bc77643ca16" index="1" datatype="integer" />
+    <Column name="SUMMARY_DATE" id="tblCol_4952452cab2d4482b708a8e8f7a915ac" index="2" datatype="text" />
+    <Column name="ACTIVITY_SUMMARY" id="tblCol_4f140b8c7779481b982acffc5fe09fbb" index="3" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

@@ -1,0 +1,390 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Initiate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "InitiateTDMLoad",
+                            "actorType": {
+                                "parentType": "InitiateTDMLoad_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Fabric Table Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "GetTableData",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select * from ${@FabricTable}"
+                                    },
+                                    {
+                                        "const": "ALLERGIES",
+                                        "name": "FabricTable",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "PATIENT_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "SSN": {
+                                                        "type": "string"
+                                                    },
+                                                    "FIRST_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "LAST_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "ADDRESS": {
+                                                        "type": "string"
+                                                    },
+                                                    "CITY": {
+                                                        "type": "string"
+                                                    },
+                                                    "ZIP": {
+                                                        "type": "string"
+                                                    },
+                                                    "STATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "COUNTRY": {
+                                                        "type": "string"
+                                                    },
+                                                    "DATE1": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Pre Transformation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "Activities before doing special fields mapping.\nFor Example,in case of population depended sequence, set the Sequence Name based on the Population ID field from Fabric table",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Transformation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Transformation 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data To Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "SkipOnError",
+                            "onError": "value",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "LoadTableData",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TARGET_DB"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "ALLERGIES2"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "PATIENT_ID",
+                                            "ALERGY_ID",
+                                            "MEDICATION_ALLERGY",
+                                            "DISCOVERED_DATE",
+                                            "PIN_CODE"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "oracle"
+                                    },
+                                    {
+                                        "name": "PATIENT_ID",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "ALERGY_ID",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "MEDICATION_ALLERGY",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "DISCOVERED_DATE",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "PIN_CODE",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Record Loading",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Table Loading",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "GetTableData",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LoadTableData",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SourceEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "SourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SyncMode"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "SyncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DataFluxInd"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "DataFluxInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "MaskingFlag"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "MaskingFlag"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TargetEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "TargetEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "InsertToTarget"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "InsertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "RootInd"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "RootInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "DeleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "DeleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TaskExecutionId"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "TaskExecutionId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ReplaceSequence"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "ReplaceSequence"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "HierarchyInd"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "HierarchyInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "CloneInd"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad",
+                "name": "CloneInd"
+            }
+        }
+    ]
+}

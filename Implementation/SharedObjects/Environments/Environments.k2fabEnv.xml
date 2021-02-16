@@ -1,0 +1,336 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FabEnvironmentsManager xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Environments</Name>
+  <EnvironmentsList>
+    <Environment enabled="true" name="SRC">
+      <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\billing_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\billing_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\collection_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\collection_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\crm_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\crm_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>9042</dbPort>
+          <dbUser>admin</dbUser>
+          <dbPasswordEncrypted>ZBmV3e3Qrq7tvWhmyjoiutqCIdrBjya5/cEoD6JIo0U=:YP57MsEF3hQF7vruZK4IgCZjer2An7zcBSzmq6QAZVw=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>Cassandra</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\orders_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\orders_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TDMDB</dbScheme>
+          <dbUser>tdm</dbUser>
+          <dbPasswordEncrypted>/NznNPDGp8a/yt+l43/iKRX1eeenhJAXUeJx1sqoffU=:3hbTpSEc5RrdVHIi7Wj0V44/xw2ESwjxRkStmJnLx3Y=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+      </DbInterfacesList>
+      <GlobalsList>
+        <Global name="ORACLE8_DB_TYPE" luName="">
+          <Value>Oracle8</Value>
+          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
+        </Global>
+        <Global name="COMBO_MAX_COUNT" luName="">
+          <Value>49</Value>
+          <Comment>Maximum values of combo box input object</Comment>
+        </Global>
+        <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="TDM_INSERT_TO_TARGET" luName="">
+          <Value>true</Value>
+        </Global>
+        <Global name="TDM_SYNC_SOURCE_DATA" luName="">
+          <Value>true</Value>
+        </Global>
+        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
+          <Value>TAR</Value>
+          <Comment>Prefix of delete tables</Comment>
+        </Global>
+        <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
+          <Value>false</Value>
+          <Comment>Target product version to override by task execution process</Comment>
+        </Global>
+        <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
+          <Value>false</Value>
+          <Comment>Source product version to override by task execution process</Comment>
+        </Global>
+        <Global name="INTERCODE_UK" luName="">
+          <Value>+44</Value>
+          <Comment>changing international code</Comment>
+        </Global>
+        <Global name="CASES_THRESHOLD" luName="">
+          <Value>30000</Value>
+          <Comment>threshold sync</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Billing">
+          <Value>SUBSCRIBER</Value>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Collection">
+          <Value>collection</Value>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Orders">
+          <Value>orders</Value>
+        </Global>
+        <Global name="TDM_REPORT_DIRECTORY" luName="TDM">
+          <Value>/usr/local/k2view/tdm_reports/</Value>
+        </Global>
+      </GlobalsList>
+      <GenericInterfacesList>
+        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+          <Name>FabricRedis</Name>
+          <Properties>
+            <Property name="Servers" dataType="string" mandatory="true">
+              <Value>10.21.2.69:6379</Value>
+            </Property>
+            <Property name="Password" dataType="password">
+              <Value>IesYPfMITgPdRMVZoA6Jz117qFKYrkooD6IdNFM5nMM=:OvPhxXLYQ87JJ/Pmm1nU/Nr1NYPGzW//eXkcX+mB7e4=</Value>
+            </Property>
+            <Property name="ConnectionTimeout" dataType="integer">
+              <Value>10000</Value>
+            </Property>
+            <Property name="SoTimeout" dataType="integer">
+              <Value>10000</Value>
+            </Property>
+            <Property name="MaxAttempts" dataType="integer">
+              <Value>10</Value>
+            </Property>
+            <Property name="MaxTotal" dataType="integer">
+              <Value>128</Value>
+            </Property>
+            <Property name="MaxIdle" dataType="integer">
+              <Value>128</Value>
+            </Property>
+            <Property name="MinIdle" dataType="integer">
+              <Value>16</Value>
+            </Property>
+            <Property name="TestOnBorrow" dataType="boolean">
+              <Value>True</Value>
+            </Property>
+            <Property name="TestOnReturn" dataType="boolean">
+              <Value>True</Value>
+            </Property>
+            <Property name="TestWhileIdle" dataType="boolean">
+              <Value>True</Value>
+            </Property>
+            <Property name="MinEvictableIdle" dataType="long">
+              <Value>60000</Value>
+            </Property>
+            <Property name="EvictionRunIntervals" dataType="long">
+              <Value>30000</Value>
+            </Property>
+            <Property name="TestPerEviction" dataType="int">
+              <Value>3</Value>
+            </Property>
+            <Property name="BlockWhenExhausted" dataType="boolean">
+              <Value>False</Value>
+            </Property>
+          </Properties>
+          <TestConnection enabled="false" />
+        </GenericInterface>
+      </GenericInterfacesList>
+    </Environment>
+    <Environment enabled="true" name="TAR">
+      <DbInterfacesList>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\tar_billing_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_billing_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\tar_collection_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_collection_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\tar_crm_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_crm_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
+          <dbPort>9042</dbPort>
+          <dbUser>cassandra</dbUser>
+          <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>Cassandra</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort />
+          <dbScheme>C:\K2View\DB_Scripts\tar_orders_db.db</dbScheme>
+          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_orders_db.db</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>SQLite</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TDMDB</dbScheme>
+          <dbUser>tdm</dbUser>
+          <dbPasswordEncrypted>C/4dQW5PsIydeXvwIbr57C63YB7BO3zJxwlanT6XWTs=:Xv/tpjbC6/CHE5YW7Z6j2tXBGKCTdoqpQm5rWjXibZ0=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+      </DbInterfacesList>
+      <GlobalsList>
+        <Global name="ORACLE8_DB_TYPE" luName="">
+          <Value>Oracle8</Value>
+          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
+        </Global>
+        <Global name="COMBO_MAX_COUNT" luName="">
+          <Value>49</Value>
+          <Comment>Maximum values of combo box input object</Comment>
+        </Global>
+        <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
+          <Value>true</Value>
+        </Global>
+        <Global name="TDM_INSERT_TO_TARGET" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="TDM_SYNC_SOURCE_DATA" luName="">
+          <Value>true</Value>
+        </Global>
+        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
+          <Value>TAR</Value>
+          <Comment>Prefix of delete tables</Comment>
+        </Global>
+        <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
+          <Value>false</Value>
+          <Comment>Target product version to override by task execution process</Comment>
+        </Global>
+        <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
+          <Value>false</Value>
+          <Comment>Source product version to override by task execution process</Comment>
+        </Global>
+        <Global name="INTERCODE_UK" luName="">
+          <Value>+44</Value>
+          <Comment>changing international code</Comment>
+        </Global>
+        <Global name="CASES_THRESHOLD" luName="">
+          <Value>30000</Value>
+          <Comment>threshold sync</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Billing">
+          <Value>SUBSCRIBER</Value>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Collection">
+          <Value>collection</Value>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Orders">
+          <Value>orders</Value>
+        </Global>
+        <Global name="TDM_REPORT_DIRECTORY" luName="TDM">
+          <Value>/usr/local/k2view/tdm_reports/</Value>
+        </Global>
+      </GlobalsList>
+      <GenericInterfacesList>
+        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+          <Name>FabricRedis</Name>
+          <Properties>
+            <Property name="Servers" dataType="string" mandatory="true">
+              <Value>10.21.2.64:6379</Value>
+            </Property>
+            <Property name="Password" dataType="password">
+              <Value>tWS1zKv5cNbbN3S7/yX+nGoGrIFwnDICZl0or89ykoM=:k+BwTg0aZMBUd+nVf/9K69v2H+GNRNfq/zfQQUtQktk=</Value>
+            </Property>
+            <Property name="ConnectionTimeout" dataType="integer">
+              <Value>10000</Value>
+            </Property>
+            <Property name="SoTimeout" dataType="integer">
+              <Value>10000</Value>
+            </Property>
+            <Property name="MaxAttempts" dataType="integer">
+              <Value>10</Value>
+            </Property>
+            <Property name="MaxTotal" dataType="integer">
+              <Value>128</Value>
+            </Property>
+            <Property name="MaxIdle" dataType="integer">
+              <Value>128</Value>
+            </Property>
+            <Property name="MinIdle" dataType="integer">
+              <Value>16</Value>
+            </Property>
+            <Property name="TestOnBorrow" dataType="boolean">
+              <Value>True</Value>
+            </Property>
+            <Property name="TestOnReturn" dataType="boolean">
+              <Value>True</Value>
+            </Property>
+            <Property name="TestWhileIdle" dataType="boolean">
+              <Value>True</Value>
+            </Property>
+            <Property name="MinEvictableIdle" dataType="long">
+              <Value>60000</Value>
+            </Property>
+            <Property name="EvictionRunIntervals" dataType="long">
+              <Value>30000</Value>
+            </Property>
+            <Property name="TestPerEviction" dataType="int">
+              <Value>3</Value>
+            </Property>
+            <Property name="BlockWhenExhausted" dataType="boolean">
+              <Value>False</Value>
+            </Property>
+          </Properties>
+          <TestConnection enabled="false" />
+        </GenericInterface>
+      </GenericInterfacesList>
+    </Environment>
+  </EnvironmentsList>
+</FabEnvironmentsManager>

@@ -1,0 +1,584 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Prepare to Subtract",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MathMultiply1",
+                            "actorType": {
+                                "parentType": "MathMultiply",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0,
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": -1
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare the Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Task Exec ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get LU Type",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "LU_TYPE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Target Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get IID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Calculate difference between extracted and loaded",
+                            "actorType": {
+                                "parentType": "MathAdd",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "const": 0,
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "b",
+                                        "const": 0,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Current Date",
+                            "minHeight": 150,
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Continue Preparing",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Remove Decimal Point",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": ".0"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "string",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "If Target Entity ID is not set, use the source Entity ID",
+                            "minHeight": 213,
+                            "actorType": {
+                                "parentType": "Elvis",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set the match result",
+                            "minHeight": 193,
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Mismatch"
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "OK"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Format the current date to load it ",
+                            "minHeight": 76,
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data to Detailed Statistics table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Load Data To Stats Table",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "task_exe_stats_detailed"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "task_execution_id",
+                                            "lu_name",
+                                            "entity_id",
+                                            "target_entity_id",
+                                            "table_name",
+                                            "stage_name",
+                                            "flow_name",
+                                            "actor_name",
+                                            "actor_inputs",
+                                            "creation_date",
+                                            "source_count",
+                                            "target_count",
+                                            "diff",
+                                            "results"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "target_entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "stage_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "flow_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "actor_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "const": "",
+                                        "name": "actor_inputs",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "creation_date",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "source_count",
+                                        "const": 0,
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "target_count",
+                                        "const": 0,
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "diff",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "results",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "MathMultiply1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate difference between extracted and loaded",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Remove Decimal Point",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Target Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate difference between extracted and loaded",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set the match result",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate difference between extracted and loaded",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "diff"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Current Date",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format the current date to load it ",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Remove Decimal Point",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "target_entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set the match result",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "results"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format the current date to load it ",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "creation_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "numberOfFabricRecords"
+            },
+            "rightPort": {
+                "actor": "MathMultiply1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "numberOfLoadedRecords"
+            },
+            "rightPort": {
+                "actor": "Calculate difference between extracted and loaded",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "table_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "stageName"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "stage_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "StatitcsFlowName"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "flow_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "actorName"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "actor_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "numberOfFabricRecords"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "source_count"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "numberOfLoadedRecords"
+            },
+            "rightPort": {
+                "actor": "Load Data To Stats Table",
+                "name": "target_count"
+            }
+        }
+    ]
+}

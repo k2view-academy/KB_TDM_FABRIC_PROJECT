@@ -1,0 +1,29 @@
+{
+  "name": "root",
+  "type": "sqlNonPrepared",
+  "code": "get Customer.${i_id}",
+  "children": [
+    {
+      "name": "MSG",
+      "type": "string",
+      "code": "CUSTOMER is still BRONZE in at least one of his contracts"
+    },
+    {
+      "name": "Customer Data",
+      "type": "sql",
+      "code": "Select  customer_id,ssn,first_name,last_name From CUSTOMER"
+    },
+    {
+      "name": "Line Data",
+      "type": "sql",
+      "code": "Select SIM, VIP_STATUS From SUBSCRIBER where VIP_STATUS = \"Bronze\" "
+    }
+  ],
+  "params": [
+    {
+      "name": "i_id",
+      "dataType": "String",
+      "debugValue": "1000"
+    }
+  ]
+}

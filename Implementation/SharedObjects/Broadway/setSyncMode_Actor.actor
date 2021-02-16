@@ -1,0 +1,39 @@
+{
+  "type": "setSyncMode_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "syncMode",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "insertToTarget",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "deleteBeforeLoad",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "setSyncMode"
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ]
+}

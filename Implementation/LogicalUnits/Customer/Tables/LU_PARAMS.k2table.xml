@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>LU_PARAMS</Name>
+  <ID>tbl_LU_PARAMS</ID>
+  <Columns>
+    <Column name="ENTITY_ID" id="tblCol_12cb4021e87c4145a589a0eccb73e00c" index="0" datatype="text" />
+    <Column name="SOURCE_ENVIRONMENT" id="tblCol_e0f660d06137442c96afaf0508a33bd9" index="1" datatype="text" />
+    <Column name="FIRST_NAME" id="tblCol_b69ede4fa21442b5879f089159f9681a" index="2" datatype="text" />
+    <Column name="LAST_NAME" id="tblCol_c9fb2e4717da44ad94b3a5acc98a3647" index="3" datatype="text" />
+    <Column name="LINE_NUMBER" id="tblCol_4660325eca844215a49e4b0843c8ee08" index="4" datatype="text" />
+    <Column name="NO_OF_OPEN_CASES" id="tblCol_330778d914cd45d7b6ce429e0fd21bea" index="5" datatype="text" />
+    <Column name="OPEN_CASE_DATE" id="tblCol_4fec878d50264a5a85fc8d6d3a927453" index="6" datatype="text" />
+    <Column name="NO_OF_SUBSCRIBERS" id="tblCol_bea9befedfb4406bb69a27b6d3b22245" index="7" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList>
+    <Enrichment>
+      <Name>fnEnrichmentLuParams</Name>
+      <Type>Function</Type>
+    </Enrichment>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="None" performEvery="00:00:05">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>

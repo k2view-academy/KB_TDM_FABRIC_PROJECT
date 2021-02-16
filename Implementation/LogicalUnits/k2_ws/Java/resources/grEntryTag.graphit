@@ -1,0 +1,69 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "name": "Root",
+      "serializerSettings": [
+        {
+          "set": "nice",
+          "value": "true"
+        }
+      ],
+      "children": [
+        {
+          "name": "SUBSCRIBERS",
+          "type": "collect",
+          "entryTag": "subscribers",
+          "children": [
+            {
+              "name": "CRM_DB",
+              "type": "sql",
+              "code": "Select SUBSCRIBER_ID\nFrom SUBSCRIBER limit 4",
+              "sessionProvider": "CRM_DB",
+              "children": [
+                {
+                  "name": "SUBSCRIBER_ID",
+                  "type": "variable",
+                  "code": "SUBSCRIBER_ID"
+                }
+              ]
+            },
+            {
+              "name": "BILLING_DB",
+              "type": "sql",
+              "code": "Select SUBSCRIBER.SUBSCRIBER_ID\nFrom SUBSCRIBER limit 4",
+              "sessionProvider": "BILLING_DB",
+              "children": [
+                {
+                  "name": "SUBSCRIBER_ID",
+                  "type": "variable",
+                  "code": "SUBSCRIBER_ID"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SUBSCRIBERS2",
+          "children": [
+            {
+              "name": "BILLING_DB2",
+              "type": "sql",
+              "code": "Select OFFER.SUBSCRIBER_ID\nFrom OFFER limit 4",
+              "sessionProvider": "BILLING_DB",
+              "children": [
+                {
+                  "name": "SUBSCRIBER_ID",
+                  "type": "variable",
+                  "code": "SUBSCRIBER_ID"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {}
+  ],
+  "params": []
+}

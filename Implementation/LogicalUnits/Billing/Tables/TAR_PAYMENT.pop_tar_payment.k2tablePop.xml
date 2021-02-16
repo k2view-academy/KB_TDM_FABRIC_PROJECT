@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>pop_tar_payment</ID>
+  <PopulationObjectName>pop_tar_payment</PopulationObjectName>
+  <TableName>TAR_PAYMENT</TableName>
+  <RootItemID>query_query_main_PAYMENT</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>true</SimpleObject>
+  <IidFinderProp />
+  <InputArguments>
+    <Arg name="INVOICE_ID" id="queryCol_0" dataType="Integer" index="0" />
+    <Arg name="PAYMENT_ID" id="queryCol_1" dataType="Integer" index="1" />
+  </InputArguments>
+  <ItemsList>
+    <Item xsi:type="DBQueryDataSave" id="query_query_main_PAYMENT" name="query_main_PAYMENT" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="BILLING_DB">
+      <OutputsList>
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="INVOICE_ID" dataType="Integer" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="PAYMENT_ID" dataType="Integer" index="1" />
+      </OutputsList>
+      <SQL><![CDATA[Select PAYMENT.INVOICE_ID,
+  PAYMENT.PAYMENT_ID
+From main.PAYMENT]]></SQL>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="11" fromNodeOrder="0" fromItemID="query_query_main_PAYMENT" fromColID="queryCol_0" toItemID="tbl_TAR_PAYMENT" toColID="tblCol_5a289977e1074dfb899af98d8aecc528" />
+    <Link partId="12" fromNodeOrder="0" fromItemID="query_query_main_PAYMENT" fromColID="queryCol_1" toItemID="tbl_TAR_PAYMENT" toColID="tblCol_74ed2752a8a14d4e8029d170e985663a" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="TAR_PAYMENT.pop_tar_payment.k2tablePop.xml" lastPartID="12">
+      <TableNode partID="0" name="TAR_PAYMENT" pos="404 30" width="253" />
+      <DBQueryNode partID="5" name="BILLING_DB" pos="25 45.50911" size="253 84.14583" isRoot="true">
+        <DBQuery>{"Name":"query_main_PAYMENT","ID":"query_query_main_PAYMENT","ConnName":"BILLING_DB","SQL":"Select PAYMENT.INVOICE_ID,\r\n  PAYMENT.PAYMENT_ID\r\nFrom main.PAYMENT","ColumnsList":[{"ID":"queryCol_0","Name":"INVOICE_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"PAYMENT_ID","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
+      </DBQueryNode>
+      <Link partID="11" from="0" to="1" pointsArr="278 81.54556 288 81.54556 394 61.0364571 404 61.0364571" fromNodePartID="5" fromNodeColumnName="INVOICE_ID" toNodePartID="0" toNodeColumnName="INVOICE_ID" />
+      <Link partID="12" from="2" to="3" pointsArr="278 93.6184845 288 93.6184845 394 73.109375 404 73.109375" fromNodePartID="5" fromNodeColumnName="PAYMENT_ID" toNodePartID="0" toNodeColumnName="PAYMENT_ID" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

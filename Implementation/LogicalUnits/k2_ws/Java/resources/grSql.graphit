@@ -1,0 +1,80 @@
+{
+  "name": "Root",
+  "type": "sqlNonPrepared",
+  "code": "get Customer.${customer_id}",
+  "children": [
+    {
+      "name": "CUSTOMER_DATA",
+      "type": "sql",
+      "code": "Select  customer_id,ssn,first_name,last_name From CUSTOMER\n",
+      "children": [
+        {
+          "name": "CUSTOMER_ID",
+          "type": "variable",
+          "code": "CUSTOMER_ID"
+        },
+        {
+          "name": "SSN",
+          "type": "variable",
+          "code": "SSN"
+        },
+        {
+          "name": "FIRST_NAME",
+          "type": "variable",
+          "code": "FIRST_NAME"
+        },
+        {
+          "name": "LAST_NAME",
+          "type": "variable",
+          "code": "LAST_NAME"
+        }
+      ]
+    },
+    {
+      "name": "CASE_DATA",
+      "type": "sql",
+      "code": "select * from CASE_NOTE where case_id = ${case_id}",
+      "children": [
+        {
+          "name": "NOTE_DATE",
+          "type": "variable",
+          "code": "NOTE_DATE"
+        },
+        {
+          "name": "NOTE_TEXT",
+          "type": "variable",
+          "code": "NOTE_TEXT"
+        }
+      ]
+    },
+    {
+      "name": "Balance",
+      "type": "sql",
+      "code": "select SUM(AMOUNT) as DollarCustomerValue from PAYMENT",
+      "children": [
+        {
+          "name": "BalValue",
+          "type": "variable",
+          "code": "DollarCustomerValue"
+        },
+        {
+          "name": "BalanceGBPEUR",
+          "type": "function",
+          "code": "if (Boolean(convGBP)){\n  \"GBPValue::\"+DollarCustomerValue*0.79}\nelse{\"EURValue::\"+DollarCustomerValue*0.89}\n"
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "customer_id",
+      "dataType": "String",
+      "debugValue": "3"
+    },
+    {
+      "name": "case_id",
+      "dataType": "String",
+      "debugValue": "8"
+    }
+  ]
+}

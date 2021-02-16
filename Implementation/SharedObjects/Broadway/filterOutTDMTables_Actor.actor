@@ -1,0 +1,33 @@
+{
+  "type": "filterOutTDMTables_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "tableName",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "filterOutTDMTables"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "tableNameOut",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

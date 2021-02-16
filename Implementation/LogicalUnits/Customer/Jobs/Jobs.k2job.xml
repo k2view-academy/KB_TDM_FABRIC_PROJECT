@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<JobsGroup xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Jobs</Name>
+  <Jobs>
+    <Job methodName="testJob" jobName="testJob3008" active="false">
+      <ScheduleType>TimeInterval</ScheduleType>
+      <ExecuteEvery>00:01:00</ExecuteEvery>
+      <InputParams>
+        <Input name="test" dataType="Integer">
+          <Value><![CDATA[0]]></Value>
+        </Input>
+        <Input name="inSecTime" dataType="Integer">
+          <Value><![CDATA[]]></Value>
+        </Input>
+      </InputParams>
+    </Job>
+  </Jobs>
+  <InterfaceListeners />
+</JobsGroup>

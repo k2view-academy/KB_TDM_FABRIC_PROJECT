@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.7">
+  <Name>vdb</Name>
+  <RootView>FABRIC_TDM_ROOT</RootView>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
+  <EventsList />
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+    <OrderValidationTime>00:05:00</OrderValidationTime>
+    <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
+    <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
+    <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
+  </IidFinderProp>
+  <Tables>
+    <Table>collection</Table>
+    <Table>FABRIC_TDM_ROOT</Table>
+    <Table>INSTANCE_TABLE_COUNT</Table>
+    <Table>LU_PARAMS</Table>
+    <Table>TAR_COLLECTION</Table>
+  </Tables>
+  <TablesProperties>
+    <TableProperties name="collection">
+      <Populations>
+        <Population name="pop_collection" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="FABRIC_TDM_ROOT">
+      <Populations>
+        <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="INSTANCE_TABLE_COUNT">
+      <Populations>
+        <Population name="query_INSTANCE_TABLE_COUNT" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="LU_PARAMS">
+      <Populations>
+        <Population name="populate_LU_PARAMS" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_COLLECTION">
+      <Populations>
+        <Population name="pop_tar_collection" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+    <Item order="1" active="true" name="FABRIC_TDM_ROOT" columnName="fnCheckInsFound" type="Table" />
+    <Item order="2" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
+    <Item order="3" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
+  </EnrichmentsOrderList>
+  <ReferencesList />
+  <Relations />
+  <DatabaseRelations>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="LU_PARAMS" populationObjectName="populate_LU_PARAMS" column="ENTITY_ID" columnId="fi_80.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="INSTANCE_TABLE_COUNT" populationObjectName="query_INSTANCE_TABLE_COUNT" column="input" columnId="fi_7.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TAR_COLLECTION" populationObjectName="pop_tar_collection" column="customer_id" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="collection" populationObjectName="pop_collection" column="input" columnId="fi_7.0" />
+    </Relation>
+  </DatabaseRelations>
+  <PreVCsSqlScript />
+  <PostVCsSqlScript />
+  <Indexes />
+  <LudbProperties />
+  <DiagramGraph>
+    <Graph version="6.4.1.7" name="vdb.k2vdb.xml">
+      <Node name="FABRIC_TDM_ROOT" pos="-4 82" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="TDM Tables" pos="298 1.87240314" size="272 344.1276" wasexpanded="false" expanded="true">
+        <Node name="LU_PARAMS" pos="309 20.9635468" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="INSTANCE_TABLE_COUNT" pos="302 190" size="257 152" listGroupSize="250 116" viewType="Table" />
+      </Group>
+      <Group name="Target Tables for Delete" pos="301 412.908844" size="265 159.091156" wasexpanded="false" expanded="true">
+        <Node name="TAR_COLLECTION" pos="305 432" size="257 136" listGroupSize="250 100" viewType="Table" />
+      </Group>
+      <Node name="collection" pos="613 193.963547" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

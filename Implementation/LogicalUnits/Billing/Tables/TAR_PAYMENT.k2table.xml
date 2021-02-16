@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>TAR_PAYMENT</Name>
+  <ID>tbl_TAR_PAYMENT</ID>
+  <Columns>
+    <Column name="INVOICE_ID" id="tblCol_5a289977e1074dfb899af98d8aecc528" index="0" datatype="text" />
+    <Column name="PAYMENT_ID" id="tblCol_74ed2752a8a14d4e8029d170e985663a" index="1" datatype="text" mandatory="true" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_74ed2752a8a14d4e8029d170e985663a" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>
