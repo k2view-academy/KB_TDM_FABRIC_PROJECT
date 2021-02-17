@@ -1615,8 +1615,8 @@ public class SharedLogic {
 		return objects;
 	}
 
-	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws SQLException {
-
+	@out(name = "result", type = String.class, desc = "")
+	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws Exception {
 		final String where = !Util.isEmpty(whereStmt) ? "where " + whereStmt : "";
 		Db tdmDB = db("TDM");
 		Db.Rows rows = tdmDB.fetch("SELECT be_name FROM public.business_entities WHERE be_id=?;", beID);
@@ -1626,11 +1626,12 @@ public class SharedLogic {
 		}
 		String rootLu = "";
 		String luRelationsView = "lu_relations_" + beName + "_" + sourceEnv;
-
+		
 		String getParentsSql = GET_PARENTS_SQL;
 		AtomicInteger parentsCount = new AtomicInteger();
-
+		
 		Db.Rows parents = tdmDB.fetch(PARENTS_SQL, beID);
+		log.info("PARENTS_SQL: " + PARENTS_SQL);
 		Map<String,String> setTypesSql = new HashMap<>();
 		Map<String,String> getParamsSqlMap = new HashMap<>();
 		List<String> getEntitiesSqlList = new ArrayList<>();
@@ -1638,24 +1639,25 @@ public class SharedLogic {
 		for(Db.Row luRow : parents){
 			ResultSet resultSet = luRow.resultSet();
 			rootLu = resultSet.getString("lu_name");
+			log.info("Root LU: " + rootLu);
 			String rootLuStrL = rootLu.toLowerCase();
 			String jsonTypeName = sourceEnv + "_" + beName + "_" + rootLu + "_json_type";
 			parentsCount.getAndIncrement();
-
+		
 			Db.Rows children = tdmDB.fetch(GET_CHILDREN_SQL, rootLu, beID);
-
+		
 			String childrenList = (String) children.firstValue();
 			setTypesQuery.append(getSetTypesQuery(sourceEnv, rootLu, jsonTypeName, childrenList));
-
-
+		
+		
 			String paramsSql = getParamsSql(sourceEnv, rootLu, rootLuStrL, jsonTypeName, childrenList);
-
+		
 			getParamsSqlMap.put(rootLu, paramsSql);
 			getEntitiesSqlList.add(" SELECT DISTINCT " + rootLuStrL + "_root_id as entity_id FROM \"" + luRelationsView + "\" " + where);
 		}
-
+		
 		String getParamsSql = "";
-
+		
 		int count = parentsCount.get();
 		if(count > 0){
 			if(count == 1){
@@ -1667,11 +1669,10 @@ public class SharedLogic {
 						.collect(Collectors.joining(" "));
 			}
 		}
-
+		
 		String createViewSql = createViewSql(luRelationsView, setTypesQuery.toString(), getParamsSql);
 		tdmDB.execute(createViewSql);
 		return getEntitiesSqlList.stream().map(Object::toString).collect(Collectors.joining(" UNION "));
-
 	}
 
 

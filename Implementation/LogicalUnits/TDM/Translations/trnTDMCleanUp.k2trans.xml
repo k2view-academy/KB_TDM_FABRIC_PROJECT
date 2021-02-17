@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Translation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>trnTDMCleanUp</Name>
   <InputNotFoundAction>Use_Default</InputNotFoundAction>
   <SchemaColumns>
@@ -205,14 +205,6 @@
           <SEQ>10</SEQ>
         </trnTDMCleanUp>
         <trnTDMCleanUp diffgr:id="trnTDMCleanUp11" msdata:rowOrder="10">
-          <TABLE_NAME>TASKS_PRODUCTS</TABLE_NAME>
-          <CLEANUP_ORDER>4</CLEANUP_ORDER>
-          <CLEANUP_IND>true</CLEANUP_IND>
-          <CLEANUP_STATEMENT>DELETE FROM TASKS_PRODUCTS</CLEANUP_STATEMENT>
-          <CLEANUP_LOGIC>Clean all records- this table is no longer in use since TDM 4</CLEANUP_LOGIC>
-          <SEQ>11</SEQ>
-        </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp12" msdata:rowOrder="11">
           <TABLE_NAME>ENVIRONMENT_ROLE_USERS</TABLE_NAME>
           <CLEANUP_ORDER>5</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -220,7 +212,7 @@
           <CLEANUP_LOGIC>Entities with role_id that belongs to Inactive role that needs to be cleaned</CLEANUP_LOGIC>
           <SEQ>12</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp13" msdata:rowOrder="12">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp12" msdata:rowOrder="11">
           <TABLE_NAME>ENVIRONMENT_ROLES</TABLE_NAME>
           <CLEANUP_ORDER>6</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -228,7 +220,7 @@
           <CLEANUP_LOGIC>Entities with role_status = 'Inactive' and role_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
           <SEQ>13</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp14" msdata:rowOrder="13">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp13" msdata:rowOrder="12">
           <TABLE_NAME>ENVIRONMENT_PRODUCTS</TABLE_NAME>
           <CLEANUP_ORDER>6</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -236,23 +228,7 @@
           <CLEANUP_LOGIC>Entities with status = 'Inactive' and last_updated_date &lt; X months ago</CLEANUP_LOGIC>
           <SEQ>14</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp15" msdata:rowOrder="14">
-          <TABLE_NAME>ENVIRONMENT_PRODUCTS_INTERFACES</TABLE_NAME>
-          <CLEANUP_ORDER>7</CLEANUP_ORDER>
-          <CLEANUP_IND>true</CLEANUP_IND>
-          <CLEANUP_STATEMENT>DELETE FROM ENVIRONMENT_PRODUCT_INTERFACES WHERE (ENVIRONMENT_ID, PRODUCT_ID) IN (SELECT ENVIRONMENT_ID, PRODUCT_ID FROM ENVIRONMENT_PRODUCTS WHERE UPPER(STATUS) = 'INACTIVE' AND LAST_UPDATED_DATE &lt; ?)</CLEANUP_STATEMENT>
-          <CLEANUP_LOGIC>Interfaces that belong to environment products that need to be cleaned</CLEANUP_LOGIC>
-          <SEQ>15</SEQ>
-        </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp16" msdata:rowOrder="15">
-          <TABLE_NAME>ENVIRONMENT_PRODUCTS_INTERFACES</TABLE_NAME>
-          <CLEANUP_ORDER>7</CLEANUP_ORDER>
-          <CLEANUP_IND>true</CLEANUP_IND>
-          <CLEANUP_STATEMENT>DELETE FROM ENVIRONMENT_PRODUCT_INTERFACES WHERE UPPER(ENV_PRODUCT_INTERFACE_STATUS) = 'INACTIVE'</CLEANUP_STATEMENT>
-          <CLEANUP_LOGIC>Entities with env_product_interface_status = 'Inactive'</CLEANUP_LOGIC>
-          <SEQ>16</SEQ>
-        </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp17" msdata:rowOrder="16">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp14" msdata:rowOrder="13">
           <TABLE_NAME>ENVIRONMENT_OWNERS</TABLE_NAME>
           <CLEANUP_ORDER>7</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -260,7 +236,7 @@
           <CLEANUP_LOGIC>Owners of environments which need to be cleaned</CLEANUP_LOGIC>
           <SEQ>17</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp18" msdata:rowOrder="17">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp15" msdata:rowOrder="14">
           <TABLE_NAME>TDM_ENV_GLOBALS</TABLE_NAME>
           <CLEANUP_ORDER>7</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -268,7 +244,7 @@
           <CLEANUP_LOGIC>Globals belong to environment that needs to be cleaned</CLEANUP_LOGIC>
           <SEQ>18</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp19" msdata:rowOrder="18">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp16" msdata:rowOrder="15">
           <TABLE_NAME>ENVIRONMENTS</TABLE_NAME>
           <CLEANUP_ORDER>8</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -276,7 +252,7 @@
           <CLEANUP_LOGIC>Entities with environment_status = 'Inactive' and and environment_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
           <SEQ>19</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp20" msdata:rowOrder="19">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp17" msdata:rowOrder="16">
           <TABLE_NAME>PRODUCTS</TABLE_NAME>
           <CLEANUP_ORDER>9</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -284,7 +260,7 @@
           <CLEANUP_LOGIC>Entities with product_status = 'Inactive' and product_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
           <SEQ>20</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp21" msdata:rowOrder="20">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp18" msdata:rowOrder="17">
           <TABLE_NAME>PRODUCT_LOGICAL_UNITS</TABLE_NAME>
           <CLEANUP_ORDER>10</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -292,7 +268,7 @@
           <CLEANUP_LOGIC>Entities with be_id belongs to Inactive business entity which needs to be cleaned</CLEANUP_LOGIC>
           <SEQ>21</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp22" msdata:rowOrder="21">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp19" msdata:rowOrder="18">
           <TABLE_NAME>BUSINESS_ENTITIES</TABLE_NAME>
           <CLEANUP_ORDER>11</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -300,21 +276,13 @@
           <CLEANUP_LOGIC>Entities with be_status = 'Inactive' and be_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
           <SEQ>22</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp23" msdata:rowOrder="22">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp20" msdata:rowOrder="19">
           <TABLE_NAME>TDM_BE_ENV_EXCLUSION_LIST</TABLE_NAME>
           <CLEANUP_ORDER>12</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
           <CLEANUP_STATEMENT>DELETE FROM TDM_BE_ENV_EXCLUSION_LIST WHERE ENVIRONMENT_ID IN (SELECT ENVIRONMENT_ID FROM ENVIRONMENTS  WHERE UPPER(ENVIRONMENT_STATUS) = 'INACTIVE' AND ENVIRONMENT_LAST_UPDATED_DATE &lt; ?)  OR BE_ID IN (SELECT BE_ID FROM BUSINESS_ENTITIES WHERE UPPER(BE_STATUS) = 'INACTIVE' AND BE_LAST_UPDATED_DATE &lt; ?)</CLEANUP_STATEMENT>
           <CLEANUP_LOGIC>Records belong to environment that need to be cleaned or business entitiy that need to be cleaned</CLEANUP_LOGIC>
           <SEQ>24</SEQ>
-        </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp24" msdata:rowOrder="23">
-          <TABLE_NAME>DATA_CENTERS</TABLE_NAME>
-          <CLEANUP_ORDER>13</CLEANUP_ORDER>
-          <CLEANUP_IND>true</CLEANUP_IND>
-          <CLEANUP_STATEMENT>DELETE FROM DATA_CENTERS WHERE UPPER(DATA_CENTER_STATUS) = 'INACTIVE' AND DATA_CENTER_LAST_UPDATED_DATE &lt; ?</CLEANUP_STATEMENT>
-          <CLEANUP_LOGIC>Entities with data_center_status = 'Inactive' and data_center_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
-          <SEQ>25</SEQ>
         </trnTDMCleanUp>
       </DocumentElement>
     </diffgr:diffgram>

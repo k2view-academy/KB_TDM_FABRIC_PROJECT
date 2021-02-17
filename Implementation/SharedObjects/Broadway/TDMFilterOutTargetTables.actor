@@ -39,9 +39,9 @@
                     "lu_name": "ALL_LUS"
                 },
                 {
-                    "table_regex": "visit2labResults",
+                    "table_regex": "orders",
                     "active": true,
-                    "lu_name": "PV"
+                    "lu_name": "Customer"
                 }
             ],
             "schema": {

@@ -7,7 +7,7 @@
       <Title>lu_name</Title>
       <ColumnName>lu_name</ColumnName>
       <Direction>Input</Direction>
-      <Type>Text</Type>
+      <Type>LU NAME</Type>
       <Length>100</Length>
       <Format />
       <Index>0</Index>
@@ -101,16 +101,18 @@
         <trnMigrateList diffgr:id="trnMigrateList1" msdata:rowOrder="0">
           <lu_name>Customer</lu_name>
           <source_env_name></source_env_name>
-          <interface_name>ORDERS_DB</interface_name>
-          <ig_sql>Select PATIENT.PATIENT_ID
-From PATIENT
-Where RowNum &lt; 10000</ig_sql>
-        </trnMigrateList>
-        <trnMigrateList diffgr:id="trnMigrateList2" msdata:rowOrder="1">
-          <lu_name>Orders</lu_name>
           <interface_name>CRM_DB</interface_name>
           <ig_sql>Select CUSTOMER.CUSTOMER_ID
-From main.CUSTOMER limit 1000</ig_sql>
+From main.CUSTOMER
+limit 1000</ig_sql>
+        </trnMigrateList>
+        <trnMigrateList diffgr:id="trnMigrateList2" msdata:rowOrder="1">
+          <lu_name>Collection</lu_name>
+          <source_env_name></source_env_name>
+          <interface_name>CRM_DB</interface_name>
+          <ig_sql>Select CUSTOMER.CUSTOMER_ID
+From main.CUSTOMER
+limit 1000</ig_sql>
         </trnMigrateList>
       </DocumentElement>
     </diffgr:diffgram>

@@ -22,13 +22,13 @@
                             }
                         },
                         {
-                            "name": "Get Source IID",
+                            "name": "Get Original IID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
+                                        "const": "INPUT_IID",
                                         "isDefault": false
                                     }
                                 ],
@@ -80,13 +80,20 @@
                                     },
                                     {
                                         "name": "initialValue",
-                                        "const": "PatientIdInit"
+                                        "const": "{{INITIATE_VALUE_FLOW}}"
                                     }
                                 ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+										}
+									}
+								]
+							}
+                        }						 
+					]
                 }
             ]
         },
@@ -145,7 +152,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get Source IID",
+                "actor": "Get Original IID",
                 "name": "result"
             },
             "rightPort": {

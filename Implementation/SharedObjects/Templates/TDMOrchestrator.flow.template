@@ -9,7 +9,33 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "InitiateTDMLoad_Actor1",
+                           "name": "Initation Error Handle",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate TDM Load",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
@@ -164,7 +190,7 @@
                                                 "actions": {
                                                     "suppress": false,
                                                     "log": true,
-                                                    "flowName": ""
+                                                    "flowName": "PopulateTableErrorsWithFailed"
                                                 }
                                             }
                                         ]
@@ -278,6 +304,32 @@
                     "remark": "Load tables into target.\nThis flow will first check if data should be loaded to target tables or not",
                     "actors": [
                         {
+                            "name": "Load Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Load All Tables",
                             "actorType": {
                                 "parentType": "InnerFlow",
@@ -330,80 +382,6 @@
                             "actorType": {
                                 "parentType": "PopulateTdmSeqMapping_Actor",
                                 "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Entity Status",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ENTITY_STATUS",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check If Entity Failed",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "ErrorHandler1",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": ""
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Throw Exception If Entity Failed",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "if (entityStatus != 'completed') {\r\n    throw \"Entity Failed\"\r\n}\r\ntrue;",
-                                            "script": "if (entityStatus != 'completed') {\n  throw \"Entity Failed\";\n}\n\ntrue;"
-                                        }
-                                    },
-                                    {
-                                        "name": "entityStatus",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
                                 "outputs": []
                             }
                         }
@@ -472,16 +450,6 @@
             "rightPort": {
                 "actor": "Equals1",
                 "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Entity Status",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Throw Exception If Entity Failed",
-                "name": "entityStatus"
             }
         },
         {

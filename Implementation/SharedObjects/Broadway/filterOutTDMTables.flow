@@ -8,51 +8,30 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "JavaScript2",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.matchFound = false;"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "name": "TDMFilterOutTargetTables1",
                             "actorType": {
                                 "parentType": "TDMFilterOutTargetTables",
-                                "inputs": [
-                                    {
-                                        "name": "table",
-                                        "const": [
-                                            {
-                                                "table_regex": "FABRIC_TDM_ROOT",
-                                                "active": true,
-                                                "lu_name": "ALL_LUS"
-                                            },
-                                            {
-                                                "table_regex": "INSTANCE_TABLE_COUNT",
-                                                "active": true,
-                                                "lu_name": "ALL_LUS"
-                                            },
-                                            {
-                                                "table_regex": "LU_PARAMS",
-                                                "active": true,
-                                                "lu_name": "ALL_LUS"
-                                            },
-                                            {
-                                                "table_regex": "TDM_LU_TYPE_REL_TAR_EID",
-                                                "active": true,
-                                                "lu_name": "ALL_LUS"
-                                            },
-                                            {
-                                                "table_regex": "TDM_LU_TYPE_RELATION_EID",
-                                                "active": true,
-                                                "lu_name": "ALL_LUS"
-                                            },
-                                            {
-                                                "table_regex": "TAR_.*",
-                                                "active": true,
-                                                "lu_name": "ALL_LUS"
-                                            },
-                                            {
-                                                "table_regex": "visit2labResults",
-                                                "active": true,
-                                                "lu_name": "PV"
-                                            }
-                                        ]
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": [
                                     {
                                         "name": "table",
@@ -72,26 +51,6 @@
                                                     }
                                                 }
                                             }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "JavaScript2",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.matchFound = false;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
                                         }
                                     }
                                 ]

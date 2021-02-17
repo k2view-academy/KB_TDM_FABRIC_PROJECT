@@ -34,8 +34,8 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>9042</dbPort>
-          <dbUser>admin</dbUser>
-          <dbPasswordEncrypted>ZBmV3e3Qrq7tvWhmyjoiutqCIdrBjya5/cEoD6JIo0U=:YP57MsEF3hQF7vruZK4IgCZjer2An7zcBSzmq6QAZVw=</dbPasswordEncrypted>
+          <dbUser>cassandra</dbUser>
+          <dbPasswordEncrypted>+suLEUL/JlMp2jFA17J+0n+4QGYNY2zUM//pynb3mwA=:fdZqiDXqips6X607ApOD03aJLl7v476iM5G4RCP3SUc=</dbPasswordEncrypted>
           <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
@@ -80,10 +80,6 @@
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
         </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
-        </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
           <Value>false</Value>
           <Comment>Target product version to override by task execution process</Comment>
@@ -91,6 +87,37 @@
         <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
           <Value>false</Value>
           <Comment>Source product version to override by task execution process</Comment>
+        </Global>
+        <Global name="TDM_REPLACE_SEQUENCES" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="TDM_TASK_EXE_ID" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="MASK_FLAG" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
+          <Value>ENV1</Value>
+        </Global>
+        <Global name="TDM_TAR_ENV_NAME" luName="">
+          <Value>ENV2</Value>
+        </Global>
+        <Global name="TDM_SYNTHETIC_DATA" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="TDM_TASK_ID" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="TDM_VERSION_DATETIME" luName="">
+          <Value>19700101000000</Value>
+        </Global>
+        <Global name="TDM_VERSION_NAME" luName="">
+          <Value />
+        </Global>
+        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
+          <Value>TAR</Value>
+          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="INTERCODE_UK" luName="">
           <Value>+44</Value>
@@ -245,10 +272,6 @@
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
         </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
-        </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
           <Value>false</Value>
           <Comment>Target product version to override by task execution process</Comment>
@@ -256,6 +279,37 @@
         <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
           <Value>false</Value>
           <Comment>Source product version to override by task execution process</Comment>
+        </Global>
+        <Global name="TDM_REPLACE_SEQUENCES" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="TDM_TASK_EXE_ID" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="MASK_FLAG" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
+          <Value>ENV1</Value>
+        </Global>
+        <Global name="TDM_TAR_ENV_NAME" luName="">
+          <Value>ENV2</Value>
+        </Global>
+        <Global name="TDM_SYNTHETIC_DATA" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="TDM_TASK_ID" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="TDM_VERSION_DATETIME" luName="">
+          <Value>19700101000000</Value>
+        </Global>
+        <Global name="TDM_VERSION_NAME" luName="">
+          <Value />
+        </Global>
+        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
+          <Value>TAR</Value>
+          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="INTERCODE_UK" luName="">
           <Value>+44</Value>
