@@ -105,11 +105,11 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "INVOICE_ID"
+                                            "SUBSCRIBER_ID"
                                         ]
                                     },
                                     {
-                                        "name": "INVOICE_ID",
+                                        "name": "SUBSCRIBER_ID",
                                         "schema": {}
                                     }
                                 ],
