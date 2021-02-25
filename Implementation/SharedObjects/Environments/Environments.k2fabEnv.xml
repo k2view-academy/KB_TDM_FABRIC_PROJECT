@@ -73,19 +73,21 @@
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
           <Value>false</Value>
+          <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
           <Value>true</Value>
+          <Comment>Indicator to insert the instance to target DB</Comment>
         </Global>
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
-          <Value>false</Value>
+          <Value>1</Value>
           <Comment>Target product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
-          <Value>false</Value>
+          <Value>1</Value>
           <Comment>Source product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_REPLACE_SEQUENCES" luName="">
@@ -98,10 +100,10 @@
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>ENV1</Value>
+          <Value>SRC</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>ENV2</Value>
+          <Value>TAR</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -135,9 +137,6 @@
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
-        </Global>
-        <Global name="TDM_REPORT_DIRECTORY" luName="TDM">
-          <Value>/usr/local/k2view/tdm_reports/</Value>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
@@ -223,7 +222,7 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>SQLite</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="false">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
@@ -242,7 +241,7 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>SQLite</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="false">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
@@ -264,20 +263,22 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>true</Value>
+          <Value>false</Value>
+          <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
+          <Comment>Indicator to insert the instance to target DB</Comment>
         </Global>
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
-          <Value>false</Value>
+          <Value>1</Value>
           <Comment>Target product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
-          <Value>false</Value>
+          <Value>1</Value>
           <Comment>Source product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_REPLACE_SEQUENCES" luName="">
@@ -290,10 +291,10 @@
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>ENV1</Value>
+          <Value>SRC</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>ENV2</Value>
+          <Value>TAR</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -328,16 +329,13 @@
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
         </Global>
-        <Global name="TDM_REPORT_DIRECTORY" luName="TDM">
-          <Value>/usr/local/k2view/tdm_reports/</Value>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers" dataType="string" mandatory="true">
-              <Value>10.21.2.64:6379</Value>
+              <Value>10.21.2.69:6379</Value>
             </Property>
             <Property name="Password" dataType="password">
               <Value>tWS1zKv5cNbbN3S7/yX+nGoGrIFwnDICZl0or89ykoM=:k+BwTg0aZMBUd+nVf/9K69v2H+GNRNfq/zfQQUtQktk=</Value>

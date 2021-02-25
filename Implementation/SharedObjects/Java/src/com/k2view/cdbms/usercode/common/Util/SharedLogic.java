@@ -117,8 +117,9 @@ public class SharedLogic {
 				}
 				currentOrder = p.gettablePopulationOrder();
 			}
-		
-			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=" + p.getLudbObjectName()).firstValue();
+			
+			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=" + 
+														p.getLudbObjectName() + ", luName=" + luType.luName).firstValue();
 			if( !tables.contains(p.getLudbObjectName()) && !"null".equals(tableFiltered) && !Util.isEmpty(tableFiltered)) {
 				tmpBucket.add(p.getLudbObjectName());
 				tables.add(p.getLudbObjectName());
@@ -181,6 +182,17 @@ public class SharedLogic {
 				rs.close();
 		}
 		return al;
+	}
+
+
+	@out(name = "res", type = Object.class, desc = "")
+	public static Object buildSeqTemplateData(String seqName, String cacheDBName, String redisOrDBName, String initiationScriptOrValue) throws Exception {
+		Map<String, Object> map = new TreeMap<>();
+		map.put("SEQUENCE_NAME", seqName);
+		map.put("CACHE_DB_NAME", cacheDBName);
+		map.put("SEQUENCE_REDIS_DB", redisOrDBName);
+		map.put("INITIATE_VALUE_FLOW", initiationScriptOrValue);
+		return map;
 	}
 
 }

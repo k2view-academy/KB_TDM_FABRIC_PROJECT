@@ -172,7 +172,7 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": true,
+                                                    "suppress": false,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }

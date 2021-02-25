@@ -58,8 +58,7 @@ public class SharedLogic {
 			"FROM product_logical_units a " +
 			"INNER JOIN children b ON a.lu_parent_id = b.lu_id) " +
 			"SELECT  string_agg('''' ||  unnest || '''' , ',') FROM children ,unnest(string_to_array(children.lu_name, ',')); ";
-	public static final String GET_PARENTS_SQL = "SELECT lu_name  FROM product_logical_units WHERE be_id=? AND lu_parent_id is null and last_executed_lu=false";
-	public static final String PARENTS_SQL = "SELECT lu_name  FROM product_logical_units WHERE be_id=? AND lu_parent_id is null and last_executed_lu=false";
+	public static final String PARENTS_SQL = "SELECT lu_name  FROM product_logical_units WHERE be_id=? AND lu_parent_id is null";
 
 	@desc("New function for TDM 5.1- this function is called if the open and close separators are populated for the IID.\r\nThe function returns the IID without the separators + the end position of the IID (including the separators) in the UID")
 	@out(name = "res", type = Object[].class, desc = "")
@@ -293,7 +292,7 @@ public class SharedLogic {
 		            // DROP the view for the BE if exists
 		            //String viewName = "lu_relations_" + beRow[0] + "_" + env_name ;
 					String viewName = "lu_relations_" + beRow.cell(0) + "_" + env_name;
-					ciTDM.execute("DROP VIEW IF EXISTS \"" + viewName + "\"");
+					ciTDM.execute("DROP MATERIALIZED VIEW IF EXISTS \"" + viewName + "\"");
 		        }
 			
 				if (rsBeList != null) rsBeList.close();
@@ -1615,8 +1614,8 @@ public class SharedLogic {
 		return objects;
 	}
 
-	@out(name = "result", type = String.class, desc = "")
-	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws Exception {
+	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws SQLException {
+
 		final String where = !Util.isEmpty(whereStmt) ? "where " + whereStmt : "";
 		Db tdmDB = db("TDM");
 		Db.Rows rows = tdmDB.fetch("SELECT be_name FROM public.business_entities WHERE be_id=?;", beID);
@@ -1626,12 +1625,10 @@ public class SharedLogic {
 		}
 		String rootLu = "";
 		String luRelationsView = "lu_relations_" + beName + "_" + sourceEnv;
-		
-		String getParentsSql = GET_PARENTS_SQL;
+
 		AtomicInteger parentsCount = new AtomicInteger();
-		
+
 		Db.Rows parents = tdmDB.fetch(PARENTS_SQL, beID);
-		log.info("PARENTS_SQL: " + PARENTS_SQL);
 		Map<String,String> setTypesSql = new HashMap<>();
 		Map<String,String> getParamsSqlMap = new HashMap<>();
 		List<String> getEntitiesSqlList = new ArrayList<>();
@@ -1639,25 +1636,24 @@ public class SharedLogic {
 		for(Db.Row luRow : parents){
 			ResultSet resultSet = luRow.resultSet();
 			rootLu = resultSet.getString("lu_name");
-			log.info("Root LU: " + rootLu);
 			String rootLuStrL = rootLu.toLowerCase();
 			String jsonTypeName = sourceEnv + "_" + beName + "_" + rootLu + "_json_type";
 			parentsCount.getAndIncrement();
-		
+
 			Db.Rows children = tdmDB.fetch(GET_CHILDREN_SQL, rootLu, beID);
-		
+
 			String childrenList = (String) children.firstValue();
 			setTypesQuery.append(getSetTypesQuery(sourceEnv, rootLu, jsonTypeName, childrenList));
-		
-		
+
+
 			String paramsSql = getParamsSql(sourceEnv, rootLu, rootLuStrL, jsonTypeName, childrenList);
-		
+
 			getParamsSqlMap.put(rootLu, paramsSql);
 			getEntitiesSqlList.add(" SELECT DISTINCT " + rootLuStrL + "_root_id as entity_id FROM \"" + luRelationsView + "\" " + where);
 		}
-		
+
 		String getParamsSql = "";
-		
+
 		int count = parentsCount.get();
 		if(count > 0){
 			if(count == 1){
@@ -1669,10 +1665,11 @@ public class SharedLogic {
 						.collect(Collectors.joining(" "));
 			}
 		}
-		
+
 		String createViewSql = createViewSql(luRelationsView, setTypesQuery.toString(), getParamsSql);
 		tdmDB.execute(createViewSql);
 		return getEntitiesSqlList.stream().map(Object::toString).collect(Collectors.joining(" UNION "));
+
 	}
 
 
@@ -1959,7 +1956,8 @@ public class SharedLogic {
 		//	"WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
 		
 		String taskExeListSql = "SELECT L.FABRIC_EXECUTION_ID, L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
-						"L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, L.VERSION_DATETIME, T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
+						"L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, to_char(L.VERSION_DATETIME,'YYYY-MM-DD HH24:MI:SS') AS VERSION_DATETIME, " +
+						"T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
 						"FROM TASK_EXECUTION_LIST L, TASKS T " +
 						"WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
 		
@@ -2206,5 +2204,9 @@ public class SharedLogic {
 	}
 
 
+	@out(name = "globalValue", type = String.class, desc = "")
+	public static String getGlobal(String globalName) throws Exception {
+		return "" + fabric().fetch("set " + globalName).firstValue();
+	}
 
 }

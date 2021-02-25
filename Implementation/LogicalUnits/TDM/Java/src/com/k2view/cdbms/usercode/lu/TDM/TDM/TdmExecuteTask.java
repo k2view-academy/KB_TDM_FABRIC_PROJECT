@@ -308,7 +308,7 @@ public class TdmExecuteTask {
 			entityInclusion = "SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel " +
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
 						" and t.lu_name = '" + parentLU + "' and t.lu_name = rel.lu_type_1 and rel.lu_type_2= '" + luName + 
-						"' and t.entity_id =  " + entityIdSelectParID + versionClause +
+						"' and rel.source_env = t.source_env and t.entity_id =  " + entityIdSelectParID + versionClause +
 					// In case of delete from target, there could be entries added to the target environment after the TDM load.
 					" UNION SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_rel_tar_eid rel " +
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
@@ -318,19 +318,9 @@ public class TdmExecuteTask {
 			entityInclusion = "SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel " + 
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
 						" and t.lu_name = '" + parentLU + "' and t.lu_name = rel.lu_type_1 and rel.lu_type_2= '" + luName + 
-						"' and t.entity_id =  " + entityIdSelectParID + versionClause;
+						"' and rel.source_env = t.source_env and t.entity_id =  " + entityIdSelectParID + versionClause;
 		}
 		
-/*        if(!isDeleteOnlyMode(taskProperties)){
-            entityInclusion = "SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel where t.task_execution_id= '" + taskExecutionID + 
-						"' and t.execution_status = 'completed' and t.lu_name = '" + parentLU + "' and t.lu_name = rel.lu_type_1 and rel.lu_type_2= '" + luName + 
-						"' and t.entity_id =  " + entityIdSelectParID + versionClause;
-        }else{
-            entityInclusion = "select " + entityIdSelectChildID + " as child_entity_id from task_execution_entities t, tdm_lu_type_rel_tar_eid rel " +
-						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
-						" and t.lu_name = '" + parentLU + "' and rel.target_env = '" + TARGET_ENVIRONMENT_NAME.get(taskProperties) + "' and t.lu_name = rel.lu_type_1 " +
-						" and t.target_entity_id = rel.lu_type1_eid and rel.lu_type_2= '" + luName + "'"; 
-        } */
 		//log.info("getEntityInclusionForChildLU - entityInclusion: " + entityInclusion);
         return entityInclusion;
     }

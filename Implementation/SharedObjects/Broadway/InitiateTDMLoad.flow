@@ -139,97 +139,7 @@
         {
             "stages": [
                 {
-                    "name": "Set The given Globals",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "remark": "The task receives a set of  Globals, these Globals will be set at this stage to impact the run of the Entity loading.",
-                    "actors": [
-                        {
-                            "name": "Set Globals",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "functionName",
-                                        "const": "setGlobals"
-                                    },
-                                    {
-                                        "name": "globals",
-                                        "schema": {
-                                            "type": "object"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "SplitIIDAndCloneNumber_Actor2",
-                            "actorType": {
-                                "parentType": "SplitIIDAndCloneNumber_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format Start Time",
-                            "actorType": {
-                                "parentType": "DateFormat",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Current Time",
-                            "minHeight": 155,
-                            "actorType": {
-                                "parentType": "Now",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Masking Flag",
-                            "minHeight": 374,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "MASK_FLAG",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set TDM Session Variables",
+                    "name": "Set TDM Parameters",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
@@ -269,6 +179,237 @@
                             }
                         },
                         {
+                            "name": "Format Start Time",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Input IID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "INPUT_IID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Delete Before Load",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_BEFORE_LOAD",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Insert To Target",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_INSERT_TO_TARGET",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate Source Entity ID",
+                            "remark": "The Source Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate IID",
+                            "remark": "The IID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set The given Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "remark": "The task receives a set of  Globals, these Globals will be set at this stage to impact the run of the Entity loading.",
+                    "actors": [
+                        {
+                            "name": "Set Globals",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "functionName",
+                                        "const": "setGlobals"
+                                    },
+                                    {
+                                        "name": "globals",
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Replace Sequence Global",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_REPLACE_SEQUENCES",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Masking Flag",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "MASK_FLAG",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Set Start Processing Time",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_START_DATETIME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Task Execution ID From Global",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SplitIIDAndCloneNumber_Actor2",
+                            "actorType": {
+                                "parentType": "SplitIIDAndCloneNumber_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Values of Globals And Set  Indicators And IDs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
                             "name": "Set IID",
                             "minHeight": 139,
                             "actorType": {
@@ -302,7 +443,7 @@
                             }
                         },
                         {
-                            "name": "Set Entity ID",
+                            "name": "Set Source Entity ID",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -321,56 +462,14 @@
                             }
                         },
                         {
-                            "name": "Get Replace Sequence Global",
-                            "minHeight": 82,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_REPLACE_SEQUENCES",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Task Execution ID From Global",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TASK_EXE_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Start Processing Time",
+                            "name": "Set Replace Sequence Ind",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "IID_START_DATETIME",
+                                        "const": "enable_sequences",
                                         "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Input IID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "INPUT_IID"
                                     },
                                     {
                                         "name": "value",
@@ -399,6 +498,32 @@
                                             "type": "string"
                                         },
                                         "const": "false"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Set Task Execution ID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "execution_id",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -436,94 +561,8 @@
                             }
                         },
                         {
-                            "name": "Set Delete Before Load",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_DELETE_BEFORE_LOAD",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Insert To Target",
-                            "minHeight": 130,
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_INSERT_TO_TARGET",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Task Execution ID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "execution_id",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format Current Time",
-                            "actorType": {
-                                "parentType": "DateFormat",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Replace Sequence Ind",
-                            "minHeight": 131,
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "enable_sequences",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Set Masking Indicator",
-                            "minHeight": 131,
+                            "minHeight": 282,
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -592,6 +631,10 @@
                                         "name": "iid",
                                         "const": null,
                                         "isDefault": false
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": [
@@ -616,6 +659,14 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Get Time After Get",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
                             }
                         }
                     ]
@@ -650,20 +701,6 @@
                             }
                         },
                         {
-                            "name": "Set End Time of Get Command",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID_AFTER_GET_DATETIME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Initiate Entity Status",
                             "actorType": {
                                 "parentType": "FabricSet",
@@ -676,6 +713,40 @@
                                     {
                                         "name": "value",
                                         "const": "completed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Current Time",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set End Time of Get",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Set End Time of Get Command",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_AFTER_GET_DATETIME",
                                         "isDefault": false
                                     }
                                 ],
@@ -706,6 +777,56 @@
             "rightPort": {
                 "actor": "Format Start Time",
                 "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set Sync Mode",
+                "name": "updatedSyncMode"
+            },
+            "rightPort": {
+                "actor": "Get Entity",
+                "name": "syncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format Start Time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Set Start Processing Time",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Replace Sequence Global",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Replace Sequence Ind",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Masking Flag",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check if Masking Flag is set",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Execution ID From Global",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Task Execution ID",
+                "name": "value"
             }
         },
         {
@@ -744,57 +865,7 @@
                 "name": "UID"
             },
             "rightPort": {
-                "actor": "Set Entity ID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Start Time",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Set Start Processing Time",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Current Time",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Format Current Time",
-                "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Masking Flag",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check if Masking Flag is set",
-                "name": "test"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Replace Sequence Global",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set Replace Sequence Ind",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Task Execution ID From Global",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set Task Execution ID",
+                "actor": "Set Source Entity ID",
                 "name": "value"
             }
         },
@@ -806,6 +877,16 @@
             "rightPort": {
                 "actor": "Set Masking Indicator",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Time After Get",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format Current Time",
+                "name": "date"
             }
         },
         {
@@ -881,26 +962,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "Set Globals",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -951,16 +1012,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "Set Source Environment",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "deleteBeforeLoad"
             },
             "rightPort": {
@@ -975,6 +1026,56 @@
             },
             "rightPort": {
                 "actor": "Set Insert To Target",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate Source Entity ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "Set Globals",
+                "name": "globals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "Set Source Environment",
                 "name": "value"
             }
         },

@@ -4,28 +4,12 @@
 
 package com.k2view.cdbms.usercode.lu.Orders.Root;
 
-import java.util.*;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.Globals;
 import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.Orders.*;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
-import static com.k2view.cdbms.usercode.lu.Orders.Globals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {
@@ -55,11 +39,21 @@ public class Logic extends UserCode {
 		
 			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
 			{
+
+				// Indicates if any of the source root table has the instance id
+				AtomicBoolean instanceExists = new AtomicBoolean(false);
+
 				//log.info("TEST11- select orders from DB by input: " + input);
 				String sql = "SELECT contract_id, order_id, order_type, order_date, order_status FROM main.orders where order_id = ?";
+
 				db("ORDERS_DB").fetch(sql, input).each(row->{
+					instanceExists.set(true);
 					yield(row.cells());
 				});
+
+				if(!instanceExists.get()) {
+					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
+				}
 			}
 		}
 	}

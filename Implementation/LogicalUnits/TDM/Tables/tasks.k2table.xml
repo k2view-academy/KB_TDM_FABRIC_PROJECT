@@ -24,14 +24,14 @@
     <Column name="selected_ref_version_datetime" id="tblCol_d37a33d3b16c41a7bdcb596dd3612418" index="18" datatype="text" />
     <Column name="retention_period_type" id="tblCol_f43c2676051d4c27a519a5e56b5cae16" index="19" datatype="text" />
     <Column name="retention_period_value" id="tblCol_f0a53a3a8fe84318a61ac0125a3e7d1a" index="20" datatype="text" />
-    <Column name="request_of_fresh_data" id="tblCol_a66999c09f0c40fda4b19b4e4851bd3f" index="21" datatype="text" />
+    <Column name="sync_mode" id="tblCol_fcd1edb6598e4061a4d934990aa8e020" index="21" datatype="text" />
     <Column name="scheduling_end_date" id="tblCol_ab0a72d9610d40f492b97b330818618c" index="22" datatype="text" />
     <Column name="operation_mode" id="tblCol_c05d6615236a4796abe8fb5ccd49a80b" index="23" datatype="text" />
-    <Column name="tdm_set_sync_off" id="tblCol_fcd1edb6598e4061a4d934990aa8e020" index="24" datatype="text" />
   </Columns>
   <IndexesList />
   <EnrichmentList />
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
     <TruncateBeforeSync>true</TruncateBeforeSync>
   </LazyDataUpdate>
+  <TriggersList />
 </TableObject>

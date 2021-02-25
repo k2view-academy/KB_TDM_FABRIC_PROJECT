@@ -8,6 +8,7 @@ import java.util.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.Globals;
@@ -35,7 +36,7 @@ public class Logic extends UserCode {
 
 
 	@type(RootFunction)
-	@out(name = "field1", type = String.class, desc = "")
+	@out(name = "field1", type = void.class, desc = "")
 	public static void fnPop_RootTable(String key) throws Exception {
 		// Check the TDM_INSERT_TO_TARGET, TDM_DELETE_BEFORE_LOAD and TDM_SYNC_SOURCE_DATA.
 		// Note: if both globals - TDM_SYNC_SOURCE_DATA is false and TDM_DELETE_BEFORE_LOAD - are false, the Init flow needs to set the sync mode to OFF
@@ -54,11 +55,20 @@ public class Logic extends UserCode {
 		
 			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
 			{
+
+				// Indicates if any of the source root table has the instance id
+				AtomicBoolean instanceExists = new AtomicBoolean(false);
+				
 				// Note that sql needs to be edited to select from the main source table by the input id
 				String sql = "SELECT * FROM <main table name> WHERE  <main table column> =?";
 				db("<SOURCE DB>").fetch(sql, key).each(row -> {
+					instanceExists.set(true);
 					yield(row.cells());
 				});
+
+				if(!instanceExists.get()) {
+					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
+				}
 			}
 		}		
 	}

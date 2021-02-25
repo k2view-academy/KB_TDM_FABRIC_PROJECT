@@ -8,19 +8,19 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "GetSyncMode",
+                            "name": "Define Sync Mode",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "var syncValue = 'SyncMode';\r\nif(syncMode.toUpperCase() == 'OFF') {\r\n    if ( insertToTarget.toUpperCase() === 'TRUE' && deleteBeforeLoad.toUpperCase === 'FALSE') {\r\n        syncValue = 'off';\r\n    } else {\r\n        syncValue = 'on';\r\n    }  \r\n}\r\n\r\nsyncValue;\r\n",
-                                            "script": "var syncValue = 'SyncMode';\n\nif (syncMode.toUpperCase() == 'OFF') {\n  if (insertToTarget.toUpperCase() === 'TRUE' && deleteBeforeLoad.toUpperCase === 'FALSE') {\n    syncValue = 'off';\n  } else {\n    syncValue = 'on';\n  }\n}\n\nsyncValue;"
+                                            "userCode": "self.result = new Array();\r\nif(inputSyncMode.toUpperCase() == 'OFF') {\r\n    if ( insertToTarget.toUpperCase() === 'TRUE' && deleteBeforeLoad.toUpperCase === 'FALSE') {\r\n        self.result.push({syncMode:'off', syncSrcData: \"false\"});\r\n    } else {\r\n        self.result.push({syncMode:'on', syncSrcData: \"false\"});\r\n    }  \r\n}\r\nif ( self.result.length == 0) {\r\n    self.result.push({syncMode:inputSyncMode, syncSrcData: \"true\"});\r\n}\r\n\r\nself.result;\r\n",
+                                            "script": "self.result = new Array();\n\nif (inputSyncMode.toUpperCase() == 'OFF') {\n  if (insertToTarget.toUpperCase() === 'TRUE' && deleteBeforeLoad.toUpperCase === 'FALSE') {\n    self.result.push({\n      syncMode: 'off',\n      syncSrcData: \"false\"\n    });\n  } else {\n    self.result.push({\n      syncMode: 'on',\n      syncSrcData: \"false\"\n    });\n  }\n}\n\nif (self.result.length == 0) {\n  self.result.push({\n    syncMode: inputSyncMode,\n    syncSrcData: \"true\"\n  });\n}\n\nself.result;"
                                         }
                                     },
                                     {
-                                        "name": "syncMode",
+                                        "name": "inputSyncMode",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -38,45 +38,25 @@
                                         }
                                     }
                                 ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Init TDM_SYNC_SOURCE_DATA To True",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
+                                "outputs": [
                                     {
-                                        "name": "key",
-                                        "const": "TDM_SYNC_SOURCE_DATA",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "true",
-                                        "isDefault": false
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "syncMode": {
+                                                        "type": "string"
+                                                    },
+                                                    "syncSrcData": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Init Sync Mode to Given input",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "sync",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
+                                ]
                             }
                         }
                     ]
@@ -87,78 +67,12 @@
             "stages": [
                 {
                     "name": "Stage 1",
-                    "dependsOnList": [
-                        "Stage 3"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "EqualsIgnoreCase1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "off"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "Stage 3"
-                    ],
+                    "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Stage 1"
-                    ],
-                    "isLast": 0,
                     "actors": [
                         {
-                            "name": "Set TDM_SYNC_SOURCE_DATA to False",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_SYNC_SOURCE_DATA",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "false",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Sync Mode to OFF",
+                            "name": "Set Sync Mode",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -166,51 +80,13 @@
                                         "name": "key",
                                         "const": "sync",
                                         "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "off",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [
-                        "Stage 4"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "EqualsIgnoreCase2",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "on"
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "FabricSet5Set TDM_SYNC_SOURCE_DATA to False 2",
+                            "name": "Set TDM_SYNC_SOURCE_DATA",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -218,33 +94,32 @@
                                         "name": "key",
                                         "const": "TDM_SYNC_SOURCE_DATA",
                                         "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "false",
-                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "Set Sync Mode to On",
+                            "name": "Const1",
                             "actorType": {
-                                "parentType": "FabricSet",
+                                "parentType": "Const",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "sync",
-                                        "isDefault": false
-                                    },
-                                    {
                                         "name": "value",
-                                        "const": "on",
-                                        "isDefault": false
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -255,62 +130,84 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "GetSyncMode",
+                "actor": "Define Sync Mode",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "EqualsIgnoreCase1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "GetSyncMode",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "EqualsIgnoreCase2",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "GetSyncMode",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "insertToTarget"
-            },
-            "rightPort": {
-                "actor": "GetSyncMode",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "GetSyncMode",
-                "name": "deleteBeforeLoad"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Init Sync Mode to Given input",
+                "actor": "Set Sync Mode",
                 "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "syncMode"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Define Sync Mode",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "syncMode"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Define Sync Mode",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set TDM_SYNC_SOURCE_DATA",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "syncSrcData"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "syncMode"
+            },
+            "rightPort": {
+                "actor": "Define Sync Mode",
+                "name": "inputSyncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "Define Sync Mode",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "Define Sync Mode",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "updatedSyncMode"
             }
         }
     ]

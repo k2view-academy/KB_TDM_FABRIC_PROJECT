@@ -458,7 +458,7 @@
                 "name": "globals"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "globals"
             }
         },
@@ -468,7 +468,7 @@
                 "name": "deleteBeforeLoad"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "deleteBeforeLoad"
             }
         },
@@ -478,7 +478,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "luName"
             }
         },
@@ -488,7 +488,7 @@
                 "name": "insertToTarget"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "insertToTarget"
             }
         },
@@ -498,7 +498,7 @@
                 "name": "targetEnv"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "targetEnv"
             }
         },
@@ -508,7 +508,7 @@
                 "name": "sourceEnv"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "sourceEnv"
             }
         },
@@ -518,7 +518,7 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "iid"
             }
         },
@@ -528,7 +528,7 @@
                 "name": "syncMode"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "syncMode"
             }
         },

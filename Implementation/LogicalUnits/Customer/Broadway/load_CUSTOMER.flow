@@ -26,12 +26,6 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
@@ -57,6 +51,12 @@
                                     },
                                     {
                                         "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -106,10 +106,9 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "CUSTOMER_ID": {},
-													"SSN": {},
-													"FIRST_NAME": {},
-													"LAST_NAME": {}
-													
+                                                    "SSN": {},
+                                                    "FIRST_NAME": {},
+                                                    "LAST_NAME": {}
                                                 }
                                             }
                                         }
@@ -138,7 +137,25 @@
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "CUSTOMER_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "CUSTOMER_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "CUSTOMER"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "CUSTOMER_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -174,7 +191,7 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": true,
+                                                    "suppress": false,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
@@ -194,7 +211,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "main"
                                     },
@@ -206,36 +223,34 @@
                                         "name": "fields",
                                         "const": [
                                             "CUSTOMER_ID",
-											"SSN",
-											"FIRST_NAME",
-											"LAST_NAME"
-											
+                                            "SSN",
+                                            "FIRST_NAME",
+                                            "LAST_NAME"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "CUSTOMER_ID"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "CUSTOMER_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "SSN",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "FIRST_NAME",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "LAST_NAME",
                                         "schema": {}
                                     }
@@ -282,27 +297,13 @@
                     "name": "Report Statistics",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load Stats To TDM Table",
-                            "actorType": {
-                                "parentType": "StatsLoader",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
         {
             "stages": [
-                {											 
+                {
                     "name": "Post Table Loading",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -325,16 +326,30 @@
         },
         {
             "leftPort": {
-               "actor": "Read Stats",
-                "name": "flow"
+                "actor": "Get Table Data",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Load Stats To TDM Table",
-                "name": "stats"
+                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CUSTOMER_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CUSTOMER Table",
+                "name": "CUSTOMER_ID"
             }
         },
         {
-            "leftPort": {									  
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "globals"
             },
@@ -405,7 +420,7 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
+                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {

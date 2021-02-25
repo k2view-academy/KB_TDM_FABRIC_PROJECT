@@ -22,28 +22,10 @@
                             }
                         },
                         {
-                            "name": "Get Target Env Name",
+                            "name": "setTargetEnv_Actor1",
                             "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TARGET_ENV_NAME"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Target Environment",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment"
-                                    }
-                                ],
+                                "parentType": "setTargetEnv_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -72,7 +54,22 @@
                                         "const": "Select CUSTOMER.CUSTOMER_ID\r\nFrom main.CUSTOMER"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "CUSTOMER_ID": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -161,16 +158,6 @@
             "rightPort": {
                 "actor": "Query",
                 "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Target Env Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set Target Environment",
-                "name": "value"
             }
         },
         {

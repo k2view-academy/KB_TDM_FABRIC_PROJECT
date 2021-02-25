@@ -28,7 +28,7 @@
     <Column name="process_id" id="tblCol_29bb00d7855341c68d690ebe4e601ae1" index="22" datatype="text" mandatory="true" />
   </Columns>
   <IndexesList>
-    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_2f6a4593ef4142ffa559426939cabdc0,tblCol_516f51bbc0ec4c7eafca8ee74b48578e,tblCol_8266e9c91a8f4631aeb957b787fee2a5" />
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_2f6a4593ef4142ffa559426939cabdc0,tblCol_516f51bbc0ec4c7eafca8ee74b48578e,tblCol_8266e9c91a8f4631aeb957b787fee2a5,tblCol_29bb00d7855341c68d690ebe4e601ae1" />
   </IndexesList>
   <EnrichmentList />
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">

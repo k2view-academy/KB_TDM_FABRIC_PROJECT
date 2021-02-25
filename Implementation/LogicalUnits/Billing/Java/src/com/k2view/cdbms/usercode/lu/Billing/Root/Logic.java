@@ -8,6 +8,7 @@ import java.util.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.Globals;
@@ -105,11 +106,19 @@ public class Logic extends UserCode {
 		
 			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
 			{
-		
+
+				// Indicates if any of the source root table has the instance id
+				AtomicBoolean instanceExists = new AtomicBoolean(false);
+
 				String sql = "SELECT SUBSCRIBER_ID, MSISDN, IMSI, SIM, FIRST_NAME, LAST_NAME, SUBSCRIBER_TYPE, VIP_STATUS FROM main.SUBSCRIBER where subscriber_id = ?";
 				db("BILLING_DB").fetch(sql, input).each(row->{
+					instanceExists.set(true);
 					yield(row.cells());
 				});
+
+				if(!instanceExists.get()) {
+					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
+				}
 				
 			}
 		} 

@@ -1,105 +1,125 @@
 {
-    "name": "rootNode",
-    "children": [
+  "name": "rootNode",
+  "children": [
+    {
+      "name": "result",
+      "children": [
         {
-            "name": "result",
-            "children": [{
-                    "name": "General Info",
-                    "type": "sqlNonPrepared",
-                    "code": "Select T.TASK_NAME,\n  T.TASK_ID,\n  T.TASK_EXECUTION_ID,\n  T.TASK_CREATED_BY as CREATED_BY,\n  L.TASK_EXECUTED_BY as EXECUTED_BY,\n  MIN(L.START_EXECUTION_TIME) as START_EXECUTION,\n  MAX(L.END_EXECUTION_TIME) as END_EXECUTION,\n  case when (exists (select 1 from task_execution_list where task_execution_id = l.task_execution_id and execution_status <>'completed')) \n  \tthen 'failed' else 'completed' end as EXECUTION_STATUS,\n  T.SOURCE_ENV,\n  T.BE_NAME,\n  T.TASK_TYPE,\n  T.VERSION_IND,\n  L.VERSION_EXPIRATION_DATE,\n  T.RETENTION_PERIOD_TYPE,\n  T.RETENTION_PERIOD_VALUE\nFrom TDM.TASKS T,\n  TDM.TASK_EXECUTION_LIST L"
-                }, {
-                    "name": "Task Execution Summary",
-                    "type": "sqlNonPrepared",
-                    "code": "select ifnull(fabric_execution_id, -1) as fabric_execution_id, lu_name from task_execution_list",
-                    "children": [{
-                            "name": "LU Name",
-                            "type": "variable",
-                            "code": "lu_name"
-                        }, {
-                            "type": "condition",
-                            "code": "fabric_execution_id == \"null\"",
-                            "children": [{
-                                    "name": "LU Migration Summary",
-                                    "type": "string",
-                                    "code": "",
-                                    "serializerSettings": [{
-                                            "set": "showEmpty",
-                                            "value": "true"
-                                        }
-                                    ]
-                                }, {
-                                    "name": "LU Migration Summary",
-                                    "type": "sqlNonPrepared",
-                                    "code": "migrate_summary '${fabric_execution_id}'"
-                                }
-                            ]
-                        }, {
-                            "name": "LU Reference Summary",
-                            "type": "sql",
-                            "code": "Select count(*), to_char(min(start_time), 'YYYY-MM-DD HH24:MI:SS') as start_time, to_char(max(end_time), 'YYYY-MM-DD HH24:MI:SS') as end_time, execution_status, lu_name \nfrom TASK_REF_EXE_STATS es, TASK_REF_TABLES rt where task_execution_id = ${i_taskExecutionId}\n\tand es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id and rt.lu_name = ${lu_name} group by lu_name, execution_status",
-                            "sessionProvider": "TDM"
-                        }
-                    ]
-                }, {
-                    "name": "List of Root Entities",
-                    "children": [{
-                            "name": "Number of Copied Entities",
-                            "type": "sqlNonPrepared",
-                            "code": "select count(*) as number_of_copied_root_entities from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status = 'completed' \nEXCEPT Select be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status <> 'completed')"
-                        }, {
-                            "name": "List of Copied Entities",
-                            "type": "sqlNonPrepared",
-                            "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status = 'completed'\nEXCEPT Select ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id \nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'"
-                        }, {
-                            "name": "Number of Failed Entities",
-                            "type": "sqlNonPrepared",
-                            "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' and root_entity_status <> 'completed'"
-                        }, {
-                            "name": "List of Failed Entities",
-                            "type": "sqlNonPrepared",
-                            "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'"
-                        }
-                    ]
-                }, {
-                    "name": "List of Reference Tables",
-                    "children": [{
-                            "name": "Number of Copied Reference Tables",
-                            "type": "sql",
-                            "code": "Select Count(1) as count\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status = 'completed'",
-                            "sessionProvider": "TDM"
-                        }, {
-                            "name": "List of Copied Reference Tables",
-                            "type": "sql",
-                            "code": "Select res.ref_table_name as table_name, rt.lu_name\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status = 'completed'",
-                            "sessionProvider": "TDM"
-                        }, {
-                            "name": "Number of Failed Reference Tables",
-                            "type": "sql",
-                            "code": "Select Count(1) as count\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status <> 'completed' ",
-                            "sessionProvider": "TDM"
-                        }, {
-                            "name": "List of Failed Reference Tables",
-                            "type": "sql",
-                            "code": "Select res.ref_table_name as table_name, rt.lu_name\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status <> 'completed'",
-                            "sessionProvider": "TDM"
-                        }
-                    ]
+          "name": "General Info",
+          "type": "sql",
+          "code": "Select T.TASK_NAME,\n  T.TASK_ID,\n  T.TASK_EXECUTION_ID,\n  T.TASK_CREATED_BY As CREATED_BY,\n  L.TASK_EXECUTED_BY As EXECUTED_BY,\n  MIN(L.START_EXECUTION_TIME) As START_EXECUTION,\n  MAX(L.END_EXECUTION_TIME) As END_EXECUTION,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End As EXECUTION_STATUS,\n  T.SOURCE_ENV,\n  T.BE_NAME,\n  T.TASK_TYPE,\n  T.VERSION_IND,\n  L.VERSION_EXPIRATION_DATE,\n  T.RETENTION_PERIOD_TYPE,\n  T.RETENTION_PERIOD_VALUE\nFrom TDM.TASKS T,\n  TDM.TASK_EXECUTION_LIST L"
+        },
+        {
+          "name": "Task Execution Summary",
+          "type": "sqlNonPrepared",
+          "code": "select ifnull(fabric_execution_id, -1) as fabric_execution_id, lu_name from task_execution_list",
+          "children": [
+            {
+              "name": "LU Name",
+              "type": "variable",
+              "code": "lu_name"
+            },
+            {
+              "type": "condition",
+              "code": "fabric_execution_id == \"null\"",
+              "children": [
+                {
+                  "name": "LU Migration Summary",
+                  "type": "string",
+                  "code": "",
+                  "serializerSettings": [
+                    {
+                      "set": "showEmpty",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "LU Migration Summary",
+                  "type": "sqlNonPrepared",
+                  "code": "migrate_summary '${fabric_execution_id}'"
                 }
-            ]
-        }, {
-            "name": "errorCode",
-            "type": "string",
-            "code": "SUCCESS"
-        }, {
-            "name": "message",
-            "type": "string",
-            "code": ""
-        }
-    ],
-    "params": [
+              ]
+            },
+            {
+              "name": "LU Reference Summary",
+              "type": "sql",
+              "code": "Select count(*), to_char(min(start_time), 'YYYY-MM-DD HH24:MI:SS') as start_time, to_char(max(end_time), 'YYYY-MM-DD HH24:MI:SS') as end_time, execution_status, lu_name \nfrom TASK_REF_EXE_STATS es, TASK_REF_TABLES rt where task_execution_id = ${i_taskExecutionId}\n\tand es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id and rt.lu_name = ${lu_name} group by lu_name, execution_status",
+              "sessionProvider": "TDM"
+            }
+          ]
+        },
         {
-            "name": "i_taskExecutionId",
-            "dataType": "String"
+          "name": "List of Root Entities",
+          "children": [
+            {
+              "name": "Number of Copied Entities",
+              "type": "sqlNonPrepared",
+              "code": "select count(*) as number_of_copied_root_entities from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status = 'completed' \nEXCEPT Select be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status <> 'completed')"
+            },
+            {
+              "name": "List of Copied Entities",
+              "type": "sqlNonPrepared",
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status = 'completed'\nEXCEPT Select ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id \nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'"
+            },
+            {
+              "name": "Number of Failed Entities",
+              "type": "sqlNonPrepared",
+              "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' and root_entity_status <> 'completed'"
+            },
+            {
+              "name": "List of Failed Entities",
+              "type": "sqlNonPrepared",
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'"
+            }
+          ]
+        },
+        {
+          "name": "List of Reference Tables",
+          "children": [
+            {
+              "name": "Number of Copied Reference Tables",
+              "type": "sql",
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status = 'completed'",
+              "sessionProvider": "TDM"
+            },
+            {
+              "name": "List of Copied Reference Tables",
+              "type": "sql",
+              "code": "Select res.ref_table_name as table_name, rt.lu_name\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status = 'completed'",
+              "sessionProvider": "TDM"
+            },
+            {
+              "name": "Number of Failed Reference Tables",
+              "type": "sql",
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status <> 'completed' ",
+              "sessionProvider": "TDM"
+            },
+            {
+              "name": "List of Failed Reference Tables",
+              "type": "sql",
+              "code": "Select res.ref_table_name as table_name, rt.lu_name\nFrom task_ref_exe_stats res,\n  task_ref_tables rt\nWhere res.task_id = rt.task_id And res.task_ref_table_id = rt.task_ref_table_id\n  And res.task_execution_id = ${i_taskExecutionId} And res.execution_status <> 'completed'",
+              "sessionProvider": "TDM"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "name": "errorCode",
+      "type": "string",
+      "code": "SUCCESS"
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "code": ""
+    }
+  ],
+  "params": [
+    {
+      "name": "i_taskExecutionId",
+      "dataType": "String"
+    }
+  ]
 }

@@ -1,0 +1,485 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Description",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "remark": "This flow demonstrates the following:\n1. A table flow with field transformations:\n  a. Changing the sequential value of a field\n2. Supporting sequence replacement:\n  a. Regular sequence replacement\n  b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache. In this example, the PATIENT_ID was already replaced in PATIENT table actor, and here the value will be retrieved from sequence cache.",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Initiate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "InitiateTDMLoad_Actor1",
+                            "actorType": {
+                                "parentType": "InitiateTDMLoad_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "deleteBeforeLoad",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "insertToTarget",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Fabric Table Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Get Table Data",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select * from BALANCE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "SUBSCRIBER_ID": {},
+                                                    "BALANCE_ID": {},
+                                                    "BALANCE_REF_ID": {},
+                                                    "AVAILABLE_AMOUNT": {},
+                                                    "RESET_AMOUNT": {},
+                                                    "RESET_DATE": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Pre Transformation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "Activities before doing special fields mapping.\nFor Example,in case of population depended sequence, set the Sequence Name based on the Population ID field from Fabric table",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Transformation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CONTRACT_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "CONTRACT_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "BALANCE"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "CONTRACT_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "BALANCE_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "BALANCE_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "BALANCE"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "BALANCE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Transformation 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data To Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": true,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Load BALANCE Table",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "main"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "BALANCE"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "SUBSCRIBER_ID",
+                                            "BALANCE_ID",
+                                            "BALANCE_REF_ID",
+                                            "AVAILABLE_AMOUNT",
+                                            "RESET_AMOUNT",
+                                            "RESET_DATE"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "BALANCE_ID"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "oracle"
+                                    },
+                                    {
+                                        "name": "SUBSCRIBER_ID",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "BALANCE_ID",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "BALANCE_REF_ID",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "AVAILABLE_AMOUNT",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "RESET_AMOUNT",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "RESET_DATE",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Record Loading",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Statistics",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Read Stats",
+                            "actorType": {
+                                "parentType": "StatsReader",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Report Statistics",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Table Loading",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load BALANCE Table",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CONTRACT_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "SUBSCRIBER_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "BALANCE_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "BALANCE_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load BALANCE Table",
+                "name": "SUBSCRIBER_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "BALANCE_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load BALANCE Table",
+                "name": "BALANCE_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "globals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "targetEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "syncMode"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "syncMode"
+            }
+        }
+    ]
+}

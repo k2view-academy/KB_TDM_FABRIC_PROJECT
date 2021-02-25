@@ -32,7 +32,15 @@
       "const": "setSyncMode"
     }
   ],
-  "outputs": [],
+  "outputs": [
+    {
+      "name": "updatedSyncMode",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    }
+  ],
   "tags": [
     "tdm"
   ]

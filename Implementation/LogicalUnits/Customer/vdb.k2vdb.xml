@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.7">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.10">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -7,6 +7,8 @@
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
+    <NumberOfPartitionsInPriority>0</NumberOfPartitionsInPriority>
+    <NumberOfJobsInPriority>0</NumberOfJobsInPriority>
     <OrderValidationTime>00:05:00</OrderValidationTime>
     <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
     <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
@@ -25,7 +27,9 @@
     <Table>orders</Table>
     <Table>TAR_ACTIVITY</Table>
     <Table>TAR_CASES</Table>
+    <Table>TAR_CONTRACT</Table>
     <Table>TAR_CUSTOMER</Table>
+    <Table>TAR_ORDERS</Table>
     <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
     <Table>TDM_LU_TYPE_RELATION_EID</Table>
   </Tables>
@@ -82,17 +86,27 @@
     </TableProperties>
     <TableProperties name="TAR_ACTIVITY">
       <Populations>
-        <Population name="pop_tar_activity" order="3" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_activity" order="7" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_CASES">
       <Populations>
-        <Population name="pop_tar_cases" order="4" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_cases" order="8" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_CONTRACT">
+      <Populations>
+        <Population name="pop_tar_contract" order="7" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_CUSTOMER">
       <Populations>
-        <Population name="populationTarCustomer.flow" order="2" disabled="false" populationType="Flow" />
+        <Population name="populationTarCustomer.flow" order="6" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_ORDERS">
+      <Populations>
+        <Population name="pop_tar_orders" order="8" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TDM_LU_TYPE_RELATION_EID">
@@ -107,10 +121,9 @@
     </TableProperties>
   </TablesProperties>
   <EnrichmentsOrderList>
-    <Item order="1" active="true" name="FABRIC_TDM_ROOT" columnName="fnCheckInsFound" type="Table" />
-    <Item order="2" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
-    <Item order="3" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
-    <Item order="4" active="true" name="FABRIC_TDM_ROOT" columnName="fnEnrichmentChildLink" type="Table" />
+    <Item order="1" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
+    <Item order="2" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
+    <Item order="3" active="true" name="FABRIC_TDM_ROOT" columnName="fnEnrichmentChildLink" type="Table" />
   </EnrichmentsOrderList>
   <ReferencesList />
   <Relations />
@@ -140,14 +153,6 @@
       <To tableType="TableObject" table="TAR_CUSTOMER" populationObjectName="populationTarCustomer.flow" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="TAR_ACTIVITY" populationObjectName="pop_tar_activity" column="CUSTOMER_ID" columnId="queryCol_0" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="TAR_ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
-      <To tableType="TableObject" table="TAR_CASES" populationObjectName="pop_tar_cases" column="ACTIVITY_ID" columnId="queryCol_0" />
-    </Relation>
-    <Relation>
       <From tableType="TableObject" table="CASES" column="CASE_ID" columnId="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
       <To tableType="TableObject" table="CASE_NOTE" populationObjectName="query_main_CASE_NOTE" column="CASE_ID" columnId="queryCol_0" />
     </Relation>
@@ -171,33 +176,51 @@
       <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
       <To tableType="TableObject" table="ADDRESS" populationObjectName="query_main_ADDRESS" column="CUSTOMER_ID" columnId="queryCol_0" />
     </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="TAR_CONTRACT" populationObjectName="pop_tar_contract" column="CUSTOMER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_CONTRACT" column="CONTRACT_ID" columnId="tblCol_1649524d4e5949648d3c604eeb51c7b1" />
+      <To tableType="TableObject" table="TAR_ORDERS" populationObjectName="pop_tar_orders" column="contract_id" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="TAR_ACTIVITY" populationObjectName="pop_tar_activity" column="CUSTOMER_ID" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TAR_ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
+      <To tableType="TableObject" table="TAR_CASES" populationObjectName="pop_tar_cases" column="ACTIVITY_ID" columnId="queryCol_0" />
+    </Relation>
   </DatabaseRelations>
   <PreVCsSqlScript />
   <PostVCsSqlScript />
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.4.1.7" name="vdb.k2vdb.xml">
+    <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Group name="TDM Tables" pos="354 28.4544334" size="265 759.0912" wasexpanded="false" expanded="true">
-        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="358 47.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TDM_LU_TYPE_RELATION_EID" pos="358 247.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="INSTANCE_TABLE_COUNT" pos="358 447.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="LU_PARAMS" pos="358 647.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="TDM Tables" pos="345 17.4544373" size="265 759.0912" wasexpanded="false" expanded="true">
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="349 36.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="349 236.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="INSTANCE_TABLE_COUNT" pos="349 436.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="LU_PARAMS" pos="349 636.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Target Tables for Delete" pos="650 643.9544" size="869 184.091125" wasexpanded="false" expanded="true">
-        <Node name="TAR_CUSTOMER" pos="654 663.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TAR_ACTIVITY" pos="956 663.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TAR_CASES" pos="1258 688.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="Source Tables" pos="637 17.4544373" size="1171 559.0911" wasexpanded="false" expanded="true">
+        <Node name="ADDRESS" pos="943 436.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CASE_NOTE" pos="1547 286.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CASES" pos="1245 261.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="orders" pos="1245 61.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CONTRACT" pos="943 36.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="ACTIVITY" pos="943 236.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CUSTOMER" pos="641 211.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="649 46.4544334" size="1171 559.0912" wasexpanded="false" expanded="true">
-        <Node name="ADDRESS" pos="955 465.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="CASE_NOTE" pos="1559 315.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="CASES" pos="1257 290.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="orders" pos="1257 90.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="CONTRACT" pos="955 65.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="ACTIVITY" pos="955 265.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="CUSTOMER" pos="653 240.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="Target Tables for Delete" pos="638 625.9544" size="869 384.091156" wasexpanded="false" expanded="true">
+        <Node name="TAR_CONTRACT" pos="944 645.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_ORDERS" pos="1246 670.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_CUSTOMER" pos="642 695.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_ACTIVITY" pos="944 845.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_CASES" pos="1246 870.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
     </Graph>
   </DiagramGraph>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.7">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.10">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -7,6 +7,8 @@
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
+    <NumberOfPartitionsInPriority>0</NumberOfPartitionsInPriority>
+    <NumberOfJobsInPriority>0</NumberOfJobsInPriority>
     <OrderValidationTime>00:05:00</OrderValidationTime>
     <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
     <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
@@ -68,17 +70,17 @@
     </TableProperties>
     <TableProperties name="TAR_INVOICE">
       <Populations>
-        <Population name="popTar_Invoice" order="3" disabled="false" populationType="Regular" />
+        <Population name="popTar_Invoice" order="6" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_PAYMENT">
       <Populations>
-        <Population name="pop_tar_payment" order="4" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_payment" order="7" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_SUBSCRIBER">
       <Populations>
-        <Population name="popTar_Subscriber" order="2" disabled="false" populationType="Regular" />
+        <Population name="populationTar_Subscriber.flow" order="5" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
   </TablesProperties>
@@ -104,7 +106,7 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="popTar_Subscriber" column="SUBSCRIBER_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="populationTar_Subscriber.flow" column="SUBSCRIBER_ID" columnId="tblCol_d78b5d3e85764f2c918b40943907711e" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
@@ -136,7 +138,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.4.1.7" name="vdb.k2vdb.xml">
+    <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="310 193.40892" size="267 315.091125" wasexpanded="false" expanded="true">
         <Node name="LU_PARAMS" pos="316 212.500061" size="257 136" listGroupSize="250 100" viewType="Table" />

@@ -108,10 +108,10 @@ SELECT DISTINCT
   , tt.task_execution_id
   , p.execution_status parent_lu_status
   , tt.product_id
-  , tt.product_version
+  , tt.product_version tdm_target_product_version
   , tt.num_of_processed_entities
   , tt.process_id
-  , ep.product_version                                  source_product_version
+  , ep.product_version tdm_source_product_version
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , e.fabric_environment_name as source_environment_name
   , e2.fabric_environment_name as target_environment_name

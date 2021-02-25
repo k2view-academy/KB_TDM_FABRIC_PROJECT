@@ -13,10 +13,6 @@
   <IndexesList />
   <EnrichmentList>
     <Enrichment>
-      <Name>fnCheckInsFound</Name>
-      <Type>Function</Type>
-    </Enrichment>
-    <Enrichment>
       <Name>fnEnrichmentChildLink</Name>
       <Type>Function</Type>
     </Enrichment>

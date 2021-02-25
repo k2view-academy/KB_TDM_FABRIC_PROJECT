@@ -150,7 +150,7 @@
                     "name": "Delete Data From Target",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": true,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Error Handler Of Deletion",
@@ -180,6 +180,7 @@
                         },
                         {
                             "name": "Delete Target Table",
+                            "minHeight": 346,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -214,11 +215,81 @@
         {
             "stages": [
                 {
-                    "name": "Get Reference Data and Fields List",
+                    "name": "Count Records in Source Table",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": true,
+                    "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "DbFetchField1",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select count(*) as recordsCount from k2view_tdm.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "selectedRefVersionTaskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Reference Data and Fields List",
+                    "dependsOnList": [
+                        "Count Records in Source Table"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "GreaterThan1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "GreaterThan",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Get Data From Cassandra",
                             "actorType": {
@@ -328,6 +399,88 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Count Records in Source Table"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update TDMDB table for Reference Table__1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = 0,\r\nnumber_of_records_to_process = 0\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JavaScript1",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "throw new \"Empty Source Table in Cassandra\"",
+                                            "script": "throw new \"Empty Source Table in Cassandra\"();"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -337,7 +490,7 @@
                     "name": "Load Data to Target",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": true,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Error Handler Of Loading",
@@ -367,6 +520,7 @@
                         },
                         {
                             "name": "Insert Data To Target Table",
+                            "minHeight": 237,
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -399,8 +553,8 @@
                 {
                     "name": "Count Records",
                     "dependsOnList": [],
-                    "isLast": 1,
-                    "isTransactional": true,
+                    "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Count Loaded Records",
@@ -438,13 +592,37 @@
         {
             "stages": [
                 {
-                    "name": "Update TDMDB Table",
+                    "name": "Update Count",
                     "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": true,
+                    "isLast": 1,
+                    "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Update TDMDB table for Reference Table",
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 100
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update TDMDB table during loop",
+                            "minHeight": 260,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -454,7 +632,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET number_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -470,6 +648,65 @@
                                     },
                                     {
                                         "name": "loadedRecCnt",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "recsToBeLoaded",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update TDMDB Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Update TDMDB table for Reference Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "loadedRecCnt",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "recsToBeLoaded",
                                         "schema": {
                                             "type": "integer"
                                         }
@@ -551,6 +788,16 @@
         },
         {
             "leftPort": {
+                "actor": "Elvis1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Details of Reference Table",
                 "name": "targetInterfaceName"
             },
@@ -611,6 +858,36 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GreaterThan1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "recsToBeLoaded"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table during loop",
+                "name": "recsToBeLoaded"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Data From Cassandra",
                 "name": "result"
             },
@@ -647,6 +924,26 @@
             },
             "rightPort": {
                 "actor": "Update TDMDB table for Reference Table",
+                "name": "loadedRecCnt"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Loaded Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Loaded Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table during loop",
                 "name": "loadedRecCnt"
             }
         },
@@ -736,6 +1033,26 @@
                 "name": "refTableName"
             },
             "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
                 "actor": "Get Data From Cassandra",
                 "name": "refTableName"
             }
@@ -758,6 +1075,46 @@
             "rightPort": {
                 "actor": "Get Table Fields From Cassandra",
                 "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table__1",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table__1",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table during loop",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table during loop",
+                "name": "refTableName"
             }
         },
         {

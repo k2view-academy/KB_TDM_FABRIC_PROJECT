@@ -390,7 +390,7 @@ public class Logic extends UserCode {
 		"synced_to_fabric = FALSE "+ 
 		"and not exists (select 1 from task_execution_list tbl, tasks t where tbl.task_execution_id = out.task_execution_id " +  
 		"and t.task_id = tbl.task_id " +
-		"and ( ( t.task_type = 'LOAD' and tbl.execution_status not in ('stopped','completed','failed','killed') )" +
+		"and ( ( t.task_type = 'LOAD' and tbl.execution_status not in ('completed','failed','killed') )" +
 			  "OR ( t.task_type = 'EXTRACT' and tbl.execution_status not in ('completed','failed','killed') ) ) )";
 		
 		String taskExecutionId= "";
@@ -416,6 +416,27 @@ public class Logic extends UserCode {
 						db("TDM").execute("update task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
 					}catch(Exception e){
 						log.error("Failed to get task execution id: " + taskExecutionId + " into TDM LU and update synced_to_fabric indicator of TDM DB. Error message: " + e.getMessage(),e);
+					}
+		
+					if (taskType.equalsIgnoreCase("EXTRACT")) {
+						// Refresh the LU Params Materialized View
+						// For each LU Param view asssociated with this LU...
+						db("TDM").fetch("" +
+								"WITH business_entities AS ( " +
+								"   SELECT DISTINCT 'lu_relations_' || be.be_name || '_' || tel.source_env_name as view_name  " +
+								"   FROM            public.task_execution_list tel  " +
+								"              JOIN public.tasks_logical_units tlu   ON (tel.task_id = tlu.task_id) " +
+								"              JOIN public.product_logical_units plu ON (tlu.lu_name = plu.lu_name) " +
+								"              JOIN public.business_entities be      ON (plu.be_id = be.be_id)  " +
+								"   WHERE           tel.task_execution_id=? " +
+								") " +
+								"SELECT bes.view_name   " +
+								"FROM   business_entities bes   " +
+								"  JOIN pg_matviews ON (bes.view_name = pg_matviews.matviewname)",taskExecutionId).each(r-> {
+		
+							// Refresh the view
+							db("TDM").execute(String.format("REFRESH MATERIALIZED VIEW public.\"%s\"",r.get("view_name")));
+						});
 					}
 				}
 			}
@@ -811,6 +832,13 @@ public class Logic extends UserCode {
 		
 		if (totCopiedRootEnt == 0 && totCopiedRefTabs == 0) {
 			executionStatus = "failed";
+		}
+		
+		//TDM 7 - in case the task was stopped the summary status should be updated to stopped
+		int numOfStoppedLUs = (int)fabric().fetch("select count(*) from TDM.task_execution_list where execution_status = 'stopped'").firstValue();
+		
+		if (numOfStoppedLUs > 0) {
+			executionStatus = "stopped";
 		}
 		
 		startExecTime = "" + fabric().fetch("select min(start_execution_time) from task_execution_list").firstValue();

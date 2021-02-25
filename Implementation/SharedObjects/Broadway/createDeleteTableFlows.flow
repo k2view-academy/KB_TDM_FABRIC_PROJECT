@@ -235,6 +235,7 @@
                 "actor": "flowName",
                 "name": "params"
             },
+            "iterate": "Iterate",
             "arrayPosition": 0
         },
         {
@@ -275,6 +276,16 @@
             "rightPort": {
                 "actor": "getDbTargetTablesList",
                 "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "filterOutTDMTables_Actor1",
+                "name": "luName"
             }
         },
         {

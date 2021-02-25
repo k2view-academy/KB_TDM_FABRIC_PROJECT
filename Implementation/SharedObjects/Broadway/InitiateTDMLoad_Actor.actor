@@ -4,20 +4,6 @@
   "parentType": "InnerFlow",
   "inputs": [
     {
-      "name": "globals",
-      "schema": {
-        "type": "object"
-      },
-      "const": null
-    },
-    {
-      "name": "deleteBeforeLoad",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
       "name": "luName",
       "schema": {
         "type": "Any"
@@ -25,7 +11,14 @@
       "const": null
     },
     {
-      "name": "insertToTarget",
+      "name": "iid",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "sourceEnv",
       "schema": {
         "type": "Any"
       },
@@ -39,21 +32,28 @@
       "const": null
     },
     {
-      "name": "sourceEnv",
+      "name": "globals",
       "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "iid",
-      "schema": {
-        "type": "Any"
+        "type": "object"
       },
       "const": null
     },
     {
       "name": "syncMode",
+      "schema": {
+        "type": "String"
+      },
+      "const": null
+    },
+    {
+      "name": "insertToTarget",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "deleteBeforeLoad",
       "schema": {
         "type": "Any"
       },

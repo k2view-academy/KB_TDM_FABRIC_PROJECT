@@ -260,7 +260,8 @@ public class Logic extends WebServiceUserCode {
 		Db.Rows batchIdList = null;
 		try {
 			//TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-			batchIdList = db("TDM").fetch("select fabric_execution_id, execution_status, l.lu_id, lu_name from task_execution_list l, tasks_logical_units u where task_execution_id = ? " +
+			batchIdList = db("TDM").fetch("select fabric_execution_id, execution_status, l.lu_id, lu_name, task_type " +
+						"from task_execution_list l, tasks_logical_units u where task_execution_id = ? " +
 						"and fabric_execution_id is not null and UPPER(execution_status) IN " +
 						"('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
 						"and l.task_id = u.task_id and l.lu_id = u.lu_id" , task_execution_id);
@@ -276,18 +277,20 @@ public class Logic extends WebServiceUserCode {
 			// TDM 7, set the execution summary to stopped also
 			db("TDM").execute("UPDATE task_execution_summary SET execution_status='stopped' where task_execution_id = ? and execution_status != 'completed'",
 						task_execution_id);	
-
+		
 			// TDM 5.1- cancel the migrate only if the input migration id is not null
 			//TDM 6.0 - Loop over the list of migrate IDs
 			for (Db.Row batchInfo : batchIdList)
 			{
 				String fabricExecID = "" + batchInfo.get("fabric_execution_id");
+				String taskType = "" + batchInfo.get("task_type");
 				Long luID = (Long) batchInfo.get("lu_id");
 				String luName = "" + batchInfo.get("lu_name");
 				String taskExecutionID = "" + task_execution_id;
 				ludb().execute("cancel batch '" + fabricExecID +"'");
 				
-				if (luID > 0) {
+				if (luID > 0 && ("extract".equalsIgnoreCase(taskType))) {
+					log.info("wsStopTaskExecution - Updating task_execution_entities");
 					fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
 				}
 			}
@@ -296,7 +299,7 @@ public class Logic extends WebServiceUserCode {
 		catch (Exception e){
 			log.error("wsStopTaskExecution", e);
 			return wrapWebServiceResults("FAIL", null, null);
-
+		
 		} finally {
 			if(batchIdList != null) {
 				batchIdList.close();
@@ -304,7 +307,7 @@ public class Logic extends WebServiceUserCode {
 		}
 	}
 
-	@webService(path = "", verb = {MethodType.GET, MethodType.POST, MethodType.PUT, MethodType.DELETE}, version = "1", isRaw = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "", verb = {MethodType.GET, MethodType.POST, MethodType.PUT, MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	public static Object wsResumeTaskExecution(Long task_execution_id) throws Exception {
 		Boolean success_ind = true;
 		Db.Rows batchIdList = null;
@@ -319,7 +322,7 @@ public class Logic extends WebServiceUserCode {
 				task_execution_id);
 			
 			// TDM 7, set the status in execution summary to running
-			db("TDM").execute("UPDATE task_execution_summary SET execution_status='running' where task_execution_id = ? and execution_status != 'stopped'",
+			db("TDM").execute("UPDATE task_execution_summary SET execution_status='running' where task_execution_id = ? and execution_status = 'stopped'",
 						task_execution_id);
 			db("TDM").execute("UPDATE task_execution_list SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
 				"and lower(execution_status) = 'stopped' and task_id in (select task_id from tasks where lower(selection_method) <>'ref')",
@@ -336,12 +339,14 @@ public class Logic extends WebServiceUserCode {
 				task_execution_id);
 			db("TDM").execute("UPDATE task_ref_exe_stats set execution_status= 'resume' where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
 			
-			
 			// TDM 5.1- cancel the migrate only if the input migration id is not null
 			//TDM 6.0 - Loop over the list of migrate IDs
 			for (Db.Row batchInfo : batchIdList)
 			{
-				ludb().execute("batch_retry '" + batchInfo.cell(0) +"'");
+				fabric().execute("delete instance TDM.?",  task_execution_id);
+				db("TDM").execute("UPDATE task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
+				fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") +"'");
+			
 			}
 		}
 		catch (Exception e){
@@ -353,7 +358,7 @@ public class Logic extends WebServiceUserCode {
 				batchIdList.close();
 			}
 		}
-
+		
 		return wrapWebServiceResults((success_ind ? "SUCCESS" : "FAIL"), null, success_ind);
 	}
 
@@ -641,13 +646,6 @@ public class Logic extends WebServiceUserCode {
 		
 		return wrapWebServiceResults("SUCCESS", null, connResMap);
 	}
-
-
-
-
-
-
-
 
 	@webService(path = "", verb = {MethodType.GET, MethodType.POST, MethodType.PUT, MethodType.DELETE}, version = "1", isRaw = false, produce = {Produce.XML, Produce.JSON})
 	public static Object wsExtractRefStats(String i_taskExecutionId, String i_runMode) throws Exception {

@@ -26,12 +26,6 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
@@ -57,6 +51,12 @@
                                     },
                                     {
                                         "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -106,10 +106,9 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "CASE_ID": {},
-													"NOTE_ID": {},
-													"NOTE_DATE": {},
-													"NOTE_TEXT": {}
-													
+                                                    "NOTE_ID": {},
+                                                    "NOTE_DATE": {},
+                                                    "NOTE_TEXT": {}
                                                 }
                                             }
                                         }
@@ -138,7 +137,42 @@
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "CASE_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "CASE_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "CASE_NOTE"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "CASE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "NOTE_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "NOTE_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "CASE_NOTE"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "NOTE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -174,7 +208,7 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": true,
+                                                    "suppress": false,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
@@ -194,7 +228,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "main"
                                     },
@@ -206,36 +240,34 @@
                                         "name": "fields",
                                         "const": [
                                             "CASE_ID",
-											"NOTE_ID",
-											"NOTE_DATE",
-											"NOTE_TEXT"
-											
+                                            "NOTE_ID",
+                                            "NOTE_DATE",
+                                            "NOTE_TEXT"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "NOTE_ID"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "CASE_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "NOTE_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "NOTE_DATE",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "NOTE_TEXT",
                                         "schema": {}
                                     }
@@ -282,27 +314,13 @@
                     "name": "Report Statistics",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load Stats To TDM Table",
-                            "actorType": {
-                                "parentType": "StatsLoader",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
         {
             "stages": [
-                {											 
+                {
                     "name": "Post Table Loading",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -325,16 +343,54 @@
         },
         {
             "leftPort": {
-               "actor": "Read Stats",
-                "name": "flow"
+                "actor": "Get Table Data",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Load Stats To TDM Table",
-                "name": "stats"
+                "actor": "NOTE_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "NOTE_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CASE_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CASE_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CASE_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CASE_NOTE Table",
+                "name": "CASE_ID"
             }
         },
         {
-            "leftPort": {									  
+            "leftPort": {
+                "actor": "NOTE_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CASE_NOTE Table",
+                "name": "NOTE_ID"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "globals"
             },
@@ -405,7 +461,7 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
+                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {

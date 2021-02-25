@@ -4,6 +4,13 @@
   "parentType": "InnerFlow",
   "inputs": [
     {
+      "name": "luName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
       "name": "tableName",
       "schema": {
         "type": "Any"

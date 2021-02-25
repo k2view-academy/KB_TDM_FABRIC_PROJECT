@@ -39,10 +39,15 @@
     </Job>
     <Job methodName="fnValidateAndRebuildRefTables" jobName="fnValidateAndRebuildRefTables" active="true">
       <ScheduleType>TimeInterval</ScheduleType>
-      <ExecuteEvery>100.00:00:00</ExecuteEvery>
+      <ExecuteEvery>1.00:00:00</ExecuteEvery>
       <InputParams />
     </Job>
     <Job methodName="tdmExecuteTask" jobName="tdmExecuteTask" active="true">
+      <ScheduleType>TimeInterval</ScheduleType>
+      <ExecuteEvery>00:00:10</ExecuteEvery>
+      <InputParams />
+    </Job>
+    <Job methodName="tdmTaskScheduler" jobName="tdmTaskScheduler" active="true">
       <ScheduleType>TimeInterval</ScheduleType>
       <ExecuteEvery>00:00:10</ExecuteEvery>
       <InputParams />

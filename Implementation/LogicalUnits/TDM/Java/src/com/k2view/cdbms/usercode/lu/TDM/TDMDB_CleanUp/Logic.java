@@ -36,30 +36,18 @@ public class Logic extends UserCode {
 			" based on retention period given in TDMDB table tdm_general_parameters")
 	@type(UserJob)
 	public static void TDMDB_CleanUp() throws Exception {
-		//The expectation that in TDM project, interface TDM is always defined.
-		//Connection con = getConnection("TDM");
-		
 		String paramName = "";
 		String paramValue = "";
 		String retentionDate = "";
 		String retentionPeriod = "";
 		String activeInd = "";
 		
-		//Boolean delSts = null;
-		
-		
 		//Set the SQL parameter
 		String queryString = "SELECT * FROM tdm_general_parameters where UPPER(param_name) in ('CLEANUP_ACTIVE_IND', 'CLEANUP_RETENTION_PERIOD')";
 		
-		//Set the prepared statement object
-		//PreparedStatement queryStatement = con.prepareStatement(queryString);
-		
-			
 		//Execute the query
-		//ResultSetWrapper rs = DBQueryPrepared (queryStatement,null);
 		Db.Rows rows = db("TDM").fetch(queryString);
 		
-		//for (Object[] row : rs) {
 		for (Db.Row row : rows) {
 			paramName = "" + row.cell(0);
 			paramValue = "" + row.cell(1);
@@ -79,24 +67,12 @@ public class Logic extends UserCode {
 		
 		// Check if the Clean Up Functionality is activated
 		if (!activeInd.equalsIgnoreCase("true")) {
-			log.info("TDMDB_CleanUp - The TDMDB CleanUp is disabled, in order to enable it, change the active_ind in table tdm_general_parameters in TDM DB");
+			//log.info("TDMDB_CleanUp - The TDMDB CleanUp is disabled, in order to enable it, change the active_ind in table tdm_general_parameters in TDM DB");
 			return;
 		}
 		
 		queryString = "SELECT date_trunc('day', NOW() - interval ' " + retentionPeriod + " MONTH')";
 		
-		//Set the prepared statement object
-		/*queryStatement = con.prepareStatement(queryString);
-			
-		//Execute the query
-		rs = DBQueryPrepared (queryStatement,null);
-		
-		for (Object[] row : rs) {
-			retentionDate = (String)row[0];
-		}
-		if (rs != null) {
-			rs.closeStmt();
-		}*/
 		retentionDate = "" + db("TDM").fetch(queryString).firstValue();
 		
 		//log.info("retentionDate = " + retentionDate);		
@@ -121,13 +97,10 @@ public class Logic extends UserCode {
 			for (int i = 0; i < numOfParams; i++) {
 				queryParam[i] = retentionDate;
 			}
-			//Set the prepared statement object
-			//queryStatement = con.prepareStatement(statement);
-					
+
 			//Execute the query	
 			try {
 				//log.info("Running Statement: " + statement);
-				//delSts = DBExecutePrepared(queryStatement,queryParam);
 				db("TDM").execute(statement, queryParam);
 			} 
 			catch (Exception e) {
@@ -138,7 +111,6 @@ public class Logic extends UserCode {
 			}
 		}
 		
-		//con.close();
 	}
 	
 }

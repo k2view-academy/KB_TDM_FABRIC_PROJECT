@@ -10,7 +10,8 @@
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_a48f99e18d024160814094e349b9e0fc" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+  <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
+    <DecisionFunction>fnDecisionDeleteFromTarget</DecisionFunction>
     <TruncateBeforeSync>true</TruncateBeforeSync>
   </LazyDataUpdate>
   <TriggersList />

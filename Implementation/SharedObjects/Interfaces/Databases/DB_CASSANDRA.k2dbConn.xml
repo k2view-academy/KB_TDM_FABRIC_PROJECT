@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="DB_CASSANDRA" type="genericdb" version="6.4.1.7">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="DB_CASSANDRA" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
   <DataSource>localhost</DataSource>
   <PortNum>9042</PortNum>

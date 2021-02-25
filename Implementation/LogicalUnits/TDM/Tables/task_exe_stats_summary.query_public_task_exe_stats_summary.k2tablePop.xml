@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>query_public_task_exe_stats_summary</ID>
+  <PopulationObjectName>query_public_task_exe_stats_summary</PopulationObjectName>
+  <TableName>task_exe_stats_summary</TableName>
+  <RootItemID>query_query_public_task_exe_stats_summary</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>true</SimpleObject>
+  <IidFinderProp />
+  <InputArguments>
+    <Arg name="task_execution_id" id="queryCol_0" dataType="Integer" index="0" />
+    <Arg name="lu_name" id="queryCol_1" dataType="Text" index="1" />
+    <Arg name="creation_date" id="queryCol_2" dataType="Text" index="2" />
+    <Arg name="table_name" id="queryCol_3" dataType="Text" index="3" />
+    <Arg name="source_count" id="queryCol_4" dataType="Text" index="4" />
+    <Arg name="target_count" id="queryCol_5" dataType="Text" index="5" />
+    <Arg name="diff" id="queryCol_6" dataType="Text" index="6" />
+    <Arg name="results" id="queryCol_7" dataType="Text" index="7" />
+  </InputArguments>
+  <ItemsList>
+    <Item xsi:type="DBQueryDataSave" id="query_query_public_task_exe_stats_summary" name="query_public_task_exe_stats_summary" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="TDM">
+      <OutputsList>
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="task_execution_id" dataType="Integer" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="lu_name" dataType="Text" index="1" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_2" name="creation_date" dataType="Text" index="2" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_3" name="table_name" dataType="Text" index="3" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_4" name="source_count" dataType="Text" index="4" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_5" name="target_count" dataType="Text" index="5" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_6" name="diff" dataType="Text" index="6" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_7" name="results" dataType="Text" index="7" />
+      </OutputsList>
+      <SQL><![CDATA[SELECT * FROM public.task_exe_stats_summary]]></SQL>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="20" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_0" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_61ada4a4d80a451992114103b8ad30e1" />
+    <Link partId="21" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_1" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_823d7e374fd645709b0f68d94388e059" />
+    <Link partId="22" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_2" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_cf841ea16ca64f8c80b5aa8748c51ff9" />
+    <Link partId="23" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_3" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_faad0ce69eee45d092f5fd32a8b5a40e" />
+    <Link partId="24" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_4" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_0d7c9212b50f4596a702cda5c1a0e24b" />
+    <Link partId="25" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_5" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_ea1b01093ba1480b84f08fbf5a9de26e" />
+    <Link partId="26" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_6" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_71524825c7ff47429e9373409038babf" />
+    <Link partId="27" fromNodeOrder="0" fromItemID="query_query_public_task_exe_stats_summary" fromColID="queryCol_7" toItemID="tbl_task_exe_stats_summary" toColID="tblCol_7f4d043f4f2b4a43a329aca67c02d360" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="task_exe_stats_summary.query_public_task_exe_stats_summary.k2tablePop.xml" lastPartID="45">
+      <TableNode partID="0" name="task_exe_stats_summary" pos="404.71875 5.67189026" width="253" />
+      <DBQueryNode partID="11" name="TDM" pos="10 0.7083435" size="277.71875 156.583313" isRoot="true">
+        <DBQuery>{"Name":"query_public_task_exe_stats_summary","ID":"query_query_public_task_exe_stats_summary","ConnName":"TDM","SQL":"SELECT * FROM public.task_exe_stats_summary","ColumnsList":[{"ID":"queryCol_0","Name":"task_execution_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"lu_name","DataType":"Text","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"creation_date","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"table_name","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"source_count","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"target_count","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"diff","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"results","DataType":"Text","Index":7,"IsInputArgument":true}]}</DBQuery>
+      </DBQueryNode>
+      <Link partID="20" from="0" to="1" pointsArr="287.71875 36.7447968 297.71875 36.7447968 394.71875 36.7083435 404.71875 36.7083435" fromNodePartID="11" fromNodeColumnName="task_execution_id" toNodePartID="0" toNodeColumnName="task_execution_id" />
+      <Link partID="21" from="2" to="3" pointsArr="287.71875 48.81771 297.71875 48.81771 394.71875 48.7812576 404.71875 48.7812576" fromNodePartID="11" fromNodeColumnName="lu_name" toNodePartID="0" toNodeColumnName="lu_name" />
+      <Link partID="22" from="4" to="5" pointsArr="287.71875 60.890625 297.71875 60.890625 394.71875 60.85417 404.71875 60.85417" fromNodePartID="11" fromNodeColumnName="creation_date" toNodePartID="0" toNodeColumnName="creation_date" />
+      <Link partID="23" from="6" to="7" pointsArr="287.71875 72.96355 297.71875 72.96355 394.71875 72.92709 404.71875 72.92709" fromNodePartID="11" fromNodeColumnName="table_name" toNodePartID="0" toNodeColumnName="table_name" />
+      <Link partID="24" from="8" to="9" pointsArr="287.71875 85.03645 297.71875 85.03645 394.71875 85 404.71875 85" fromNodePartID="11" fromNodeColumnName="source_count" toNodePartID="0" toNodeColumnName="source_count" />
+      <Link partID="25" from="10" to="11" pointsArr="287.71875 97.109375 297.71875 97.109375 394.71875 97.07292 404.71875 97.07292" fromNodePartID="11" fromNodeColumnName="target_count" toNodePartID="0" toNodeColumnName="target_count" />
+      <Link partID="26" from="12" to="13" pointsArr="287.71875 109.1823 297.71875 109.1823 394.71875 109.145844 404.71875 109.145844" fromNodePartID="11" fromNodeColumnName="diff" toNodePartID="0" toNodeColumnName="diff" />
+      <Link partID="27" from="14" to="15" pointsArr="287.71875 121.255219 297.71875 121.255219 394.71875 121.218765 404.71875 121.218765" fromNodePartID="11" fromNodeColumnName="results" toNodePartID="0" toNodeColumnName="results" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

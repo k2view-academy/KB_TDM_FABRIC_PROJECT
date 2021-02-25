@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="6.4.0.14">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
   <PortNum />
   <DataBase>C:\K2View\DB_Scripts\crm_db.db</DataBase>

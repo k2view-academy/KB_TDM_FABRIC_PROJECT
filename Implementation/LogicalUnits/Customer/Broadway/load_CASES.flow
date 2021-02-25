@@ -26,12 +26,6 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
@@ -57,6 +51,12 @@
                                     },
                                     {
                                         "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -106,11 +106,10 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "ACTIVITY_ID": {},
-													"CASE_ID": {},
-													"CASE_DATE": {},
-													"CASE_TYPE": {},
-													"STATUS": {}
-													
+                                                    "CASE_ID": {},
+                                                    "CASE_DATE": {},
+                                                    "CASE_TYPE": {},
+                                                    "STATUS": {}
                                                 }
                                             }
                                         }
@@ -139,7 +138,42 @@
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "ACTIVITY_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "ACTIVITY_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "CASES"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "ACTIVITY_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CASE_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "CASE_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "CASES"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "CASE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -175,7 +209,7 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": true,
+                                                    "suppress": false,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
@@ -195,7 +229,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "main"
                                     },
@@ -207,41 +241,39 @@
                                         "name": "fields",
                                         "const": [
                                             "ACTIVITY_ID",
-											"CASE_ID",
-											"CASE_DATE",
-											"CASE_TYPE",
-											"STATUS"
-											
+                                            "CASE_ID",
+                                            "CASE_DATE",
+                                            "CASE_TYPE",
+                                            "STATUS"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "CASE_ID"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "ACTIVITY_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "CASE_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "CASE_DATE",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "CASE_TYPE",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "STATUS",
                                         "schema": {}
                                     }
@@ -288,27 +320,13 @@
                     "name": "Report Statistics",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load Stats To TDM Table",
-                            "actorType": {
-                                "parentType": "StatsLoader",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
         {
             "stages": [
-                {											 
+                {
                     "name": "Post Table Loading",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -331,16 +349,54 @@
         },
         {
             "leftPort": {
-               "actor": "Read Stats",
-                "name": "flow"
+                "actor": "Get Table Data",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Load Stats To TDM Table",
-                "name": "stats"
+                "actor": "ACTIVITY_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "ACTIVITY_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CASE_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CASE_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ACTIVITY_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CASES Table",
+                "name": "ACTIVITY_ID"
             }
         },
         {
-            "leftPort": {									  
+            "leftPort": {
+                "actor": "CASE_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CASES Table",
+                "name": "CASE_ID"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "globals"
             },
@@ -411,7 +467,7 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
+                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {

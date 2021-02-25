@@ -7,26 +7,7 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "SEQUENCE_NAME": "PATIENT_ID_SEQ",
-                    "CACHE_DB_NAME": "DB_CASSANDRA",
-                    "SEQUENCE_REDIS_OR_DB": "FabricRedis",
-                    "INITIATE_VALUE_OR_FLOW": "PatientIdInit"
-                },
-                {
-                    "SEQUENCE_NAME": "INVOICE_ID_SEQ",
-                    "CACHE_DB_NAME": "DB_CASSANDRA",
-                    "SEQUENCE_REDIS_OR_DB": "FabricRedis",
-                    "INITIATE_VALUE_OR_FLOW": "60000"
-                },
-                {
-                    "SEQUENCE_NAME": "PAYMENT_ID_SEQ",
-                    "CACHE_DB_NAME": "DB_CASSANDRA",
-                    "SEQUENCE_REDIS_OR_DB": "TARGET_DB",
-                    "INITIATE_VALUE_OR_FLOW": "1"
-                }
-            ],
+            "const": [],
             "schema": {
                 "type": "array",
                 "items": {

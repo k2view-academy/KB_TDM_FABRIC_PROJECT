@@ -8,9 +8,13 @@ import java.util.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.k2view.cdbms.exceptions.InstanceNotFoundException;
 import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.Globals;
+import com.k2view.cdbms.shared.logging.LogEntry;
+import com.k2view.cdbms.shared.logging.MsgId;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
@@ -23,6 +27,7 @@ import com.k2view.cdbms.usercode.lu.Customer.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnValidateNdGetInstance;
 import static com.k2view.cdbms.usercode.lu.Customer.Globals.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import com.k2view.fabric.events.*;
@@ -83,11 +88,19 @@ public class Logic extends UserCode {
 		
 			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
 			{
-				log.info("TEST2---select data for entity ID: " + input);
+
+				// Indicates if any of the source root table has the instance id
+				AtomicBoolean instanceExists = new AtomicBoolean(false);
+
 				String sql = "SELECT CUSTOMER_ID, SSN, FIRST_NAME, LAST_NAME FROM main.CUSTOMER where customer_id = ?";
 				db("CRM_DB").fetch(sql, input).each(row->{
+					instanceExists.set(true);
 					yield(row.cells());
 				});
+
+				if(!instanceExists.get()) {
+					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
+				}
 			}
 		} 
 	}

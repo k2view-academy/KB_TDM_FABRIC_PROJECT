@@ -82,14 +82,13 @@
       <DocumentElement>
         <trnChildLink diffgr:id="trnChildLink1" msdata:rowOrder="0">
           <child_lu>Billing</child_lu>
-          <child_lu_eid_sql>Select CONTRACT.CONTRACT_ID From Customer.CONTRACT</child_lu_eid_sql>
-          <child_lu_tar_eid_sql>Select CUSTOMER.CUSTOMER_ID From Customer.CUSTOMER</child_lu_tar_eid_sql>
+          <child_lu_eid_sql>Select CONTRACT_ID From CONTRACT</child_lu_eid_sql>
+          <child_lu_tar_eid_sql>Select TAR_CONTRACT.CONTRACT_ID From Customer.TAR_CONTRACT</child_lu_tar_eid_sql>
         </trnChildLink>
         <trnChildLink diffgr:id="trnChildLink2" msdata:rowOrder="1">
           <child_lu>Orders</child_lu>
-          <child_lu_eid_sql>Select ORDERS.ORDER_ID
-From Customer.ORDERS</child_lu_eid_sql>
-          <child_lu_tar_eid_sql></child_lu_tar_eid_sql>
+          <child_lu_eid_sql>Select Customer.ORDERS.ORDER_ID From Customer.ORDERS</child_lu_eid_sql>
+          <child_lu_tar_eid_sql>Select TAR_ORDERS.ORDER_ID From Customer.TAR_ORDERS</child_lu_tar_eid_sql>
         </trnChildLink>
       </DocumentElement>
     </diffgr:diffgram>

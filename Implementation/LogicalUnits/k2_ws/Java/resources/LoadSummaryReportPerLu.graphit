@@ -6,8 +6,8 @@
       "children": [
         {
           "name": "General Info",
-          "type": "sqlNonPrepared",
-          "code": "Select T.TASK_NAME,\n  T.TASK_ID,\n  T.TASK_EXECUTION_ID,\n  T.TASK_CREATED_BY as CREATED_BY,\n  L.TASK_EXECUTED_BY as EXECUTED_BY,\n  MIN(L.START_EXECUTION_TIME) as START_EXECUTION,\n  MAX(L.END_EXECUTION_TIME) as END_EXECUTION,\n  case when (exists (select 1 from task_execution_list where task_execution_id = l.task_execution_id and execution_status <>'completed')) \n  \tthen 'failed' else 'completed' end as EXECUTION_STATUS,\n  T.SOURCE_ENV,\n  T.TARGET_ENV,\n  T.BE_NAME,\n  T.TASK_TYPE,\n  Case When t.selection_method = 'ALL' Then 'ALL'\n    When t.selection_method = 'L' Then 'Entity List'\n    When t.selection_method = 'R' Then 'Randon Selection'\n    When t.selection_method = 'REF' Then 'Reference only'\n    When t.selection_method = 'S' Then 'Synthetic creation' Else 'Parameters'\n\tEnd As SELECTION_METHOD,\n  T.REQUEST_OF_FRESH_DATA,\n  T.OPERATION_MODE,\n  case when t.selection_method = 'S' Then 'true' else T.REPLACE_SEQUENCES\n  \tEnd As REPLACE_SEQUENCES,\n  T.TDM_SET_SYNC_OFF,\n  T.VERSION_IND,\n  T.SELECTED_VERSION_TASK_NAME,\n  T.SELECTED_VERSION_DATETIME,\n  T.SELECTED_REF_VERSION_TASK_NAME,\n  T.SELECTED_REF_VERSION_DATETIME,\n  T.SCHEDULER as SCHEDULING_PARAMETERS,\n  T.SCHEDULING_END_DATE as SCHEDULE_EXPIRATION_DATE\nFrom TDM.TASKS T,\n  TDM.TASK_EXECUTION_LIST L"
+          "type": "sql",
+          "code": "Select T.TASK_NAME,\n  T.TASK_ID,\n  T.TASK_EXECUTION_ID,\n  T.TASK_CREATED_BY As CREATED_BY,\n  L.TASK_EXECUTED_BY As EXECUTED_BY,\n  MIN(L.START_EXECUTION_TIME) As START_EXECUTION,\n  MAX(L.END_EXECUTION_TIME) As END_EXECUTION,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End As EXECUTION_STATUS,\n  T.SOURCE_ENV,\n  T.TARGET_ENV,\n  T.BE_NAME,\n  T.TASK_TYPE,\n  Case When T.selection_method = 'ALL' Then 'ALL'\n    When T.selection_method = 'L' Then 'Entity List'\n    When T.selection_method = 'R' Then 'Randon Selection'\n    When T.selection_method = 'REF' Then 'Reference only'\n    When T.selection_method = 'S' Then 'Synthetic creation' Else 'Parameters'\n  End As SELECTION_METHOD,\n  T.SYNC_MODE,\n  T.OPERATION_MODE,\n  Case When T.selection_method = 'S' Then 'true' Else T.REPLACE_SEQUENCES\n  End As REPLACE_SEQUENCES,\n  T.VERSION_IND,\n  T.SELECTED_VERSION_TASK_NAME,\n  T.SELECTED_VERSION_DATETIME,\n  T.SELECTED_REF_VERSION_TASK_NAME,\n  T.SELECTED_REF_VERSION_DATETIME,\n  T.SCHEDULER As SCHEDULING_PARAMETERS,\n  T.SCHEDULING_END_DATE As SCHEDULE_EXPIRATION_DATE\nFrom TDM.TASKS T,\n  TDM.TASK_EXECUTION_LIST L"
         },
         {
           "name": "Task Execution Summary",
@@ -76,7 +76,7 @@
         {
           "name": "Error Details",
           "type": "sql",
-          "code": "Select lu_name, entity_id as source_entity_id, target_entity_id, flow_name, stage_name, actor_name, error_category, error_code, error_message,actor_parameters \nFrom task_exe_error_detailed \nWhere lu_name = ${i_luName}\norder by error_category, entity_id"
+          "code": "Select distinct lu_name, entity_id as source_entity_id, target_entity_id, flow_name, stage_name, actor_name, error_category, error_code, error_message,actor_parameters \nFrom task_exe_error_detailed \nWhere lu_name = ${i_luName}\norder by error_category, entity_id"
         },
         {
           "name": "Statistics Report",

@@ -84,6 +84,19 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "TEST1- pop error tables- prepare data!!"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -271,6 +284,23 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Logger2",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "TEST2- error message: ${msg}"
+                                    },
+                                    {
+                                        "name": "msg",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -401,6 +431,19 @@
                                             "type": "string"
                                         },
                                         "isDefault": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Logger3",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "TEST3 - after populating the error tables"
                                     }
                                 ],
                                 "outputs": []
@@ -564,6 +607,16 @@
             "path": [
                 "params"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "message"
+            },
+            "rightPort": {
+                "actor": "Logger2",
+                "name": "msg"
+            }
         },
         {
             "leftPort": {

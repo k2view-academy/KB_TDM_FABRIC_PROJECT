@@ -26,12 +26,6 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
@@ -57,6 +51,12 @@
                                     },
                                     {
                                         "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -106,14 +106,13 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "CUSTOMER_ID": {},
-													"ADDRESS_ID": {},
-													"STREET_ADDRESS_1": {},
-													"STREET_ADDRESS_2": {},
-													"CITY": {},
-													"ZIP": {},
-													"STATE": {},
-													"COUNTRY": {}
-													
+                                                    "ADDRESS_ID": {},
+                                                    "STREET_ADDRESS_1": {},
+                                                    "STREET_ADDRESS_2": {},
+                                                    "CITY": {},
+                                                    "ZIP": {},
+                                                    "STATE": {},
+                                                    "COUNTRY": {}
                                                 }
                                             }
                                         }
@@ -142,7 +141,42 @@
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "CUSTOMER_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "CUSTOMER_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "ADDRESS"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "CUSTOMER_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ADDRESS_ID_SEQ_Actor1",
+                            "actorType": {
+                                "parentType": "ADDRESS_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "ADDRESS"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "ADDRESS_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -178,7 +212,7 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": true,
+                                                    "suppress": false,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
@@ -198,7 +232,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "main"
                                     },
@@ -210,56 +244,54 @@
                                         "name": "fields",
                                         "const": [
                                             "CUSTOMER_ID",
-											"ADDRESS_ID",
-											"STREET_ADDRESS_1",
-											"STREET_ADDRESS_2",
-											"CITY",
-											"ZIP",
-											"STATE",
-											"COUNTRY"
-											
+                                            "ADDRESS_ID",
+                                            "STREET_ADDRESS_1",
+                                            "STREET_ADDRESS_2",
+                                            "CITY",
+                                            "ZIP",
+                                            "STATE",
+                                            "COUNTRY"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "ADDRESS_ID"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "CUSTOMER_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "ADDRESS_ID",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "STREET_ADDRESS_1",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "STREET_ADDRESS_2",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "CITY",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "ZIP",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "STATE",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "COUNTRY",
                                         "schema": {}
                                     }
@@ -306,27 +338,13 @@
                     "name": "Report Statistics",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load Stats To TDM Table",
-                            "actorType": {
-                                "parentType": "StatsLoader",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
         {
             "stages": [
-                {											 
+                {
                     "name": "Post Table Loading",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -349,16 +367,54 @@
         },
         {
             "leftPort": {
-               "actor": "Read Stats",
-                "name": "flow"
+                "actor": "Get Table Data",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Load Stats To TDM Table",
-                "name": "stats"
+                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CUSTOMER_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ADDRESS_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "ADDRESS_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load ADDRESS Table",
+                "name": "CUSTOMER_ID"
             }
         },
         {
-            "leftPort": {									  
+            "leftPort": {
+                "actor": "ADDRESS_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load ADDRESS Table",
+                "name": "ADDRESS_ID"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "globals"
             },
@@ -429,7 +485,7 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
+                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {

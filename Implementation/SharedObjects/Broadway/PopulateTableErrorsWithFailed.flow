@@ -62,7 +62,6 @@
                         },
                         {
                             "name": "Commit",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [

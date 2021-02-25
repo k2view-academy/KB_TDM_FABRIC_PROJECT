@@ -9,9 +9,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 
 public class Globals extends SharedGlobals {
 
-	public static String TDM_REPORT_DIRECTORY = "/usr/local/k2view/tdm_reports/";
-
-
 	
 
 
