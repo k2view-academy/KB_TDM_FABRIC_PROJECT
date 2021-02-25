@@ -355,12 +355,12 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "COLLECTION_ID_SEQ_Actor1",
+                "actor": "CUSTOMER_ID_SEQ_Actor1",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
             "path": [
-                "collection_id"
+                "customer_id"
             ]
         },
         {
@@ -369,12 +369,12 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "actor": "COLLECTION_ID_SEQ_Actor1",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
             "path": [
-                "customer_id"
+                "collection_id"
             ]
         },
         {

@@ -10,7 +10,7 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Delete Tables Level 1",
@@ -24,7 +24,7 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "delete_collection"
+                                        "const": "delete_COLLECTION"
                                     }
                                 ],
                                 "outputs": []

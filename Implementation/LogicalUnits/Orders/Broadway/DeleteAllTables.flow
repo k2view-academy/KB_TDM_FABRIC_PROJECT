@@ -10,7 +10,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Delete Tables Level 1",

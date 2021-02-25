@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="COLLECTION_DB" type="genericdb" version="6.2.2.8">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="COLLECTION_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
   <PortNum />
-  <DataBase>C:\K2View\DB_Scripts\collection_db.db</DataBase>
-  <ConnectionStringServerSide>jdbc:sqlite:C:\K2View\DB_Scripts\collection_db.db</ConnectionStringServerSide>
+  <DataBase>C:\K2View\DB_Scripts\tar_collection_db.db</DataBase>
+  <ConnectionStringServerSide>jdbc:sqlite:C:\K2View\DB_Scripts\tar_collection_db.db</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

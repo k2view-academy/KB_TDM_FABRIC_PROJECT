@@ -31,7 +31,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select TAR_ORDERS.ORDER_ID\r\nFrom Orders.TAR_ORDERS"
+                                        "const": "Select TAR_ORDERS.ORDER_ID\r\nFrom TAR_ORDERS"
                                     }
                                 ],
                                 "outputs": [
@@ -41,7 +41,11 @@
                                             "type": "array",
                                             "items": {
                                                 "type": "object",
-                                                "properties": {}
+                                                "properties": {
+                                                    "ORDER_ID": {
+                                                        "type": "string"
+                                                    }
+                                                }
                                             }
                                         }
                                     }

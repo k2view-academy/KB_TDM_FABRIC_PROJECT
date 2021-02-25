@@ -26,25 +26,7 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "deleteBeforeLoad",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "insertToTarget",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -56,13 +38,25 @@
                                         }
                                     },
                                     {
-                                        "name": "iid",
+                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
                                     },
                                     {
                                         "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "insertToTarget",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -161,7 +155,16 @@
                             "name": "OFFER_ID_SEQ_Actor1",
                             "actorType": {
                                 "parentType": "OFFER_ID_SEQ_Actor",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "const": "OFFER"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "const": "OFFER_ID"
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -360,6 +363,20 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "OFFER_ID_SEQ_Actor1",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "OFFER_ID"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "CONTRACT_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
@@ -370,22 +387,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "globals"
+                "actor": "OFFER_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "deleteBeforeLoad"
+                "actor": "Load OFFER Table",
+                "name": "OFFER_ID"
             }
         },
         {
@@ -401,21 +408,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "insertToTarget"
+                "name": "iid"
             },
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "targetEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "targetEnv"
+                "name": "iid"
             }
         },
         {
@@ -431,11 +428,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "iid"
+                "name": "targetEnv"
             },
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
-                "name": "iid"
+                "name": "targetEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "globals"
             }
         },
         {
@@ -446,6 +453,26 @@
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
                 "name": "syncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "deleteBeforeLoad"
             }
         }
     ]
