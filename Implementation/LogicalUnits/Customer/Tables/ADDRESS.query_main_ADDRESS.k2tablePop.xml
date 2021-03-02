@@ -10,8 +10,8 @@
   <SimpleObject>true</SimpleObject>
   <IidFinderProp />
   <InputArguments>
-    <Arg name="CUSTOMER_ID" id="queryCol_0" dataType="Real" index="0" />
-    <Arg name="ADDRESS_ID" id="queryCol_1" dataType="Real" index="1" />
+    <Arg name="CUSTOMER_ID" id="queryCol_0" dataType="Integer" index="0" />
+    <Arg name="ADDRESS_ID" id="queryCol_1" dataType="Integer" index="1" />
     <Arg name="STREET_ADDRESS_1" id="queryCol_2" dataType="Text" index="2" />
     <Arg name="STREET_ADDRESS_2" id="queryCol_3" dataType="Text" index="3" />
     <Arg name="CITY" id="queryCol_4" dataType="Text" index="4" />
@@ -22,8 +22,8 @@
   <ItemsList>
     <Item xsi:type="DBQueryDataSave" id="query_query_main_ADDRESS" name="query_main_ADDRESS" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="CRM_DB">
       <OutputsList>
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="CUSTOMER_ID" dataType="Real" index="0" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="ADDRESS_ID" dataType="Real" index="1" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="CUSTOMER_ID" dataType="Integer" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="ADDRESS_ID" dataType="Integer" index="1" />
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_2" name="STREET_ADDRESS_1" dataType="Text" index="2" />
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_3" name="STREET_ADDRESS_2" dataType="Text" index="3" />
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_4" name="CITY" dataType="Text" index="4" />
@@ -31,7 +31,8 @@
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_6" name="STATE" dataType="Text" index="6" />
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_7" name="COUNTRY" dataType="Text" index="7" />
       </OutputsList>
-      <SQL><![CDATA[SELECT * FROM main.ADDRESS]]></SQL>
+      <SQL><![CDATA[Select *
+From ADDRESS]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -46,10 +47,10 @@
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="ADDRESS.query_main_ADDRESS.k2tablePop.xml" lastPartID="27">
-      <TableNode partID="0" name="ADDRESS" pos="383 5.67189026" width="252.999985" />
+    <Graph name="ADDRESS.query_main_ADDRESS.k2tablePop.xml" lastPartID="45">
+      <TableNode partID="0" name="ADDRESS" pos="383 5.67189026" width="253" />
       <DBQueryNode partID="11" name="CRM_DB" pos="10 0.7083435" size="253 156.583313" isRoot="true">
-        <DBQuery>{"Name":"query_main_ADDRESS","ID":"query_query_main_ADDRESS","ConnName":"CRM_DB","SQL":"SELECT * FROM main.ADDRESS","ColumnsList":[{"ID":"queryCol_0","Name":"CUSTOMER_ID","DataType":"Real","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"ADDRESS_ID","DataType":"Real","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"STREET_ADDRESS_1","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"STREET_ADDRESS_2","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"CITY","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"ZIP","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"STATE","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"COUNTRY","DataType":"Text","Index":7,"IsInputArgument":true}]}</DBQuery>
+        <DBQuery>{"Name":"query_main_ADDRESS","ID":"query_query_main_ADDRESS","ConnName":"CRM_DB","SQL":"Select *\r\nFrom ADDRESS","ColumnsList":[{"ID":"queryCol_0","Name":"CUSTOMER_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"ADDRESS_ID","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"STREET_ADDRESS_1","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"STREET_ADDRESS_2","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"CITY","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"ZIP","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"STATE","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"COUNTRY","DataType":"Text","Index":7,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
       <Link partID="20" from="0" to="1" pointsArr="263 36.7447968 273 36.7447968 313 37 333 37 373 36.7083435 383 36.7083435" fromNodePartID="11" fromNodeColumnName="CUSTOMER_ID" toNodePartID="0" toNodeColumnName="CUSTOMER_ID" />
       <Link partID="21" from="2" to="3" pointsArr="263 48.81771 273 48.81771 313 49 333 49 373 48.7812576 383 48.7812576" fromNodePartID="11" fromNodeColumnName="ADDRESS_ID" toNodePartID="0" toNodeColumnName="ADDRESS_ID" />

@@ -18,7 +18,7 @@ public class SharedGlobals {
 
 
 	@desc("Indicator to delete the instance to target DB")
-	public static String TDM_DELETE_BEFORE_LOAD = "false";
+	public static String TDM_DELETE_BEFORE_LOAD = "true";
 	@desc("Indicator to insert the instance to target DB")
 	public static String TDM_INSERT_TO_TARGET = "true";
 

@@ -147,7 +147,19 @@
         </xs:complexType>
       </xs:element>
     </xs:schema>
-    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" />
+    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
+      <DocumentElement>
+        <trnRefList diffgr:id="trnRefList1" msdata:rowOrder="0">
+          <lu_name>Customer</lu_name>
+          <id>1</id>
+          <reference_table_name>DEVICESTABLE2017</reference_table_name>
+          <schema_name>CRM_DB</schema_name>
+          <interface_name>CRM_DB</interface_name>
+          <target_schema_name>TAR_CRM_DB</target_schema_name>
+          <target_interface_name>CRM_DB</target_interface_name>
+        </trnRefList>
+      </DocumentElement>
+    </diffgr:diffgram>
   </TranslationData>
   <DataRowsHeight>37</DataRowsHeight>
 </Translation>

@@ -93,8 +93,6 @@ public class Logic extends UserCode {
 		String luName = getLuType().luName;
 		String tdmInsertToTarget = "" +fabric().fetch("SET " + luName +".TDM_INSERT_TO_TARGET").firstValue();
 		String tdmSyncSourceData = "" + fabric().fetch("SET " + luName +".TDM_SYNC_SOURCE_DATA").firstValue();
-		String rootTableName = "" + fabric().fetch("SET " + luName +".ROOT_TABLE_NAME").firstValue();
-		String rootTableColumn = "" + fabric().fetch("SET " + luName +".ROOT_COLUMN_NAME").firstValue();
 		
 		// Check TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA. If the TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA are true, then select the data from the source and yield the results
 		if(tdmInsertToTarget.equals("true") ) {
@@ -106,16 +104,16 @@ public class Logic extends UserCode {
 		
 			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
 			{
-
+		
 				// Indicates if any of the source root table has the instance id
 				AtomicBoolean instanceExists = new AtomicBoolean(false);
-
-				String sql = "SELECT SUBSCRIBER_ID, MSISDN, IMSI, SIM, FIRST_NAME, LAST_NAME, SUBSCRIBER_TYPE, VIP_STATUS FROM main.SUBSCRIBER where subscriber_id = ?";
+		
+				String sql = "SELECT SUBSCRIBER_ID, MSISDN, IMSI, SIM, FIRST_NAME, LAST_NAME, SUBSCRIBER_TYPE, VIP_STATUS FROM SUBSCRIBER where subscriber_id = ?";
 				db("BILLING_DB").fetch(sql, input).each(row->{
 					instanceExists.set(true);
 					yield(row.cells());
 				});
-
+		
 				if(!instanceExists.get()) {
 					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
 				}

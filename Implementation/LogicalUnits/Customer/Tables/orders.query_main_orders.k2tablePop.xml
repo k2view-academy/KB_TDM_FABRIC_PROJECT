@@ -26,7 +26,7 @@
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_4" name="order_status" dataType="Text" index="4" />
       </OutputsList>
       <SQL><![CDATA[Select *
-From main.orders]]></SQL>
+From orders]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -38,10 +38,10 @@ From main.orders]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="orders.query_main_orders.k2tablePop.xml" lastPartID="30">
+    <Graph name="orders.query_main_orders.k2tablePop.xml" lastPartID="42">
       <TableNode partID="0" name="orders" pos="383 5.781254" width="253" />
       <DBQueryNode partID="8" name="ORDERS_DB" pos="10 0.8177109" size="253 120.364578" isRoot="true">
-        <DBQuery>{"Name":"query_main_orders","ID":"query_query_main_orders","ConnName":"ORDERS_DB","SQL":"Select *\r\nFrom main.orders","ColumnsList":[{"ID":"queryCol_0","Name":"contract_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"order_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"order_type","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"order_date","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"order_status","DataType":"Text","Index":4,"IsInputArgument":true}]}</DBQuery>
+        <DBQuery>{"Name":"query_main_orders","ID":"query_query_main_orders","ConnName":"ORDERS_DB","SQL":"Select *\r\nFrom orders","ColumnsList":[{"ID":"queryCol_0","Name":"contract_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"order_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"order_type","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"order_date","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"order_status","DataType":"Text","Index":4,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
       <Link partID="14" from="0" to="1" pointsArr="263 36.85417 273 36.85417 313 37 333 37 373 36.8177147 383 36.8177147" fromNodePartID="8" fromNodeColumnName="contract_id" toNodePartID="0" toNodeColumnName="contract_id" />
       <Link partID="15" from="2" to="3" pointsArr="263 48.9270859 273 48.9270859 313 49 333 49 373 48.89063 383 48.89063" fromNodePartID="8" fromNodeColumnName="order_id" toNodePartID="0" toNodeColumnName="order_id" />

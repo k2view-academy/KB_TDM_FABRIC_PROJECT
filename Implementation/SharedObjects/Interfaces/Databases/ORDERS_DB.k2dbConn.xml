@@ -1,15 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="ORDERS_DB" type="genericdb" version="6.2.2.8">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="ORDERS_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
-  <PortNum />
-  <DataBase>C:\K2View\DB_Scripts\orders_db.db</DataBase>
-  <ConnectionStringServerSide>jdbc:sqlite:C:\K2View\DB_Scripts\orders_db.db</ConnectionStringServerSide>
+  <DataSource>10.21.1.53</DataSource>
+  <PortNum>5432</PortNum>
+  <DataBase>ORDERS_DB</DataBase>
+  <UserId>ORDERS_USER</UserId>
+  <Password>zSVYM3rg6BOChCSd98j5jp6VK59HSs884we7m7mKkOE=:O2+2AXh0POo2flS7GiL1Zrf5qULfq8ZABmmS0b479zs=</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://10.21.1.53:5432/ORDERS_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
   <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
   <OfflineMode>true</OfflineMode>
   <CommandList />
-  <JdbcDriverName>SQLite</JdbcDriverName>
+  <JdbcDriverName>PostgreSQL</JdbcDriverName>
   <ConnectionProperties />
 </DBConn>

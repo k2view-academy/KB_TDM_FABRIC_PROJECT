@@ -5,31 +5,37 @@
     <Environment enabled="true" name="SRC">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\billing_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\billing_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <dbUser>BILLING_USER</dbUser>
+          <dbPasswordEncrypted>2ZdHGZ8Uk80/32PVL57ZTn80AXtktHRcH16LrgnoD70=:A2hB6JhQKYxRsDOPGm+C0YhWp7gNzSCH86cqMzg2vOE=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\collection_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\collection_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>COLLECTION_DB</dbScheme>
+          <dbUser>COLLECTION_USER</dbUser>
+          <dbPasswordEncrypted>Z4vNIG2vZYpbvk7YshA94BAOFvXCqZOzcSQTSZQz1PM=:zz9GHja0iUOmP/dbVafciM4jTY10Fm1+trk0MhvYMGM=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\crm_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\crm_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>1521</dbPort>
+          <dbScheme>XE</dbScheme>
+          <dbUser>CRM_DB</dbUser>
+          <dbPasswordEncrypted>HprB+lXtFvPtI9r5DOnt+Chr9y7iB7fA6dl9KQEfLLI=:zPpEgStMbakTBb1R4xTXTKjvCo+j5AmQQP1cVcPY1VA=</dbPasswordEncrypted>
+          <connString>jdbc:oracle:thin:@10.21.1.53:1521/XE</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -42,13 +48,15 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\orders_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\orders_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>ORDERS_DB</dbScheme>
+          <dbUser>ORDERS_USER</dbUser>
+          <dbPasswordEncrypted>cWCiDdivisDXoj7xxlqwTxqu6NRRKXiyv4N3tTaqrH4=:fBvVdwtd40zNG6GAdCoQyegMF5WNFkR1jnyIZCqAsYA=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -196,31 +204,37 @@
     <Environment enabled="true" name="TAR">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\tar_billing_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_billing_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_BILLING_DB</dbScheme>
+          <dbUser>TAR_BILLING_USER</dbUser>
+          <dbPasswordEncrypted>WPen6KEEQ4h5wFXdQ1wYNe2DT35ola4KRQfHX9e80Sc=:/DpHanKjTQf96NruOELZq0AtTXWL6CUqqIe5HVO/cZQ=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\tar_collection_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_collection_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_COLLECTION_DB</dbScheme>
+          <dbUser>TAR_COLLECTION_USER</dbUser>
+          <dbPasswordEncrypted>z9VmcYm0EeosJgh7ecGjtjxakPUEm0ioZwmIwngTSXw=:7283Y/pXU3l0n0ni64ln+01tA7XgEfW+/6ILyvA3h1Q=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\tar_crm_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_crm_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>1521</dbPort>
+          <dbScheme>XE</dbScheme>
+          <dbUser>TAR_CRM_DB</dbUser>
+          <dbPasswordEncrypted>hNEVJuCq95sC5Oi7xdWw/g7rKF4rInacHVENXe3D/4c=:xkaLiHDAxd3/fhJjYb4GUbYL8X0uZOBCqMjQ73eVDSM=</dbPasswordEncrypted>
+          <connString>jdbc:oracle:thin:@10.21.1.53:1521/XE</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -233,13 +247,15 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort />
-          <dbScheme>C:\K2View\DB_Scripts\tar_orders_db.db</dbScheme>
-          <connString>jdbc:sqlite:C:\K2View\DB_Scripts\tar_orders_db.db</connString>
+          <dbHost>10.21.1.53</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_ORDERS_DB</dbScheme>
+          <dbUser>TAR_ORDERING_USER</dbUser>
+          <dbPasswordEncrypted>5hzwVQ3UwP0lMOt5MGvUOoBRp9lO58VRURZlwzDkmE8=:sdrDPOZrEJSTeGJWGWIX+WvTEywZPrvtb0jsf9/ogv4=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>SQLite</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>

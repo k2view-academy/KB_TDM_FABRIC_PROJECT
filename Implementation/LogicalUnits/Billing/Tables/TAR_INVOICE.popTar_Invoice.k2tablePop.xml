@@ -10,18 +10,18 @@
   <SimpleObject>true</SimpleObject>
   <IidFinderProp />
   <InputArguments>
-    <Arg name="SUBSCRIBER_ID" id="queryCol_0" dataType="Integer" index="0" />
-    <Arg name="INVOICE_ID" id="queryCol_1" dataType="Integer" index="1" />
+    <Arg name="subscriber_id" id="queryCol_0" dataType="Integer" index="0" />
+    <Arg name="invoice_id" id="queryCol_1" dataType="Integer" index="1" />
   </InputArguments>
   <ItemsList>
     <Item xsi:type="DBQueryDataSave" id="query_query_main_INVOICE" name="query_main_INVOICE" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="BILLING_DB">
       <OutputsList>
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="SUBSCRIBER_ID" dataType="Integer" index="0" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="INVOICE_ID" dataType="Integer" index="1" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="subscriber_id" dataType="Integer" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="invoice_id" dataType="Integer" index="1" />
       </OutputsList>
-      <SQL><![CDATA[Select INVOICE.SUBSCRIBER_ID,
-  INVOICE.INVOICE_ID
-From main.INVOICE]]></SQL>
+      <SQL><![CDATA[Select public.invoice.subscriber_id,
+  public.invoice.invoice_id
+From public.invoice]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -30,13 +30,13 @@ From main.INVOICE]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="TAR_INVOICE.popTar_Invoice.k2tablePop.xml" lastPartID="14">
+    <Graph name="TAR_INVOICE.popTar_Invoice.k2tablePop.xml" lastPartID="20">
       <TableNode partID="0" name="TAR_INVOICE" pos="404 30" width="253" />
-      <DBQueryNode partID="5" name="BILLING_DB" pos="36 47.50911" size="253 84.14583" isRoot="true">
-        <DBQuery>{"Name":"query_main_INVOICE","ID":"query_query_main_INVOICE","ConnName":"BILLING_DB","SQL":"Select INVOICE.SUBSCRIBER_ID,\r\n  INVOICE.INVOICE_ID\r\nFrom main.INVOICE","ColumnsList":[{"ID":"queryCol_0","Name":"SUBSCRIBER_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"INVOICE_ID","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
+      <DBQueryNode partID="5" name="BILLING_DB" pos="34 44.50911" size="253 84.14583" isRoot="true">
+        <DBQuery>{"Name":"query_main_INVOICE","ID":"query_query_main_INVOICE","ConnName":"BILLING_DB","SQL":"Select public.invoice.subscriber_id,\r\n  public.invoice.invoice_id\r\nFrom public.invoice","ColumnsList":[{"ID":"queryCol_0","Name":"subscriber_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"invoice_id","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
-      <Link partID="13" from="0" to="1" pointsArr="289 83.54557 299 83.54557 394 61.0364571 404 61.0364571" fromNodePartID="5" fromNodeColumnName="SUBSCRIBER_ID" toNodePartID="0" toNodeColumnName="SUBSCRIBER_ID" />
-      <Link partID="14" from="2" to="3" pointsArr="289 95.6184845 299 95.6184845 394 73.109375 404 73.109375" fromNodePartID="5" fromNodeColumnName="INVOICE_ID" toNodePartID="0" toNodeColumnName="INVOICE_ID" />
+      <Link partID="13" from="0" to="1" pointsArr="287 80.54557 297 80.54557 394 61.0364571 404 61.0364571" fromNodePartID="5" fromNodeColumnName="subscriber_id" toNodePartID="0" toNodeColumnName="SUBSCRIBER_ID" />
+      <Link partID="14" from="2" to="3" pointsArr="287 92.6184845 297 92.6184845 394 73.109375 404 73.109375" fromNodePartID="5" fromNodeColumnName="invoice_id" toNodePartID="0" toNodeColumnName="INVOICE_ID" />
     </Graph>
   </DiagramGraph>
 </TablePopulationObject>

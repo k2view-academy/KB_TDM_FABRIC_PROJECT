@@ -21,7 +21,7 @@
       </OutputsList>
       <SQL><![CDATA[Select ACTIVITY_ID,
   CASE_ID
-From main.CASES]]></SQL>
+From CASES]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -30,10 +30,10 @@ From main.CASES]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="TAR_CASES.pop_tar_cases.k2tablePop.xml" lastPartID="12">
+    <Graph name="TAR_CASES.pop_tar_cases.k2tablePop.xml" lastPartID="18">
       <TableNode partID="0" name="TAR_CASES" pos="404 30" width="253" />
       <DBQueryNode partID="5" name="CRM_DB" pos="39 24.50911" size="253 84.14583" isRoot="true">
-        <DBQuery>{"Name":"query_main_CASES","ID":"query_query_main_CASES","ConnName":"CRM_DB","SQL":"Select ACTIVITY_ID,\r\n  CASE_ID\r\nFrom main.CASES","ColumnsList":[{"ID":"queryCol_0","Name":"ACTIVITY_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"CASE_ID","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
+        <DBQuery>{"Name":"query_main_CASES","ID":"query_query_main_CASES","ConnName":"CRM_DB","SQL":"Select ACTIVITY_ID,\r\n  CASE_ID\r\nFrom CASES","ColumnsList":[{"ID":"queryCol_0","Name":"ACTIVITY_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"CASE_ID","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
       <Link partID="11" from="0" to="1" pointsArr="292 60.5455666 302 60.5455666 394 61.0364571 404 61.0364571" fromNodePartID="5" fromNodeColumnName="ACTIVITY_ID" toNodePartID="0" toNodeColumnName="ACTIVITY_ID" />
       <Link partID="12" from="2" to="3" pointsArr="292 72.6184845 302 72.6184845 394 73.109375 404 73.109375" fromNodePartID="5" fromNodeColumnName="CASE_ID" toNodePartID="0" toNodeColumnName="CASE_ID" />

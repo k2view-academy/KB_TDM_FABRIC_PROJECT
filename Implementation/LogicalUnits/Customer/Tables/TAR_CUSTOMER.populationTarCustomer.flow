@@ -20,7 +20,18 @@
                                 ],
                                 "outputs": []
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
                         {
                             "name": "setTargetEnv_Actor1",
                             "actorType": {
@@ -51,7 +62,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select CUSTOMER.CUSTOMER_ID\r\nFrom main.CUSTOMER"
+                                        "const": "Select CUSTOMER.CUSTOMER_ID\r\nFrom CUSTOMER"
                                     }
                                 ],
                                 "outputs": [

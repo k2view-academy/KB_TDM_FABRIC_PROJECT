@@ -224,10 +224,6 @@
                                         "const": "BILLING_DB"
                                     },
                                     {
-                                        "name": "schema",
-                                        "const": "main"
-                                    },
-                                    {
                                         "name": "table",
                                         "const": "PAYMENT"
                                     },

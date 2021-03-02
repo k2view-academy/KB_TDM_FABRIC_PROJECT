@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select orders.order_id,\r\n  orders.contract_id\r\nFrom main.orders"
+                                        "const": "Select public.orders.contract_id,\r\n  public.orders.order_id\r\nFrom public.orders"
                                     }
                                 ],
                                 "outputs": []

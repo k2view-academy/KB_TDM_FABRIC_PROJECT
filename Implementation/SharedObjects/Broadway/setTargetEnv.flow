@@ -14,7 +14,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_TARGET_ENV_NAME"
+                                        "const": "TDM_TAR_ENV_NAME"
                                     }
                                 ],
                                 "outputs": []

@@ -88,16 +88,16 @@ public class Logic extends UserCode {
 		
 			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
 			{
-
+		
 				// Indicates if any of the source root table has the instance id
 				AtomicBoolean instanceExists = new AtomicBoolean(false);
-
-				String sql = "SELECT CUSTOMER_ID, SSN, FIRST_NAME, LAST_NAME FROM main.CUSTOMER where customer_id = ?";
+		
+				String sql = "SELECT CUSTOMER_ID, SSN, FIRST_NAME, LAST_NAME FROM CUSTOMER where customer_id = ?";
 				db("CRM_DB").fetch(sql, input).each(row->{
 					instanceExists.set(true);
 					yield(row.cells());
 				});
-
+		
 				if(!instanceExists.get()) {
 					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
 				}
