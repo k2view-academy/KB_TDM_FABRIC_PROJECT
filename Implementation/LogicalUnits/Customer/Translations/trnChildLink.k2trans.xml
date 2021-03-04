@@ -90,6 +90,11 @@
           <child_lu_eid_sql>Select Customer.ORDERS.ORDER_ID From Customer.ORDERS</child_lu_eid_sql>
           <child_lu_tar_eid_sql>Select TAR_ORDERS.ORDER_ID From Customer.TAR_ORDERS</child_lu_tar_eid_sql>
         </trnChildLink>
+        <trnChildLink diffgr:id="trnChildLink3" msdata:rowOrder="2">
+          <child_lu>Collection</child_lu>
+          <child_lu_eid_sql>Select collection_id from collection</child_lu_eid_sql>
+          <child_lu_tar_eid_sql>select collection_id from tar_collection</child_lu_tar_eid_sql>
+        </trnChildLink>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

@@ -40,25 +40,7 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "deleteBeforeLoad",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "insertToTarget",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -70,13 +52,25 @@
                                         }
                                     },
                                     {
-                                        "name": "iid",
+                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
                                     },
                                     {
                                         "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "insertToTarget",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -455,61 +449,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "deleteBeforeLoad"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
                 "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "insertToTarget"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "targetEnv"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "targetEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "sourceEnv"
             }
         },
         {
@@ -525,11 +469,61 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Load",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnv"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Load",
+                "name": "targetEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Load",
+                "name": "globals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
                 "name": "syncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Load",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Load",
+                "name": "deleteBeforeLoad"
             }
         },
         {

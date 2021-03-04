@@ -166,6 +166,19 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "DateFormat1",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "yyyy-MM-dd HH:mm"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -367,6 +380,20 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DateFormat1",
+                "name": "date"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CASE_DATE"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "ACTIVITY_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
@@ -383,6 +410,16 @@
             "rightPort": {
                 "actor": "Load CASES Table",
                 "name": "CASE_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DateFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load CASES Table",
+                "name": "CASE_DATE"
             }
         },
         {

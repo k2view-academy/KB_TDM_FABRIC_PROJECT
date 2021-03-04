@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(balance_id) + 1 As init_balance_id\r\nFrom balance"
+                                        "const": "Select Max(balance_id) + 1 As init_balance_id\r\nFrom balance"
                                     }
                                 ],
                                 "outputs": []

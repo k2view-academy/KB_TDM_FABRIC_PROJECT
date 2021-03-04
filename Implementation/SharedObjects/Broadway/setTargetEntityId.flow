@@ -8,17 +8,14 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "DbFetchField1",
+                            "name": "FabricSet1",
                             "actorType": {
-                                "parentType": "DbFetchField",
+                                "parentType": "FabricSet",
                                 "inputs": [
                                     {
-                                        "name": "interface",
-                                        "const": "ORDERS_DB"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "Select Max(order_id) + 1 As init_order_id\r\nFrom orders"
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -32,12 +29,12 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "DbFetchField1",
-                "name": "result"
+                "actor": "flowArgs",
+                "name": "target_entity_id"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "initialValue"
+                "actor": "FabricSet1",
+                "name": "value"
             }
         }
     ]

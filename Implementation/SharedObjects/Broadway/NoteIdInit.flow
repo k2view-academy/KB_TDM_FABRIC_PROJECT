@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(CASE_NOTE.NOTE_ID) + 1 As init_note_id\r\nFrom main.CASE_NOTE"
+                                        "const": "Select max(CASE_NOTE.NOTE_ID) + 1 As init_note_id\r\nFrom CASE_NOTE"
                                     }
                                 ],
                                 "outputs": []

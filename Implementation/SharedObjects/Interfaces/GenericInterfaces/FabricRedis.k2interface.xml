@@ -3,10 +3,10 @@
   <Name>FabricRedis</Name>
   <Properties>
     <Property name="Servers" dataType="string" mandatory="true">
-      <Value>10.21.2.69:6379</Value>
+      <Value>192.168.168.201:6379</Value>
     </Property>
     <Property name="Password" dataType="password">
-      <Value>wy+mGIN+HEWFyM/RNs+QAF5ZeJiP8+HHTZLpvT0U46A=:cdH72kY9/BJ7yMtZYtHrmZtfapLA4eoB8HNLSrwxn10=</Value>
+      <Value />
     </Property>
     <Property name="ConnectionTimeout" dataType="integer">
       <Value>10000</Value>

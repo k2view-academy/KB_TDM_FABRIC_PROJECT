@@ -102,17 +102,8 @@
           <lu_name>Customer</lu_name>
           <source_env_name></source_env_name>
           <interface_name>CRM_DB</interface_name>
-          <ig_sql>Select CUSTOMER.CUSTOMER_ID
-From main.CUSTOMER
-limit 1000</ig_sql>
-        </trnMigrateList>
-        <trnMigrateList diffgr:id="trnMigrateList2" msdata:rowOrder="1">
-          <lu_name>Collection</lu_name>
-          <source_env_name></source_env_name>
-          <interface_name>CRM_DB</interface_name>
-          <ig_sql>Select CUSTOMER.CUSTOMER_ID
-From main.CUSTOMER
-limit 1000</ig_sql>
+          <ig_sql>Select CRM.CUSTOMER.CUSTOMER_ID
+From CRM.CUSTOMER where customer_id &lt;= 1000</ig_sql>
         </trnMigrateList>
       </DocumentElement>
     </diffgr:diffgram>

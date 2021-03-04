@@ -3,7 +3,7 @@
   <Name>TAR_SUBSCRIBER</Name>
   <ID>tbl_TAR_SUBSCRIBER</ID>
   <Columns>
-    <Column name="SUBSCRIBER_ID" id="tblCol_d78b5d3e85764f2c918b40943907711e" index="0" datatype="text" />
+    <Column name="subscriber_id" id="tblCol_d78b5d3e85764f2c918b40943907711e" index="0" datatype="text" />
   </Columns>
   <IndexesList />
   <EnrichmentList />

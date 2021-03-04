@@ -271,6 +271,14 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "setTargetEntityId_Actor1",
+                            "actorType": {
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -360,6 +368,16 @@
             "rightPort": {
                 "actor": "Load SUBSCRIBER Table",
                 "name": "SUBSCRIBER_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "setTargetEntityId_Actor1",
+                "name": "target_entity_id"
             }
         },
         {

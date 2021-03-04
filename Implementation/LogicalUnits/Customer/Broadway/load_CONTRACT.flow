@@ -170,6 +170,32 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "DateFormat1",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "yyyy-MM-dd HH:mm"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "DateFormat2",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "yyyy-MM-dd HH:mm"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -386,6 +412,34 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DateFormat2",
+                "name": "date"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "TO_DATE"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DateFormat1",
+                "name": "date"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "FROM_DATE"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "CUSTOMER_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
@@ -402,6 +456,26 @@
             "rightPort": {
                 "actor": "Load CONTRACT Table",
                 "name": "CONTRACT_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DateFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load CONTRACT Table",
+                "name": "FROM_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DateFormat2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load CONTRACT Table",
+                "name": "TO_DATE"
             }
         },
         {

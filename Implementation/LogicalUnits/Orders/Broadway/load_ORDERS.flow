@@ -99,11 +99,21 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "contract_id": {},
-                                                    "order_id": {},
-                                                    "order_type": {},
-                                                    "order_date": {},
-                                                    "order_status": {}
+                                                    "CONTRACT_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "ORDER_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "ORDER_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "ORDER_DATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "ORDER_STATUS": {
+                                                        "type": "string"
+                                                    }
                                                 }
                                             }
                                         }
@@ -224,6 +234,10 @@
                                         "const": "ORDERS_DB"
                                     },
                                     {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
                                         "name": "table",
                                         "const": "ORDERS"
                                     },
@@ -268,6 +282,14 @@
                                         "schema": {}
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "setTargetEntityId_Actor1",
+                            "actorType": {
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -362,7 +384,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "contract_id"
+                "CONTRACT_ID"
             ]
         },
         {
@@ -376,7 +398,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "order_id"
+                "ORDER_ID"
             ]
         },
         {
@@ -397,6 +419,16 @@
             "rightPort": {
                 "actor": "Load ORDERS Table",
                 "name": "order_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDER_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "setTargetEntityId_Actor1",
+                "name": "target_entity_id"
             }
         },
         {

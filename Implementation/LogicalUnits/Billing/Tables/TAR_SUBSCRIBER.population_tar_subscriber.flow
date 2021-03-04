@@ -14,7 +14,7 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "SUBSCRIBER_ID",
+                                        "name": "subscriber_id",
                                         "schema": {}
                                     }
                                 ],
@@ -65,7 +65,22 @@
                                         "const": "Select public.subscriber.subscriber_id\r\nFrom public.subscriber"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "subscriber_id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -109,7 +124,7 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "SUBSCRIBER_ID"
+                                            "subscriber_id"
                                         ]
                                     },
                                     {
@@ -117,7 +132,7 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "SUBSCRIBER_ID",
+                                        "name": "subscriber_id",
                                         "schema": {}
                                     }
                                 ],
@@ -164,11 +179,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "SUBSCRIBER_ID"
+                "name": "subscriber_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "SUBSCRIBER_ID"
+                "name": "subscriber_id"
             }
         },
         {

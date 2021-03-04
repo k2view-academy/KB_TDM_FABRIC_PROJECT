@@ -501,7 +501,7 @@ public class SharedLogic {
 		if (!inDebugMode()) {
 			ciTDM.beginTransaction();
 		}
-		//TALI- Fix ticket #9523- delete the parent IID records, if exist, before the insert
+		
 		//log.info("before delete");
 		//Add the LU Name to the table name
 		// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
@@ -511,7 +511,9 @@ public class SharedLogic {
 					verAddition;
 		
 		//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
-		String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
+		
+		//String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
+		String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
 		String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
 		
 		String currDate = sdf.format(new java.util.Date());
@@ -531,7 +533,7 @@ public class SharedLogic {
 			String sql = mapVal.get("child_lu_eid_sql");
 			String sqlTar = mapVal.get("child_lu_tar_eid_sql");
 		    
-			//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql);
+			//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql + ", and sqlTar: " + sqlTar);
 			childEIDs = ludb().fetch(sql);
 			
 			for (Db.Row row : childEIDs) {
@@ -573,9 +575,12 @@ public class SharedLogic {
 			
 			//TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated 
 			if (fnDecisionDeleteFromTarget()) {
-				ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId);
+				//log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
+				ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
 				
+				//log.info("TEST- populating tdm_lu_type_rel_Tar_eid LU table");
 				childTarEIDs = ludb().fetch(sqlTar);
+				
 				for (Db.Row row : childTarEIDs) {
 					
 		    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDate};
@@ -583,6 +588,7 @@ public class SharedLogic {
 					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
 		
 					if (!inDebugMode()) {
+						//log.info("TEST- populating tdm_lu_type_rel_Tar_eid TDM table");
 						ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
 					}
 				}

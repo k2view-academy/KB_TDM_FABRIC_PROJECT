@@ -3,8 +3,8 @@
   <Name>TAR_CASES</Name>
   <ID>tbl_TAR_CASES</ID>
   <Columns>
-    <Column name="ACTIVITY_ID" id="tblCol_daa1771ac711418c831f703d1ef5775f" index="0" datatype="Real" />
-    <Column name="CASE_ID" id="tblCol_716636d23e2945169513b5b2c3d5dd0f" index="1" datatype="Real" mandatory="true" />
+    <Column name="ACTIVITY_ID" id="tblCol_daa1771ac711418c831f703d1ef5775f" index="0" datatype="text" />
+    <Column name="CASE_ID" id="tblCol_716636d23e2945169513b5b2c3d5dd0f" index="1" datatype="text" mandatory="true" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_716636d23e2945169513b5b2c3d5dd0f" />

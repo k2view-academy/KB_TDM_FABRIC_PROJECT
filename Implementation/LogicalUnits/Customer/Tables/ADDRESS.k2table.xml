@@ -3,8 +3,8 @@
   <Name>ADDRESS</Name>
   <ID>tbl_ADDRESS</ID>
   <Columns>
-    <Column name="CUSTOMER_ID" id="tblCol_201fcee2200d46c4b7364e709e43868b" index="0" datatype="Real" />
-    <Column name="ADDRESS_ID" id="tblCol_a63d983e43bf41c6b2ba931afd8b1056" index="1" datatype="Real" mandatory="true" />
+    <Column name="CUSTOMER_ID" id="tblCol_201fcee2200d46c4b7364e709e43868b" index="0" datatype="text" />
+    <Column name="ADDRESS_ID" id="tblCol_a63d983e43bf41c6b2ba931afd8b1056" index="1" datatype="text" mandatory="true" />
     <Column name="STREET_ADDRESS_1" id="tblCol_6a5b9823c06243dd829fb912e7f2db3a" index="2" datatype="Text" />
     <Column name="STREET_ADDRESS_2" id="tblCol_566726b3738040eb9053c223d414ea6d" index="3" datatype="Text" />
     <Column name="CITY" id="tblCol_0f794cd3474f4a6fb389c2b08e7631f8" index="4" datatype="Text" />

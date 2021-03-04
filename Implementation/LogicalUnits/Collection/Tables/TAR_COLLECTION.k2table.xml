@@ -5,6 +5,7 @@
   <EntityId>tblCol_29cbdbf8b1684994973ad7163bfac575</EntityId>
   <Columns>
     <Column name="customer_id" id="tblCol_29cbdbf8b1684994973ad7163bfac575" index="0" datatype="text" />
+    <Column name="collection_id" id="tblCol_1bf3fbe4ad3249c5a959146a38dba173" index="1" datatype="text" />
   </Columns>
   <IndexesList />
   <EnrichmentList />

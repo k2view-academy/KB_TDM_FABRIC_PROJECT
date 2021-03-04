@@ -88,7 +88,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from COLLECTION"
+                                        "const": "Select *\r\nFrom Collection.COLLECTION"
                                     }
                                 ],
                                 "outputs": [
@@ -99,10 +99,18 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {},
-                                                    "collection_id": {},
-                                                    "last_update": {},
-                                                    "collection_status": {}
+                                                    "CUSTOMER_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "COLLECTION_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "LAST_UPDATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "COLLECTION_STATUS": {
+                                                        "type": "string"
+                                                    }
                                                 }
                                             }
                                         }
@@ -224,7 +232,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": "main"
+                                        "const": "public"
                                     },
                                     {
                                         "name": "table",
@@ -266,6 +274,14 @@
                                         "schema": {}
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "setTargetEntityId_Actor1",
+                            "actorType": {
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -360,7 +376,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "customer_id"
+                "CUSTOMER_ID"
             ]
         },
         {
@@ -374,7 +390,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "collection_id"
+                "COLLECTION_ID"
             ]
         },
         {
@@ -395,6 +411,16 @@
             "rightPort": {
                 "actor": "Load COLLECTION Table",
                 "name": "collection_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "COLLECTION_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "setTargetEntityId_Actor1",
+                "name": "target_entity_id"
             }
         },
         {

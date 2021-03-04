@@ -59,8 +59,8 @@ public class Logic extends UserCode {
 				// Indicates if any of the source root table has the instance id
 				AtomicBoolean instanceExists = new AtomicBoolean(false);
 		
-				String sql = "SELECT customer_id, collection_id, last_update, collection_status FROM collection";
-				db("COLLECTION_DB").fetch(sql).each(row->{
+				String sql = "SELECT customer_id, collection_id, last_update, collection_status FROM collection where collection_id = ?";
+				db("COLLECTION_DB").fetch(sql, input).each(row->{
 					instanceExists.set(true);
 					yield(row.cells());
 				});

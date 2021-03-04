@@ -247,6 +247,14 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "setTargetEntityId_Actor1",
+                            "actorType": {
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -336,6 +344,16 @@
             "rightPort": {
                 "actor": "Load CUSTOMER Table",
                 "name": "CUSTOMER_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "setTargetEntityId_Actor1",
+                "name": "target_entity_id"
             }
         },
         {

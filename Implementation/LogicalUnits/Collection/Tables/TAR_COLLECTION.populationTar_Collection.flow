@@ -14,7 +14,7 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "CUSTOMER_ID",
+                                        "name": "collection_id",
                                         "schema": {}
                                     }
                                 ],
@@ -98,7 +98,8 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "customer_id"
+                                            "customer_id",
+                                            "collection_id"
                                         ]
                                     },
                                     {
@@ -107,6 +108,10 @@
                                     },
                                     {
                                         "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "collection_id",
                                         "schema": {}
                                     }
                                 ],
@@ -153,11 +158,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
+                "name": "collection_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "CUSTOMER_ID"
+                "name": "collection_id"
             }
         },
         {

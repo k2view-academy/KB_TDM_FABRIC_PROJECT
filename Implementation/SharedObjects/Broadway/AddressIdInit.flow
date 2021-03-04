@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(ADDRESS.ADDRESS_ID) + 1 As init_address_id\r\nFrom main.ADDRESS"
+                                        "const": "Select max(ADDRESS.ADDRESS_ID) + 1 As init_address_id\r\nFrom ADDRESS"
                                     }
                                 ],
                                 "outputs": []
