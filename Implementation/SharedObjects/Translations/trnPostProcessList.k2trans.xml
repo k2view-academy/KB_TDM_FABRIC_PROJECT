@@ -62,24 +62,8 @@
     <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
       <DocumentElement>
         <trnPostProcessList diffgr:id="trnPostProcessList1" msdata:rowOrder="0">
-          <process_name>LoggerFlow1</process_name>
-          <lu_name>POST_EXE_DUMMY</lu_name>
-        </trnPostProcessList>
-        <trnPostProcessList diffgr:id="trnPostProcessList2" msdata:rowOrder="1">
-          <process_name>LoggerFlow2</process_name>
-          <lu_name>POST_EXE_DUMMY</lu_name>
-        </trnPostProcessList>
-        <trnPostProcessList diffgr:id="trnPostProcessList3" msdata:rowOrder="2">
-          <process_name>logflow3</process_name>
-          <lu_name>POST_EXE_DUMMY</lu_name>
-        </trnPostProcessList>
-        <trnPostProcessList diffgr:id="trnPostProcessList4" msdata:rowOrder="3">
-          <process_name>ShareLogFlow</process_name>
+          <process_name>writeMsgToLog</process_name>
           <lu_name></lu_name>
-        </trnPostProcessList>
-        <trnPostProcessList diffgr:id="trnPostProcessList5" msdata:rowOrder="4">
-          <process_name>PLUFlow</process_name>
-          <lu_name>PATIENT_LU</lu_name>
         </trnPostProcessList>
       </DocumentElement>
     </diffgr:diffgram>
