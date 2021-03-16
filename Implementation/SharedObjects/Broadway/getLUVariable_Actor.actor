@@ -1,0 +1,40 @@
+{
+  "type": "getLUVariable_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "luType",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "variableName",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "getLUVariable"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "variableValue",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

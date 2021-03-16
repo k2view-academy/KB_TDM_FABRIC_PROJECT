@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="ORDERS_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
-  <DataSource>192.168.168.145</DataSource>
+  <DataSource>10.21.1.53</DataSource>
   <PortNum>5432</PortNum>
-  <DataBase>ORDERING_DB</DataBase>
+  <DataBase>ORDERS_DB</DataBase>
   <UserId>ORDERS_USER</UserId>
   <Password>4NKN+BZfrRSLusJE6FGF5vyWOcZV1zFBpqPLVfzkzIo=:dT/RhDzL2gwMLVbpAQx07MblRd1b98OC5epVbHCcVys=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://192.168.168.145:5432/ORDERING_DB?stringtype=unspecified</ConnectionStringServerSide>
+  <ConnectionStringServerSide>jdbc:postgresql://10.21.1.53:5432/ORDERS_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

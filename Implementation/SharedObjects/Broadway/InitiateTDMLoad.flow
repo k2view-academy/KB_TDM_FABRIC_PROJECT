@@ -320,38 +320,18 @@
                             }
                         },
                         {
-                            "name": "Get Replace Sequence Global",
+                            "name": "SplitIIDAndCloneNumber_Actor2",
                             "actorType": {
-                                "parentType": "FabricSetRead",
+                                "parentType": "SplitIIDAndCloneNumber_Actor",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "TDM_REPLACE_SEQUENCES",
-                                        "isDefault": false
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Masking Flag",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "MASK_FLAG",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
                             }
                         },
                         {
@@ -369,32 +349,90 @@
                             }
                         },
                         {
-                            "name": "Get Task Execution ID From Global",
+                            "name": "get  TDM Replace Sequence Indicator",
                             "actorType": {
-                                "parentType": "FabricSetRead",
+                                "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "TDM_TASK_EXE_ID",
-                                        "isDefault": false
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_REPLACE_SEQUENCES"
                                     }
                                 ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "SplitIIDAndCloneNumber_Actor2",
-                            "actorType": {
-                                "parentType": "SplitIIDAndCloneNumber_Actor",
-                                "inputs": [
+                                "outputs": [
                                     {
-                                        "name": "iid",
+                                        "name": "variableValue",
                                         "schema": {
                                             "type": "string"
                                         }
                                     }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "get  Mask Flag",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "MASK_FLAG"
+                                    }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "variableValue",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "get TDM Task Execution ID",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_TASK_EXE_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "variableValue",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -444,6 +482,7 @@
                         },
                         {
                             "name": "Set Source Entity ID",
+                            "minHeight": 110,
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -524,6 +563,31 @@
                                         "name": "value",
                                         "const": null,
                                         "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "InitTDM --> Vars - Task Exec ID: ${id}, Replace: ${repl}, Mask: ${mask}"
+                                    },
+                                    {
+                                        "name": "id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "repl",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "mask",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -801,36 +865,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Replace Sequence Global",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set Replace Sequence Ind",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Masking Flag",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check if Masking Flag is set",
-                "name": "test"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Task Execution ID From Global",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Set Task Execution ID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "SplitIIDAndCloneNumber_Actor2",
                 "name": "cloneNo"
             },
@@ -867,6 +901,66 @@
             "rightPort": {
                 "actor": "Set Source Entity ID",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get  TDM Replace Sequence Indicator",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Set Replace Sequence Ind",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get  TDM Replace Sequence Indicator",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "repl"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get  Mask Flag",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Check if Masking Flag is set",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get  Mask Flag",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "mask"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Task Execution ID",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Set Task Execution ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Task Execution ID",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "id"
             }
         },
         {
@@ -1067,6 +1161,36 @@
             "rightPort": {
                 "actor": "SplitIIDAndCloneNumber_Actor2",
                 "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "get  TDM Replace Sequence Indicator",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "get  Mask Flag",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "get TDM Task Execution ID",
+                "name": "luType"
             }
         },
         {

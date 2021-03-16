@@ -85,7 +85,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "../../SharedObjects/Templates/TempateSeq_Actor.actor.template"
+                                        "const": "../../SharedObjects/Templates/tdmSequence_Actor.actor.template"
                                     }
                                 ],
                                 "outputs": []
@@ -103,32 +103,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "LU Folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "file://../Implementation/LogicalUnits/${LU_NAME}"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "LuFunction2",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
                                         "name": "luType",
-                                        "const": null
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "functionName",
@@ -203,7 +184,7 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${0}.actor"
+                                        "const": "${0}_Actor.actor"
                                     }
                                 ],
                                 "outputs": []
@@ -227,7 +208,7 @@
                                 "inputs": [
                                     {
                                         "name": "luType",
-                                        "const": null
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "functionName",
@@ -425,36 +406,6 @@
             "rightPort": {
                 "actor": "FileWrite1",
                 "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "LU Folder",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "ApplyTemplate",
-                "name": "luType"
             }
         }
     ]

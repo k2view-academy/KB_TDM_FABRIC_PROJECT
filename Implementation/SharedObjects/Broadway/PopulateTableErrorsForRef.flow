@@ -48,19 +48,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Reference Table has failed"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -447,19 +434,6 @@
                                     {
                                         "name": "sql",
                                         "const": "commit;"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Logger2",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Failed Reference Table was handled"
                                     }
                                 ],
                                 "outputs": []

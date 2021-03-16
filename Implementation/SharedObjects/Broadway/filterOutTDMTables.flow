@@ -8,26 +8,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Uppercase2",
-                            "minHeight": 232,
-                            "actorType": {
-                                "parentType": "Uppercase",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
                             "name": "TDMFilterOutTargetTables1",
                             "actorType": {
                                 "parentType": "TDMFilterOutTargetTables",
@@ -74,25 +54,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Uppercase1",
-                            "actorType": {
-                                "parentType": "Uppercase",
-                                "inputs": [],
-                                "outputs": []
                             }
                         }
                     ]
@@ -252,26 +213,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Uppercase2",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Regex1",
-                "name": "input"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Uppercase2",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Const2",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "TDMFilterOutTargetTables1",
                 "name": "table"
             },
@@ -304,23 +245,13 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "Uppercase1",
-                "name": "string"
+                "actor": "Regex1",
+                "name": "pattern"
             },
             "iterate": "Iterate",
             "path": [
                 "table_regex"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "Uppercase1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Regex1",
-                "name": "pattern"
-            }
         },
         {
             "leftPort": {
@@ -348,8 +279,8 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "Uppercase2",
-                "name": "string"
+                "actor": "Regex1",
+                "name": "input"
             }
         },
         {
@@ -360,6 +291,16 @@
             "rightPort": {
                 "actor": "JavaScript1",
                 "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Const2",
+                "name": "value"
             }
         },
         {

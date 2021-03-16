@@ -11,13 +11,8 @@
       "const": "setTargetEnv"
     }
   ],
-  "outputs": [
-    {
-      "name": "value",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    }
+  "outputs": [],
+  "tags": [
+    "tdm"
   ]
 }

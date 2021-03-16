@@ -5,67 +5,66 @@
     <Environment enabled="true" name="SRC">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
-          <dbPasswordEncrypted>CEh/ytjsy73gF8JqdiUlup+jhbrA845mpHcva8YpXiI=:5jzj2TPxgDQiX+wd298pCS8aCMFJc7YAHAiqsjZYL0E=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/BILLING_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.1.53:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>Z4vNIG2vZYpbvk7YshA94BAOFvXCqZOzcSQTSZQz1PM=:zz9GHja0iUOmP/dbVafciM4jTY10Fm1+trk0MhvYMGM=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.1.53:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>1521</dbPort>
           <dbScheme>XE</dbScheme>
-          <dbUser>CRM</dbUser>
-          <dbPasswordEncrypted>ab/znYCLT3mPUEFJRiO/DsgxcKsdUHzplUO5VFTVx+Q=:2Mw+ud/p1SmelOdE7Yt+BvWu7OKmCwhmEwyDzIz9Da8=</dbPasswordEncrypted>
-          <connString>jdbc:oracle:thin:@192.168.168.145:1521/XE</connString>
+          <dbUser>CRM_DB</dbUser>
+          <dbPasswordEncrypted>pNSbztpzb9mHR/PbjKEU9dQJXH/Qww8tyY86YnF/9Yw=:d6EMrw2mbIu1+Pp0zE7UVoecO2YpInvQ+LuSac459Pc=</dbPasswordEncrypted>
+          <connString>jdbc:oracle:thin:@10.21.1.53:1521/XE</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>192.168.168.201</dbHost>
-          <dbPort>9142</dbPort>
+          <dbHost>localhost</dbHost>
+          <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>+suLEUL/JlMp2jFA17J+0n+4QGYNY2zUM//pynb3mwA=:fdZqiDXqips6X607ApOD03aJLl7v476iM5G4RCP3SUc=</dbPasswordEncrypted>
-          <IsCustomConnectionStringServerSide>true</IsCustomConnectionStringServerSide>
-          <connString>jdbc:cassandra://192.168.168.201:9142/?consistency=QUORUM&amp;internodesssl=true</connString>
+          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>ORDERING_DB</dbScheme>
+          <dbScheme>ORDERS_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>6sZR40JP5KtkTEPfYQgMrGX+XtTRin80uAQ3QT4C8AI=:Hp8csxAT7jTAenOK1w1avPQLO3Jf89yqUn2OwE4V/U0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.1.53:5432/ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>/NznNPDGp8a/yt+l43/iKRX1eeenhJAXUeJx1sqoffU=:3hbTpSEc5RrdVHIi7Wj0V44/xw2ESwjxRkStmJnLx3Y=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -153,10 +152,10 @@
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers" dataType="string" mandatory="true">
-              <Value>192.168.168.201:6379</Value>
+              <Value>10.21.2.69:6379</Value>
             </Property>
             <Property name="Password" dataType="password">
-              <Value />
+              <Value>oJtFmw1WAJdEsTEumZF0hGxWNePNx7nWZOjg8EoZ3VI=:L4VSNeRvms5mWeVshba/iKvTwrORGn4TSUpyjvWZ//c=</Value>
             </Property>
             <Property name="ConnectionTimeout" dataType="integer">
               <Value>10000</Value>
@@ -205,67 +204,66 @@
     <Environment enabled="true" name="TAR">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
           <dbPasswordEncrypted>cgImnRiQHBvlj8HQApLO+0W108HCSn17bEfrJuwgsLo=:MBgEHUBAgSyZ6IJBT25qzabKpXgR8EQ5KbEvHV4eBgI=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION</dbScheme>
+          <dbScheme>TAR_COLLECTION_DB</dbScheme>
           <dbUser>TAR_COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>z9VmcYm0EeosJgh7ecGjtjxakPUEm0ioZwmIwngTSXw=:7283Y/pXU3l0n0ni64ln+01tA7XgEfW+/6ILyvA3h1Q=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/TAR_COLLECTION?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>1521</dbPort>
           <dbScheme>XE</dbScheme>
-          <dbUser>CRM_TRG</dbUser>
-          <dbPasswordEncrypted>TYOdwMQJaxom4LHyTI6oyBJeK4Velunnt8AFi9jouLg=:RVkWVWn4TfflN1Xp278fnpd3SDNZjTzGuZeeiA4B3WY=</dbPasswordEncrypted>
-          <connString>jdbc:oracle:thin:@192.168.168.145:1521/XE</connString>
+          <dbUser>TAR_CRM_DB</dbUser>
+          <dbPasswordEncrypted>PCCXm1SzSNlQHJdHUJUPufI/E07hQRIl89TmDmXqh/k=:KBbFP+a2rysvjapLLvYoA9/ywFwZn9aiHQyeiiOBT/0=</dbPasswordEncrypted>
+          <connString>jdbc:oracle:thin:@10.21.1.53:1521/XE</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>192.168.168.201</dbHost>
-          <dbPort>9142</dbPort>
+          <dbHost>localhost</dbHost>
+          <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
-          <IsCustomConnectionStringServerSide>true</IsCustomConnectionStringServerSide>
-          <connString>jdbc:cassandra://192.168.168.201:9142/?consistency=QUORUM&amp;internodesssl=true</connString>
+          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>10.21.1.53</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERING</dbScheme>
+          <dbScheme>TAR_ORDERS_DB</dbScheme>
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>5hzwVQ3UwP0lMOt5MGvUOoBRp9lO58VRURZlwzDkmE8=:sdrDPOZrEJSTeGJWGWIX+WvTEywZPrvtb0jsf9/ogv4=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/TAR_ORDERING?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>192.168.168.145</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>C/4dQW5PsIydeXvwIbr57C63YB7BO3zJxwlanT6XWTs=:Xv/tpjbC6/CHE5YW7Z6j2tXBGKCTdoqpQm5rWjXibZ0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://192.168.168.145:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -353,10 +351,10 @@
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers" dataType="string" mandatory="true">
-              <Value>192.168.168.201:6379</Value>
+              <Value>10.21.2.69:6379</Value>
             </Property>
             <Property name="Password" dataType="password">
-              <Value />
+              <Value>CHUx74fqdqloqJsr4strIfOqtSCX+0jIdDyC0IudR+Y=:occrkFqBc3vDjrwZpK0vO2LaWHqn3TXO9AaECbHv9dY=</Value>
             </Property>
             <Property name="ConnectionTimeout" dataType="integer">
               <Value>10000</Value>

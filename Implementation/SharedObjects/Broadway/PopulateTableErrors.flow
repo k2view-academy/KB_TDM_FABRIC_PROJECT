@@ -8,20 +8,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Task Exec ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TASK_EXE_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get LU Type",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -29,20 +15,6 @@
                                     {
                                         "name": "key",
                                         "const": "LU_TYPE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Source Entity ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
                                         "isDefault": false
                                     }
                                 ],
@@ -78,23 +50,24 @@
                             }
                         },
                         {
-                            "name": "Get Current Date",
+                            "name": "Get Source Entity ID",
                             "actorType": {
-                                "parentType": "Now",
-                                "inputs": [],
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "Logger1",
+                            "name": "Get Current Date",
                             "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TEST1- pop error tables- prepare data!!"
-                                    }
-                                ],
+                                "parentType": "Now",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -110,31 +83,41 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Remove Decimal Point",
+                            "name": "Get Task Execution ID",
+                            "minHeight": 191,
                             "actorType": {
-                                "parentType": "Replace",
+                                "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "search",
-                                        "const": ".0"
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "string",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
-                            "name": "If Target Entity ID is not set, use the source Entity ID",
-                            "minHeight": 260,
+                            "name": "Equals1",
                             "actorType": {
-                                "parentType": "Elvis",
-                                "inputs": [],
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "NO_ID"
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -286,17 +269,21 @@
                             }
                         },
                         {
-                            "name": "Logger2",
+                            "name": "IfElse1",
                             "actorType": {
-                                "parentType": "Logger",
+                                "parentType": "IfElse",
                                 "inputs": [
                                     {
-                                        "name": "message",
-                                        "const": "TEST2- error message: ${msg}"
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
-                                        "name": "msg",
-                                        "schema": {}
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -435,19 +422,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Logger3",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TEST3 - after populating the error tables"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -455,26 +429,6 @@
         }
     ],
     "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Task Exec ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Remove Decimal Point",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Task Exec ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Load Data To Error Table",
-                "name": "task_execution_id"
-            }
-        },
         {
             "leftPort": {
                 "actor": "Get LU Type",
@@ -487,22 +441,12 @@
         },
         {
             "leftPort": {
-                "actor": "Get Source Entity ID",
+                "actor": "Get LU Type",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Load Data To Error Table",
-                "name": "entity_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "If Target Entity ID is not set, use the source Entity ID",
-                "name": "b"
+                "actor": "Get Task Execution ID",
+                "name": "luType"
             }
         },
         {
@@ -517,12 +461,42 @@
         },
         {
             "leftPort": {
+                "actor": "Get IID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IfElse1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Target Entity ID",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "If Target Entity ID is not set, use the source Entity ID",
+                "actor": "Equals1",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Target Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IfElse1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "entity_id"
             }
         },
         {
@@ -537,12 +511,22 @@
         },
         {
             "leftPort": {
-                "actor": "If Target Entity ID is not set, use the source Entity ID",
-                "name": "result"
+                "actor": "Get Task Execution ID",
+                "name": "variableValue"
             },
             "rightPort": {
                 "actor": "Load Data To Error Table",
-                "name": "target_entity_id"
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Equals1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IfElse1",
+                "name": "test"
             }
         },
         {
@@ -610,16 +594,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get the Error Fields",
-                "name": "message"
-            },
-            "rightPort": {
-                "actor": "Logger2",
-                "name": "msg"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Format the current date to load it ",
                 "name": "string"
             },
@@ -636,6 +610,16 @@
             "rightPort": {
                 "actor": "Load Data To Error Table",
                 "name": "actor_parameters"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IfElse1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "target_entity_id"
             }
         },
         {

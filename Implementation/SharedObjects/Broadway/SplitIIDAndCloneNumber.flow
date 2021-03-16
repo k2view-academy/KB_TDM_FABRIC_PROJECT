@@ -233,40 +233,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Logger1",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "After Split:\r\nUID: ${UID}, instanceID: ${instanceID}\r\nenvName: ${envName}, cloneNo: ${cloneNo}\r\n"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "UID",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "instanceID",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "envName",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "cloneNo",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -316,16 +282,6 @@
         },
         {
             "leftPort": {
-                "actor": "JavaScript2",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "UID"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "JavaScript3",
                 "name": "result"
             },
@@ -336,45 +292,12 @@
         },
         {
             "leftPort": {
-                "actor": "Split UID",
-                "name": "instanceID"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "instanceID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split UID",
-                "name": "envName"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "envName"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "JsonParser1",
                 "name": "object"
             },
             "rightPort": {
                 "actor": "Const1",
                 "name": "value"
-            },
-            "path": [
-                "clone_no"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "cloneNo"
             },
             "path": [
                 "clone_no"

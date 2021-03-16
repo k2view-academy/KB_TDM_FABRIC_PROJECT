@@ -8,20 +8,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Source Environment",
-                            "minHeight": 114,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get Target Entity ID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -30,19 +16,6 @@
                                         "name": "key",
                                         "const": "TARGET_ENTITY_ID",
                                         "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Task Execution Id",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
                                 "outputs": []
@@ -89,7 +62,7 @@
                     "actors": [
                         {
                             "name": "Build Root Column session variable",
-                            "minHeight": 495,
+                            "minHeight": 350,
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -104,14 +77,6 @@
                                         }
                                     }
                                 ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Logger2",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -132,6 +97,52 @@
                                     }
                                 ],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Task Execution ID",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_TASK_EXE_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "variableValue",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Source Environment",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "variableValue",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -432,71 +443,9 @@
                     ]
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Commit",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "DbCommand1",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "commit;"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TDM_SEQ_MAPPING - Number of loaded Records: ${cnt}"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "cnt",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
         }
     ],
     "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Source Environment",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "DbLoad1",
-                "name": "source_env"
-            }
-        },
         {
             "leftPort": {
                 "actor": "Get Target Entity ID",
@@ -505,16 +454,6 @@
             "rightPort": {
                 "actor": "DbLoad1",
                 "name": "entity_target_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Task Execution Id",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Data From Cassandra Table",
-                "name": "taskExeId"
             }
         },
         {
@@ -559,6 +498,26 @@
         },
         {
             "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Task Execution ID",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Source Environment",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Build Root Column session variable",
                 "name": "string"
             },
@@ -575,6 +534,26 @@
             "rightPort": {
                 "actor": "Get Root Table Name",
                 "name": "key"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Execution ID",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Get Data From Cassandra Table",
+                "name": "taskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Environment",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "DbLoad1",
+                "name": "source_env"
             }
         },
         {
@@ -646,16 +625,6 @@
             "rightPort": {
                 "actor": "DbLoad1",
                 "name": "is_instance_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Count1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "cnt"
             }
         }
     ]

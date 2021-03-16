@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
-  <DataSource>192.168.168.145</DataSource>
+  <DataSource>10.21.1.53</DataSource>
   <PortNum>1521</PortNum>
   <DataBase>XE</DataBase>
-  <UserId>CRM</UserId>
-  <Password>yEtuy357IWmGjHjGAFAtDA6VIuXdgPDQSGd0AS7k8s4=:s3SODE+EcDm5ctuxYJ1mkWjd4q1QsPp6Xzg9sF4t39w=</Password>
-  <ConnectionStringServerSide>jdbc:oracle:thin:@192.168.168.145:1521/XE</ConnectionStringServerSide>
+  <UserId>CRM_DB</UserId>
+  <Password>3VUHcKl/BlqKJ+kPgsdUdEPCq66XNGM8g7ycL0xxiRo=:ONKz4ghpaSWahGOaalPBLrx2RxywjZj6HKEjf3SU7Z4=</Password>
+  <ConnectionStringServerSide>jdbc:oracle:thin:@10.21.1.53:1521/XE</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

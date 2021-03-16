@@ -15,12 +15,6 @@
                                     {
                                         "name": "flowName",
                                         "const": "createSequenceFlows"
-                                    },
-                                    {
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -45,12 +39,6 @@
                                     {
                                         "name": "flowName",
                                         "const": "createSequenceActors"
-                                    },
-                                    {
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -61,26 +49,5 @@
             ]
         }
     ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "Create Flows of Sequences",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "Create Actors of Sequences",
-                "name": "luType"
-            }
-        }
-    ]
+    "connections": []
 }
