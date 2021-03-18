@@ -139,6 +139,20 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Get Key Space Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_KEYSPACE_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -221,6 +235,32 @@
                     "isTransactional": false,
                     "actors": [
                         {
+                            "name": "Error Handler Of Record Count",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "DbFetchField1",
                             "actorType": {
                                 "parentType": "DbFetchField",
@@ -231,7 +271,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select count(*) as recordsCount from k2view_tdm.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                        "const": "select count(*) as recordsCount from ${@refKeySpace}.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
                                     },
                                     {
                                         "name": "refTableName",
@@ -247,6 +287,12 @@
                                     },
                                     {
                                         "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refKeySpace",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -291,6 +337,32 @@
                             }
                         },
                         {
+                            "name": "Error Handler Of Get Data From Cassandra",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Get Data From Cassandra",
                             "actorType": {
                                 "parentType": "DbCommand",
@@ -301,7 +373,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from k2view_tdm.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                        "const": "select * from ${@refKeySpace}.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
                                     },
                                     {
                                         "name": "refTableName",
@@ -317,6 +389,12 @@
                                     },
                                     {
                                         "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refKeySpace",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -410,7 +488,7 @@
                     "hasElse": true,
                     "actors": [
                         {
-                            "name": "ErrorHandler1",
+                            "name": "Error Handler For Updating TDMDB To Failure",
                             "onError": "result",
                             "actorType": {
                                 "parentType": "ErrorHandler",
@@ -621,6 +699,32 @@
                             }
                         },
                         {
+                            "name": "Error Handler Of Updating number of records",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Update TDMDB table during loop",
                             "minHeight": 260,
                             "actorType": {
@@ -674,6 +778,32 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Error Handler Of Updating Final Status",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Update TDMDB table for Reference Table",
                             "actorType": {
@@ -854,6 +984,26 @@
             "rightPort": {
                 "actor": "Delete Target Table",
                 "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Key Space Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "refKeySpace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Key Space Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Data From Cassandra",
+                "name": "refKeySpace"
             }
         },
         {

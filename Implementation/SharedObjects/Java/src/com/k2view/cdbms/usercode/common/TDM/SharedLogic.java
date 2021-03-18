@@ -91,8 +91,13 @@ public class SharedLogic {
 			"<environment>_<entity_id>_<task_name>_<timestamp>")
 	@out(name = "rs", type = Object[].class, desc = "")
 	public static Object[] fnValidateNdGetInstance() throws Exception {
-
 		String origUid = getInstanceID();
+		
+		// TEST- fix- get out the clone id before the split. For example: SRC_66#params#{"clone_id"=1}|//
+		Object[] splitCloneId = origUid.split("#params#");
+		origUid = "" + splitCloneId[0];
+		
+		// end of test
 		Object[] splitIID = fnSplitUID(origUid);
 		
 		return new Object[]{origUid, splitIID[1], splitIID[0], splitIID[2], splitIID[3]};
@@ -1020,7 +1025,7 @@ public class SharedLogic {
 			if(!(statusData.isEmpty())){
 				statusData.forEach((key, value) -> {
 					try {
-						//log.info("setting "+key+"='"+value+ "'");
+						log.info("TESTTT- setting "+key+"='"+value+ "'");
 						//DBExecute(DB_FABRIC, "set "+key+"='"+value+ "'", null);
 						fabric().execute( "set "+key+"='"+value+ "'");
 					} catch (SQLException e) {

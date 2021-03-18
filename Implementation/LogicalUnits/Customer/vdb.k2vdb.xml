@@ -129,7 +129,7 @@
     </TableProperties>
     <TableProperties name="TDM_LU_TYPE_REL_TAR_EID">
       <Populations>
-        <Population name="popTDM_LU_TYPE_REL_TAR_EID.flow" order="2" disabled="true" populationType="Flow" />
+        <Population name="pop_TDM_LU_TYPE_REL_TAR_EID" order="2" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
   </TablesProperties>
@@ -159,11 +159,7 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="TDM_LU_TYPE_REL_TAR_EID" populationObjectName="popTDM_LU_TYPE_REL_TAR_EID.flow" column="CUSTOMER_ID" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="TAR_CUSTOMER" populationObjectName="populationTarCustomer.flow" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="TAR_CUSTOMER" populationObjectName="populationTarCustomer.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
@@ -171,15 +167,19 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TDM_LU_TYPE_REL_TAR_EID" populationObjectName="pop_TDM_LU_TYPE_REL_TAR_EID" column="dummy_input" columnId="fi_9.0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CASES" column="CASE_ID" columnId="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
-      <To tableType="TableObject" table="CASE_NOTE" populationObjectName="query_main_CASE_NOTE" column="CASE_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="CASE_NOTE" populationObjectName="query_main_CASE_NOTE" column="case_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
-      <To tableType="TableObject" table="CASES" populationObjectName="query_main_CASES" column="ACTIVITY_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="CASES" populationObjectName="query_main_CASES" column="activity_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CONTRACT" column="CONTRACT_ID" columnId="tblCol_1649524d4e5949648d3c604eeb51c7b1" />
@@ -187,18 +187,18 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="CONTRACT" populationObjectName="query_CONTRACT" column="CUSTOMER_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="CONTRACT" populationObjectName="query_CONTRACT" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="ACTIVITY" populationObjectName="query_main_ACTIVITY" column="CUSTOMER_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="ACTIVITY" populationObjectName="query_main_ACTIVITY" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="ADDRESS" populationObjectName="query_main_ADDRESS" column="CUSTOMER_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="ADDRESS" populationObjectName="query_main_ADDRESS" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <From tableType="TableObject" table="TAR_CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
       <To tableType="TableObject" table="tar_collection" populationObjectName="pop_tar_collection" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
@@ -206,16 +206,16 @@
       <To tableType="TableObject" table="TAR_ORDERS" populationObjectName="pop_tar_orders" column="contract_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="TAR_CONTRACT" populationObjectName="pop_tar_contract" column="CUSTOMER_ID" columnId="queryCol_0" />
+      <From tableType="TableObject" table="TAR_CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="TAR_CONTRACT" populationObjectName="pop_tar_contract" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="TAR_CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="TAR_ACTIVITY" populationObjectName="pop_tar_activity" column="CUSTOMER_ID" columnId="queryCol_0" />
+      <From tableType="TableObject" table="TAR_CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="TAR_ACTIVITY" populationObjectName="pop_tar_activity" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="TAR_ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
-      <To tableType="TableObject" table="TAR_CASES" populationObjectName="pop_tar_cases" column="ACTIVITY_ID" columnId="queryCol_0" />
+      <To tableType="TableObject" table="TAR_CASES" populationObjectName="pop_tar_cases" column="activity_id" columnId="queryCol_1" />
     </Relation>
   </DatabaseRelations>
   <PreVCsSqlScript />
@@ -225,8 +225,8 @@
   <DiagramGraph>
     <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Group name="TDM Tables" pos="345 17.4544373" size="265 759.0912" wasexpanded="false" expanded="true">
-        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="349 36.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="TDM Tables" pos="345 33.4544334" size="265 743.0912" wasexpanded="false" expanded="true">
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="349 52.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TDM_LU_TYPE_RELATION_EID" pos="349 236.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="INSTANCE_TABLE_COUNT" pos="349 436.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="LU_PARAMS" pos="349 636.5456" size="257 136" listGroupSize="250 100" viewType="Table" />

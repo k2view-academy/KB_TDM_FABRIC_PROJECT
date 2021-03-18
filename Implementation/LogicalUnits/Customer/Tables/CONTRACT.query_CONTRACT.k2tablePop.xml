@@ -10,27 +10,28 @@
   <SimpleObject>false</SimpleObject>
   <IidFinderProp />
   <InputArguments>
-    <Arg name="CUSTOMER_ID" id="queryCol_0" dataType="Integer" index="0" />
-    <Arg name="CONTRACT_ID" id="queryCol_1" dataType="Integer" index="1" />
-    <Arg name="CONTRACT_REF_ID" id="queryCol_2" dataType="Integer" index="2" />
-    <Arg name="ASSOCIATED_LINE" id="queryCol_3" dataType="Text" index="3" />
-    <Arg name="CONTRACT_DESCRIPTION" id="queryCol_4" dataType="Text" index="4" />
-    <Arg name="FROM_DATE" id="queryCol_5" dataType="Text" index="5" />
-    <Arg name="TO_DATE" id="queryCol_6" dataType="Text" index="6" />
+    <Arg name="customer_id" id="queryCol_0" dataType="Integer" index="0" />
+    <Arg name="contract_id" id="queryCol_1" dataType="Integer" index="1" />
+    <Arg name="contract_ref_id" id="queryCol_2" dataType="Integer" index="2" />
+    <Arg name="associated_line" id="queryCol_3" dataType="Text" index="3" />
+    <Arg name="contract_description" id="queryCol_4" dataType="Text" index="4" />
+    <Arg name="from_date" id="queryCol_5" dataType="Text" index="5" />
+    <Arg name="to_date" id="queryCol_6" dataType="Text" index="6" />
   </InputArguments>
   <ItemsList>
     <Item xsi:type="DBQueryDataSave" id="query_query_CONTRACT" name="query_CONTRACT" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="CRM_DB">
       <OutputsList>
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="CUSTOMER_ID" dataType="Integer" index="0" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="CONTRACT_ID" dataType="Integer" index="1" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_2" name="CONTRACT_REF_ID" dataType="Integer" index="2" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_3" name="ASSOCIATED_LINE" dataType="Text" index="3" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_4" name="CONTRACT_DESCRIPTION" dataType="Text" index="4" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_5" name="FROM_DATE" dataType="Text" index="5" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_6" name="TO_DATE" dataType="Text" index="6" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_7" name="ASSOCIATED_LINE_FMT" dataType="Text" index="7" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="customer_id" dataType="Integer" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="contract_id" dataType="Integer" index="1" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_2" name="contract_ref_id" dataType="Integer" index="2" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_3" name="associated_line" dataType="Text" index="3" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_4" name="contract_description" dataType="Text" index="4" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_5" name="from_date" dataType="Text" index="5" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_6" name="to_date" dataType="Text" index="6" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_7" name="associated_line_fmt" dataType="Text" index="7" />
       </OutputsList>
-      <SQL><![CDATA[SELECT * FROM CONTRACT]]></SQL>
+      <SQL><![CDATA[Select *
+From public.contract]]></SQL>
     </Item>
     <Item xsi:type="FunctionDiagramItemDataSave" id="f_59" name="k2_regexp_replace" nodeOrder="1" module="Function" mapObjectModule="Function" fileName="k2_regexp_replace.k2function.xml">
       <InputsList>
@@ -57,24 +58,24 @@
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="CONTRACT.query_CONTRACT.k2tablePop.xml" lastPartID="163">
-      <TableNode partID="0" name="CONTRACT" pos="569.6244 5.70834351" width="306.699829" />
-      <DBQueryNode partID="10" name="CRM_DB" pos="10 0.744796753" size="389.143738 156.583313" isRoot="true">
-        <DBQuery>{"Name":"query_CONTRACT","ID":"query_query_CONTRACT","ConnName":"CRM_DB","SQL":"SELECT * FROM CONTRACT","ColumnsList":[{"ID":"queryCol_0","Name":"CUSTOMER_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"CONTRACT_ID","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"CONTRACT_REF_ID","DataType":"Integer","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"ASSOCIATED_LINE","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"CONTRACT_DESCRIPTION","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"FROM_DATE","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"TO_DATE","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"ASSOCIATED_LINE_FMT","DataType":"Text","Index":7,"IsInputArgument":false}]}</DBQuery>
+    <Graph name="CONTRACT.query_CONTRACT.k2tablePop.xml" lastPartID="186">
+      <TableNode partID="0" name="CONTRACT" pos="570.261169 5.70834351" width="306.0631" />
+      <DBQueryNode partID="10" name="CRM_DB" pos="10 0.744796753" size="395.131256 156.583313" isRoot="true">
+        <DBQuery>{"Name":"query_CONTRACT","ID":"query_query_CONTRACT","ConnName":"CRM_DB","SQL":"Select *\r\nFrom public.contract","ColumnsList":[{"ID":"queryCol_0","Name":"customer_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"contract_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"contract_ref_id","DataType":"Integer","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"associated_line","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"contract_description","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"from_date","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"to_date","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"associated_line_fmt","DataType":"Text","Index":7,"IsInputArgument":false}]}</DBQuery>
       </DBQueryNode>
-      <FunctionMapNode id="0" L0="1" L1="2" L2="3" R0="4" partID="59" topLabel="k2_regexp_replace (59)" pos="298.4595 279.617157" size="157.9672 61.309906" isRoot="false">
+      <FunctionMapNode id="0" L0="1" L1="2" L2="3" R0="4" partID="59" topLabel="k2_regexp_replace (59)" pos="298.3253 279.617157" size="158.235687 61.309906" isRoot="false">
         <KFunction>{"Name":"k2_regexp_replace","ID":"f_59","Category":"String","FunctionLevel":1,"FunctionType2":0,"ReturnType":"String","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"Perform a regular expression search and replace","Language":1,"FunctionBody":"","IsRootFunction":false,"inputParams":[{"Name":"pattern","ID":"fi_59.0","Index":0,"DataType":"String","MapDefaultValue":"[^0-9.]"},{"Name":"replacement","ID":"fi_59.1","Index":1,"DataType":"String","MapDefaultValue":""},{"Name":"subject","ID":"fi_59.2","Index":2,"DataType":"String"}],"outputParams":[{"Name":"output","ID":"fo_59.0","Index":0,"DataType":"String","Comment":""}],"HideMethodInUi":false}</KFunction>
       </FunctionMapNode>
-      <Link partID="18" from="5" to="6" pointsArr="399.143738 36.78125 409.143738 36.78125 559.6244 36.7448 569.6244 36.7448" fromNodePartID="10" fromNodeColumnName="CUSTOMER_ID" toNodePartID="0" toNodeColumnName="CUSTOMER_ID" />
-      <Link partID="19" from="7" to="8" pointsArr="399.143738 48.8541641 409.143738 48.8541641 559.6244 48.81772 569.6244 48.81772" fromNodePartID="10" fromNodeColumnName="CONTRACT_ID" toNodePartID="0" toNodeColumnName="CONTRACT_ID" />
-      <Link partID="20" from="9" to="10" pointsArr="399.143738 60.92708 409.143738 60.92708 559.6244 60.8906326 569.6244 60.8906326" fromNodePartID="10" fromNodeColumnName="CONTRACT_REF_ID" toNodePartID="0" toNodeColumnName="CONTRACT_REF_ID" />
-      <Link partID="21" from="11" to="12" pointsArr="399.143738 73 409.143738 73 559.6244 72.96355 569.6244 72.96355" fromNodePartID="10" fromNodeColumnName="ASSOCIATED_LINE" toNodePartID="0" toNodeColumnName="ASSOCIATED_LINE" />
-      <Link partID="22" from="13" to="14" pointsArr="399.143738 85.07291 409.143738 85.07291 559.6244 85.03646 569.6244 85.03646" fromNodePartID="10" fromNodeColumnName="CONTRACT_DESCRIPTION" toNodePartID="0" toNodeColumnName="CONTRACT_DESCRIPTION" />
-      <Link partID="23" from="15" to="16" pointsArr="399.143738 97.14583 409.143738 97.14583 559.6244 97.109375 569.6244 97.109375" fromNodePartID="10" fromNodeColumnName="FROM_DATE" toNodePartID="0" toNodeColumnName="FROM_DATE" />
-      <Link partID="24" from="17" to="18" pointsArr="399.143738 109.21875 409.143738 109.21875 559.6244 109.1823 569.6244 109.1823" fromNodePartID="10" fromNodeColumnName="TO_DATE" toNodePartID="0" toNodeColumnName="TO_DATE" />
-      <Link partID="65" from="4" to="19" pointsArr="456.4267 312.8177 466.4267 312.8177 559.6244 121.255219 569.6244 121.255219" fromNodePartID="59" fromNodeColumnName="output" toNodePartID="0" toNodeColumnName="MyMSISDN" />
-      <Link partID="66" from="11" to="3" pointsArr="399.143738 73 409.143738 73 288.4595 324.8906 298.4595 324.8906" fromNodePartID="10" fromNodeColumnName="ASSOCIATED_LINE" toNodePartID="59" toNodeColumnName="subject" />
-      <Link partID="140" from="20" to="21" pointsArr="399.143738 121.291672 409.143738 121.291672 559.6244 133.32814 569.6244 133.32814" fromNodePartID="10" fromNodeColumnName="ASSOCIATED_LINE_FMT" toNodePartID="0" toNodeColumnName="ASSOCIATED_LINE_FMT" />
+      <Link partID="18" from="5" to="6" pointsArr="405.131256 36.78125 415.131256 36.78125 560.261169 36.7448 570.261169 36.7448" fromNodePartID="10" fromNodeColumnName="customer_id" toNodePartID="0" toNodeColumnName="CUSTOMER_ID" />
+      <Link partID="19" from="7" to="8" pointsArr="405.131256 48.8541641 415.131256 48.8541641 560.261169 48.81772 570.261169 48.81772" fromNodePartID="10" fromNodeColumnName="contract_id" toNodePartID="0" toNodeColumnName="CONTRACT_ID" />
+      <Link partID="20" from="9" to="10" pointsArr="405.131256 60.92708 415.131256 60.92708 560.261169 60.8906326 570.261169 60.8906326" fromNodePartID="10" fromNodeColumnName="contract_ref_id" toNodePartID="0" toNodeColumnName="CONTRACT_REF_ID" />
+      <Link partID="21" from="11" to="12" pointsArr="405.131256 73 415.131256 73 560.261169 72.96355 570.261169 72.96355" fromNodePartID="10" fromNodeColumnName="associated_line" toNodePartID="0" toNodeColumnName="ASSOCIATED_LINE" />
+      <Link partID="22" from="13" to="14" pointsArr="405.131256 85.07291 415.131256 85.07291 560.261169 85.03646 570.261169 85.03646" fromNodePartID="10" fromNodeColumnName="contract_description" toNodePartID="0" toNodeColumnName="CONTRACT_DESCRIPTION" />
+      <Link partID="23" from="15" to="16" pointsArr="405.131256 97.14583 415.131256 97.14583 560.261169 97.109375 570.261169 97.109375" fromNodePartID="10" fromNodeColumnName="from_date" toNodePartID="0" toNodeColumnName="FROM_DATE" />
+      <Link partID="24" from="17" to="18" pointsArr="405.131256 109.21875 415.131256 109.21875 560.261169 109.1823 570.261169 109.1823" fromNodePartID="10" fromNodeColumnName="to_date" toNodePartID="0" toNodeColumnName="TO_DATE" />
+      <Link partID="65" from="4" to="19" pointsArr="456.560974 312.8177 466.560974 312.8177 560.261169 121.255219 570.261169 121.255219" fromNodePartID="59" fromNodeColumnName="output" toNodePartID="0" toNodeColumnName="MyMSISDN" />
+      <Link partID="66" from="11" to="3" pointsArr="405.131256 73 415.131256 73 288.3253 324.8906 298.3253 324.8906" fromNodePartID="10" fromNodeColumnName="associated_line" toNodePartID="59" toNodeColumnName="subject" />
+      <Link partID="140" from="20" to="21" pointsArr="405.131256 121.291672 415.131256 121.291672 560.261169 133.32814 570.261169 133.32814" fromNodePartID="10" fromNodeColumnName="associated_line_fmt" toNodePartID="0" toNodeColumnName="ASSOCIATED_LINE_FMT" />
     </Graph>
   </DiagramGraph>
 </TablePopulationObject>

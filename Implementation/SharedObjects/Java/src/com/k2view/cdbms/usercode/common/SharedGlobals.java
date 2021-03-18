@@ -34,7 +34,7 @@ public class SharedGlobals {
 
 	public static String TDM_TASK_EXE_ID = "0";
 
-	public static String MASK_FLAG = "0";
+	public static String MASK_FLAG = "1";
 	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
 	public static String TDM_TAR_ENV_NAME = "TAR";
 	public static String TDM_SYNTHETIC_DATA = "false";

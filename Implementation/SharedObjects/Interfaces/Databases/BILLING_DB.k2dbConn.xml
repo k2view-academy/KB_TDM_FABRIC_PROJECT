@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="BILLING_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
-  <DataSource>10.21.1.53</DataSource>
+  <DataSource>localhost</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>BILLING_DB</DataBase>
   <UserId>BILLING_USER</UserId>
-  <Password>c/27LD/MJ0LELUekcRRxCfx8dFFzOWi2AwfRCR1gXjQ=:xpbcsGRsc7UNNea2qkLPduKAdpo/4zPCI8SdKe8xPpc=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://10.21.1.53:5432/BILLING_DB?stringtype=unspecified</ConnectionStringServerSide>
+  <Password>U9odZDUkTbwq5ga7h/IHkyclKHI8jKNTDIuQIdVuqcU=:RiGAraMvDkC5qH1lQmdgY6OqPR8FnxXlV+/7MshPih8=</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

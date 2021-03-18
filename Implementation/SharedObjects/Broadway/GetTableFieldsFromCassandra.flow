@@ -3,34 +3,19 @@
         {
             "stages": [
                 {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
+                    "name": "Get the Reference Key Space",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "StringFormat1",
+                            "name": "Get Key Space Name",
                             "actorType": {
-                                "parentType": "StringFormat",
+                                "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
-                                        "name": "format",
-                                        "const": "select * from k2view_tdm.${tableName} limit 1"
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "name": "key",
+                                        "const": "REF_KEYSPACE_NAME",
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -43,7 +28,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Get A record from Reference Table",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -59,7 +44,19 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": null
+                                        "const": "select * from ${@refKeySpace}.${@tableName} limit 1"
+                                    },
+                                    {
+                                        "name": "refKeySpace",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -123,7 +120,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 3",
+                    "name": "Get the list of table's fields",
                     "dependsOnList": [],
                     "isLast": 1,
                     "actors": [
@@ -173,12 +170,12 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "StringFormat1",
-                "name": "string"
+                "actor": "Get Key Space Name",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "DbCommand1",
-                "name": "sql"
+                "name": "refKeySpace"
             }
         },
         {
@@ -195,21 +192,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "StringFormat1",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "cassandraInterface"
             },
             "rightPort": {
                 "actor": "DbCommand1",
                 "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "tableName"
             }
         },
         {

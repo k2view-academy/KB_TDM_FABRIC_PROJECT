@@ -3,11 +3,11 @@
   <Name>TDM_LU_TYPE_REL_TAR_EID</Name>
   <ID>tbl_TDM_LU_TYPE_REL_TAR_EID</ID>
   <Columns>
-    <Column name="target_env" id="tblCol_aa2765289815492b9912119b9822abb6" index="0" datatype="Text" mandatory="true" />
-    <Column name="lu_type_1" id="tblCol_a47d5ac92aeb4a9092901db24e3315a5" index="1" datatype="Text" mandatory="true" />
-    <Column name="lu_type_2" id="tblCol_f78caadcd5674eb4a45d7bb801f3a59e" index="2" datatype="Text" mandatory="true" />
-    <Column name="lu_type1_eid" id="tblCol_14a022ffef5a4bf58078c76905d88e7d" index="3" datatype="Text" mandatory="true" />
-    <Column name="lu_type2_eid" id="tblCol_2c468e5038fb4eb2a018987c992aaa4e" index="4" datatype="Text" mandatory="true" />
+    <Column name="target_env" id="tblCol_aa2765289815492b9912119b9822abb6" index="0" datatype="Text" />
+    <Column name="lu_type_1" id="tblCol_a47d5ac92aeb4a9092901db24e3315a5" index="1" datatype="Text" />
+    <Column name="lu_type_2" id="tblCol_f78caadcd5674eb4a45d7bb801f3a59e" index="2" datatype="Text" />
+    <Column name="lu_type1_eid" id="tblCol_14a022ffef5a4bf58078c76905d88e7d" index="3" datatype="Text" />
+    <Column name="lu_type2_eid" id="tblCol_2c468e5038fb4eb2a018987c992aaa4e" index="4" datatype="Text" />
     <Column name="creation_date" id="tblCol_5b0b23b0398942cf981ac84992c97f75" index="5" datatype="Text" />
   </Columns>
   <IndexesList>

@@ -123,12 +123,44 @@
                                 ],
                                 "outputs": []
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Environment To Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
                             "name": "Get Start Time",
                             "actorType": {
                                 "parentType": "Now",
                                 "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Source Environment",
+                            "minHeight": 139,
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -272,6 +304,26 @@
                                     {
                                         "name": "key",
                                         "const": "IID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate Target Entity ID",
+                            "remark": "The Target Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
                                         "isDefault": false
                                     },
                                     {
@@ -600,57 +652,6 @@
         {
             "stages": [
                 {
-                    "name": "Set Environment To Source",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Set Source Environment",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Masking Indicator",
-                            "minHeight": 282,
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "enable_masking",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Get Instance From Fabric",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -730,6 +731,25 @@
                             "actorType": {
                                 "parentType": "Now",
                                 "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Indicator",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -871,16 +891,6 @@
             "rightPort": {
                 "actor": "Set Clone No",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
-                "name": "UID"
-            },
-            "rightPort": {
-                "actor": "Get Entity",
-                "name": "iid"
             }
         },
         {
@@ -1056,6 +1066,16 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "Set Source Environment",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -1146,6 +1166,16 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate Target Entity ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "globals"
             },
             "rightPort": {
@@ -1196,21 +1226,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "Set Source Environment",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
                 "actor": "Get Entity",
                 "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Get Entity",
+                "name": "iid"
             }
         },
         {

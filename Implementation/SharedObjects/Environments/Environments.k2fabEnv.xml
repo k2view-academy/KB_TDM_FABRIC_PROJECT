@@ -5,37 +5,45 @@
     <Environment enabled="true" name="SRC">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.1.53:5432/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>Z4vNIG2vZYpbvk7YshA94BAOFvXCqZOzcSQTSZQz1PM=:zz9GHja0iUOmP/dbVafciM4jTY10Fm1+trk0MhvYMGM=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.1.53:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
-          <dbPort>1521</dbPort>
-          <dbScheme>XE</dbScheme>
-          <dbUser>CRM_DB</dbUser>
-          <dbPasswordEncrypted>pNSbztpzb9mHR/PbjKEU9dQJXH/Qww8tyY86YnF/9Yw=:d6EMrw2mbIu1+Pp0zE7UVoecO2YpInvQ+LuSac459Pc=</dbPasswordEncrypted>
-          <connString>jdbc:oracle:thin:@10.21.1.53:1521/XE</connString>
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <dbUser>CRM_USER</dbUser>
+          <dbPasswordEncrypted>oPyNv420dIR79vmUJhrqr6YVXo2XjSGLd31R9jlk9Pw=:CZJ6OLSxnElR0RgoEcgiNh1Ov20l+khXVkj4goKOBTY=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>Oracle</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_PG" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -48,12 +56,12 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>ORDERS_DB</dbScheme>
+          <dbScheme>ORDERING_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>6sZR40JP5KtkTEPfYQgMrGX+XtTRin80uAQ3QT4C8AI=:Hp8csxAT7jTAenOK1w1avPQLO3Jf89yqUn2OwE4V/U0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.1.53:5432/ORDERS_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -155,7 +163,7 @@
               <Value>10.21.2.69:6379</Value>
             </Property>
             <Property name="Password" dataType="password">
-              <Value>oJtFmw1WAJdEsTEumZF0hGxWNePNx7nWZOjg8EoZ3VI=:L4VSNeRvms5mWeVshba/iKvTwrORGn4TSUpyjvWZ//c=</Value>
+              <Value>tXnZP+vtLXw+YU7kO+ym28Q8+c65UQphxijezHZvTXY=:3+8/2ap3EWhqn+PKWwnn1HdQ3DbjlH8uACjaP0p8jjI=</Value>
             </Property>
             <Property name="ConnectionTimeout" dataType="integer">
               <Value>10000</Value>
@@ -204,37 +212,45 @@
     <Environment enabled="true" name="TAR">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
           <dbPasswordEncrypted>cgImnRiQHBvlj8HQApLO+0W108HCSn17bEfrJuwgsLo=:MBgEHUBAgSyZ6IJBT25qzabKpXgR8EQ5KbEvHV4eBgI=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>TAR_COLLECTION_DB</dbScheme>
+          <dbScheme>TAR_COLLECTION</dbScheme>
           <dbUser>TAR_COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>z9VmcYm0EeosJgh7ecGjtjxakPUEm0ioZwmIwngTSXw=:7283Y/pXU3l0n0ni64ln+01tA7XgEfW+/6ILyvA3h1Q=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/TAR_COLLECTION?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
-          <dbPort>1521</dbPort>
-          <dbScheme>XE</dbScheme>
-          <dbUser>TAR_CRM_DB</dbUser>
-          <dbPasswordEncrypted>PCCXm1SzSNlQHJdHUJUPufI/E07hQRIl89TmDmXqh/k=:KBbFP+a2rysvjapLLvYoA9/ywFwZn9aiHQyeiiOBT/0=</dbPasswordEncrypted>
-          <connString>jdbc:oracle:thin:@10.21.1.53:1521/XE</connString>
+          <dbHost>localhost</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>ciTFwNYxZWZfZOZdw0PliE9M7NM9ymCJsvx/jm8Dg28=:NB/wCHq7Ylp4Gi47idwmGR9yl0BPruDLizv36dQnc4Q=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>Oracle</JdbcDriverName>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_PG" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -247,12 +263,12 @@
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>10.21.1.53</dbHost>
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>TAR_ORDERS_DB</dbScheme>
+          <dbScheme>TAR_ORDERING</dbScheme>
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>5hzwVQ3UwP0lMOt5MGvUOoBRp9lO58VRURZlwzDkmE8=:sdrDPOZrEJSTeGJWGWIX+WvTEywZPrvtb0jsf9/ogv4=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.1.53:5432/TAR_ORDERS_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5432/TAR_ORDERING?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -354,7 +370,7 @@
               <Value>10.21.2.69:6379</Value>
             </Property>
             <Property name="Password" dataType="password">
-              <Value>CHUx74fqdqloqJsr4strIfOqtSCX+0jIdDyC0IudR+Y=:occrkFqBc3vDjrwZpK0vO2LaWHqn3TXO9AaECbHv9dY=</Value>
+              <Value>zWUUoUzrvd2Efl1cNHQg9gtxRxhw+62JtCXH2CWk0kc=:lzxfoN2U2AGp+oS7dGJ1y676OYhqLUhokZ2DayEpqYM=</Value>
             </Property>
             <Property name="ConnectionTimeout" dataType="integer">
               <Value>10000</Value>

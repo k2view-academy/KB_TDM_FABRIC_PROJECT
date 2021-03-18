@@ -23,7 +23,8 @@
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_2" name="last_update" dataType="Text" index="2" />
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_3" name="collection_status" dataType="Text" index="3" />
       </OutputsList>
-      <SQL><![CDATA[SELECT * FROM public.collection]]></SQL>
+      <SQL><![CDATA[Select *
+From public.collection]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -34,15 +35,15 @@
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="collection.popCollection.k2tablePop.xml" lastPartID="15">
+    <Graph name="collection.popCollection.k2tablePop.xml" lastPartID="25">
       <TableNode partID="0" name="collection" pos="404 30" width="253" />
-      <DBQueryNode partID="7" name="COLLECTION_DB" pos="16 28.50911" size="253 108.291672" isRoot="true">
-        <DBQuery>{"Name":"query_public_collection","ID":"query_query_public_collection","ConnName":"COLLECTION_DB","SQL":"SELECT * FROM public.collection","ColumnsList":[{"ID":"queryCol_0","Name":"customer_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"collection_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"last_update","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"collection_status","DataType":"Text","Index":3,"IsInputArgument":true}]}</DBQuery>
+      <DBQueryNode partID="7" name="COLLECTION_DB" pos="16 28.50911" size="253 108.291656" isRoot="true">
+        <DBQuery>{"Name":"query_public_collection","ID":"query_query_public_collection","ConnName":"COLLECTION_DB","SQL":"Select *\r\nFrom public.collection","ColumnsList":[{"ID":"queryCol_0","Name":"customer_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"collection_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"last_update","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"collection_status","DataType":"Text","Index":3,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
-      <Link partID="12" from="0" to="1" pointsArr="269 64.54556 279 64.54556 394 61.0364532 404 61.0364532" fromNodePartID="7" fromNodeColumnName="customer_id" toNodePartID="0" toNodeColumnName="customer_id" />
-      <Link partID="13" from="2" to="3" pointsArr="269 76.6184845 279 76.6184845 394 73.109375 404 73.109375" fromNodePartID="7" fromNodeColumnName="collection_id" toNodePartID="0" toNodeColumnName="collection_id" />
-      <Link partID="14" from="4" to="5" pointsArr="269 88.69139 279 88.69139 394 85.18229 404 85.18229" fromNodePartID="7" fromNodeColumnName="last_update" toNodePartID="0" toNodeColumnName="last_update" />
-      <Link partID="15" from="6" to="7" pointsArr="269 100.764313 279 100.764313 394 97.2552 404 97.2552" fromNodePartID="7" fromNodeColumnName="collection_status" toNodePartID="0" toNodeColumnName="collection_status" />
+      <Link partID="12" from="0" to="1" pointsArr="269 64.54558 279 64.54558 394 61.0364571 404 61.0364571" fromNodePartID="7" fromNodeColumnName="customer_id" toNodePartID="0" toNodeColumnName="customer_id" />
+      <Link partID="13" from="2" to="3" pointsArr="269 76.61849 279 76.61849 394 73.109375 404 73.109375" fromNodePartID="7" fromNodeColumnName="collection_id" toNodePartID="0" toNodeColumnName="collection_id" />
+      <Link partID="14" from="4" to="5" pointsArr="269 88.69141 279 88.69141 394 85.18229 404 85.18229" fromNodePartID="7" fromNodeColumnName="last_update" toNodePartID="0" toNodeColumnName="last_update" />
+      <Link partID="15" from="6" to="7" pointsArr="269 100.76432 279 100.76432 394 97.2552 404 97.2552" fromNodePartID="7" fromNodeColumnName="collection_status" toNodePartID="0" toNodeColumnName="collection_status" />
     </Graph>
   </DiagramGraph>
 </TablePopulationObject>

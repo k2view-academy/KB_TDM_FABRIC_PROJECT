@@ -10,18 +10,18 @@
   <SimpleObject>true</SimpleObject>
   <IidFinderProp />
   <InputArguments>
-    <Arg name="CUSTOMER_ID" id="queryCol_0" dataType="Integer" index="0" />
-    <Arg name="ACTIVITY_ID" id="queryCol_1" dataType="Integer" index="1" />
+    <Arg name="customer_id" id="queryCol_0" dataType="Integer" index="0" />
+    <Arg name="activity_id" id="queryCol_1" dataType="Integer" index="1" />
   </InputArguments>
   <ItemsList>
     <Item xsi:type="DBQueryDataSave" id="query_query_main_ACTIVITY" name="query_main_ACTIVITY" nodeOrder="0" module="DBQuery" mapObjectModule="DBQuery" connName="CRM_DB">
       <OutputsList>
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="CUSTOMER_ID" dataType="Integer" index="0" />
-        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="ACTIVITY_ID" dataType="Integer" index="1" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_0" name="customer_id" dataType="Integer" index="0" />
+        <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_1" name="activity_id" dataType="Integer" index="1" />
       </OutputsList>
-      <SQL><![CDATA[Select CUSTOMER_ID,
-  ACTIVITY_ID
-From ACTIVITY]]></SQL>
+      <SQL><![CDATA[Select public.activity.customer_id,
+  public.activity.activity_id
+From public.activity]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -30,13 +30,13 @@ From ACTIVITY]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="TAR_ACTIVITY.pop_tar_activity.k2tablePop.xml" lastPartID="31">
+    <Graph name="TAR_ACTIVITY.pop_tar_activity.k2tablePop.xml" lastPartID="37">
       <TableNode partID="0" name="TAR_ACTIVITY" pos="404 30" width="253" />
       <DBQueryNode partID="7" name="CRM_DB" pos="38 33.50911" size="253 84.14583" isRoot="true">
-        <DBQuery>{"Name":"query_main_ACTIVITY","ID":"query_query_main_ACTIVITY","ConnName":"CRM_DB","SQL":"Select CUSTOMER_ID,\r\n  ACTIVITY_ID\r\nFrom ACTIVITY","ColumnsList":[{"ID":"queryCol_0","Name":"CUSTOMER_ID","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"ACTIVITY_ID","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
+        <DBQuery>{"Name":"query_main_ACTIVITY","ID":"query_query_main_ACTIVITY","ConnName":"CRM_DB","SQL":"Select public.activity.customer_id,\r\n  public.activity.activity_id\r\nFrom public.activity","ColumnsList":[{"ID":"queryCol_0","Name":"customer_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"activity_id","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
-      <Link partID="12" from="0" to="1" pointsArr="291 69.54556 301 69.54556 394 61.0364571 404 61.0364571" fromNodePartID="7" fromNodeColumnName="CUSTOMER_ID" toNodePartID="0" toNodeColumnName="CUSTOMER_ID" />
-      <Link partID="13" from="2" to="3" pointsArr="291 81.6184845 301 81.6184845 394 73.109375 404 73.109375" fromNodePartID="7" fromNodeColumnName="ACTIVITY_ID" toNodePartID="0" toNodeColumnName="ACTIVITY_ID" />
+      <Link partID="12" from="0" to="1" pointsArr="291 69.54556 301 69.54556 394 61.0364571 404 61.0364571" fromNodePartID="7" fromNodeColumnName="customer_id" toNodePartID="0" toNodeColumnName="CUSTOMER_ID" />
+      <Link partID="13" from="2" to="3" pointsArr="291 81.6184845 301 81.6184845 394 73.109375 404 73.109375" fromNodePartID="7" fromNodeColumnName="activity_id" toNodePartID="0" toNodeColumnName="ACTIVITY_ID" />
     </Graph>
   </DiagramGraph>
 </TablePopulationObject>

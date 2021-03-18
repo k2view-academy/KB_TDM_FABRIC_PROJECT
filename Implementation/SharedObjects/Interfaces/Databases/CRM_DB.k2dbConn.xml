@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
-  <DataSource>10.21.1.53</DataSource>
-  <PortNum>1521</PortNum>
-  <DataBase>XE</DataBase>
-  <UserId>CRM_DB</UserId>
-  <Password>3VUHcKl/BlqKJ+kPgsdUdEPCq66XNGM8g7ycL0xxiRo=:ONKz4ghpaSWahGOaalPBLrx2RxywjZj6HKEjf3SU7Z4=</Password>
-  <ConnectionStringServerSide>jdbc:oracle:thin:@10.21.1.53:1521/XE</ConnectionStringServerSide>
+  <DataSource>localhost</DataSource>
+  <PortNum>5432</PortNum>
+  <DataBase>CRM_DB</DataBase>
+  <UserId>CRM_USER</UserId>
+  <Password>15cKQ47hOqX5oDXywL1D3e9qI45HcudcK2Vx716Lv7s=:isNU25fJ+cZ/Y4PFKXHUU3UDvq+xv1Jqsw2ACppCD0M=</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/CRM_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
   <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
   <OfflineMode>true</OfflineMode>
   <CommandList />
-  <JdbcDriverName>Oracle</JdbcDriverName>
+  <JdbcDriverName>PostgreSQL</JdbcDriverName>
   <ConnectionProperties />
 </DBConn>

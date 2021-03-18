@@ -62,7 +62,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select CUSTOMER.CUSTOMER_ID\r\nFrom CUSTOMER"
+                                        "const": "Select customer_id\r\nFrom public.customer"
                                     }
                                 ],
                                 "outputs": [

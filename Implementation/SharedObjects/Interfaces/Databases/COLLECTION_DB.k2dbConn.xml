@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="COLLECTION_DB" type="genericdb" version="6.4.1.10">
   <Active>true</Active>
-  <DataSource>10.21.1.53</DataSource>
+  <DataSource>localhost</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>COLLECTION_DB</DataBase>
   <UserId>COLLECTION_USER</UserId>
   <Password>PKF69KO7kMxyGni6a1vGaULfewApyaH58yPlaDRXinw=:/o8CO010CHaz7Cu6VaHPz2mNX/N9jNr7eELyrGm8JLQ=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://10.21.1.53:5432/COLLECTION_DB?stringtype=unspecified</ConnectionStringServerSide>
+  <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/COLLECTION_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
