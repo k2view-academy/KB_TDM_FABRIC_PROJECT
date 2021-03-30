@@ -230,7 +230,7 @@ public class Logic extends UserCode {
 					{
 					
 						Map<String, Object> batchStats = fnBatchStats(batchID);
-						log.info("fnCheckMigrateAndUpdateTDMDB - Returned output from fnRunBatchSummary: " + batchStats);
+						//log.info("fnCheckMigrateAndUpdateTDMDB - Returned output from fnRunBatchSummary: " + batchStats);
 						
 						if (batchStats != null) // response from migrate_summary command (which is run in wsMigrateStats ) should be returned with all levels (Node,DC,Cluster). if its returned without level DC - skip the update command and wait to next time the user job will be executed
 						{
@@ -253,7 +253,8 @@ public class Logic extends UserCode {
 								}
 							}
 							
-							log.info("fnCheckMigrateAndUpdateTDMDB - luName: " + luName + ", refStillRunning: " + refStillRunning +	", status: " + status);
+							//log.info("fnCheckMigrateAndUpdateTDMDB - luName: " + luName + ", refStillRunning: " + refStillRunning +
+							//	", status: " + status);
 							// Tali- fix defect- add the check that status is not "generate_iid_list"
 							// Taha - check that all refernece tables were copied
 							if (!status.equalsIgnoreCase(RUNNING) && !status.equalsIgnoreCase("generate_iid_list") 

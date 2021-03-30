@@ -37,14 +37,6 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_PG" dbType="genericdb" active="false">
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>9042</dbPort>
@@ -99,11 +91,11 @@
           <Value>true</Value>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
-          <Value>1</Value>
+          <Value>DEV</Value>
           <Comment>Target product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
-          <Value>1</Value>
+          <Value>PROD</Value>
           <Comment>Source product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_REPLACE_SEQUENCES" luName="">
@@ -244,14 +236,6 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_PG" dbType="genericdb" active="false">
-          <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>9042</dbPort>
@@ -306,11 +290,11 @@
           <Value>true</Value>
         </Global>
         <Global name="TDM_TARGET_PRODUCT_VERSION" luName="">
-          <Value>1</Value>
+          <Value>DEV</Value>
           <Comment>Target product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_SOURCE_PRODUCT_VERSION" luName="">
-          <Value>1</Value>
+          <Value>PROD</Value>
           <Comment>Source product version to override by task execution process</Comment>
         </Global>
         <Global name="TDM_REPLACE_SEQUENCES" luName="">

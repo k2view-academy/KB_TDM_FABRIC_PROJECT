@@ -18,25 +18,25 @@ public class SharedGlobals {
 
 
 	@desc("Indicator to delete the instance to target DB")
-	public static String TDM_DELETE_BEFORE_LOAD = "true";
+	public static String TDM_DELETE_BEFORE_LOAD = "false";
 	@desc("Indicator to insert the instance to target DB")
-	public static String TDM_INSERT_TO_TARGET = "true";
+	public static String TDM_INSERT_TO_TARGET = "false";
 
 	public static String TDM_SYNC_SOURCE_DATA = "true";
 
 
 	@desc("Target product version to override by task execution process")
-	public static String TDM_TARGET_PRODUCT_VERSION = "1";
+	public static String TDM_TARGET_PRODUCT_VERSION = "false";
 	@desc("Source product version to override by task execution process")
-	public static String TDM_SOURCE_PRODUCT_VERSION = "1";
+	public static String TDM_SOURCE_PRODUCT_VERSION = "false";
 
 	public static String TDM_REPLACE_SEQUENCES = "false";
 
 	public static String TDM_TASK_EXE_ID = "0";
 
-	public static String MASK_FLAG = "1";
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
-	public static String TDM_TAR_ENV_NAME = "TAR";
+	public static String MASK_FLAG = "0";
+	public static String TDM_SOURCE_ENVIRONMENT_NAME = "ENV1";
+	public static String TDM_TAR_ENV_NAME = "ENV2";
 	public static String TDM_SYNTHETIC_DATA = "false";
 	public static String TDM_TASK_ID = "0";
 	public static String TDM_VERSION_DATETIME = "19700101000000";

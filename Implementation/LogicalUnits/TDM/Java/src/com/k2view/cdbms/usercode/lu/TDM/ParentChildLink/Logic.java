@@ -49,11 +49,11 @@ public class Logic extends UserCode {
 				"FROM tdm_lu_type_relation_eid rel, task_execution_entities parent, task_execution_entities child " +
 				"where parent.task_execution_id = ? and parent.lu_name = rel.lu_type_1 " +
 				"and parent.source_env = rel.source_env and parent.iid = rel.lu_type1_eid " +
-				"and parent.version_name = rel.version_name and parent.version_datetime = rel.version_datetime " +
+				"and parent.version_name = rel.version_name and to_char(parent.version_datetime,'YYYY-MM-DD HH24:MI:SS') = to_char(rel.version_datetime,'YYYY-MM-DD HH24:MI:SS') " +
 				"and child.task_execution_id = parent.task_execution_id and child.clone_no = parent.clone_no and child.lu_name= rel.lu_type_2 " +
 				"and child.source_env = rel.source_env and child.iid = rel.lu_type2_eid " +
-				"and child.version_name = parent.version_name and child.version_datetime = parent.version_datetime";
-			
+				"and child.version_name = parent.version_name and to_char(child.version_datetime,'YYYY-MM-DD HH24:MI:SS') = to_char(parent.version_datetime,'YYYY-MM-DD HH24:MI:SS')";
+		
 			Db.Rows rows = null;
 			try {	
 				

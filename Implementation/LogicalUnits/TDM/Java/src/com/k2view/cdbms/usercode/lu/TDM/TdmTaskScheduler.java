@@ -73,7 +73,7 @@ public class TdmTaskScheduler {
 
                     Long parentLuID = (Long) Util.rte(() -> db(TDM).fetch("SELECT lu_parent_id FROM product_logical_units WHERE be_id=? AND lu_id=?", beID, luID)).firstValue();
                     log.info(" ----------------- adding task  ----------------- " + taskExecutionID + " luID: " + luID);
-                    String insertQuery = versionInd.equals("TRUE") ? insertToTaskExecutionDFQuery : insertToTaskExecutionQuery;
+                    String insertQuery = versionInd.equals("t") ? insertToTaskExecutionDFQuery : insertToTaskExecutionQuery;
 
                     Util.rte(() ->
                             db(TDM).execute(insertQuery,

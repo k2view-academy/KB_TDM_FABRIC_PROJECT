@@ -56,44 +56,49 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Prepare the Data",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Build Root Column session variable",
-                            "minHeight": 350,
+                            "name": "Get Root Table Name__1",
                             "actorType": {
-                                "parentType": "StringFormat",
+                                "parentType": "getLUVariable_Actor",
                                 "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${luName}.ROOT_COLUMN_NAME"
-                                    },
                                     {
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "ROOT_TABLE_NAME"
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "Build Root Table session variable",
+                            "name": "Get Root Column Name__1",
                             "actorType": {
-                                "parentType": "StringFormat",
+                                "parentType": "getLUVariable_Actor",
                                 "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${luName}.ROOT_TABLE_NAME"
-                                    },
                                     {
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "ROOT_COLUMN_NAME"
                                     }
                                 ],
                                 "outputs": []
@@ -105,6 +110,12 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
                                         "name": "variableName",
                                         "schema": {
                                             "type": "string"
@@ -112,14 +123,7 @@
                                         "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "variableValue",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -128,6 +132,12 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
                                         "name": "variableName",
                                         "schema": {
                                             "type": "string"
@@ -135,14 +145,7 @@
                                         "const": "TDM_SOURCE_ENVIRONMENT_NAME"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "variableValue",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -152,12 +155,13 @@
         {
             "stages": [
                 {
-                    "name": "Prepare the Data",
+                    "name": "Get Data from TDM_SEQ_MAPPING",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
                             "name": "Get Data From Cassandra Table",
+                            "minHeight": 449,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -190,34 +194,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Get Root Column Name",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Root Table Name",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -234,7 +210,20 @@
                             "name": "Check If Root Table",
                             "actorType": {
                                 "parentType": "Equals",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -242,7 +231,20 @@
                             "name": "Check If Root Column",
                             "actorType": {
                                 "parentType": "Equals",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -472,26 +474,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Build Root Column session variable",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Build Root Table session variable",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "Get Data From Cassandra Table",
                 "name": "luType"
             }
@@ -518,22 +500,62 @@
         },
         {
             "leftPort": {
-                "actor": "Build Root Column session variable",
-                "name": "string"
+                "actor": "Get LU Type",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Get Root Column Name",
-                "name": "key"
+                "actor": "Get Task Execution ID",
+                "name": "luName"
             }
         },
         {
             "leftPort": {
-                "actor": "Build Root Table session variable",
-                "name": "string"
+                "actor": "Get LU Type",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Get Root Table Name",
-                "name": "key"
+                "actor": "Get Source Environment",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Root Table Name__1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Root Column Name__1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Root Table Name__1",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Check If Root Table",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Root Column Name__1",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Check If Root Column",
+                "name": "a"
             }
         },
         {
@@ -566,26 +588,6 @@
                 "name": "params"
             },
             "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Get Root Column Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Root Column",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Root Table Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Root Table",
-                "name": "a"
-            }
         },
         {
             "leftPort": {
@@ -625,6 +627,26 @@
             "rightPort": {
                 "actor": "DbLoad1",
                 "name": "is_instance_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Check If Root Table",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "columName"
+            },
+            "rightPort": {
+                "actor": "Check If Root Column",
+                "name": "b"
             }
         }
     ]

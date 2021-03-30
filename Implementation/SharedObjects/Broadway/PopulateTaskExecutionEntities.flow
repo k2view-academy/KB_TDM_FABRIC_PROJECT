@@ -8,20 +8,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get LU Type",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "LU_TYPE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get Entity Status",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -42,6 +28,20 @@
                                     {
                                         "name": "key",
                                         "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get LU Type",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "LU_TYPE",
                                         "isDefault": false
                                     }
                                 ],
@@ -103,10 +103,15 @@
                     "actors": [
                         {
                             "name": "Get Task Execution ID",
-                            "minHeight": 148,
                             "actorType": {
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
                                     {
                                         "name": "variableName",
                                         "schema": {
@@ -120,6 +125,7 @@
                         },
                         {
                             "name": "Get Timing of Processing Start",
+                            "minHeight": 151,
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -168,6 +174,12 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
                                         "name": "variableName",
                                         "schema": {
                                             "type": "string"
@@ -183,6 +195,12 @@
                             "actorType": {
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
                                     {
                                         "name": "variableName",
                                         "schema": {
@@ -397,12 +415,22 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get LU Type",
+                "actor": "Get Entity Status",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
-                "name": "luName"
+                "name": "executionStatus"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Add Entity to Entities Table",
+                "name": "sourceEntityId"
             }
         },
         {
@@ -411,8 +439,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Get Task Execution ID",
-                "name": "luType"
+                "actor": "Add Entity to Entities Table",
+                "name": "luName"
             }
         },
         {
@@ -437,22 +465,32 @@
         },
         {
             "leftPort": {
-                "actor": "Get Entity Status",
+                "actor": "Get LU Type",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "executionStatus"
+                "actor": "Get Task Execution ID",
+                "name": "luName"
             }
         },
         {
             "leftPort": {
-                "actor": "Get Source Entity ID",
+                "actor": "Get LU Type",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "sourceEntityId"
+                "actor": "Get TDM  Version Name",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get TDM  Version DateTime",
+                "name": "luName"
             }
         },
         {

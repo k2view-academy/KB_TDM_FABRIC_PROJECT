@@ -4,7 +4,7 @@
   "parentType": "InnerFlow",
   "inputs": [
     {
-      "name": "luType",
+      "name": "luName",
       "schema": {
         "type": "Any"
       },
@@ -29,7 +29,7 @@
     {
       "name": "variableValue",
       "schema": {
-        "type": "Any"
+        "type": "string"
       },
       "const": null
     }

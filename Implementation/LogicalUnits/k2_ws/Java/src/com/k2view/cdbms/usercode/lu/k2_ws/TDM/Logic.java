@@ -885,9 +885,9 @@ public class Logic extends WebServiceUserCode {
 	public static Object wsGetTDMTaskExecutionStats(String taskExecutionId, String luName, String luEntityId, String luIdType, String luParentId, Integer entitiesArraySize, String displayErrorPath) throws Exception {
 		//Tali- 4-Dec-18- fix the queries- select distinct the combination of be_root_entity_id + TARGET_ROOT_ENTITY_ID when selecting the number of copied/failed entities. This is required to support the clone of one entity X times by a task
 		
-		log.info("wsGetTDMTaskExecutionStats - Inputs:");
-		log.info("taskExecutionId: <" + taskExecutionId + ">, luName: <" + luName + ">, luEntityId: <" + luEntityId + ">, luIdType: <" +
-				luIdType + ">, luParentId: <" + luParentId + ">, entitiesArraySize: <" + entitiesArraySize + ">, displayErrorPath: <" + displayErrorPath + ">");
+		//log.info("wsGetTDMTaskExecutionStats - Inputs:");
+		//log.info("taskExecutionId: <" + taskExecutionId + ">, luName: <" + luName + ">, luEntityId: <" + luEntityId + ">, luIdType: <" +
+		//		luIdType + ">, luParentId: <" + luParentId + ">, entitiesArraySize: <" + entitiesArraySize + ">, displayErrorPath: <" + displayErrorPath + ">");
 		boolean isRootLu = true;
 		Map <String, Map> Map_Outer = new LinkedHashMap<>();
 		
@@ -922,7 +922,7 @@ public class Logic extends WebServiceUserCode {
 		if(!("".equals(parentLuName))) {
 		    isRootLu = false;
 		}
-		log.info("wsGetTDMTaskExecutionStats - isRootLu: " + isRootLu + ", luIdType: " + luIdType);
+		//log.info("wsGetTDMTaskExecutionStats - isRootLu: " + isRootLu + ", luIdType: " + luIdType);
 		//***** Entities lists *****//
 		//
 		
@@ -944,36 +944,36 @@ public class Logic extends WebServiceUserCode {
 		if ("ENTITY".equals(luIdType)) {//If looking only for reference fo directly to reference section
 			if (isRootLu) { //If root LU
 				
-				log.info("wsGetTDMTaskExecutionStats - Handling Root Entity.luEntityId:  " + luEntityId);
+				//log.info("wsGetTDMTaskExecutionStats - Handling Root Entity");
 					
 				//lu Entity ID of the root is not given then set the query to get all entities of the given root LU
 				if ( (luEntityId == null || luEntityId.isEmpty())) {
 					
-					log.info("wsGetTDMTaskExecutionStats - luEntityId of the root is not provided, retrieving it");
+					//log.info("wsGetTDMTaskExecutionStats - luEntityId of the root is not provided, retrieving it");
 					
 					sqlCompEntities = sqlSelect + 
 						"lu_name = ? and root_entity_status = 'completed' " +
 						sqlSelectOrder + " limit ?";
 		
 					compEntitiesBuf = fabric().fetch(sqlCompEntities, luName, entitiesArraySize);
-					log.info("wsGetTDMTaskExecutionStats - After getting the copied root entities");
+					//log.info("wsGetTDMTaskExecutionStats - After getting the copied root entities");
 					sqlCompCount = sqlSelectCnt +
 						"lu_name = ? and root_entity_status = 'completed'";
 					
 					compEntitiesCnt = "" + fabric().fetch(sqlCompCount, luName).firstValue();
-					log.info("wsGetTDMTaskExecutionStats - After getting the count of copied root entities. SQL: " + sqlCompCount);
+					//log.info("wsGetTDMTaskExecutionStats - After getting the count of copied root entities");
 					
 					sqlFailedEntities = sqlSelect +
 						"lu_name = ? and root_entity_status <> 'completed' " +
 						sqlSelectOrder + " limit ?";
 			
 					failedEntitiesBuf = fabric().fetch(sqlFailedEntities, luName, entitiesArraySize);
-					log.info("wsGetTDMTaskExecutionStats - After getting the failed root entities");
+					//log.info("wsGetTDMTaskExecutionStats - After getting the failed root entities");
 					sqlFailedCount = sqlSelectCnt +
 						"lu_name = ? and root_entity_status <> 'completed'";
 					
 					failedEntitiesCnt = "" + fabric().fetch(sqlFailedCount, luName).firstValue();
-					log.info("wsGetTDMTaskExecutionStats - After getting the count of failed root entities. SQL: " + sqlFailedCount);
+					//log.info("wsGetTDMTaskExecutionStats - After getting the count of failed root entities");
 				} else {// luEntityId is given
 					
 					sqlCompEntities = sqlSelect + 
@@ -999,7 +999,7 @@ public class Logic extends WebServiceUserCode {
 					failedEntitiesCnt = "" + fabric().fetch(sqlFailedCount, luName, luEntityId).firstValue();
 				}		
 			} else {//if not a root LU
-				log.info("TEST- The LU is not a root LU");
+				//log.info("The LU is not a root LU");
 				if ( !(luEntityId == null || luEntityId.isEmpty()) ) {//If entity ID is given and looking for entities and not reference
 					//log.info("luEntityId provided: " + luEntityId);
 					sqlCompEntities = sqlSelect +
@@ -1027,13 +1027,13 @@ public class Logic extends WebServiceUserCode {
 					failedEntitiesCnt = "" + fabric().fetch(sqlFailedCount, luName, luEntityId).firstValue();
 		
 				} else {//lu Entity ID is not given
-					log.info("TEST- luEntityId is not provided");
+					//log.info("luEntityId is not provided");
 					if(luParentId == null || luParentId.isEmpty()) {// if parent LU ID is not given
 						//log.info("luParentId is not provided");
 						sqlCompEntities = sqlSelect +
 							"LU_NAME = ? and execution_status = 'completed' and root_entity_status = 'completed' " +
 							sqlSelectOrder + " limit ?";
-						log.info("wsGetTDMTaskExecutionStats -luName: " + luName + ", sqlCompEntities for non Root without ID: " + sqlCompEntities);
+						//log.info("wsGetTDMTaskExecutionStats - sqlCompEntities for non Root without ID: " + sqlCompEntities);
 						compEntitiesBuf = fabric().fetch(sqlCompEntities, luName, entitiesArraySize);
 						
 						sqlCompCount = sqlSelectCnt +
@@ -1041,7 +1041,6 @@ public class Logic extends WebServiceUserCode {
 					
 						compEntitiesCnt = "" + fabric().fetch(sqlCompCount, luName).firstValue();
 			
-						log.info("wsGetTDMTaskExecutionStats -luName: " + luName + ", sqlCompEntities for non Root without ID: " + sqlCompEntities);
 						sqlFailedEntities = sqlSelect +
 							"LU_NAME = ? and (ifNull(execution_status, 'failed') <> 'completed' or root_entity_status <> 'completed') " +
 							sqlSelectOrder + " limit ?";
@@ -1550,6 +1549,9 @@ public class Logic extends WebServiceUserCode {
 			
 		return wrapWebServiceResults("SUCCESS", null, response);
 	}
+
+
+
 
 	@NotNull
 	private static String getColumnMinMaxSQL(String env, String colName, String beTableName) {

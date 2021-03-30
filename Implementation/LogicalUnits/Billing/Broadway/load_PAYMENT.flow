@@ -99,11 +99,21 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "INVOICE_ID": {},
-                                                    "PAYMENT_ID": {},
-                                                    "ISSUED_DATE": {},
-                                                    "STATUS": {},
-                                                    "AMOUNT": {}
+                                                    "INVOICE_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "PAYMENT_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "ISSUED_DATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "STATUS": {
+                                                        "type": "string"
+                                                    },
+                                                    "AMOUNT": {
+                                                        "type": "number"
+                                                    }
                                                 }
                                             }
                                         }
@@ -166,6 +176,19 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TARGET_PRODUCT_VERSION"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -174,18 +197,118 @@
         {
             "stages": [
                 {
-                    "name": "Transformation 2",
+                    "name": "Check Target Product Version",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "Get Product Version",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TARGET_PRODUCT_VERSION",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Load Payment- TDM_TARGET_PRODUCT_VERSION value is: ${0}"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "Load Data To Target",
-                    "dependsOnList": [],
+                    "name": "PROD Version",
+                    "dependsOnList": [
+                        "Check Target Product Version"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "PROD"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "DEV Version",
+                    "dependsOnList": [
+                        "Check Target Product Version"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Payment Method",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "CASH"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data To Target - PROD version",
+                    "dependsOnList": [
+                        "PROD Version"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -272,6 +395,110 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Load Data To Target- DEV Version",
+                    "dependsOnList": [
+                        "DEV Version"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Error Handler__1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Load PAYMENT - DEV",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "PAYMENT"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "INVOICE_ID",
+                                            "PAYMENT_ID",
+                                            "ISSUED_DATE",
+                                            "STATUS",
+                                            "AMOUNT",
+                                            "PAYMENT_METHOD"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "PAYMENT_ID"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "oracle"
+                                    },
+                                    {
+                                        "name": "INVOICE_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "PAYMENT_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "ISSUED_DATE",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "STATUS",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "AMOUNT",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "PAYMENT_METHOD",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -297,7 +524,72 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_PAYMENT": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_PAYMENT": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_OFFER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_PAYMENT": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_OFFER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_PAYMENT": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -381,11 +673,32 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load PAYMENT - DEV",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
                 "actor": "INVOICE_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
             "rightPort": {
                 "actor": "Load PAYMENT Table",
+                "name": "INVOICE_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "INVOICE_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load PAYMENT - DEV",
                 "name": "INVOICE_ID"
             }
         },
@@ -397,6 +710,47 @@
             "rightPort": {
                 "actor": "Load PAYMENT Table",
                 "name": "PAYMENT_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PAYMENT_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load PAYMENT - DEV",
+                "name": "PAYMENT_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Get Product Version",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Payment Method",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load PAYMENT - DEV",
+                "name": "PAYMENT_METHOD"
             }
         },
         {

@@ -398,14 +398,15 @@ public class TdmExecuteTask {
     @NotNull
     private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
         String entityExclusionLIst = ENTITY_EXCLUSION_LIST.get(taskProperties);
+		String env = isDeleteOnlyMode(taskProperties) ? TARGET_ENVIRONMENT_NAME.get(taskProperties) : SOURCE_ENVIRONMENT_NAME.get(taskProperties);
         String entityExclusionListWhere = !Util.isEmpty(entityExclusionLIst) ? "cast (entity_id as text) NOT IN (" + Arrays.stream(entityExclusionLIst.split(","))
-                .map(entityID -> buildEntityExclusion(SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
+                .map(entityID -> buildEntityExclusion(env, SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
                 .map(eID -> "'" + eID + "'").collect(Collectors.joining(",")) + ")" : "1 = 1";
 
         String eIDsToExcludeBasedOnEnvAndBE = (String) db(TDM).fetch("select replace(string_agg(exclusion_list, ','), ' ', '') from TDM_BE_ENV_EXCLUSION_LIST where be_id=? and environment_id=?;", BE_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)).firstValue();
         if(!Util.isEmpty(eIDsToExcludeBasedOnEnvAndBE)){
             entityExclusionListWhere += " AND cast (entity_id as text) NOT IN (" + Arrays.stream(eIDsToExcludeBasedOnEnvAndBE.split(","))
-                    .map(entityID -> buildEntityExclusion(SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
+                    .map(entityID -> buildEntityExclusion(env, SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
                     .map(eID -> "'" + eID + "'").collect(Collectors.joining(",")) + ")";
         }
         return entityExclusionListWhere;
@@ -423,24 +424,33 @@ public class TdmExecuteTask {
         globals.put("TDM_TASK_ID", TASK_ID.get(taskProperties));
         globals.put("TDM_TASK_EXE_ID", "" + TASK_EXECUTION_ID.get(taskProperties));
         globals.put("TDM_REPLACE_SEQUENCES", selectionMethod.equals("S") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
-        globals.put("MASK_FLAG", selectionMethod.equals("S") ? "1" : "");
-        globals.put("TDM_SYNTHETIC_DATA", getSyntheticData(selectionMethod));
-		log.info("getGlobals - VERSION_IND: <" + VERSION_IND.get(taskProperties) + ">");
-		if (VERSION_IND.get(taskProperties).equals("true")) {
-	        globals.put("TDM_VERSION_NAME", SELECTED_VERSION_TASK_NAME.get(taskProperties));
-    	    globals.put("TDM_VERSION_DATETIME", SELECTED_VERSION_DATETIME.get(taskProperties));
-    	    globals.put("MASK_FLAG", "0");
-    	    globals.put("TDM_REPLACE_SEQUENCES", "false");		
-		} else {
-			globals.put("TDM_VERSION_NAME", "");
-    	    globals.put("TDM_VERSION_DATETIME", "19700101000000" );
-		}
-        globals.put("NUMBER_OF_ENTITIES_PER_STAT_REPORT", "1"); //todo If the number of entities to migrate is small than the STAT_REPORT_THRESHOLD value
+		
+        //globals.put("NUMBER_OF_ENTITIES_PER_STAT_REPORT", "1"); //todo If the number of entities to migrate is small than the STAT_REPORT_THRESHOLD value
 
         globals.putAll(args);
 
         Util.rte(() -> db(TDM).fetch(globalsQuery, params).forEach(res ->Util.rte(() -> globals.put(res.resultSet().getString("global_name"), res.resultSet().getString("global_value")))));
         Gson gson = new Gson();
+	
+	
+		if (selectionMethod.equals("S")) {
+			globals.keySet().removeIf(key -> key.contains("MASK_FLAG"));
+			globals.put("MASK_FLAG", "1");
+		}
+        globals.put("TDM_SYNTHETIC_DATA", getSyntheticData(selectionMethod));
+		log.info("getGlobals - VERSION_IND: <" + VERSION_IND.get(taskProperties) + ">");
+		if (VERSION_IND.get(taskProperties).equals("true")) {
+	        globals.put("TDM_VERSION_NAME", SELECTED_VERSION_TASK_NAME.get(taskProperties));
+    	    globals.put("TDM_VERSION_DATETIME", SELECTED_VERSION_DATETIME.get(taskProperties));
+			
+            globals.keySet().removeIf(key -> key.contains("MASK_FLAG"));
+    	    globals.put("MASK_FLAG", "0");
+    	    
+			globals.put("TDM_REPLACE_SEQUENCES", "false");		
+		} else {
+			globals.put("TDM_VERSION_NAME", "");
+    	    globals.put("TDM_VERSION_DATETIME", "19700101000000" );
+		}
         return gson.toJson(globals, new TypeToken<HashMap>(){}.getType());
     }
 
@@ -450,12 +460,18 @@ public class TdmExecuteTask {
     }
 
     @NotNull
-    private static String buildEntityExclusion(String selectionMethod, String versionInd, String selectedVersionTaskName, String selectedVersionDateTime, String entityID) {
+    private static String buildEntityExclusion(String environment, String selectionMethod, String versionInd, String selectedVersionTaskName, String selectedVersionDateTime, String entityID) {
         if (!selectionMethod.toUpperCase().equals("R")) {
             String ent = Util.rte(() -> addSeparators(entityID.trim()));
-            return ent + (versionInd.equals("true") ? "_" + selectedVersionTaskName.trim() + "_" + selectedVersionDateTime.trim() : entityID.trim());
+            String exclusionList;
+            if (versionInd.equals("true")) {
+                exclusionList = environment + "_" + ent + "_" + selectedVersionTaskName.trim() + "_" + selectedVersionDateTime.trim();
+            } else {
+                exclusionList = environment + "_" + ent;
+            }
+            return exclusionList;
         } else {
-            return entityID.trim();
+            return environment + "_" + entityID.trim();
         }
     }
 
@@ -465,7 +481,7 @@ public class TdmExecuteTask {
         String open = (String) separators[0];
         String close = (String) separators[1];
         String entityIdSelect = "||'_'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + name :  name);
-        entityIdSelect += !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : "";
+        entityIdSelect = !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : entityIdSelect;
         return entityIdSelect;
     }
 

@@ -89,6 +89,12 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
                                         "name": "variableName",
                                         "schema": {
                                             "type": "string"
@@ -446,7 +452,7 @@
             },
             "rightPort": {
                 "actor": "Get Task Execution ID",
-                "name": "luType"
+                "name": "luName"
             }
         },
         {

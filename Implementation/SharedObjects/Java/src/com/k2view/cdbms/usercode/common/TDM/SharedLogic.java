@@ -92,13 +92,13 @@ public class SharedLogic {
 	@out(name = "rs", type = Object[].class, desc = "")
 	public static Object[] fnValidateNdGetInstance() throws Exception {
 		String origUid = getInstanceID();
+		Object[] splitIID = fnSplitUID(origUid);
 		
-		// TEST- fix- get out the clone id before the split. For example: SRC_66#params#{"clone_id"=1}|//
+		// TDM 7.1 - fix- get out the clone id before the split. For example: SRC_66#params#{"clone_id"=1}|//
 		Object[] splitCloneId = origUid.split("#params#");
 		origUid = "" + splitCloneId[0];
 		
-		// end of test
-		Object[] splitIID = fnSplitUID(origUid);
+		// end of Fix
 		
 		return new Object[]{origUid, splitIID[1], splitIID[0], splitIID[2], splitIID[3]};
 	}
@@ -506,7 +506,7 @@ public class SharedLogic {
 		if (!inDebugMode()) {
 			ciTDM.beginTransaction();
 		}
-		
+		//TALI- Fix ticket #9523- delete the parent IID records, if exist, before the insert
 		//log.info("before delete");
 		//Add the LU Name to the table name
 		// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
@@ -516,8 +516,7 @@ public class SharedLogic {
 					verAddition;
 		
 		//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
-		
-		//String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
+		// Fix the query- add the child LU to the condition
 		String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
 		String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
 		
@@ -538,7 +537,7 @@ public class SharedLogic {
 			String sql = mapVal.get("child_lu_eid_sql");
 			String sqlTar = mapVal.get("child_lu_tar_eid_sql");
 		    
-			//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql + ", and sqlTar: " + sqlTar);
+			//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql);
 			childEIDs = ludb().fetch(sql);
 			
 			for (Db.Row row : childEIDs) {
@@ -583,9 +582,7 @@ public class SharedLogic {
 				//log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
 				ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
 				
-				//log.info("TEST- populating tdm_lu_type_rel_Tar_eid LU table");
 				childTarEIDs = ludb().fetch(sqlTar);
-				
 				for (Db.Row row : childTarEIDs) {
 					
 		    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDate};
@@ -593,7 +590,6 @@ public class SharedLogic {
 					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
 		
 					if (!inDebugMode()) {
-						//log.info("TEST- populating tdm_lu_type_rel_Tar_eid TDM table");
 						ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
 					}
 				}
@@ -1025,9 +1021,10 @@ public class SharedLogic {
 			if(!(statusData.isEmpty())){
 				statusData.forEach((key, value) -> {
 					try {
-						log.info("TESTTT- setting "+key+"='"+value+ "'");
-						//DBExecute(DB_FABRIC, "set "+key+"='"+value+ "'", null);
+						//log.info("setGlobals - setting "+key+"='"+value+ "'");
 						fabric().execute( "set "+key+"='"+value+ "'");
+						// TDM 7.1 - Handle Masking and Sequence Broadway Actors flags
+						setBroadawayActorFlags("" + key, "" + value);
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -1037,6 +1034,22 @@ public class SharedLogic {
 	}
 
 
+	private static void setBroadawayActorFlags(String key, String value) throws SQLException {
+		//TDM 7.1 - Masking and Sequence Broadway Actors have special flags to enable/disable them, and they need
+		// to be set based on the input globals of the task
+
+		// Masking Actor - If MASK_FLAG is set to false set the indicator of masking actor to false to suppress the masking in
+		// both Load and Extract tasks. If MASK_FLAG is not set or set to true then nothing to do as the Masking is enabled by default.
+		if (key.contains("MASK_FLAG") && "0".equals(value)) {
+			//log.info("setBroadawayActorFlags - Disabling Masking");
+			fabric().execute("set enable_masking = false");
+		}
+		// Sequence Actor - If TDM_REPLACE_SEQUENCES is set, used its value to disable/enable the sequence actor
+		if (key.contains("TDM_REPLACE_SEQUENCES") ) {
+			//log.info("setBroadawayActorFlags - Setting Sequence Actor to: " + value);
+			fabric().execute("set enable_sequences = ?", value);
+		}
+	}
 	@out(name = "res", type = Object[].class, desc = "")
 	public static Object[] fnGetIIdSeparatorsFromTDM() throws Exception {
 		String iidOpenSeparator = "";
@@ -1437,8 +1450,8 @@ public class SharedLogic {
 				//log.info("Get values from the translation map: " + trnMigrateList_values.toString());
 				String interface_name = ""+ trnMigrateList_values.get("interface_name");
 				String sql = ""+ trnMigrateList_values.get("ig_sql").replaceAll("\n"," ");
-
-
+		
+		
 				String splitSQL[] = StringUtils.split(sql.toLowerCase());
 				String qry_entity_col="";
 				for (int i = 0; i < splitSQL.length; i++)
@@ -1449,7 +1462,7 @@ public class SharedLogic {
 						break;
 					}
 				}
-
+		
 				// get original SQL statement "select" including the next SQL command like "distinct"
 				String select = StringUtils.substringBefore(sql.toLowerCase(), qry_entity_col);
 				String sql_part2 = sql.substring(sql.toLowerCase().indexOf(" from ")).replace("'","''");
@@ -1792,11 +1805,11 @@ public class SharedLogic {
 		return "WITH RECURSIVE relations AS(" +
 				"SELECT lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, entity_id as root_id," +
 				" param_values('" + rootLu +"',entity_id,lower(base.lu_type_1) || '_params','" + sourceEnv + "'," +
-				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid')::text as p1," +
-				" CASE WHEN base.lu_type_2 IS NULL THEN '{}'::text ELSE param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
+				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid', '-1')::text as p1," +
+				" param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
 				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
 				"'" + str + "', 'lu_type2_eid'" +
-				")::text END as p2 " +
+				",base.lu_type_2)::text as p2 " +
 				"FROM ( " +
 				"SELECT entity_id, '" + rootLu + "'::text as lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid " +
 				"FROM " + rootLu + "_params " +
@@ -1806,11 +1819,11 @@ public class SharedLogic {
 				" UNION ALL" +
 				" SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid, root_id," +
 				" param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
-				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid')::text as p1," +
-				" CASE WHEN a.lu_type_2 IS NULL THEN '{}'::text ELSE param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
+				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid', '-1')::text as p1," +
+				" param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
 				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
 				"'" + str + "', 'lu_type2_eid'" +
-				")::text END as p2 " +
+				",a.lu_type_2)::text as p2 " +
 				"FROM tdm_lu_type_relation_eid a " +
 				"INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv + "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList + ") AND b.lu_type_1 IN("+ childrenList +"))" +
 				" SELECT * FROM ( " +
@@ -1870,9 +1883,6 @@ public class SharedLogic {
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionDeleteFromTarget() throws Exception {
 		String luName = getLuType().luName;
-		
-		log.info("TEST!!- check TDM_DELETE_BEFORE_LOAD global: " + "" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue());
-		
 		if(("" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
 		{
 			return true;

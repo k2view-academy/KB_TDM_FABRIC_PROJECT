@@ -210,6 +210,17 @@
                                         "name": "config",
                                         "const": [
                                             {
+                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
+                                                "conditions": {
+                                                    "standardType": "UNIQUE_CONSTRAINT"
+                                                },
+                                                "actions": {
+                                                    "suppress": true,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithReject"
+                                                }
+                                            },
+                                            {
                                                 "exceptionKey": "java.lang.Exception",
                                                 "conditions": {
                                                     "message": ""
