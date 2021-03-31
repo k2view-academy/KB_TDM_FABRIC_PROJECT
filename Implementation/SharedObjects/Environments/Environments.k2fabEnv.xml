@@ -208,7 +208,7 @@
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
-          <dbPasswordEncrypted>cgImnRiQHBvlj8HQApLO+0W108HCSn17bEfrJuwgsLo=:MBgEHUBAgSyZ6IJBT25qzabKpXgR8EQ5KbEvHV4eBgI=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>dm9bLdI7jl6gTlCkw2VRGiTFDCba7RXPML4J+F9mbE8=:jl2zeqnMP9IOFtaJrfgOYJ3NF4/ja6yWITFdMDMCfmw=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>

@@ -579,7 +579,7 @@ public class SharedLogic {
 			
 			//TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated 
 			if (fnDecisionDeleteFromTarget()) {
-				//log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
+				log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
 				ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
 				
 				childTarEIDs = ludb().fetch(sqlTar);
@@ -589,7 +589,9 @@ public class SharedLogic {
 			
 					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
 		
+					log.info("TEST - LU name: " + parentLU + ", before insert records into TDM DB - tdm_lu_type_rel_tar_eid - check inDebugMode: " + !inDebugMode());
 					if (!inDebugMode()) {
+						log.info("TEST - LU name: " + parentLU + ", insert records into TDM DB - tdm_lu_type_rel_tar_eid"); 
 						ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
 					}
 				}
