@@ -20,15 +20,15 @@ public class SharedGlobals {
 	@desc("Indicator to delete the instance to target DB")
 	public static String TDM_DELETE_BEFORE_LOAD = "false";
 	@desc("Indicator to insert the instance to target DB")
-	public static String TDM_INSERT_TO_TARGET = "false";
+	public static String TDM_INSERT_TO_TARGET = "true";
 
 	public static String TDM_SYNC_SOURCE_DATA = "true";
 
 
 	@desc("Target product version to override by task execution process")
-	public static String TDM_TARGET_PRODUCT_VERSION = "false";
+	public static String TDM_TARGET_PRODUCT_VERSION = "PROD";
 	@desc("Source product version to override by task execution process")
-	public static String TDM_SOURCE_PRODUCT_VERSION = "false";
+	public static String TDM_SOURCE_PRODUCT_VERSION = "PROD";
 
 	public static String TDM_REPLACE_SEQUENCES = "false";
 
@@ -52,6 +52,9 @@ public class SharedGlobals {
 	public static String CASES_THRESHOLD = "30000";
 	@desc("globals threshold")
 	public static final String RUN_POP = "20000";
+
+	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
+	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
 
 }

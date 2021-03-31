@@ -5,7 +5,7 @@
   <PortNum>5432</PortNum>
   <DataBase>BILLING_DB</DataBase>
   <UserId>BILLING_USER</UserId>
-  <Password>U9odZDUkTbwq5ga7h/IHkyclKHI8jKNTDIuQIdVuqcU=:RiGAraMvDkC5qH1lQmdgY6OqPR8FnxXlV+/7MshPih8=</Password>
+  <Password>utt3UTFL5WwO8y+Q2F3Yg27pd953qHdXRq+SPNCRGrE=:vGefyJ/ig0h0K8aGKq9ZAEKYxECsD8TQBA9qRnQj2jg=</Password>
   <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>

@@ -41,7 +41,7 @@ From public.offer]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="OFFER.query_main_OFFER.k2tablePop.xml" lastPartID="49">
+    <Graph name="OFFER.query_main_OFFER.k2tablePop.xml" lastPartID="63">
       <TableNode partID="0" name="OFFER" pos="383 5.74479675" width="253" />
       <DBQueryNode partID="9" name="BILLING_DB" pos="10 0.78125" size="253 132.4375" isRoot="true">
         <DBQuery>{"Name":"query_main_OFFER","ID":"query_query_main_OFFER","ConnName":"BILLING_DB","SQL":"Select public.offer.*\r\nFrom public.offer","ColumnsList":[{"ID":"queryCol_0","Name":"subscriber_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"offer_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"offer_ref_id","DataType":"Integer","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"offer_description","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"from_date","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"to_date","DataType":"Text","Index":5,"IsInputArgument":true}]}</DBQuery>

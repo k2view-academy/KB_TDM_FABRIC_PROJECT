@@ -61,6 +61,7 @@
     <TableProperties name="PAYMENT">
       <Populations>
         <Population name="query_main_PAYMENT" order="4" disabled="false" populationType="Regular" />
+        <Population name="query_main_PAYMENT_Development" order="4" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="SUBSCRIBER">
@@ -80,7 +81,6 @@
     </TableProperties>
     <TableProperties name="TAR_SUBSCRIBER">
       <Populations>
-        <Population name="tar_pop_sub_test" order="5" disabled="true" populationType="Regular" />
         <Population name="population_tar_subscriber.flow" order="5" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
@@ -110,8 +110,8 @@
       <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="population_tar_subscriber.flow" column="subscriber_id" columnId="tblCol_d78b5d3e85764f2c918b40943907711e" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="tar_pop_sub_test" column="subscriber_id" columnId="queryCol_0" />
+      <From tableType="TableObject" table="INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
+      <To tableType="TableObject" table="PAYMENT" populationObjectName="query_main_PAYMENT_Development" column="invoice_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
@@ -154,12 +154,12 @@
         <Node name="OFFER" pos="992 558.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="INVOICE" pos="992 358.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="BALANCE" pos="992 158.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
-        <Node name="PAYMENT" pos="1294 383.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="PAYMENT" pos="1294 383.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Group name="Target Tables for Delete" pos="312 774.621033" size="855.666748 183.4245" wasexpanded="false" expanded="true">
         <Node name="TAR_PAYMENT" pos="906.6667 793.712158" size="257.000061 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_INVOICE" pos="618 802.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TAR_SUBSCRIBER" pos="316 802.045532" size="257 152" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_SUBSCRIBER" pos="316 818.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
     </Graph>
   </DiagramGraph>

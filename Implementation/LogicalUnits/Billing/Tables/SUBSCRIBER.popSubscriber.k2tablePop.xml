@@ -41,18 +41,18 @@
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="SUBSCRIBER.popSubscriber.k2tablePop.xml" lastPartID="28">
+    <Graph name="SUBSCRIBER.popSubscriber.k2tablePop.xml" lastPartID="47">
       <TableNode partID="0" name="SUBSCRIBER" pos="404 30" width="253" />
       <FunctionMapNode id="0" L0="1" R0="2" R1="3" R2="4" R3="5" R4="6" R5="7" R6="8" R7="9" partID="11" topLabel="fnPop_SUBSCRIBER (11)" pos="32 43.50911" size="206 121.674454" isRoot="true">
         <KFunction>{"Name":"fnPop_SUBSCRIBER","ID":"f_11","Category":"Root","Version":"6.4.1.7","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[{"Name":"input","ID":"fi_11.0","Index":0,"DataType":"String"}],"outputParams":[{"Name":"SUBSCRIBER_ID","ID":"fo_11.0","Index":0,"DataType":"Double"},{"Name":"MSISDN","ID":"fo_11.1","Index":1,"DataType":"String"},{"Name":"IMSI","ID":"fo_11.2","Index":2,"DataType":"String"},{"Name":"SIM","ID":"fo_11.3","Index":3,"DataType":"String"},{"Name":"FIRST_NAME","ID":"fo_11.4","Index":4,"DataType":"String"},{"Name":"LAST_NAME","ID":"fo_11.5","Index":5,"DataType":"String"},{"Name":"SUBSCRIBER_TYPE","ID":"fo_11.6","Index":6,"DataType":"String"},{"Name":"VIP_STATUS","ID":"fo_11.7","Index":7,"DataType":"String"}],"HideMethodInUi":false}</KFunction>
       </FunctionMapNode>
-      <Link partID="21" from="2" to="10" pointsArr="238 64.6367 248 64.6367 394 61.0364532 404 61.0364532" fromNodePartID="11" fromNodeColumnName="SUBSCRIBER_ID" toNodePartID="0" toNodeColumnName="SUBSCRIBER_ID" />
+      <Link partID="21" from="2" to="10" pointsArr="238 64.63672 248 64.63672 394 61.0364532 404 61.0364532" fromNodePartID="11" fromNodeColumnName="SUBSCRIBER_ID" toNodePartID="0" toNodeColumnName="SUBSCRIBER_ID" />
       <Link partID="22" from="3" to="11" pointsArr="238 76.7096252 248 76.7096252 394 73.10937 404 73.10937" fromNodePartID="11" fromNodeColumnName="MSISDN" toNodePartID="0" toNodeColumnName="MSISDN" />
-      <Link partID="23" from="4" to="12" pointsArr="238 88.78253 248 88.78253 394 85.18228 404 85.18228" fromNodePartID="11" fromNodeColumnName="IMSI" toNodePartID="0" toNodeColumnName="IMSI" />
-      <Link partID="24" from="5" to="13" pointsArr="238 100.855469 248 100.855469 394 97.2552 404 97.2552" fromNodePartID="11" fromNodeColumnName="SIM" toNodePartID="0" toNodeColumnName="SIM" />
+      <Link partID="23" from="4" to="12" pointsArr="238 88.78255 248 88.78255 394 85.18228 404 85.18228" fromNodePartID="11" fromNodeColumnName="IMSI" toNodePartID="0" toNodeColumnName="IMSI" />
+      <Link partID="24" from="5" to="13" pointsArr="238 100.855453 248 100.855453 394 97.2552 404 97.2552" fromNodePartID="11" fromNodeColumnName="SIM" toNodePartID="0" toNodeColumnName="SIM" />
       <Link partID="25" from="6" to="14" pointsArr="238 112.928375 248 112.928375 394 109.32811 404 109.32811" fromNodePartID="11" fromNodeColumnName="FIRST_NAME" toNodePartID="0" toNodeColumnName="FIRST_NAME" />
       <Link partID="26" from="7" to="15" pointsArr="238 125.001282 248 125.001282 394 121.401031 404 121.401031" fromNodePartID="11" fromNodeColumnName="LAST_NAME" toNodePartID="0" toNodeColumnName="LAST_NAME" />
-      <Link partID="27" from="8" to="16" pointsArr="238 137.074219 248 137.074219 394 133.473953 404 133.473953" fromNodePartID="11" fromNodeColumnName="SUBSCRIBER_TYPE" toNodePartID="0" toNodeColumnName="SUBSCRIBER_TYPE" />
+      <Link partID="27" from="8" to="16" pointsArr="238 137.0742 248 137.0742 394 133.473953 404 133.473953" fromNodePartID="11" fromNodeColumnName="SUBSCRIBER_TYPE" toNodePartID="0" toNodeColumnName="SUBSCRIBER_TYPE" />
       <Link partID="28" from="9" to="17" pointsArr="238 149.147125 248 149.147125 394 145.546875 404 145.546875" fromNodePartID="11" fromNodeColumnName="VIP_STATUS" toNodePartID="0" toNodeColumnName="VIP_STATUS" />
     </Graph>
   </DiagramGraph>

@@ -30,7 +30,7 @@ From public.payment]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="TAR_PAYMENT.pop_tar_payment.k2tablePop.xml" lastPartID="18">
+    <Graph name="TAR_PAYMENT.pop_tar_payment.k2tablePop.xml" lastPartID="24">
       <TableNode partID="0" name="TAR_PAYMENT" pos="404 30" width="253" />
       <DBQueryNode partID="5" name="BILLING_DB" pos="25 45.50911" size="253 84.14583" isRoot="true">
         <DBQuery>{"Name":"query_main_PAYMENT","ID":"query_query_main_PAYMENT","ConnName":"BILLING_DB","SQL":"Select public.payment.invoice_id,\r\n  public.payment.payment_id\r\nFrom public.payment","ColumnsList":[{"ID":"queryCol_0","Name":"invoice_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"payment_id","DataType":"Integer","Index":1,"IsInputArgument":true}]}</DBQuery>

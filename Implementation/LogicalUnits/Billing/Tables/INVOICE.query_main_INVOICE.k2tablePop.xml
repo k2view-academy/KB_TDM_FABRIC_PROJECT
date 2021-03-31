@@ -44,7 +44,7 @@ From public.invoice]]></SQL>
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="INVOICE.query_main_INVOICE.k2tablePop.xml" lastPartID="56">
+    <Graph name="INVOICE.query_main_INVOICE.k2tablePop.xml" lastPartID="72">
       <TableNode partID="0" name="INVOICE" pos="383 5.70834351" width="253" />
       <DBQueryNode partID="10" name="BILLING_DB" pos="10 0.744796753" size="253 144.5104" isRoot="true">
         <DBQuery>{"Name":"query_main_INVOICE","ID":"query_query_main_INVOICE","ConnName":"BILLING_DB","SQL":"Select public.invoice.*\r\nFrom public.invoice","ColumnsList":[{"ID":"queryCol_0","Name":"subscriber_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"invoice_id","DataType":"Integer","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"issued_date","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"due_date","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"status","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"balance","DataType":"Integer","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"invoice_image","DataType":"BLOB","Index":6,"IsInputArgument":true}]}</DBQuery>
