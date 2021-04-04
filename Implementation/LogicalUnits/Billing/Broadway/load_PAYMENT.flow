@@ -131,17 +131,6 @@
         {
             "stages": [
                 {
-                    "name": "Pre Transformation",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "remark": "Activities before doing special fields mapping.\nFor Example,in case of population depended sequence, set the Sequence Name based on the Population ID field from Fabric table",
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -270,16 +259,16 @@
                     ]
                 },
                 {
-                    "name": "Check source payment method",
+                    "name": "Product version is DEV",
                     "dependsOnList": [
                         "Check Product Versions"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
+                    "hasElse": true,
                     "actors": [
                         {
-                            "name": "IsNull1",
-                            "condition": "result",
+                            "name": "IsNull2",
                             "actorType": {
                                 "parentType": "IsNull",
                                 "inputs": [],
@@ -310,23 +299,13 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "",
-                    "dependsOnList": [
-                        "Check Product Versions"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "Load Data To Target - PROD version",
+                    "name": "PROD version ",
                     "dependsOnList": [
                         "Target PROD Version"
                     ],
@@ -418,9 +397,9 @@
                     ]
                 },
                 {
-                    "name": "Set payment method",
+                    "name": "Check source payment method",
                     "dependsOnList": [
-                        "Check source payment method"
+                        "Product version is DEV"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -436,34 +415,26 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [
-                        ""
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "Stage 3",
+                    "name": "Stage 1",
                     "dependsOnList": [
-                        "Load Data To Target - PROD version"
+                        "PROD version "
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
+                    "isTransactional": false,
                     "actors": []
                 },
                 {
-                    "name": "Load Data To Target- DEV Version",
+                    "name": "Set payment method",
                     "dependsOnList": [
-                        "Set payment method"
+                        "Check source payment method"
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
                     "isTransactional": false,
                     "actors": [
                         {
@@ -561,25 +532,6 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [
-                        "Stage 6"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Post Record Loading",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": []
                 }
             ]
         },
@@ -731,6 +683,20 @@
                 "name": "result"
             },
             "rightPort": {
+                "actor": "IfElse1",
+                "name": "b"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "PAYMENT_METHOD"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
                 "actor": "PAYMENT_ID_SEQ_Actor1",
                 "name": "OriginalSeqValue"
             },
@@ -759,22 +725,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "IsNull1",
+                "actor": "IsNull2",
                 "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "PAYMENT_METHOD"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "IfElse1",
-                "name": "b"
             },
             "iterate": "Iterate",
             "path": [
@@ -844,7 +796,7 @@
         },
         {
             "leftPort": {
-                "actor": "IsNull1",
+                "actor": "IsNull2",
                 "name": "result"
             },
             "rightPort": {
