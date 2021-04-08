@@ -102,7 +102,9 @@
           <lu_name>Customer</lu_name>
           <source_env_name></source_env_name>
           <interface_name>CRM_DB</interface_name>
-          <ig_sql>Select CUSTOMER_ID From CUSTOMER Where customer_id &lt;= 1500</ig_sql>
+          <ig_sql>Select customer_id
+From customer
+Limit 1000</ig_sql>
         </trnMigrateList>
       </DocumentElement>
     </diffgr:diffgram>

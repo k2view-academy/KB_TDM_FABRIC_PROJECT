@@ -32,49 +32,6 @@ import static com.k2view.cdbms.usercode.lu.Billing.Globals.*;
 public class Logic extends UserCode {
 
 
-	@type(RootFunction)
-	@out(name = "PATIENT_ID", type = String.class, desc = "")
-	@out(name = "SSN", type = String.class, desc = "")
-	@out(name = "FIRST_NAME", type = String.class, desc = "")
-	@out(name = "LAST_NAME", type = String.class, desc = "")
-	@out(name = "ADDRESS", type = String.class, desc = "")
-	@out(name = "CITY", type = String.class, desc = "")
-	@out(name = "ZIP", type = String.class, desc = "")
-	@out(name = "STATE", type = String.class, desc = "")
-	@out(name = "COUNTRY", type = String.class, desc = "")
-	@out(name = "DATE1", type = String.class, desc = "")
-	@out(name = "ATTR_LIST", type = String.class, desc = "")
-	@out(name = "PATIENT_CODE", type = String.class, desc = "")
-	public static void fnPop_RootTable(String PATIENT_ID) throws Exception {
-				// Check the TDM_INSERT_TO_TARGET, TDM_DELETE_BEFORE_LOAD and TDM_SYNC_SOURCE_DATA.
-				// Note: if both globals - TDM_SYNC_SOURCE_DATA is false and TDM_DELETE_BEFORE_LOAD - are false, the Init flow needs to set the sync mode to OFF
-				
-				String luName = getLuType().luName;
-				String tdmInsertToTarget = "" +fabric().fetch("SET " + luName +".TDM_INSERT_TO_TARGET").firstValue();
-				String tdmSyncSourceData = "" + fabric().fetch("SET " + luName +".TDM_SYNC_SOURCE_DATA").firstValue();
-				String rootTableName = "" + fabric().fetch("SET " + luName +".ROOT_TABLE_NAME").firstValue();
-				String rootTableColumn = "" + fabric().fetch("SET " + luName +".ROOT_COLUMN_NAME").firstValue();
-				
-				// Check TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA. If the TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA are true, then select the data from the source and yield the results
-				if(tdmInsertToTarget.equals("true") ) {
-					if (tdmSyncSourceData.equals("false")) {
-						// If this is the first sync (the instance is not in Fabric) - throw exception
-						if (isFirstSync()) {
-							throw new Exception("The instance does not exist in Fabric and sync from source is off");
-						}
-				
-					} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
-					{
-						// Note that sql needs to be edited to select from the main source table by the input id
-						String sql = "SELECT * FROM " + rootTableName + " WHERE " + rootTableColumn + "=?";
-						db("<SOURCE DB>").fetch(sql, PATIENT_ID).each(row -> {
-							yield(row.cells());
-						});
-					}
-				}
-							
-			
-	}
 
 
 	@type(RootFunction)

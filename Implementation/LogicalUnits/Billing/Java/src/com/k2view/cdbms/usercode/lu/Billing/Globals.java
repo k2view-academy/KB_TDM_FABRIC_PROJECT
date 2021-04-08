@@ -11,6 +11,8 @@ public class Globals extends SharedGlobals {
 
 	public static String ROOT_TABLE_NAME = "SUBSCRIBER";
 
+	public static String ROOT_COLUMN_NAME = "SUBSCRIBER_ID";
+
 	
 
 

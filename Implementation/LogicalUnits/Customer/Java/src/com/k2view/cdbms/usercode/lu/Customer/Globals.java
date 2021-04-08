@@ -11,6 +11,8 @@ public class Globals extends SharedGlobals {
 
 	public static final String ROOT_TABLE_NAME = "CUSTOMER";
 
+	public static String ROOT_COLUMN_NAME = "CUSTOMER_ID";
+
 	
 
 

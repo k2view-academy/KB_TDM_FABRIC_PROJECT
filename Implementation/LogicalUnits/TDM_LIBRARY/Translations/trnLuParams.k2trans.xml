@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Translation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>trnLuParams</Name>
   <InputNotFoundAction>Use_Default</InputNotFoundAction>
   <SchemaColumns>
@@ -80,15 +80,7 @@
         </xs:unique>
       </xs:element>
     </xs:schema>
-    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
-      <DocumentElement>
-        <trnLuParams diffgr:id="trnLuParams1" msdata:rowOrder="0">
-          <INDEX>1</INDEX>
-          <COLUMN_NAME>store_id</COLUMN_NAME>
-          <SQL>SELECT CUSTOMER.STORE_ID FROM CUSTOMER</SQL>
-        </trnLuParams>
-      </DocumentElement>
-    </diffgr:diffgram>
+    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" />
   </TranslationData>
   <DataRowsHeight>39</DataRowsHeight>
 </Translation>

@@ -58,16 +58,15 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
+        <DbInterface k2StudioObjectName="TDM" dbType="postgresql" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>/NznNPDGp8a/yt+l43/iKRX1eeenhJAXUeJx1sqoffU=:3hbTpSEc5RrdVHIi7Wj0V44/xw2ESwjxRkStmJnLx3Y=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>MLSM3t03hDLC9RUZVWdBM4n2RBDEia3XBbKhPu/fQHM=:5cOV+vsAE20UnHsKMtw1p+WW48JitHmIarBkI6lN7BY=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -146,11 +145,23 @@
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Billing">
+          <Value>SUBSCRIBER_ID</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
         </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Collection">
+          <Value>collection_id</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Customer">
+          <Value>CUSTOMER_ID</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Orders">
+          <Value>order_id</Value>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
@@ -263,16 +274,15 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
+        <DbInterface k2StudioObjectName="TDM" dbType="postgresql" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>C/4dQW5PsIydeXvwIbr57C63YB7BO3zJxwlanT6XWTs=:Xv/tpjbC6/CHE5YW7Z6j2tXBGKCTdoqpQm5rWjXibZ0=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>oL7PWe92krbEaEqpl7wMUxjXk3K3wyF2On8gyv7JxSI=:gP5X5Pa1vW2OaHXYV6Ga1WBVDJnLgvyq0Vq1n/j6QrE=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -351,11 +361,23 @@
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Billing">
+          <Value>SUBSCRIBER_ID</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
         </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Collection">
+          <Value>collection_id</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Customer">
+          <Value>CUSTOMER_ID</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Orders">
+          <Value>order_id</Value>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>

@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Get instance Info",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -192,7 +192,40 @@
                                         }
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "target_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "task_execution_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "lu_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "column_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "seq_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "source_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -591,6 +624,34 @@
         },
         {
             "leftPort": {
+                "actor": "Get Data From Cassandra Table",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Root Table",
+                "name": "b"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Data From Cassandra Table",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Root Column",
+                "name": "b"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "column_name"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Check If Root Table",
                 "name": "result"
             },
@@ -627,26 +688,6 @@
             "rightPort": {
                 "actor": "DbLoad1",
                 "name": "is_instance_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "tableName"
-            },
-            "rightPort": {
-                "actor": "Check If Root Table",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "columName"
-            },
-            "rightPort": {
-                "actor": "Check If Root Column",
-                "name": "b"
             }
         }
     ]

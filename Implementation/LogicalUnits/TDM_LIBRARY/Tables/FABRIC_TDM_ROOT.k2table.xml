@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>FABRIC_TDM_ROOT</Name>
   <ID>tbl_FABRIC_TDM_ROOT</ID>
   <EntityId />
@@ -11,14 +11,9 @@
     <Column name="timestamp" id="tblCol_2b3824d9700e4f788970ffb7e1603e00" index="4" datatype="text" />
   </Columns>
   <IndexesList />
-  <EnrichmentList>
-    <Enrichment>
-      <Name>fnCheckInsFound</Name>
-      <Type>Function</Type>
-      <TableName>FABRIC_TDM_ROOT</TableName>
-    </Enrichment>
-  </EnrichmentList>
+  <EnrichmentList />
   <LazyDataUpdate syncMethod="TimeInterval" performEvery="00:00:00">
     <TruncateBeforeSync>true</TruncateBeforeSync>
   </LazyDataUpdate>
+  <TriggersList />
 </TableObject>

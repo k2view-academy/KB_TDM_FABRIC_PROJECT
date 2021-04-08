@@ -504,6 +504,26 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Initiate Target Entity ID after IID Split",
+                            "remark": "The Target Entity ID should be initiated with the instance id in case of delete only tasks, otherwise it will not have IID value which includes the env name",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -751,6 +771,16 @@
             },
             "rightPort": {
                 "actor": "Set Source Entity ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "name": "instanceID"
+            },
+            "rightPort": {
+                "actor": "Initiate Target Entity ID after IID Split",
                 "name": "value"
             }
         },

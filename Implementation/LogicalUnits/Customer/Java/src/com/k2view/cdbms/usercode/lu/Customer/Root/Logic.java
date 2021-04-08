@@ -76,7 +76,7 @@ public class Logic extends UserCode {
 		String tdmInsertToTarget = "" +fabric().fetch("SET " + luName +".TDM_INSERT_TO_TARGET").firstValue();
 		String tdmSyncSourceData = "" + fabric().fetch("SET " + luName +".TDM_SYNC_SOURCE_DATA").firstValue();
 		
-		log.info("TEST1---tdmInsertToTarget: " + tdmInsertToTarget + ", tdmSyncSourceData: " + tdmSyncSourceData);
+		//log.info("TEST1---tdmInsertToTarget: " + tdmInsertToTarget + ", tdmSyncSourceData: " + tdmSyncSourceData);
 		
 		// Check TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA. If the TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA are true, then select the data from the source and yield the results
 		if(tdmInsertToTarget.equals("true") ) {
@@ -91,6 +91,8 @@ public class Logic extends UserCode {
 		
 				// Indicates if any of the source root table has the instance id
 				AtomicBoolean instanceExists = new AtomicBoolean(false);
+				
+				//log.info("POP Customer - input IID: " + input);
 		
 				String sql = "SELECT CUSTOMER_ID, SSN, FIRST_NAME, LAST_NAME FROM CUSTOMER where customer_id = ?";
 				db("CRM_DB").fetch(sql, input).each(row->{

@@ -86,9 +86,8 @@
     </TableProperties>
   </TablesProperties>
   <EnrichmentsOrderList>
-    <Item order="1" active="true" name="FABRIC_TDM_ROOT" columnName="fnCheckInsFound" type="Table" />
-    <Item order="2" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
-    <Item order="3" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
+    <Item order="1" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
+    <Item order="2" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
   </EnrichmentsOrderList>
   <ReferencesList />
   <Relations />

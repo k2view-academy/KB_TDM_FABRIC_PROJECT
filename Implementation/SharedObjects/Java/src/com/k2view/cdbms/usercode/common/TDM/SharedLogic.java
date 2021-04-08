@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////
 // Project Shared Functions
-//////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////
 
 package com.k2view.cdbms.usercode.common.TDM;
 
@@ -92,13 +92,15 @@ public class SharedLogic {
 	@out(name = "rs", type = Object[].class, desc = "")
 	public static Object[] fnValidateNdGetInstance() throws Exception {
 		String origUid = getInstanceID();
-		Object[] splitIID = fnSplitUID(origUid);
 		
 		// TDM 7.1 - fix- get out the clone id before the split. For example: SRC_66#params#{"clone_id"=1}|//
+		
 		Object[] splitCloneId = origUid.split("#params#");
 		origUid = "" + splitCloneId[0];
 		
 		// end of Fix
+		
+		Object[] splitIID = fnSplitUID(origUid);
 		
 		return new Object[]{origUid, splitIID[1], splitIID[0], splitIID[2], splitIID[3]};
 	}
@@ -516,7 +518,7 @@ public class SharedLogic {
 					verAddition;
 		
 		//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
-		// Fix the query- add the child LU to the condition
+			// Fix the query- add the child LU to the condition
 		String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
 		String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
 		
@@ -579,7 +581,7 @@ public class SharedLogic {
 			
 			//TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated 
 			if (fnDecisionDeleteFromTarget()) {
-				log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
+				//log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
 				ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
 				
 				childTarEIDs = ludb().fetch(sqlTar);
@@ -589,9 +591,7 @@ public class SharedLogic {
 			
 					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
 		
-					log.info("TEST - LU name: " + parentLU + ", before insert records into TDM DB - tdm_lu_type_rel_tar_eid - check inDebugMode: " + !inDebugMode());
 					if (!inDebugMode()) {
-						log.info("TEST - LU name: " + parentLU + ", insert records into TDM DB - tdm_lu_type_rel_tar_eid"); 
 						ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
 					}
 				}
@@ -614,14 +614,21 @@ public class SharedLogic {
 		// In addition- remove the open and close separators
 		String instanceId = "";
 		String envName = "";
-		
+		String separator = "";
 		String iidOpenSeparator = "";
 		String iidCloseSeparator = "";
 		// TDM 6.0 - The version name (task name) and version datetime should be returned
 		String versionName = "";
 		String versionDateTime = "";
-		
-		
+				
+		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+        //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
+		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
+			separator = iidSeparator;
+		} else {
+			separator = "_";
+		}
+		//log.info("fnSplitUID: separator: " + separator);
 		// TDM 5.1- get open and close separators for the instanceId. If they exist- get the instanceId according the open and close separators
 		//Set the SQL parameter
 		
@@ -641,7 +648,7 @@ public class SharedLogic {
 			
 		try {
 		 	
-				String[] split_uid = uid.split("_");
+				String[] split_uid = uid.split(separator);
 			
 				if(envName.equals(""))
 		        	envName = split_uid[0].toString();
@@ -651,7 +658,7 @@ public class SharedLogic {
 				{
 					//log.info("fnSplitUID - No Separators");
 					instanceId = split_uid[1].toString();
-					
+					//log.info("fnSplitUID - instanceId: " + instanceId);
 					//TDM 6.0, get the version name and datetime
 					if (split_uid.length==4) {  //entity in the format of <environment>_<entity_id>_<task_name>_<timestamp>
 						versionName = split_uid[2].toString();
@@ -668,12 +675,11 @@ public class SharedLogic {
 					// if the uid is longer than the end position of the instance id including the close separator
 					if (uid.length() > pos) {
 						// Add 1 to jump to the beginning of the task name
-						String[] split_version = (uid.substring(pos + 1)).split("_");
+						String[] split_version = (uid.substring(pos + 1)).split(separator);
 						versionName = split_version[0];
 						versionDateTime = split_version[1];
 					}
 				}
-			        
 		} catch (Exception e) {
 		    if (e.getMessage().toString().contains("String index out of range"))
 		        throw new Exception("Environment Name Is Missing, String index out of range");
@@ -683,13 +689,12 @@ public class SharedLogic {
 		finally
 		{
 			// If the input uid does not have _ separator
-		
-			if(uid.indexOf("_") == -1)
+			if(uid.indexOf(separator) == -1)
 				 throw new Exception("Environment Name Is Missing, Underscore not found");
 		
 		}
 		
-		//log.info("fnSplitUID - Output: instanceID: " + instanceId + ", envName: " + envName + ", versionName: " + versionName + "versionDateTime: " + versionDateTime);
+		//log.info("fnSplitUID - Output: instanceID: " + instanceId + ", envName: " + envName + ", versionName: " + versionName + ", versionDateTime: " + versionDateTime);
 		return new Object[]{instanceId, envName, versionName, versionDateTime};
 	}
 
@@ -1252,6 +1257,7 @@ public class SharedLogic {
 		return upperParent;
 	}
 
+	@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,String> fnMigrateEntitiesForTdmExtract(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String globals, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode) throws Exception {
 		if (syncMode != "ON") {
 			fabric().execute("SET SYNC " + syncMode);
@@ -1270,7 +1276,13 @@ public class SharedLogic {
 		Long unixTime_plus_retention;
 		
 		setGlobals(globals);
-		
+		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+		String separator = "";
+		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
+					separator = iidSeparator;
+			} else {
+				separator = "_";
+			}
 		// TALI- set version_exp_date to null. We cannot set an empty string for timestamp type of PG
 		String version_exp_date =null;
 		//ResultSetWrapper rs_mig_id = null;
@@ -1335,11 +1347,11 @@ public class SharedLogic {
 					entityId += closeSeparator;
 		
 				if (versionInd.equals("true")) { //Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp>
-					entities_list_for_migrate += "'" + sourceEnvName+"_"+entityId+"_"+taskName+"_"+timeStamp+"',";
+					entities_list_for_migrate += "'" + sourceEnvName+separator+entityId+separator+taskName+separator+timeStamp+"',";
 					//entities_list_for_migrate += "'" + sourceEnvName+"_"+entities_list_array[i]+"_"+taskName+"_"+timeStamp+"',";
 				}
 				else { // no Versioning needed, entities format :<source_env>_<entity_id>
-					entities_list_for_migrate +=  "'" +sourceEnvName+"_"+entityId + "',";
+					entities_list_for_migrate +=  "'" +sourceEnvName+separator+entityId + "',";
 					//entities_list_for_migrate +=  "'" +sourceEnvName+"_"+entities_list_array[i] + "',";
 				}
 			} // end of loop on entity array
@@ -1377,12 +1389,12 @@ public class SharedLogic {
 		
 				timeStamp = "" + db("TDM").fetch(sqlGetVersionDateTime, taskExecutionId, parentLuName).firstValue();
 		
-				String entityIdSelectChildID= "rel.source_env||''_''||rel.lu_type2_eid";
+				String entityIdSelectChildID= "rel.source_env||''" + separator + "''||rel.lu_type2_eid";
 				//String entityIdSelectParID = "rel.source_env||''_''||rel.lu_type1_eid";
 		
 				if (!openSeparator.equals(""))
 				{
-					entityIdSelectChildID = "rel.source_env||''_''||''" + openSeparator + "''||rel.lu_type2_eid";
+					entityIdSelectChildID = "rel.source_env||''" + separator + "''||''" + openSeparator + "''||rel.lu_type2_eid";
 					//entityIdSelectParID = "rel.source_env||''_''||''" + openSeparator + "''||rel.lu_type1_eid";
 				}
 		
@@ -1393,7 +1405,7 @@ public class SharedLogic {
 				}
 		
 				if (versionInd.equals("true")) {
-					entityIdSelectChildID += "||''_" + taskName + "_''||''" + timeStamp + "''";
+					entityIdSelectChildID += "||''" + separator + taskName + separator + "''||''" + timeStamp + "''";
 					//entityIdSelectParID += "||''_" + taskName + "_''||''" + timeStamp + "''";
 				}
 		
@@ -1494,7 +1506,7 @@ public class SharedLogic {
 		
 						String formatSeparator = query_format.substring(query_format.indexOf("<source_env_name>")+ "<source_env_named>".length(), query_format.indexOf("<entity_id>"));
 						//log.info("query_format: " + query_format + ", formatSeparator1: " + formatSeparator + " check");
-						formatSeparator = formatSeparator.replaceFirst("'_'", "");
+						formatSeparator = formatSeparator.replaceFirst("'" + separator + "'", "");
 						//log.info("formatSeparator2: " + formatSeparator);
 						String insertOpenStr = "'" + openSeparator + "'" + formatSeparator;
 						String insertCloseStr = formatSeparator +"'" + closeSeparator + "'";
@@ -1534,11 +1546,11 @@ public class SharedLogic {
 						qry_entity_col  = qry_entity_col + "||''" + closeSeparator + "''";
 		
 					if (versionInd.equals("true")) { //Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp>
-						modified_sql = select + " ''"+ sourceEnvName+"_''||"+ qry_entity_col + "||''_" + taskName + "_" + timeStamp + "''" + sql_part2;
+						modified_sql = select + " ''"+ sourceEnvName + separator + "''||"+ qry_entity_col + "||''" + separator + taskName + separator + timeStamp + "''" + sql_part2;
 						//log.info("BACKUP ALL task, No query format, with version: migrate "+luName+" from "+ interface_name +" using ('" + modified_sql + "') WITH AFFINITY='"+dcName+"' ASYNC=true");
 					}
 					else { ////Modify entities to be in the format of <source_env>_<entity_id>
-						modified_sql = select + " ''"+ sourceEnvName+"_''||"+ qry_entity_col + sql_part2;
+						modified_sql = select + " ''"+ sourceEnvName + separator + "''||"+ qry_entity_col + sql_part2;
 						//log.info("BACKUP ALL task, No query format, no version: migrate "+luName+" from "+ interface_name +" using ('" + modified_sql + "') WITH AFFINITY='"+dcName+"' ASYNC=true");
 					}
 				}
@@ -1709,13 +1721,20 @@ public class SharedLogic {
 		String instanceId = "";
 		String envName = "";
 		
+		String separator = "";
 		String iidOpenSeparator = "";
 		String iidCloseSeparator = "";
 		// TDM 6.0 - The version name (task name) and version datetime should be returned
 		String versionName = "";
 		String versionDateTime = "";
 		
-		
+		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+        //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
+		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
+			separator = iidSeparator;
+		} else {
+			separator = "_";
+		}
 		// TDM 5.1- get open and close separators for the instanceId. If they exist- get the instanceId according the open and close separators
 		//Set the SQL parameter
 		
@@ -1735,7 +1754,7 @@ public class SharedLogic {
 			
 		try {
 		 	
-				String[] split_uid = uid.split("_");
+				String[] split_uid = uid.split(separator);
 			
 				if(envName.equals(""))
 		        	envName = split_uid[0].toString();
@@ -1762,7 +1781,7 @@ public class SharedLogic {
 					// if the uid is longer than the end position of the instance id including the close separator
 					if (uid.length() > pos) {
 						// Add 1 to jump to the beginning of the task name
-						String[] split_version = (uid.substring(pos + 1)).split("_");
+						String[] split_version = (uid.substring(pos + 1)).split(separator);
 						versionName = split_version[0];
 						versionDateTime = split_version[1];
 					}
@@ -1778,7 +1797,7 @@ public class SharedLogic {
 		{
 			// If the input uid does not have _ separator
 		
-			if(uid.indexOf("_") == -1)
+			if(uid.indexOf(separator) == -1)
 				 throw new Exception("Environment Name Is Missing, Underscore not found");
 		
 		}
@@ -1896,36 +1915,6 @@ public class SharedLogic {
 	}
 
 
-	public static void fnCheckInsFound() throws Exception {
-		// Fix- TDM 7.0.1 - Check the main source LU tables only if the TDM_INSERT_TO_TARGET is true
-		String luName = getLuType().luName;
-		
-		if(("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true"))
-		{
-		
-			// Get the list of root tables from the Global
-			String[] rootTables = ("" + ludb().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue()).split(",");
-		
-			// Indicates if any of the root tables have values in it
-			boolean instanceExists = false;
-		
-			// For every possible root table
-			for(String rootTable : rootTables){
-		                // If that table has data
-		                if(!ludb().fetch(String.format("SELECT 1 FROM %s LIMIT 1",rootTable.trim())).firstRow().isEmpty())
-		                                // Indicate the LU is found
-		                                instanceExists = true;
-			}
-		
-		
-			if(!instanceExists){
-		                LogEntry lg = new LogEntry("INSTANCE NOT FOUND!", MsgId.INSTANCE_MISSING);
-		                lg.luInstance = fnValidateNdGetInstance()[0] + "";
-		                lg.luType = getLuType().luName;
-		                throw new InstanceNotFoundException(lg, null);
-			}
-		}
-	}
 
 
 
@@ -1958,7 +1947,7 @@ public class SharedLogic {
 			trnTableName = valMap.get("reference_table_name");
 			//log.info("fnGetRefTableData - trnLuName: " + trnLuName + ", trnTableName: " + trnTableName);
 			if (trnTableName.equalsIgnoreCase(refTableName)  && trnLuName.equalsIgnoreCase(luName)) {
-			//	log.info("fnGetRefTableData - Found table in translation");
+				//log.info("fnGetRefTableData - Found table in translation");
 				schemaName = valMap.get("schema_name");
 				interfaceName = valMap.get("interface_name");
 				targetSchemaName = valMap.get("target_schema_name");

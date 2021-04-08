@@ -85,7 +85,7 @@
         <xs:complexType>
           <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="trnTDMCleanUp">
-              <xs:complexType>
+				<xs:complexType>
                 <xs:sequence>
                   <xs:element name="TABLE_NAME" default="" minOccurs="0">
                     <xs:simpleType>
@@ -249,7 +249,7 @@
           <CLEANUP_ORDER>8</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
           <CLEANUP_STATEMENT>DELETE FROM ENVIRONMENTS WHERE UPPER(ENVIRONMENT_STATUS) = 'INACTIVE' AND ENVIRONMENT_LAST_UPDATED_DATE &lt; ?</CLEANUP_STATEMENT>
-          <CLEANUP_LOGIC>Entities with environment_status = 'Inactive' and and environment_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
+          <CLEANUP_LOGIC>Entities with environment_status = 'Inactive' and environment_last_updated_date &lt; X months ago</CLEANUP_LOGIC>
           <SEQ>19</SEQ>
         </trnTDMCleanUp>
         <trnTDMCleanUp diffgr:id="trnTDMCleanUp17" msdata:rowOrder="16">

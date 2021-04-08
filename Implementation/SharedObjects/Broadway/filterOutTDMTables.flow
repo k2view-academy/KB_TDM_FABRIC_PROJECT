@@ -63,6 +63,33 @@
         {
             "stages": [
                 {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Uppercase1",
+                            "actorType": {
+                                "parentType": "Uppercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Uppercase2",
+                            "actorType": {
+                                "parentType": "Uppercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Stage 4",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -245,13 +272,33 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "Regex1",
-                "name": "pattern"
+                "actor": "Uppercase1",
+                "name": "string"
             },
             "iterate": "Iterate",
             "path": [
                 "table_regex"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Uppercase1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Regex1",
+                "name": "pattern"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Uppercase2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Regex1",
+                "name": "input"
+            }
         },
         {
             "leftPort": {
@@ -279,8 +326,8 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "Regex1",
-                "name": "input"
+                "actor": "Uppercase2",
+                "name": "string"
             }
         },
         {

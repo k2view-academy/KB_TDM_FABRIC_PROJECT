@@ -36,6 +36,7 @@ public class TdmExecuteTask {
     public static final String FABRIC = "fabric";
     public static final String POST_EXECUTIONS_COUNT = "select count(*) from tasks_post_exe_process tt, task_execution_list ll where ll.task_execution_id =? and ll.process_id = tt.process_id and tt.execution_order < ? and ll.execution_status NOT IN ('stopped','completed','failed','killed');";
     public static Map<String, String> entityInclusions = new HashMap<>();
+	public static String separator = "";
 
     enum TASK_TYPES {
         EXTRACT(() -> Util.rte(() -> new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_extract_globals.sql"))),
@@ -65,7 +66,15 @@ public class TdmExecuteTask {
         String query = new String(getLuType().loadResource("TDM/fnTdmExecuteTask/query_get_tasks.sql"));
 
         Db tdmDB = db("TDM");
-
+	
+		String iidSeparator = "" + tdmDB.fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+        //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
+		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
+			separator = iidSeparator;
+		} else {
+			separator = "_";
+		}
+		//log.info("tdmExecuteTask - separator: " + separator);
         tdmDB.fetch(query).forEach(row -> {
 
             // Get task properties
@@ -104,10 +113,10 @@ public class TdmExecuteTask {
 								versionExpDate = migrationStatus.get("version_expiration_date");
                 	        	updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId, versionExpDate);
 								try {
-									log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
 									Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 								} catch (Exception e) {
-									log.info("TdmExecuteTask - Update extract task status to failed");
+									log.error("TdmExecuteTask - Update extract task status to failed");
 		                        	updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
     		                    	updateTaskExecutionSummary(taskExecutionID, "failed");
 								}
@@ -119,10 +128,10 @@ public class TdmExecuteTask {
     	                	}
 						} else {
 							try {
-								log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
 								Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							} catch (Exception e) {
-								log.info("TdmExecuteTask - Update extract task status to failed");
+								log.error("TdmExecuteTask - Update extract task status to failed");
 								updateLuExecutionStatus(taskExecutionID, luID, "failed", null, versionExpDate);
 								updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
 								updateTaskExecutionSummary(taskExecutionID, "failed");
@@ -139,7 +148,7 @@ public class TdmExecuteTask {
         	        	        String executionId = executeFabricBatch(taskProperties, globals);
             	        	    if (!executionId.isEmpty()) {
                 	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
-									log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
 									Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 		                        } else {
     		                        // rollback LU and task status
@@ -147,7 +156,7 @@ public class TdmExecuteTask {
             		                log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                 		        }
 							} else {
-								log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
 								Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							}
         	            } catch (Exception e) {
@@ -164,7 +173,7 @@ public class TdmExecuteTask {
 		
                 long luCount = (long) Util.rte(() -> db(TDM).fetch("SELECT COUNT(lu_id) FROM task_execution_list WHERE task_execution_id= ? AND lu_id > 0 AND execution_status NOT IN ('stopped','completed','failed','killed');", taskExecutionID).firstValue());
                 if(luCount == 0) {
-                    log.info("************* lu count = 0 starting post executions *************");
+                    //log.info("************* lu count = 0 starting post executions *************");
                     TASK_TYPES type = TASK_TYPES.valueOf(TASK_TYPE.get(taskProperties).toString().toUpperCase());
                     globals = getGlobals(type.query(), taskProperties, new HashMap<>(), type.params(taskProperties));
                     try {
@@ -186,7 +195,7 @@ public class TdmExecuteTask {
         waitUntilPrevProcessDone(taskExecutionID, executionOrder);
 
         String processID = Util.rte(() -> resultSet.getString("process_id"));
-        log.info("************* set task execution list to running for process id " + processID + " *************");
+        //log.info("************* set task execution list to running for process id " + processID + " *************");
 
         Map<String, Map<String, String>> trnPostProcessList = getTranslationsData("trnPostProcessList");
         String processName = Util.rte(() -> resultSet.getString("process_name"));
@@ -207,7 +216,7 @@ public class TdmExecuteTask {
         long count = -1;
         while(count != 0){
             count = (long) Util.rte(() ->db(TDM).fetch(POST_EXECUTIONS_COUNT, taskExecutionID, executionOrder).firstValue());
-            log.info("**************** post exec count = " +  count + "********************");
+            //log.info("**************** post exec count = " +  count + "********************");
             Util.sleep(1000);
         }
     }
@@ -225,7 +234,7 @@ public class TdmExecuteTask {
 
     @NotNull
     private static String executeFabricBatch(Map<String, Object> taskProperties, String globals) throws Exception {
-        log.info("----------------- preparing for batch execution -------------------");
+        //log.info("----------------- preparing for batch execution -------------------");
 		 
         String selectionMethod = SELECTION_METHOD.get(taskProperties);
         String luName = LU_NAME.get(taskProperties);
@@ -275,7 +284,7 @@ public class TdmExecuteTask {
     }
 
     private static String getEntityInclusionForChildLU(Map<String, Object> taskProperties, String luName) throws Exception {
-		log.info("getEntityInclusionForChildLU - handling Child LU: " + luName);
+		//log.info("getEntityInclusionForChildLU - handling Child LU: " + luName);
         String parentLU = "" + db(TDM).fetch("SELECT lu_parent_name FROM public.product_logical_units WHERE lu_id=?", (Object)LU_ID.get(taskProperties)).firstValue();
         String entityIdSelectChildID = "t.source_env" + getEntityIDSelect("rel.lu_type2_eid");
         String entityIdSelectParID = "t.source_env" + getEntityIDSelect("rel.lu_type1_eid");
@@ -285,10 +294,10 @@ public class TdmExecuteTask {
         String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
         String entityInclusion;
 		String selectionMethod = ((String)SELECTION_METHOD.get(taskProperties)).toUpperCase();
-		log.info("getEntityInclusionForChildLU - selectedVersionTaskName: <" + selectedVersionTaskName + ">, selectedVersionDateTime: <" + selectedVersionDateTime + ">");
+		//log.info("getEntityInclusionForChildLU - selectedVersionTaskName: <" + selectedVersionTaskName + ">, selectedVersionDateTime: <" + selectedVersionDateTime + ">, separator: <" + separator + ">");
         if(!Util.isEmpty(selectedVersionTaskName) && !Util.isEmpty(selectedVersionDateTime)){
-            entityIdSelectChildID += "||'_'||'" + selectedVersionTaskName + "'||'_'||'" + selectedVersionDateTime + "'";
-            entityIdSelectParID += "||'_'||'" + selectedVersionTaskName + "'||'_'||'" + selectedVersionDateTime + "'";
+            entityIdSelectChildID += "||'" + separator + "'||'" + selectedVersionTaskName + "'||'" + separator + "'||'" + selectedVersionDateTime + "'";
+            entityIdSelectParID += "||'" + separator + "'||'" + selectedVersionTaskName + "'||'" + separator + "'||'" + selectedVersionDateTime + "'";
             versionClause = " and rel.version_name = '" + selectedVersionTaskName + "' and to_char(rel.version_datetime,'yyyyMMddhh24miss') = '" + selectedVersionDateTime + "'";
         }else{
             versionClause = " and rel.version_name ='''' ";
@@ -345,11 +354,11 @@ public class TdmExecuteTask {
         String env = isDeleteOnlyMode(taskProperties) ? TARGET_ENVIRONMENT_NAME.get(taskProperties) : SOURCE_ENVIRONMENT_NAME.get(taskProperties);
         String selectionMethod = ((String)SELECTION_METHOD.get(taskProperties)).toUpperCase();
         String entityInclusion = "";
+		//log.info("getEntityInclusion - separator: " + separator);
         switch(selectionMethod){
             case "L": // In case the task lists the entities to run
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
-                String iidSeparator = (String) db(TDM).fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
-                String separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_"; //todo: check if needed
+				
                 entityInclusion = "SELECT entity_id from (" + Arrays.stream(entitiesListArray)
                         .map(String::trim)
                         .map(entityID -> Util.rte(() -> addSeparators(entityID)))
@@ -366,7 +375,7 @@ public class TdmExecuteTask {
                 break;
             case "S": // In case the task requests to synthetically create entities
                     //entityInclusion = "SELECT '" + env + getEntityIDSelect("'" + entitiesList + "'") + " as entity_id from (select generate_series(1, " + NUMBER_OF_ENTITIES_TO_COPY.get(taskProperties) + " ) as serie) t";
-                    entityInclusion = "SELECT '" + env + "_" + entitiesList + "#params#{\"clone_id\"='||generate_series(1, " + NUMBER_OF_ENTITIES_TO_COPY.get(taskProperties) + " )||'}' as entity_id ";
+                    entityInclusion = "SELECT '" + env + separator + entitiesList + "#params#{\"clone_id\"='||generate_series(1, " + NUMBER_OF_ENTITIES_TO_COPY.get(taskProperties) + " )||'}' as entity_id ";
                 //todo - check if should be: env + getEntityIDSelect("'" + entitiesList + "'")
                 break;
             case "P": // In case the task has criteria based on parameters
@@ -438,7 +447,7 @@ public class TdmExecuteTask {
 			globals.put("MASK_FLAG", "1");
 		}
         globals.put("TDM_SYNTHETIC_DATA", getSyntheticData(selectionMethod));
-		log.info("getGlobals - VERSION_IND: <" + VERSION_IND.get(taskProperties) + ">");
+		//log.info("getGlobals - VERSION_IND: <" + VERSION_IND.get(taskProperties) + ">");
 		if (VERSION_IND.get(taskProperties).equals("true")) {
 	        globals.put("TDM_VERSION_NAME", SELECTED_VERSION_TASK_NAME.get(taskProperties));
     	    globals.put("TDM_VERSION_DATETIME", SELECTED_VERSION_DATETIME.get(taskProperties));
@@ -461,17 +470,18 @@ public class TdmExecuteTask {
 
     @NotNull
     private static String buildEntityExclusion(String environment, String selectionMethod, String versionInd, String selectedVersionTaskName, String selectedVersionDateTime, String entityID) {
+		
         if (!selectionMethod.toUpperCase().equals("R")) {
             String ent = Util.rte(() -> addSeparators(entityID.trim()));
-            String exclusionList;
+			 String exclusionList;
             if (versionInd.equals("true")) {
-                exclusionList = environment + "_" + ent + "_" + selectedVersionTaskName.trim() + "_" + selectedVersionDateTime.trim();
+                exclusionList = environment + separator + ent + separator + selectedVersionTaskName.trim() + separator + selectedVersionDateTime.trim();
             } else {
-                exclusionList = environment + "_" + ent;
+                exclusionList = environment + separator + ent;
             }
             return exclusionList;
         } else {
-            return environment + "_" + entityID.trim();
+            return environment + separator + entityID.trim();
         }
     }
 
@@ -480,8 +490,9 @@ public class TdmExecuteTask {
         Object[] separators = fnGetIIdSeparatorsFromTDM();
         String open = (String) separators[0];
         String close = (String) separators[1];
-        String entityIdSelect = "||'_'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + name :  name);
-        entityIdSelect = !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : entityIdSelect;
+		//log.info("getEntityIDSelect - separator: " + separator);
+        String entityIdSelect = "||'" + separator + "'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + name :  name);
+        entityIdSelect += !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : "";
         return entityIdSelect;
     }
 
