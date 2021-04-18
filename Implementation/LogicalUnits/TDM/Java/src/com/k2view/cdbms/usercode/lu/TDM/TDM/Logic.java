@@ -1624,6 +1624,7 @@ public class Logic extends UserCode {
 			case "binary_double":
 			case "binary_float":
 			case "float8":
+			case "numeric":
 				colType = CASSANDRA_DOUBLE_TYPE;
 				break;
 			case "date":

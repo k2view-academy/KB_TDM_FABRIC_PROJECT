@@ -81,8 +81,10 @@ public class SharedLogic {
 	public static List<String> getLuTableColumns(String table) throws Exception {
 		List<String> al = null;// = new ArrayList<>();
 		LUType luType = getLuType();
-		if(luType == null || !luType.ludbObjects.containsKey(table))
+		
+		if(luType == null || !luType.ludbObjects.containsKey(table)) 
 			return al;
+			
 		//luType.ludbObjects.get(table).getLudbObjectColumns().forEach((s, col) -> al.add(col.getName()));
 		al = new ArrayList<>(luType.ludbObjects.get(table).getLudbObjectColumns().keySet());
 		return al;
@@ -117,12 +119,22 @@ public class SharedLogic {
 				}
 				currentOrder = p.gettablePopulationOrder();
 			}
-			
-			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=" + 
-														p.getLudbObjectName() + ", luName=" + luType.luName).firstValue();
-			if( !tables.contains(p.getLudbObjectName()) && !"null".equals(tableFiltered) && !Util.isEmpty(tableFiltered)) {
-				tmpBucket.add(p.getLudbObjectName());
-				tables.add(p.getLudbObjectName());
+		
+			//The table name in TablePopulation is kept in Upper case, to get the original name, loop over luType.ludbTables
+			String originalTableName = p.getLudbObjectName();
+			//log.info("handling Population Table: " + p.getLudbObjectName());
+			for (String tableName : luType.ludbTables.keySet()) {
+				if (tableName.equalsIgnoreCase(p.getLudbObjectName())) {
+					originalTableName = tableName;
+					break;
+				}
+			}
+			//log.info("handling  Table: " + originalTableName);
+			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=" +
+					originalTableName + ", luName=" + luType.luName).firstValue();
+			if( !tables.contains(originalTableName) && !"null".equals(tableFiltered) && !Util.isEmpty(tableFiltered)) {
+				tmpBucket.add(originalTableName);
+				tables.add(originalTableName);
 			}
 		}
 		// The last bucket
@@ -142,10 +154,19 @@ public class SharedLogic {
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String schema, String table) throws Exception {
 		ResultSet rs = null;
+		String[] types = {"TABLE"};
+		String targetTableName = table;
 		//Object[] result = new Object[2];
 		try {
 			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-			rs = md.getColumns(null, schema, table, null);
+			rs = md.getTables(null, schema, "%", types);
+			while (rs.next()) {
+				if (table.equalsIgnoreCase(rs.getString(3))) {
+					targetTableName = rs.getString(3);
+					break;
+				}
+			}
+			rs = md.getColumns(null, schema, targetTableName, null);
 			List<String> al = new ArrayList<>();
 			while (rs.next()) {
 				al.add(rs.getString("COLUMN_NAME"));
@@ -153,7 +174,7 @@ public class SharedLogic {
 			//result[0] = al;
 		
 			// get PKs
-			rs = md.getPrimaryKeys(null, schema, table);
+			rs = md.getPrimaryKeys(null, schema, targetTableName);
 			List<String> al2 = new ArrayList<>();
 			while (rs.next()) {
 				al2.add(rs.getString("COLUMN_NAME"));

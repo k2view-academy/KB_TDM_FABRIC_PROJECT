@@ -69,6 +69,7 @@
                     "actors": [
                         {
                             "name": "Uppercase1",
+                            "minHeight": 198,
                             "actorType": {
                                 "parentType": "Uppercase",
                                 "inputs": [],

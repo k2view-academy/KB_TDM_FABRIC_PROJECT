@@ -1826,11 +1826,11 @@ public class SharedLogic {
 		return "WITH RECURSIVE relations AS(" +
 				"SELECT lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, entity_id as root_id," +
 				" param_values('" + rootLu +"',entity_id,lower(base.lu_type_1) || '_params','" + sourceEnv + "'," +
-				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid', '-1')::text as p1," +
-				" param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
+				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid')::text as p1," +
+				" CASE WHEN base.lu_type_2 IS NULL THEN '{}'::text ELSE param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
 				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
 				"'" + str + "', 'lu_type2_eid'" +
-				",base.lu_type_2)::text as p2 " +
+				")::text END as p2 " +
 				"FROM ( " +
 				"SELECT entity_id, '" + rootLu + "'::text as lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid " +
 				"FROM " + rootLu + "_params " +
@@ -1840,11 +1840,11 @@ public class SharedLogic {
 				" UNION ALL" +
 				" SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid, root_id," +
 				" param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
-				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid', '-1')::text as p1," +
-				" param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
+				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid')::text as p1," +
+				" CASE WHEN a.lu_type_2 IS NULL THEN '{}'::text ELSE param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
 				" (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
 				"'" + str + "', 'lu_type2_eid'" +
-				",a.lu_type_2)::text as p2 " +
+				")::text END as p2 " +
 				"FROM tdm_lu_type_relation_eid a " +
 				"INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv + "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList + ") AND b.lu_type_1 IN("+ childrenList +"))" +
 				" SELECT * FROM ( " +
@@ -1852,7 +1852,6 @@ public class SharedLogic {
 				" FROM (" +
 				" SELECT root_id,  json_append(p1::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path from relations GROUP BY root_id, p1) colsMerged GROUP BY root_id) AS final";
 	}
-
 	@NotNull
 	private static String getSetTypesQuery(String sourceEnv, String rootLu, String json_type_name, String childrenList) {
 		return " "+
@@ -1915,6 +1914,36 @@ public class SharedLogic {
 	}
 
 
+	public static void fnCheckInsFound() throws Exception {
+		// Fix- TDM 7.0.1 - Check the main source LU tables only if the TDM_INSERT_TO_TARGET is true
+		String luName = getLuType().luName;
+		
+		if(("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true"))
+		{
+		
+			// Get the list of root tables from the Global
+			String[] rootTables = ("" + ludb().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue()).split(",");
+		
+			// Indicates if any of the root tables have values in it
+			boolean instanceExists = false;
+		
+			// For every possible root table
+			for(String rootTable : rootTables){
+		                // If that table has data
+		                if(!ludb().fetch(String.format("SELECT 1 FROM %s LIMIT 1",rootTable.trim())).firstRow().isEmpty())
+		                                // Indicate the LU is found
+		                                instanceExists = true;
+			}
+		
+		
+			if(!instanceExists){
+		                LogEntry lg = new LogEntry("INSTANCE NOT FOUND!", MsgId.INSTANCE_MISSING);
+		                lg.luInstance = fnValidateNdGetInstance()[0] + "";
+		                lg.luType = getLuType().luName;
+		                throw new InstanceNotFoundException(lg, null);
+			}
+		}
+	}
 
 
 

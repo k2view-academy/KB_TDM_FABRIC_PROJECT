@@ -238,7 +238,9 @@
                                     },
                                     {
                                         "name": "SUBSCRIBER_ID",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "MSISDN",
@@ -271,14 +273,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "setTargetEntityId_Actor1",
-                            "actorType": {
-                                "parentType": "setTargetEntityId_Actor",
-                                "inputs": [],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -306,7 +300,48 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -382,16 +417,6 @@
             "rightPort": {
                 "actor": "Load SUBSCRIBER Table",
                 "name": "SUBSCRIBER_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CONTRACT_ID_SEQ_Actor1",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "setTargetEntityId_Actor1",
-                "name": "target_entity_id"
             }
         },
         {

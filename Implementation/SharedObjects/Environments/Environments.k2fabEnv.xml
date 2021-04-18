@@ -157,6 +157,9 @@
         <Global name="ROOT_COLUMN_NAME" luName="Customer">
           <Value>CUSTOMER_ID</Value>
         </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="CustomerTest">
+          <Value>CUSTOMER_ID</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
         </Global>
@@ -371,6 +374,9 @@
           <Value>collection_id</Value>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Customer">
+          <Value>CUSTOMER_ID</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="CustomerTest">
           <Value>CUSTOMER_ID</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
