@@ -1,10 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.0.43">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.10">
   <Name>vdb</Name>
   <RootView>TASK_EXECUTION</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
   <EventsList />
   <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+    <NumberOfPartitionsInPriority>0</NumberOfPartitionsInPriority>
+    <NumberOfJobsInPriority>0</NumberOfJobsInPriority>
     <OrderValidationTime>00:05:00</OrderValidationTime>
     <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
     <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
@@ -165,16 +169,16 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.4.0.43" name="vdb.k2vdb.xml">
+    <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
       <Node name="TASK_EXECUTION" pos="10 321" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TDM_SEQ_MAPPING" pos="313 16" size="257 232" listGroupSize="250 196" viewType="Table" />
       <Node name="task_execution_entities" pos="330 366" size="257 260" listGroupSize="250 224" viewType="Table" />
       <Node name="tdm_lu_type_relation_eid" pos="774.5 230.5" size="257 179" listGroupSize="250 143" viewType="Table" />
-      <Node name="tdm_lu_type_rel_tar_eid" pos="377.052643 725.473755" size="256.999969 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="tdm_lu_type_rel_tar_eid" pos="377.052643 741.473755" size="256.999969 136" listGroupSize="250 100" viewType="Table" />
       <Node name="tasks" pos="20.4301147 576.3829" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_execution_list" pos="677 553" size="257 258.0935" listGroupSize="250 222.0935" viewType="Table" />
       <Node name="TASK_EXECUTION_LINK_ENTITIES" pos="1047 393.473755" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Node name="task_exe_stats_summary" pos="1009 734" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="task_exe_stats_summary" pos="1009 750" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_exe_error_detailed" pos="304 942" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_exe_stats_detailed" pos="1005 918" size="257 136" listGroupSize="250 100" viewType="Table" />
     </Graph>

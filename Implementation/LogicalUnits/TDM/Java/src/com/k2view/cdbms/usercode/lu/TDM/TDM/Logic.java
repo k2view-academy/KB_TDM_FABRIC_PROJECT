@@ -1620,6 +1620,9 @@ public class Logic extends UserCode {
 			case "int4":
 				colType = CASSANDRA_INT_TYPE;
 				break;
+			case "int8":
+				colType = CASSANDRA_BIGINT_TYPE;
+				break;
 			case "decimal":
 			case "binary_double":
 			case "binary_float":
