@@ -21,19 +21,19 @@
             },
             {
               "type": "condition",
-              "code": "fabric_execution_id == \"null\"",
+              "code": "fabric_execution_id != \"null\"",
               "children": [
                 {
                   "name": "LU Migration Summary",
                   "type": "sql",
-                  "code": "migrate_summary '${fabric_execution_id}'"
+                  "code": "migrate_summary ${fabric_execution_id}"
                 }
               ]
             },
             {
               "name": "LU Reference Summary",
               "type": "sql",
-              "code": "Select count(*), min(entity_start_time) as start_time, max(entity_end_time) as end_time, execution_status, lu_name \nfrom task_execution_entities where id_type = 'REFERENCE' group by lu_name, execution_status"
+              "code": "Select count(*), min(entity_start_time) as start_time, max(entity_end_time) as end_time, execution_status, lu_name \nfrom task_execution_entities where id_type = 'REFERENCE' and lu_name = ${lu_name} group by lu_name, execution_status"
             }
           ]
         },
@@ -100,10 +100,5 @@
       "code": ""
     }
   ],
-  "params": [
-    {
-      "name": "i_taskExecutionId",
-      "dataType": "String"
-    }
-  ]
+  "params": []
 }

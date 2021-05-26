@@ -114,7 +114,7 @@ public class TdmExecuteTask {
                 	        	updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId, versionExpDate);
 								try {
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-									Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+									SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 								} catch (Exception e) {
 									log.error("TdmExecuteTask - Update extract task status to failed");
 		                        	updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
@@ -129,7 +129,7 @@ public class TdmExecuteTask {
 						} else {
 							try {
 								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-								Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+								SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							} catch (Exception e) {
 								log.error("TdmExecuteTask - Update extract task status to failed");
 								updateLuExecutionStatus(taskExecutionID, luID, "failed", null, versionExpDate);
@@ -149,7 +149,7 @@ public class TdmExecuteTask {
             	        	    if (!executionId.isEmpty()) {
                 	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-									Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+									SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 		                        } else {
     		                        // rollback LU and task status
         		                    updatedFailedStatus(taskExecutionID, luID);
@@ -157,7 +157,7 @@ public class TdmExecuteTask {
                 		        }
 							} else {
 								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-								Logic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+								SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							}
         	            } catch (Exception e) {
              	       	// rollback LU and task status

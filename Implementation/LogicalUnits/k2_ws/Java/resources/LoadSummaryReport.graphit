@@ -96,11 +96,5 @@
       "type": "string",
       "code": ""
     }
-  ],
-  "params": [
-    {
-      "name": "i_taskExecutionId",
-      "dataType": "String"
-    }
   ]
 }
