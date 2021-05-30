@@ -58,16 +58,15 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
+        <DbInterface k2StudioObjectName="TDM" dbType="postgresql" active="true">
           <dbHost>10.21.3.4</dbHost>
           <dbPort>5437</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>VlxGpUxWujeCAuqFQ8RaDQ3aFeuZ9VuTNS2ZZ3x1qHY=:fpeX9LcQPUu8lRDy1xzP6B7YPvJRs3Q4WwCpkIgAWsE=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>0meBhQeupRAp2SOuwWNmTAFlRe5V645BDbVaV2x335g=:IetwKtkBMuxacnOylNv9XrtgnAJKDiNJj64DWEN81aw=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -279,16 +278,15 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
+        <DbInterface k2StudioObjectName="TDM" dbType="postgresql" active="true">
           <dbHost>10.21.3.4</dbHost>
           <dbPort>5437</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>0OmrFSS6d+fmX1sX7pUM7epMepJ0BxqT6QE/U6ZDlQ8=:5zezIxt7a955hjHbSDQMit34fMCRtpkK83GPFcvSpx8=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>tLTOfbw160deR+SNtO7PKSkAsrhfbaHiooLnTbNpSCw=:GUXtvF8aH6cDVXrGkWg70x/l12/UHO0YdWZQiKM5mc0=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>

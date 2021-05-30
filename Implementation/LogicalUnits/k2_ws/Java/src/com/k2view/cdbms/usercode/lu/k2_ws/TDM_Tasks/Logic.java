@@ -3436,8 +3436,7 @@ public class Logic extends WebServiceUserCode {
 		Map<String,Object> found = null;
 		for(Map<String,Object> rootLU:rootLUs){
 			for(Map<String,Object> e:tree){
-				if(e.get("lu_name").toString().equals(rootLU.get("lu_name").toString()))
-					found=e; break;
+				if(e.get("lu_name").toString().equals(rootLU.get("lu_name").toString())) {found=e; break;}
 			}
 
 			if (found!=null) {
@@ -3461,7 +3460,7 @@ public class Logic extends WebServiceUserCode {
 		List<Map<String,Object>> currentChildren=(List<Map<String,Object>>) current.get("children");
 		if (currentChildren==null || currentChildren.size() == 0){
 			current.put("collapsed", true);
-			if (Long.parseLong(current.get("count").toString()) > 0) {
+			if (current.get("count")!=null && Long.parseLong(current.get("count").toString()) > 0) {
 				current.put("hasChildren", true);
 			}
 			else{
@@ -3502,8 +3501,8 @@ public class Logic extends WebServiceUserCode {
 					HashMap<String,Object> nodeMap=new HashMap<>();
 					nodeMap.put("lu_name",node.get("luName"));
 					nodeMap.put("children",node.get("children")!=null? node.get("children") : new ArrayList<>());
-					nodeMap.put("collapsed",node.get("false"));
-					nodeMap.put("hasChildren",node.get("true"));
+					nodeMap.put("collapsed", false);
+					nodeMap.put("hasChildren",true);
 					//Map<String,Object> parentLu = list.get(map.get(node.get("parentLuName")));
 					//List<HashMap<String,Object>> parentLuChildren = (List<HashMap<String,Object>>) parentLu.get("children");
 					children.add(nodeMap);
@@ -3520,8 +3519,8 @@ public class Logic extends WebServiceUserCode {
 					HashMap<String,Object> nodeMap=new HashMap<>();
 					nodeMap.put("lu_name",node.get("luName"));
 					nodeMap.put("children",node.get("children")!=null? node.get("children") : new ArrayList<>());
-					nodeMap.put("collapsed",node.get("false"));
-					nodeMap.put("hasChildren",node.get("true"));
+					nodeMap.put("collapsed", false);
+					nodeMap.put("hasChildren",true);
 					roots.add(nodeMap);
 				}
 			}
