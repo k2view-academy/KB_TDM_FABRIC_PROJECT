@@ -49,8 +49,8 @@ public class Logic extends UserCode {
 		Db.Rows rows = db("TDM").fetch(queryString);
 		
 		for (Db.Row row : rows) {
-			paramName = "" + row.get("param_name");
-			paramValue = "" + row.get("param_value");
+			paramName = "" + row.cell(0);
+			paramValue = "" + row.cell(1);
 			//log.info("param_name: " + paramName + ", param_value: " + paramValue);
 			if (paramName.equalsIgnoreCase("CLEANUP_ACTIVE_IND")) {
 				activeInd = paramValue;
@@ -67,7 +67,7 @@ public class Logic extends UserCode {
 		
 		// Check if the Clean Up Functionality is activated
 		if (!activeInd.equalsIgnoreCase("true")) {
-			log.info("TDMDB_CleanUp - The TDMDB CleanUp is disabled, in order to enable it, change the active_ind in table tdm_general_parameters in TDM DB");
+			//log.info("TDMDB_CleanUp - The TDMDB CleanUp is disabled, in order to enable it, change the active_ind in table tdm_general_parameters in TDM DB");
 			return;
 		}
 		
@@ -77,22 +77,10 @@ public class Logic extends UserCode {
 		
 		//log.info("retentionDate = " + retentionDate);		
 		//Loop on the translation table and run each delete statement
-		// Rebuild the translation table as sorted map to delete the tables in the right order
 		Map<String,Map<String, String>> trnClnUpListValues = getTranslationsData("trnTDMCleanUp");
-		SortedMap<String, Map<String, String>> trnClnUpSortedMap = new TreeMap<>();
 		
 		for(String index: trnClnUpListValues.keySet()){
-			//log.info("TDMDB_CleanUp - index: " + index + ", tableOrder: " + index.substring(0, index.indexOf("@")) + 
-			//		", tableSeq: " + index.substring(index.indexOf("@") + 3));
-			int tableOrder = Integer.parseInt(index.substring(0, index.indexOf("@")));
-			int tableSeq = Integer.parseInt(index.substring(index.indexOf("@") + 3));
-			String key = String.format("%02d%02d",tableOrder, tableSeq );
-			//log.info("TDMDB_CleanUp - New Key" + key);
-			trnClnUpSortedMap.put(key, trnClnUpListValues.get(index));
-		}
-		
-		for(String index: trnClnUpSortedMap.keySet()){
-			Map<String, String> valMap = trnClnUpSortedMap.get(index);
+			Map<String, String> valMap = trnClnUpListValues.get(index);
 			
 			String active = valMap.get("CLEANUP_IND");
 			//If the entry in translation table is inactive, then the statement should not run, and continue to the next one
@@ -109,7 +97,7 @@ public class Logic extends UserCode {
 			for (int i = 0; i < numOfParams; i++) {
 				queryParam[i] = retentionDate;
 			}
-		
+
 			//Execute the query	
 			try {
 				//log.info("Running Statement: " + statement);
@@ -122,6 +110,7 @@ public class Logic extends UserCode {
 				continue;
 			}
 		}
+		
 	}
 	
 }

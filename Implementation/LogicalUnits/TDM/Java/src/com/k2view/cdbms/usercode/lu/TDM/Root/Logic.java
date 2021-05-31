@@ -316,8 +316,8 @@ public class Logic extends UserCode {
 			data_center_name = "" + tdmTaskExecRec.get("data_center_name");
 			
 			Db.Row luNames = ciTDM.fetch("SELECT lu_name, lu_parent_name from product_logical_units where lu_id = ?", Integer.valueOf(lu_id)).firstRow();
-			lu_name = "" + luNames.cell(0);
-			parent_lu_id = "" + luNames.cell(1);
+			lu_name = "" + luNames.get("lu_name");
+			parent_lu_name = "" + luNames.get("lu_parent_name");
 			
 			Db.Row taskInfo = ciTDM.fetch("SELECT version_ind, task_title from tasks where task_id = ?", task_id).firstRow();
 			version_ind = "" + taskInfo.cell(0);
