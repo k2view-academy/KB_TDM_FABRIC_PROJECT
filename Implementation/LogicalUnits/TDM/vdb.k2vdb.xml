@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.10">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.0.13">
   <Name>vdb</Name>
   <RootView>TASK_EXECUTION</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -7,8 +7,6 @@
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
-    <NumberOfPartitionsInPriority>0</NumberOfPartitionsInPriority>
-    <NumberOfJobsInPriority>0</NumberOfJobsInPriority>
     <OrderValidationTime>00:05:00</OrderValidationTime>
     <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
     <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
@@ -169,7 +167,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
+    <Graph version="6.5.0.13" name="vdb.k2vdb.xml">
       <Node name="TASK_EXECUTION" pos="10 321" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TDM_SEQ_MAPPING" pos="313 16" size="257 232" listGroupSize="250 196" viewType="Table" />
       <Node name="task_execution_entities" pos="330 366" size="257 260" listGroupSize="250 224" viewType="Table" />

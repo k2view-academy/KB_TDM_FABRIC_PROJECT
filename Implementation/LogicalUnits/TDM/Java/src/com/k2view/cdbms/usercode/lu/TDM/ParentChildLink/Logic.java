@@ -43,16 +43,20 @@ public class Logic extends UserCode {
 		
 		if (!taskInfo.isEmpty()) {
 			String taskExecId = "" + taskInfo.cell(0);
-			
+		
+			// TDM 7.1- performance improvement- remove the to_char from the version_datetime in the WHERE statement
 			String sql = "SELECT rel.source_env, rel.lu_type_1, rel.lu_type_2, rel.lu_type1_eid, rel.lu_type2_eid, rel.creation_date, rel.version_name, " +
 				"to_char(rel.version_datetime,'YYYY-MM-DD HH24:MI:SS') as version_datetime, parent.target_entity_id as parent_id, child.target_entity_id as child_id " +
 				"FROM tdm_lu_type_relation_eid rel, task_execution_entities parent, task_execution_entities child " +
 				"where parent.task_execution_id = ? and parent.lu_name = rel.lu_type_1 " +
 				"and parent.source_env = rel.source_env and parent.iid = rel.lu_type1_eid " +
-				"and parent.version_name = rel.version_name and to_char(parent.version_datetime,'YYYY-MM-DD HH24:MI:SS') = to_char(rel.version_datetime,'YYYY-MM-DD HH24:MI:SS') " +
+				"and parent.version_name = rel.version_name "+
+				"and parent.version_datetime = rel.version_datetime " +
 				"and child.task_execution_id = parent.task_execution_id and child.clone_no = parent.clone_no and child.lu_name= rel.lu_type_2 " +
 				"and child.source_env = rel.source_env and child.iid = rel.lu_type2_eid " +
-				"and child.version_name = parent.version_name and to_char(child.version_datetime,'YYYY-MM-DD HH24:MI:SS') = to_char(parent.version_datetime,'YYYY-MM-DD HH24:MI:SS')";
+				"and child.version_name = parent.version_name " + 
+				"and child.version_datetime = parent.version_datetime";
+		
 		
 			Db.Rows rows = null;
 			try {	

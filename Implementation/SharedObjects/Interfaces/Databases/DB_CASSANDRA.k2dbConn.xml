@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="DB_CASSANDRA" type="genericdb" version="6.4.1.10">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="DB_CASSANDRA" type="genericdb" version="6.5.0.13">
   <Active>true</Active>
-  <DataSource>localhost</DataSource>
+  <DataSource>10.21.3.4</DataSource>
   <PortNum>9042</PortNum>
   <UserId>cassandra</UserId>
   <Password>YMUdCTbULHStfuOmbh00HkAqXfGJsay9sjvivPR5nE4=:5gddokDP+1fxK6MMU9RG8ijCvkqC2j8nE5MjIwRUXG8=</Password>
-  <ConnectionStringServerSide>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</ConnectionStringServerSide>
+  <ConnectionStringServerSide>jdbc:cassandra://10.21.3.4:9042/?consistency=QUORUM&amp;internodesssl=false</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

@@ -46,7 +46,7 @@ public class TdmTaskScheduler {
             Timestamp schedulingEndDate = Util.rte(() -> resultSet.getTimestamp("scheduling_end_date"));
             Timestamp localTime = (Timestamp) Util.rte(() -> db("TDM").fetch("SELECT localtimestamp").firstValue());
             log.info("task with id: " + taskID + " beid: " + beID + " tasktype: " + taskType + " cronexpression: " + cronExpression);
-            if(schedulingEndDate != null && localTime.compareTo(schedulingEndDate) < 0){
+            if(schedulingEndDate != null && localTime.compareTo(schedulingEndDate) > 0){
                 log.info(" updating task to immediate.....");
                 Util.rte(() ->db(TDM).execute("UPDATE TASKS SET scheduler = ?, scheduling_end_date = ?, task_last_updated_by = ? WHERE  task_id = ?", "immediate", null, "TDM scheduler", taskID));
                 return;

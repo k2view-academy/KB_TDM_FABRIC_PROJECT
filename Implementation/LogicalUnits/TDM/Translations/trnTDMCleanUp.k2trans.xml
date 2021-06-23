@@ -18,12 +18,11 @@
     <Column>
       <Title>CLEANUP_ORDER</Title>
       <ColumnName>CLEANUP_ORDER</ColumnName>
-      <Direction>Output</Direction>
+      <Direction>Input</Direction>
       <Type>Integer</Type>
       <Length>10</Length>
       <Format />
-      <Index>1</Index>
-      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <Index>0</Index>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="36" />
     </Column>
@@ -34,7 +33,7 @@
       <Type>Boolean</Type>
       <Length>1</Length>
       <Format />
-      <Index>2</Index>
+      <Index>1</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="132" />
@@ -46,7 +45,7 @@
       <Type>Text</Type>
       <Length>1000</Length>
       <Format />
-      <Index>3</Index>
+      <Index>2</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="1134" />
@@ -58,7 +57,7 @@
       <Type>Text</Type>
       <Length>255</Length>
       <Format />
-      <Index>4</Index>
+      <Index>3</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="114" />
@@ -70,7 +69,7 @@
       <Type>Auto Increment</Type>
       <Length>10</Length>
       <Format />
-      <Index>0</Index>
+      <Index>1</Index>
       <DefaultValue />
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="59" />
@@ -85,7 +84,7 @@
         <xs:complexType>
           <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="trnTDMCleanUp">
-				<xs:complexType>
+              <xs:complexType>
                 <xs:sequence>
                   <xs:element name="TABLE_NAME" default="" minOccurs="0">
                     <xs:simpleType>
@@ -283,6 +282,30 @@
           <CLEANUP_STATEMENT>DELETE FROM TDM_BE_ENV_EXCLUSION_LIST WHERE ENVIRONMENT_ID IN (SELECT ENVIRONMENT_ID FROM ENVIRONMENTS  WHERE UPPER(ENVIRONMENT_STATUS) = 'INACTIVE' AND ENVIRONMENT_LAST_UPDATED_DATE &lt; ?)  OR BE_ID IN (SELECT BE_ID FROM BUSINESS_ENTITIES WHERE UPPER(BE_STATUS) = 'INACTIVE' AND BE_LAST_UPDATED_DATE &lt; ?)</CLEANUP_STATEMENT>
           <CLEANUP_LOGIC>Records belong to environment that need to be cleaned or business entitiy that need to be cleaned</CLEANUP_LOGIC>
           <SEQ>24</SEQ>
+        </trnTDMCleanUp>
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp21" msdata:rowOrder="20">
+          <TABLE_NAME>TASK_EXE_ERROR_DETAILED</TABLE_NAME>
+          <CLEANUP_ORDER>1</CLEANUP_ORDER>
+          <CLEANUP_IND>true</CLEANUP_IND>
+          <CLEANUP_STATEMENT>DELETE FROM TASK_EXE_ERROR_DETAILED WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME &lt; ?)</CLEANUP_STATEMENT>
+          <CLEANUP_LOGIC></CLEANUP_LOGIC>
+          <SEQ>25</SEQ>
+        </trnTDMCleanUp>
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp22" msdata:rowOrder="21">
+          <TABLE_NAME>TASK_EXE_STATS_SUMMARY</TABLE_NAME>
+          <CLEANUP_ORDER>1</CLEANUP_ORDER>
+          <CLEANUP_IND>true</CLEANUP_IND>
+          <CLEANUP_STATEMENT>DELETE FROM TASK_EXE_STATS_SUMMARY WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME &lt; ?)</CLEANUP_STATEMENT>
+          <CLEANUP_LOGIC></CLEANUP_LOGIC>
+          <SEQ>26</SEQ>
+        </trnTDMCleanUp>
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp23" msdata:rowOrder="22">
+          <TABLE_NAME>TASK_EXE_STATS_DETAILED</TABLE_NAME>
+          <CLEANUP_ORDER>1</CLEANUP_ORDER>
+          <CLEANUP_IND>true</CLEANUP_IND>
+          <CLEANUP_STATEMENT>DELETE FROM TASK_EXE_STATS_DETAILED WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME &lt; ?)</CLEANUP_STATEMENT>
+          <CLEANUP_LOGIC></CLEANUP_LOGIC>
+          <SEQ>27</SEQ>
         </trnTDMCleanUp>
       </DocumentElement>
     </diffgr:diffgram>

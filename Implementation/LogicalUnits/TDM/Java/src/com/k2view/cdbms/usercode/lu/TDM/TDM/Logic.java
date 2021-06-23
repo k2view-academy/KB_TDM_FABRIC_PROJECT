@@ -48,7 +48,7 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
 
 	public static final String CASSANDRA_TEXT_TYPE = "TEXT";
@@ -1376,20 +1376,28 @@ public class Logic extends UserCode {
 			case "long":
 			case "clob":
 			case "nchar":
+			case "nvarchar":
 				colType = CASSANDRA_TEXT_TYPE;
 				break;
 			case "number":
 			case "integer":
 			case "int4":
+			case "smallint": 
 				colType = CASSANDRA_INT_TYPE;
+				break;
+			case "int8":
+				colType = CASSANDRA_BIGINT_TYPE;
 				break;
 			case "decimal":
 			case "binary_double":
 			case "binary_float":
 			case "float8":
+			case "numeric":
 				colType = CASSANDRA_DOUBLE_TYPE;
 				break;
 			case "date":
+			case "datetime":
+			case "datetime2":
 				colType = "timestamp";
 				break;
 			case "bool":

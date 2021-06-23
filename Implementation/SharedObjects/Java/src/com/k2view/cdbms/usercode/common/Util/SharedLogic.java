@@ -81,8 +81,10 @@ public class SharedLogic {
 	public static List<String> getLuTableColumns(String table) throws Exception {
 		List<String> al = null;// = new ArrayList<>();
 		LUType luType = getLuType();
-		if(luType == null || !luType.ludbObjects.containsKey(table))
+		
+		if(luType == null || !luType.ludbObjects.containsKey(table)) 
 			return al;
+			
 		//luType.ludbObjects.get(table).getLudbObjectColumns().forEach((s, col) -> al.add(col.getName()));
 		al = new ArrayList<>(luType.ludbObjects.get(table).getLudbObjectColumns().keySet());
 		return al;
@@ -152,10 +154,19 @@ public class SharedLogic {
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String schema, String table) throws Exception {
 		ResultSet rs = null;
+		String[] types = {"TABLE"};
+		String targetTableName = table;
 		//Object[] result = new Object[2];
 		try {
 			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-			rs = md.getColumns(null, schema, table, null);
+			rs = md.getTables(null, schema, "%", types);
+			while (rs.next()) {
+				if (table.equalsIgnoreCase(rs.getString(3))) {
+					targetTableName = rs.getString(3);
+					break;
+				}
+			}
+			rs = md.getColumns(null, schema, targetTableName, null);
 			List<String> al = new ArrayList<>();
 			while (rs.next()) {
 				al.add(rs.getString("COLUMN_NAME"));
@@ -163,7 +174,7 @@ public class SharedLogic {
 			//result[0] = al;
 		
 			// get PKs
-			rs = md.getPrimaryKeys(null, schema, table);
+			rs = md.getPrimaryKeys(null, schema, targetTableName);
 			List<String> al2 = new ArrayList<>();
 			while (rs.next()) {
 				al2.add(rs.getString("COLUMN_NAME"));

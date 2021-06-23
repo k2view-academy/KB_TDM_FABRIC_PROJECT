@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<GenericInterface xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="HTTP" displayName="HTTP" enabled="true" version="1.6">
+  <Name>httpTest</Name>
+  <Properties>
+    <Property name="ProtocolType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
+      <Value>HTTP</Value>
+    </Property>
+    <Property name="HOST" dataType="string" mandatory="true">
+      <Value>localhost</Value>
+    </Property>
+    <Property name="PORT" dataType="integer" mandatory="true" clearValueOnEnvOverride="false">
+      <Value>80</Value>
+    </Property>
+    <Property name="Path" dataType="string" clearValueOnEnvOverride="false">
+      <Value>http://localhost:3213/api</Value>
+    </Property>
+    <Property name="AuthenticationType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
+      <Value>Basic</Value>
+    </Property>
+    <Property name="User" dataType="string" mandatory="true">
+      <Value>admin</Value>
+    </Property>
+    <Property name="Password" dataType="password" mandatory="true">
+      <Value>cQOKt1rAQsYjgiDebDbJMflSefwpXK5WVx6lXXXdYTo=:7E3JWKgQ3DozyntTDQxM+chPkF2v3iUBptSU1QTg9dk=</Value>
+    </Property>
+  </Properties>
+  <TestConnection enabled="false" />
+</GenericInterface>

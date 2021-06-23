@@ -25,7 +25,6 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM_LIBRARY.Globals.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
-import com.k2view.fabric.events.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {

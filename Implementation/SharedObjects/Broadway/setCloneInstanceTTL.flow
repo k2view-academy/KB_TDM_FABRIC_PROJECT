@@ -1,0 +1,262 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check if Cloning task",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Clone TTL Period Type",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "CLONE_CLEANUP_RETENTION_PERIOD_TYPE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Clone TTL Period Value",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "CLONE_CLEANUP_RETENTION_PERIOD_VALUE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "variableValue",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Setting TTL for Clone entity"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Calculate Retention",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "functionName",
+                                        "const": "getRetention"
+                                    },
+                                    {
+                                        "name": "retentionPeriodType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "retentionPeriodValue",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Instance TTL",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "INSTANCE_TTL",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Clone TTL Period Type",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Calculate Retention",
+                "name": "retentionPeriodType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Clone TTL Period Value",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Calculate Retention",
+                "name": "retentionPeriodValue"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate Retention",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Instance TTL",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "cloneNo"
+            },
+            "rightPort": {
+                "actor": "Check if Cloning task",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Get Clone TTL Period Type",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Get Clone TTL Period Value",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Calculate Retention",
+                "name": "luType"
+            }
+        }
+    ]
+}

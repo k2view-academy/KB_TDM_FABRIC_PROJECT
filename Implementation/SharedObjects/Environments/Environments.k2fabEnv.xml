@@ -79,7 +79,7 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
@@ -133,6 +133,14 @@
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
+        </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
+          <Value>Days</Value>
+          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
+        </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
+          <Value>1</Value>
+          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -220,6 +228,33 @@
           </Properties>
           <TestConnection enabled="false" />
         </GenericInterface>
+        <GenericInterface type="HTTP" displayName="HTTP" enabled="true" version="1.6">
+          <Name>httpTest</Name>
+          <Properties>
+            <Property name="ProtocolType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
+              <Value>HTTP</Value>
+            </Property>
+            <Property name="HOST" dataType="string" mandatory="true">
+              <Value>localhost</Value>
+            </Property>
+            <Property name="PORT" dataType="integer" mandatory="true" clearValueOnEnvOverride="false">
+              <Value>80</Value>
+            </Property>
+            <Property name="Path" dataType="string" clearValueOnEnvOverride="false">
+              <Value>http://localhost:3213/api</Value>
+            </Property>
+            <Property name="AuthenticationType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
+              <Value>Basic</Value>
+            </Property>
+            <Property name="User" dataType="string" mandatory="true">
+              <Value>admin</Value>
+            </Property>
+            <Property name="Password" dataType="password" mandatory="true">
+              <Value>jYD5Du5s85+5lsjpqSsBhbEts7kC/Nb3VqoVtF4jlIk=:A2kqq4Os20x4aeZLTvQCSxQKxafNrjCXSp3IJuzgGPo=</Value>
+            </Property>
+          </Properties>
+          <TestConnection enabled="false" />
+        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="TAR">
@@ -299,7 +334,7 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
@@ -353,6 +388,14 @@
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
+        </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
+          <Value>Days</Value>
+          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
+        </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
+          <Value>1</Value>
+          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -436,6 +479,33 @@
             </Property>
             <Property name="FilesFilter" dataType="string">
               <Value />
+            </Property>
+          </Properties>
+          <TestConnection enabled="false" />
+        </GenericInterface>
+        <GenericInterface type="HTTP" displayName="HTTP" enabled="true" version="1.6">
+          <Name>httpTest</Name>
+          <Properties>
+            <Property name="ProtocolType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
+              <Value>HTTP</Value>
+            </Property>
+            <Property name="HOST" dataType="string" mandatory="true">
+              <Value>localhost</Value>
+            </Property>
+            <Property name="PORT" dataType="integer" mandatory="true" clearValueOnEnvOverride="false">
+              <Value>80</Value>
+            </Property>
+            <Property name="Path" dataType="string" clearValueOnEnvOverride="false">
+              <Value>http://localhost:3213/api</Value>
+            </Property>
+            <Property name="AuthenticationType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
+              <Value>Basic</Value>
+            </Property>
+            <Property name="User" dataType="string" mandatory="true">
+              <Value>admin</Value>
+            </Property>
+            <Property name="Password" dataType="password" mandatory="true">
+              <Value>XkXwKPmC7XhSxQTlo8xYftJRXlm7n44jNj+z8VtaWL4=:YkSub2UHQ0rhN7KQG7yHAIjASh62WPqkiPcuZFozFbU=</Value>
             </Property>
           </Properties>
           <TestConnection enabled="false" />

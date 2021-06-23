@@ -2,41 +2,42 @@
 // LU Functions
 /////////////////////////////////////////////////////////////////////////
 
-package com.k2view.cdbms.usercode.lu.Orders.Root;
+package com.k2view.cdbms.usercode.lu.TDM_LIBRARY.Root;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import java.util.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.Globals;
+import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import com.k2view.cdbms.usercode.lu.TDM_LIBRARY.*;
+
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
+import static com.k2view.cdbms.usercode.lu.TDM_LIBRARY.Globals.*;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {
 
 
+
+
 	@type(RootFunction)
-	@out(name = "contract_id", type = Double.class, desc = "")
-	@out(name = "order_id", type = Double.class, desc = "")
-	@out(name = "order_type", type = String.class, desc = "")
-	@out(name = "order_date", type = String.class, desc = "")
-	@out(name = "order_status", type = String.class, desc = "")
-	public static void fnPop_orders(String input) throws Exception {
+	@out(name = "field1", type = void.class, desc = "")
+	public static void fnPop_RootTable(String key) throws Exception {
 		// Check the TDM_INSERT_TO_TARGET, TDM_DELETE_BEFORE_LOAD and TDM_SYNC_SOURCE_DATA.
 		// Note: if both globals - TDM_SYNC_SOURCE_DATA is false and TDM_DELETE_BEFORE_LOAD - are false, the Init flow needs to set the sync mode to OFF
 		
@@ -51,7 +52,7 @@ public class Logic extends UserCode {
 		/* load task, then select the data from the source and yield the results.
 		/**************************************************************************************************/
 		
-		// Defect fix- 13.6.21 - add a check of the tdmVersionName to avoid the re-sync of the entity 
+		// Defect fix- 13.6.21 - add a checl of the tdmVersionName to avoid the re-sync of the entity 
 		// on DataFlux load tasks 
 		if(tdmInsertToTarget.equals("true") && (tdmVersionName == null || tdmVersionName.equals(""))) 
 		{
@@ -66,11 +67,10 @@ public class Logic extends UserCode {
 		
 				// Indicates if any of the source root table has the instance id
 				AtomicBoolean instanceExists = new AtomicBoolean(false);
-		
-				//log.info("TEST11- select orders from DB by input: " + input);
-				String sql = "SELECT contract_id, order_id, order_type, order_date, order_status FROM orders where order_id = ?";
-		
-				db("ORDERS_DB").fetch(sql, input).each(row->{
+				
+				// Note that sql needs to be edited to select from the main source table by the input id
+				String sql = "SELECT * FROM <main table name> WHERE  <main table column> =?";
+				db("<SOURCE DB>").fetch(sql, key).each(row -> {
 					instanceExists.set(true);
 					yield(row.cells());
 				});
@@ -79,8 +79,14 @@ public class Logic extends UserCode {
 					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
 				}
 			}
-		}
+		}		
 	}
+
+
+
+
+
+
 
 	
 	

@@ -46,7 +46,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
 
 	public static final String TDM = "TDM";
@@ -127,7 +127,6 @@ public class SharedLogic {
 	@out(name = "task_name", type = String.class, desc = "")
 	@out(name = "timestamp", type = String.class, desc = "")
 	public static void fnRtK2TDMRoot(String TDM_INSTANCE_ID) throws Exception {
-		Thread.sleep(1000);
 		yield(fnValidateNdGetInstance());
 	}
 

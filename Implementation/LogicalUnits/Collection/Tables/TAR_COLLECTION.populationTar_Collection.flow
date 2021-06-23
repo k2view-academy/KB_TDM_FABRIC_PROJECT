@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select public.collection.customer_id\r\nFrom public.collection"
+                                        "const": "Select public.collection.customer_id,\r\n  public.collection.collection_id\r\nFrom public.collection"
                                     }
                                 ],
                                 "outputs": []

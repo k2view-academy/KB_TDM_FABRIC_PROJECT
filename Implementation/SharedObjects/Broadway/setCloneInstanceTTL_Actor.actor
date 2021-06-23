@@ -1,0 +1,32 @@
+{
+  "type": "setCloneInstanceTTL_Actor",
+  "actorClass": null,
+  "parentType": "InnerFlow",
+  "inputs": [
+    {
+      "name": "luName",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "cloneNo",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "setCloneInstanceTTL"
+    }
+  ],
+  "outputs": [],
+  "tags": [
+    "tdm"
+  ]
+}

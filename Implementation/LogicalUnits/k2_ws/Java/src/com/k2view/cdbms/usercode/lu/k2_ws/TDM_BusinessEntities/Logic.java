@@ -35,7 +35,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	
 	public static final String schema = "public";

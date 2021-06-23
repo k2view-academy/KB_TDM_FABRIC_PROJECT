@@ -40,7 +40,7 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	public static String schema="public";
 	public static final String DB_FABRIC = "fabric";
@@ -113,7 +113,10 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of all TDM tasks\n")
+	@desc("This is the main API to get the task details. This API gets the list of all TDM tasks or a list of given task IDs if the input task_ids parameter is populated. \r\n" +
+			"The input **task_ids** is an optional parameter that can be populated to return the data of a given list of tasks. The ID(s) of the required task(s), will be supplied in this parameter separated by comma. For example, task_ids=4 or task_ids=3,2,6. \r\n" +
+			"\r\n" +
+			"If task_ids parameter is not populated, the data of all tasks will be returned by the API.")
 	@webService(path = "tasks", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "[\r\n" +
 			"      {\r\n" +
@@ -210,7 +213,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_creation_date\": \"date\"\r\n" +
 			"    }\r\n" +
 			"]")
-	public static Object wsGetTasks() throws Exception {
+	public static Object wsGetTasks(String task_ids) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -228,6 +231,8 @@ public class Logic extends WebServiceUserCode {
 					" (tasks.environment_id = environment_owners.environment_id) " +
 					" LEFT JOIN environment_role_users ON" +
 					" (tasks.environment_id = environment_role_users.environment_id)";
+			if(task_ids!=null&&task_ids.length()>0)
+			sql+= " WHERE tasks.task_id in (" + task_ids + ")";
 			Db.Rows result = db("TDM").fetch(sql);
 		
 			String q = "SELECT * FROM ENVIRONMENT_ROLES";
@@ -235,7 +240,7 @@ public class Logic extends WebServiceUserCode {
 		
 			//modified newRow will be added to newResult list
 			List<Map<String,Object>> newResult=new ArrayList<>();
-
+		
 			for (Db.Row row:result) {
 				HashMap<String, Object> newRow = new HashMap<>();
 				ResultSet resultSet = row.resultSet();
@@ -599,7 +604,9 @@ public class Logic extends WebServiceUserCode {
 		if (selectAllEntites!=null&&selectAllEntites==true) {
 			selection_method = "ALL";
 		}
-		
+
+		if (refList!=null && refList.size() > 0) refresh_reference_data=true;
+
 		try{
 			String sql= "INSERT INTO \"" + schema + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
 					"number_of_entities_to_copy,selection_method,selection_param_value,entity_exclusion_list, task_execution_status, " +
@@ -747,8 +754,8 @@ public class Logic extends WebServiceUserCode {
 		try {
 			db("TDM").execute("UPDATE \"" + schema + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
-		
-		
+
+			if(refList!=null && refList.size() > 0) refresh_reference_data=true;
 			if(refList!=null) {
 				Iterator<Map<String, Object>> iter = refList.iterator();
 				while (iter.hasNext()) {
@@ -1075,7 +1082,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets Globals list of a given task.")
+	@desc("Gets the task's Globals if they exist. Note that task_globals attribute of  /tasks API indicates if the task has globals. This attribute is populated by true if the task has Globals.")
 	@webService(path = "task/{taskId}/globals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -2463,7 +2470,7 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Starts an execution of a given task. The force parameter indicates if the execution should ignore a failure of the task's environment connections validation. If the 'force' parameter is set to 'true', then the execution ignores the validation failure and executes the task. If the 'force' parameter is set to 'false' and the environment validation fails, the execution is not initiated.")
+	@desc("Starts an execution of a given task. The 'forced' parameter indicates if the execution should ignore a failure of the task's environment connections validation. If the 'forced' parameter is set to 'true', then the execution ignores the validation failure and executes the task. If the 'forced' parameter is set to 'false' and the environment validation fails, the execution is not initiated.")
 	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"taskExecutionId\": 48\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced) throws Exception {
@@ -2667,7 +2674,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of reference table included in a given task.")
+	@desc("Gets the list of Reference tables included in a given task. Note that refcount attribute of  /tasks API is populated by the number of Reference tables included in the task. If the refcount attribute is populated by zero, the task does not have Reference tables.")
 	@webService(path = "task/refsTable/{task_id}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -2965,7 +2972,7 @@ public class Logic extends WebServiceUserCode {
 				"OR (\"" + schema + "\".tasks.environment_id IS NULL " +
 				"AND \"" + schema + "\".environment_products.environment_id = \"" + schema + "\".tasks.source_environment_id ))) " +
 				"WHERE \"" + schema + "\".tasks.task_id = " + taskId;
-		log.error(clientQuery);
+		//log.info(clientQuery);
 		Db.Rows rows = db("TDM").fetch(clientQuery);
 
 		List<Map<String,Object>> executions=new ArrayList<>();
@@ -4247,12 +4254,12 @@ public class Logic extends WebServiceUserCode {
 				taskList = db("TDM").fetch(adminQuery);
 				break;
 			case "owner" :
-				String[] ownerParams = new String[12];
+				Object[] ownerParams = new Object[12];
 				Arrays.fill(ownerParams, userName);
 				taskList = db("TDM").fetch(envOwnerQuery, ownerParams);
 				break;
 			case "tester" :
-				String[] testerParams = new String[10];
+				Object[] testerParams = new Object[10];
 				Arrays.fill(testerParams, userName);
 				taskList = db("TDM").fetch(testerQuery, testerParams);
 				break;
@@ -4279,154 +4286,166 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Returns the details of the current/last execution of the given task_id. If the task is pending, it will return only its status, else it will return the statistics of the entities it is handling/handled.")
 	@webService(path = "wsTaskMonitor/{taskID}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\n  <result>\n    <Task ID>20</Task ID>\n    <Task Details>\n      <Fabric Batch ID>4d78fbe8-be2f-4928-8d66-9bb45b7cd8dc</Fabric Batch ID>\n      <Task Statistics>\n        <Status>\n        </Status>\n        <Ent./sec (avg.)>3.4</Ent./sec (avg.)>\n        <Added>5</Added>\n        <Ent./sec (pace)>3.4</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:01</Duration>\n        <End time>2021-03-08 11:31:23</End time>\n        <Name>26090035-d2a2-4489-abf7-6805d3baa3d8</Name>\n        <Succeeded>5</Succeeded>\n        <Total>--</Total>\n        <Level>Node</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:21</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Statistics>\n        <Status>\n        </Status>\n        <Ent./sec (avg.)>3.4</Ent./sec (avg.)>\n        <Added>5</Added>\n        <Ent./sec (pace)>3.4</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:01</Duration>\n        <End time>2021-03-08 11:31:23</End time>\n        <Name>DC1</Name>\n        <Succeeded>5</Succeeded>\n        <Total>--</Total>\n        <Level>DC</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:21</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Statistics>\n        <Status>DONE</Status>\n        <Ent./sec (avg.)>3.4</Ent./sec (avg.)>\n        <Added>5</Added>\n        <Ent./sec (pace)>3.4</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:01</Duration>\n        <End time>2021-03-08 11:31:23</End time>\n        <Name>--</Name>\n        <Succeeded>5</Succeeded>\n        <Total>5</Total>\n        <Level>Cluster</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:21</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Status>completed</Task Status>\n      <LU Name>PATIENT_LU</LU Name>\n    </Task Details>\n    <Task Details>\n      <Fabric Batch ID>ec79ecc6-ab01-43f6-9233-40163ce6df54</Fabric Batch ID>\n      <Task Statistics>\n        <Status>\n        </Status>\n        <Ent./sec (avg.)>7.13</Ent./sec (avg.)>\n        <Added>31</Added>\n        <Ent./sec (pace)>7.13</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:04</Duration>\n        <End time>2021-03-08 11:31:48</End time>\n        <Name>26090035-d2a2-4489-abf7-6805d3baa3d8</Name>\n        <Succeeded>31</Succeeded>\n        <Total>--</Total>\n        <Level>Node</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:43</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Statistics>\n        <Status>\n        </Status>\n        <Ent./sec (avg.)>7.13</Ent./sec (avg.)>\n        <Added>31</Added>\n        <Ent./sec (pace)>7.13</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:04</Duration>\n        <End time>2021-03-08 11:31:48</End time>\n        <Name>DC1</Name>\n        <Succeeded>31</Succeeded>\n        <Total>--</Total>\n        <Level>DC</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:43</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Statistics>\n        <Status>DONE</Status>\n        <Ent./sec (avg.)>7.13</Ent./sec (avg.)>\n        <Added>31</Added>\n        <Ent./sec (pace)>7.13</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:04</Duration>\n        <End time>2021-03-08 11:31:48</End time>\n        <Name>--</Name>\n        <Succeeded>31</Succeeded>\n        <Total>31</Total>\n        <Level>Cluster</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:43</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Status>completed</Task Status>\n      <LU Name>PATIENT_VISITS</LU Name>\n    </Task Details>\n    <Task Details>\n      <Task Status>Pending</Task Status>\n      <Process Name>LoggerFlow1</Process Name>\n    </Task Details>\n    <Task Details>\n      <Fabric Batch ID>c5da699f-357a-4298-9402-2a55ee9f5d57</Fabric Batch ID>\n      <Task Statistics>\n        <Status>\n        </Status>\n        <Ent./sec (avg.)>6.76</Ent./sec (avg.)>\n        <Added>15</Added>\n        <Ent./sec (pace)>6.76</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:02</Duration>\n        <End time>2021-03-08 11:31:57</End time>\n        <Name>26090035-d2a2-4489-abf7-6805d3baa3d8</Name>\n        <Succeeded>15</Succeeded>\n        <Total>--</Total>\n        <Level>Node</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:54</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Statistics>\n        <Status>\n        </Status>\n        <Ent./sec (avg.)>6.76</Ent./sec (avg.)>\n        <Added>15</Added>\n        <Ent./sec (pace)>6.76</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:02</Duration>\n        <End time>2021-03-08 11:31:57</End time>\n        <Name>DC1</Name>\n        <Succeeded>15</Succeeded>\n        <Total>--</Total>\n        <Level>DC</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:54</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Statistics>\n        <Status>DONE</Status>\n        <Ent./sec (avg.)>6.76</Ent./sec (avg.)>\n        <Added>15</Added>\n        <Ent./sec (pace)>6.76</Ent./sec (pace)>\n        <Updated>0</Updated>\n        <Failed>0</Failed>\n        <Duration>00:00:02</Duration>\n        <End time>2021-03-08 11:31:57</End time>\n        <Name>--</Name>\n        <Succeeded>15</Succeeded>\n        <Total>15</Total>\n        <Level>Cluster</Level>\n        <Remaining dur.>00:00:00</Remaining dur.>\n        <Remaining>0</Remaining>\n        <Start time>2021-03-08 11:31:54</Start time>\n        <Unchanged>0</Unchanged>\n        <% Completed>100</% Completed>\n      </Task Statistics>\n      <Task Status>running</Task Status>\n      <LU Name>VISIT_LAB_RESULTS</LU Name>\n    </Task Details>\n    <Task Name>Ext + Ver + Hier</Task Name>\n    <Task Execution ID>61</Task Execution ID>\n  </result>\n  <errorCode>SUCCESS</errorCode>\n  <message/>\n</HashMap>")
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"Task ID\": \"20\",\r\n" +
-			"    \"Task Details\": [\r\n" +
-			"      {\r\n" +
-			"        \"Fabric Batch ID\": \"4d78fbe8-be2f-4928-8d66-9bb45b7cd8dc\",\r\n" +
-			"        \"Task Statistics\": [\r\n" +
-			"          {\r\n" +
-			"            \"Status\": \"\",\r\n" +
-			"            \"Ent./sec (avg.)\": \"3.4\",\r\n" +
-			"            \"Added\": 5,\r\n" +
-			"            \"Ent./sec (pace)\": \"3.4\",\r\n" +
-			"            \"Updated\": 0,\r\n" +
-			"            \"Failed\": \"0\",\r\n" +
-			"            \"Duration\": \"00:00:01\",\r\n" +
-			"            \"End time\": \"2021-03-08 11:31:23\",\r\n" +
-			"            \"Name\": \"26090035-d2a2-4489-abf7-6805d3baa3d8\",\r\n" +
-			"            \"Succeeded\": \"5\",\r\n" +
-			"            \"Total\": \"--\",\r\n" +
-			"            \"Level\": \"Node\",\r\n" +
-			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
-			"            \"Remaining\": \"0\",\r\n" +
-			"            \"Start time\": \"2021-03-08 11:31:21\",\r\n" +
-			"            \"Unchanged\": 0,\r\n" +
-			"            \"% Completed\": \"100\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"Status\": \"\",\r\n" +
-			"            \"Ent./sec (avg.)\": \"3.4\",\r\n" +
-			"            \"Added\": 5,\r\n" +
-			"            \"Ent./sec (pace)\": \"3.4\",\r\n" +
-			"            \"Updated\": 0,\r\n" +
-			"            \"Failed\": \"0\",\r\n" +
-			"            \"Duration\": \"00:00:01\",\r\n" +
-			"            \"End time\": \"2021-03-08 11:31:23\",\r\n" +
-			"            \"Name\": \"DC1\",\r\n" +
-			"            \"Succeeded\": \"5\",\r\n" +
-			"            \"Total\": \"--\",\r\n" +
-			"            \"Level\": \"DC\",\r\n" +
-			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
-			"            \"Remaining\": \"0\",\r\n" +
-			"            \"Start time\": \"2021-03-08 11:31:21\",\r\n" +
-			"            \"Unchanged\": 0,\r\n" +
-			"            \"% Completed\": \"100\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"Status\": \"DONE\",\r\n" +
-			"            \"Ent./sec (avg.)\": \"3.4\",\r\n" +
-			"            \"Added\": 5,\r\n" +
-			"            \"Ent./sec (pace)\": \"3.4\",\r\n" +
-			"            \"Updated\": 0,\r\n" +
-			"            \"Failed\": \"0\",\r\n" +
-			"            \"Duration\": \"00:00:01\",\r\n" +
-			"            \"End time\": \"2021-03-08 11:31:23\",\r\n" +
-			"            \"Name\": \"--\",\r\n" +
-			"            \"Succeeded\": \"5\",\r\n" +
-			"            \"Total\": \"5\",\r\n" +
-			"            \"Level\": \"Cluster\",\r\n" +
-			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
-			"            \"Remaining\": \"0\",\r\n" +
-			"            \"Start time\": \"2021-03-08 11:31:21\",\r\n" +
-			"            \"Unchanged\": 0,\r\n" +
-			"            \"% Completed\": \"100\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"Task Status\": \"completed\",\r\n" +
-			"        \"LU Name\": \"PATIENT_LU\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"Task Status\": \"Pending\",\r\n" +
-			"        \"Process Name\": \"LoggerFlow1\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"Task Status\": \"Pending\",\r\n" +
-			"        \"LU Name\": \"VISIT_LAB_RESULTS\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"Fabric Batch ID\": \"ec79ecc6-ab01-43f6-9233-40163ce6df54\",\r\n" +
-			"        \"Task Statistics\": [\r\n" +
-			"          {\r\n" +
-			"            \"Status\": \"\",\r\n" +
-			"            \"Ent./sec (avg.)\": \"7.13\",\r\n" +
-			"            \"Added\": 31,\r\n" +
-			"            \"Ent./sec (pace)\": \"7.13\",\r\n" +
-			"            \"Updated\": 0,\r\n" +
-			"            \"Failed\": \"0\",\r\n" +
-			"            \"Duration\": \"00:00:04\",\r\n" +
-			"            \"End time\": \"2021-03-08 11:31:48\",\r\n" +
-			"            \"Name\": \"26090035-d2a2-4489-abf7-6805d3baa3d8\",\r\n" +
-			"            \"Succeeded\": \"31\",\r\n" +
-			"            \"Total\": \"--\",\r\n" +
-			"            \"Level\": \"Node\",\r\n" +
-			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
-			"            \"Remaining\": \"0\",\r\n" +
-			"            \"Start time\": \"2021-03-08 11:31:43\",\r\n" +
-			"            \"Unchanged\": 0,\r\n" +
-			"            \"% Completed\": \"100\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"Status\": \"\",\r\n" +
-			"            \"Ent./sec (avg.)\": \"7.13\",\r\n" +
-			"            \"Added\": 31,\r\n" +
-			"            \"Ent./sec (pace)\": \"7.13\",\r\n" +
-			"            \"Updated\": 0,\r\n" +
-			"            \"Failed\": \"0\",\r\n" +
-			"            \"Duration\": \"00:00:04\",\r\n" +
-			"            \"End time\": \"2021-03-08 11:31:48\",\r\n" +
-			"            \"Name\": \"DC1\",\r\n" +
-			"            \"Succeeded\": \"31\",\r\n" +
-			"            \"Total\": \"--\",\r\n" +
-			"            \"Level\": \"DC\",\r\n" +
-			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
-			"            \"Remaining\": \"0\",\r\n" +
-			"            \"Start time\": \"2021-03-08 11:31:43\",\r\n" +
-			"            \"Unchanged\": 0,\r\n" +
-			"            \"% Completed\": \"100\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"Status\": \"DONE\",\r\n" +
-			"            \"Ent./sec (avg.)\": \"7.13\",\r\n" +
-			"            \"Added\": 31,\r\n" +
-			"            \"Ent./sec (pace)\": \"7.13\",\r\n" +
-			"            \"Updated\": 0,\r\n" +
-			"            \"Failed\": \"0\",\r\n" +
-			"            \"Duration\": \"00:00:04\",\r\n" +
-			"            \"End time\": \"2021-03-08 11:31:48\",\r\n" +
-			"            \"Name\": \"--\",\r\n" +
-			"            \"Succeeded\": \"31\",\r\n" +
-			"            \"Total\": \"31\",\r\n" +
-			"            \"Level\": \"Cluster\",\r\n" +
-			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
-			"            \"Remaining\": \"0\",\r\n" +
-			"            \"Start time\": \"2021-03-08 11:31:43\",\r\n" +
-			"            \"Unchanged\": 0,\r\n" +
-			"            \"% Completed\": \"100\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"Task Status\": \"running\",\r\n" +
-			"        \"LU Name\": \"PATIENT_VISITS\"\r\n" +
-			"      }\r\n" +
-			"    ],\r\n" +
-			"    \"Task Name\": \"Ext + Ver + Hier\",\r\n" +
-			"    \"Task Execution ID\": 61\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\r\n" +
+			"  <result>\r\n" +
+			"    <Task ID>10</Task ID>\r\n" +
+			"    <Task Details>\r\n" +
+			"      <Fabric Batch ID>cc02e34d-2367-4a15-aae7-79dcb4c3e48e</Fabric Batch ID>\r\n" +
+			"      <Task Statistics>\r\n" +
+			"        <Status>\r\n" +
+			"        </Status>\r\n" +
+			"        <Ent./sec (avg.)>2.9</Ent./sec (avg.)>\r\n" +
+			"        <Added>0</Added>\r\n" +
+			"        <Ent./sec (pace)>2.9</Ent./sec (pace)>\r\n" +
+			"        <Updated>3</Updated>\r\n" +
+			"        <Failed>0</Failed>\r\n" +
+			"        <Duration>00:00:01</Duration>\r\n" +
+			"        <End time>2021-06-17 12:23:42.464</End time>\r\n" +
+			"        <Name>b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8</Name>\r\n" +
+			"        <Succeeded>3</Succeeded>\r\n" +
+			"        <Total>--</Total>\r\n" +
+			"        <Level>Node</Level>\r\n" +
+			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
+			"        <Remaining>0</Remaining>\r\n" +
+			"        <Start time>2021-06-17 12:23:41.429</Start time>\r\n" +
+			"        <Unchanged>0</Unchanged>\r\n" +
+			"        <% Completed>100</% Completed>\r\n" +
+			"      </Task Statistics>\r\n" +
+			"      <Task Statistics>\r\n" +
+			"        <Status>\r\n" +
+			"        </Status>\r\n" +
+			"        <Ent./sec (avg.)>2.9</Ent./sec (avg.)>\r\n" +
+			"        <Added>0</Added>\r\n" +
+			"        <Ent./sec (pace)>2.9</Ent./sec (pace)>\r\n" +
+			"        <Updated>3</Updated>\r\n" +
+			"        <Failed>0</Failed>\r\n" +
+			"        <Duration>00:00:01</Duration>\r\n" +
+			"        <End time>2021-06-17 12:23:42.464</End time>\r\n" +
+			"        <Name>DC1</Name>\r\n" +
+			"        <Succeeded>3</Succeeded>\r\n" +
+			"        <Total>--</Total>\r\n" +
+			"        <Level>DC</Level>\r\n" +
+			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
+			"        <Remaining>0</Remaining>\r\n" +
+			"        <Start time>2021-06-17 12:23:41.429</Start time>\r\n" +
+			"        <Unchanged>0</Unchanged>\r\n" +
+			"        <% Completed>100</% Completed>\r\n" +
+			"      </Task Statistics>\r\n" +
+			"      <Task Statistics>\r\n" +
+			"        <Status>DONE</Status>\r\n" +
+			"        <Ent./sec (avg.)>2.9</Ent./sec (avg.)>\r\n" +
+			"        <Added>0</Added>\r\n" +
+			"        <Ent./sec (pace)>2.9</Ent./sec (pace)>\r\n" +
+			"        <Updated>3</Updated>\r\n" +
+			"        <Failed>0</Failed>\r\n" +
+			"        <Duration>00:00:01</Duration>\r\n" +
+			"        <End time>2021-06-17 12:23:42.464</End time>\r\n" +
+			"        <Name>--</Name>\r\n" +
+			"        <Succeeded>3</Succeeded>\r\n" +
+			"        <Total>3</Total>\r\n" +
+			"        <Level>Cluster</Level>\r\n" +
+			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
+			"        <Remaining>0</Remaining>\r\n" +
+			"        <Start time>2021-06-17 12:23:41.429</Start time>\r\n" +
+			"        <Unchanged>0</Unchanged>\r\n" +
+			"        <% Completed>100</% Completed>\r\n" +
+			"      </Task Statistics>\r\n" +
+			"      <Task Status>completed</Task Status>\r\n" +
+			"      <LU Name>PATIENT_LU</LU Name>\r\n" +
+			"    </Task Details>\r\n" +
+			"    <Task Details>\r\n" +
+			"      <Fabric Batch ID>cef3e9fb-2f11-437f-8859-da535300930a</Fabric Batch ID>\r\n" +
+			"      <Task Statistics>\r\n" +
+			"        <Status>\r\n" +
+			"        </Status>\r\n" +
+			"        <Ent./sec (avg.)>6.23</Ent./sec (avg.)>\r\n" +
+			"        <Added>0</Added>\r\n" +
+			"        <Ent./sec (pace)>6.23</Ent./sec (pace)>\r\n" +
+			"        <Updated>19</Updated>\r\n" +
+			"        <Failed>0</Failed>\r\n" +
+			"        <Duration>00:00:03</Duration>\r\n" +
+			"        <End time>2021-06-17 12:24:05.572</End time>\r\n" +
+			"        <Name>b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8</Name>\r\n" +
+			"        <Succeeded>19</Succeeded>\r\n" +
+			"        <Total>--</Total>\r\n" +
+			"        <Level>Node</Level>\r\n" +
+			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
+			"        <Remaining>0</Remaining>\r\n" +
+			"        <Start time>2021-06-17 12:24:02.523</Start time>\r\n" +
+			"        <Unchanged>0</Unchanged>\r\n" +
+			"        <% Completed>100</% Completed>\r\n" +
+			"      </Task Statistics>\r\n" +
+			"      <Task Statistics>\r\n" +
+			"        <Status>\r\n" +
+			"        </Status>\r\n" +
+			"        <Ent./sec (avg.)>6.23</Ent./sec (avg.)>\r\n" +
+			"        <Added>0</Added>\r\n" +
+			"        <Ent./sec (pace)>6.23</Ent./sec (pace)>\r\n" +
+			"        <Updated>19</Updated>\r\n" +
+			"        <Failed>0</Failed>\r\n" +
+			"        <Duration>00:00:03</Duration>\r\n" +
+			"        <End time>2021-06-17 12:24:05.572</End time>\r\n" +
+			"        <Name>DC1</Name>\r\n" +
+			"        <Succeeded>19</Succeeded>\r\n" +
+			"        <Total>--</Total>\r\n" +
+			"        <Level>DC</Level>\r\n" +
+			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
+			"        <Remaining>0</Remaining>\r\n" +
+			"        <Start time>2021-06-17 12:24:02.523</Start time>\r\n" +
+			"        <Unchanged>0</Unchanged>\r\n" +
+			"        <% Completed>100</% Completed>\r\n" +
+			"      </Task Statistics>\r\n" +
+			"      <Task Statistics>\r\n" +
+			"        <Status>DONE</Status>\r\n" +
+			"        <Ent./sec (avg.)>6.23</Ent./sec (avg.)>\r\n" +
+			"        <Added>0</Added>\r\n" +
+			"        <Ent./sec (pace)>6.23</Ent./sec (pace)>\r\n" +
+			"        <Updated>19</Updated>\r\n" +
+			"        <Failed>0</Failed>\r\n" +
+			"        <Duration>00:00:03</Duration>\r\n" +
+			"        <End time>2021-06-17 12:24:05.572</End time>\r\n" +
+			"        <Name>--</Name>\r\n" +
+			"        <Succeeded>19</Succeeded>\r\n" +
+			"        <Total>19</Total>\r\n" +
+			"        <Level>Cluster</Level>\r\n" +
+			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
+			"        <Remaining>0</Remaining>\r\n" +
+			"        <Start time>2021-06-17 12:24:02.523</Start time>\r\n" +
+			"        <Unchanged>0</Unchanged>\r\n" +
+			"        <% Completed>100</% Completed>\r\n" +
+			"      </Task Statistics>\r\n" +
+			"      <Task Status>completed</Task Status>\r\n" +
+			"      <LU Name>PATIENT_VISITS</LU Name>\r\n" +
+			"    </Task Details>\r\n" +
+			"    <Task Name>Extract2</Task Name>\r\n" +
+			"    <Task Execution ID>50</Task Execution ID>\r\n" +
+			"    <Task Reference Statistics>\r\n" +
+			"      <PATIENT_LU>\r\n" +
+			"        <minStartExecutionDate>Thu Jun 17 12:23:41 UTC 2021</minStartExecutionDate>\r\n" +
+			"        <maxEndExecutionDate>Thu Jun 17 12:23:42 UTC 2021</maxEndExecutionDate>\r\n" +
+			"        <totNumOfTablesToProcess>2</totNumOfTablesToProcess>\r\n" +
+			"        <numOfProcessedRefTables>2</numOfProcessedRefTables>\r\n" +
+			"        <numOfCopiedRefTables>2</numOfCopiedRefTables>\r\n" +
+			"        <numOfFailedRefTables>0</numOfFailedRefTables>\r\n" +
+			"        <numOfProcessingRefTables>0</numOfProcessingRefTables>\r\n" +
+			"        <numberOfNotStartedRefTables>0</numberOfNotStartedRefTables>\r\n" +
+			"      </PATIENT_LU>\r\n" +
+			"      <PATIENT_VISITS>\r\n" +
+			"        <minStartExecutionDate>Thu Jun 17 12:23:41 UTC 2021</minStartExecutionDate>\r\n" +
+			"        <maxEndExecutionDate>Thu Jun 17 12:23:52 UTC 2021</maxEndExecutionDate>\r\n" +
+			"        <totNumOfTablesToProcess>1</totNumOfTablesToProcess>\r\n" +
+			"        <numOfProcessedRefTables>1</numOfProcessedRefTables>\r\n" +
+			"        <numOfCopiedRefTables>1</numOfCopiedRefTables>\r\n" +
+			"        <numOfFailedRefTables>0</numOfFailedRefTables>\r\n" +
+			"        <numOfProcessingRefTables>0</numOfProcessingRefTables>\r\n" +
+			"        <numberOfNotStartedRefTables>0</numberOfNotStartedRefTables>\r\n" +
+			"      </PATIENT_VISITS>\r\n" +
+			"    </Task Reference Statistics>\r\n" +
+			"  </result>\r\n" +
+			"  <errorCode>SUCCESS</errorCode>\r\n" +
+			"  <message/>\r\n" +
+			"</HashMap>")
+	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"Task ID\": \"10\",\n    \"Task Details\": [\n      {\n        \"Fabric Batch ID\": \"cc02e34d-2367-4a15-aae7-79dcb4c3e48e\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"Node\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"DC1\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"DC\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"DONE\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"3\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          }\n        ],\n        \"Task Status\": \"completed\",\n        \"LU Name\": \"PATIENT_LU\"\n      },\n      {\n        \"Fabric Batch ID\": \"cef3e9fb-2f11-437f-8859-da535300930a\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"IN_PROGRESS\",\n            \"Ent./sec (avg.)\": \"0\",\n            \"Ent./sec (pace)\": \"0\",\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"-\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"0\",\n            \"Total\": \"19\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:01\",\n            \"Remaining\": \"19\",\n            \"Start time\": \"2021-06-17 12:24:02.523\",\n            \"% Completed\": \"0\"\n          }\n        ],\n        \"Task Status\": \"running\",\n        \"LU Name\": \"PATIENT_VISITS\"\n      }\n    ],\n    \"Task Name\": \"Extract2\",\n    \"Task Execution ID\": 50,\n    \"Task Reference Statistics\": {\n      \"PATIENT_LU\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:42 UTC 2021\",\n        \"totNumOfTablesToProcess\": 2,\n        \"numOfProcessedRefTables\": 2,\n        \"numOfCopiedRefTables\": 2,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      },\n      \"PATIENT_VISITS\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:52 UTC 2021\",\n        \"totNumOfTablesToProcess\": 1,\n        \"numOfProcessedRefTables\": 1,\n        \"numOfCopiedRefTables\": 1,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      }\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	public static Object wsTaskMonitor(@param(required=true) String taskID) throws Exception {
 		String getExecIDsQuery = "SELECT task_execution_id, execution_status, fabric_execution_id, " +
 				"lu_name as name, task_title, 'LU' as type " +
@@ -4441,15 +4460,16 @@ public class Logic extends WebServiceUserCode {
 				"t.task_id = l.task_id AND p.task_id = l.task_id AND p.process_id = l.process_id AND T.task_id = ? " +
 				"AND l.task_execution_id = (SELECT MAX(TASK_EXECUTION_ID) " +
 				"FROM TASK_EXECUTION_LIST L2 WHERE TASK_ID = ?) AND lu_id = 0";
-
+		
 		Db.Rows execIDsList = db("TDM").fetch(getExecIDsQuery, taskID, taskID, taskID, taskID);
-
+		
 		HashMap <String, Object> taskInfo = new HashMap<>();
 		List <Object> taskList = new ArrayList<>();
-
+		
 		taskInfo.put("Task ID", taskID);
 		boolean firstRecInd = true;
-
+		String taskExecutionId = "";
+		
 		for (Db.Row execRec : execIDsList) {
 			if (firstRecInd) {
 				firstRecInd = false;
@@ -4460,20 +4480,45 @@ public class Logic extends WebServiceUserCode {
 			String execStatus = "" + execRec.get("execution_status");
 			if ("LU".equals(execRec.get("type"))) {
 				taskLUInfo.put("LU Name", execRec.get("name"));
+				taskExecutionId = "" + execRec.get("task_execution_id");
 			} else {
 				taskLUInfo.put("Process Name", execRec.get("name"));
 			}
 			taskLUInfo.put("Task Status", execStatus);
-
+		
 			if (!"pending".equalsIgnoreCase(execStatus)) {
 				taskLUInfo.put("Fabric Batch ID", execRec.get("fabric_execution_id"));
 				taskLUInfo.put("Task Statistics", fnBatchStats("" + execRec.get("fabric_execution_id"), "S"));
 			}
-
+		
 			taskList.add(taskLUInfo);
 		}
-
+		
 		taskInfo.put("Task Details", taskList);
+		if (!"".equals(taskExecutionId)) {
+			Map <String, Object> refSummaryStatsBuf = fnGetReferenceSummaryData(taskExecutionId);
+			// Convert the dates to strings
+			refSummaryStatsBuf.forEach((key, value) -> {
+				String minStartDate ="";
+				String maxEndDate="";
+				Map <String, Object> refSummaryStats = (HashMap) value;
+		
+				if (refSummaryStats.get("minStartExecutionDate")!=null)
+					minStartDate = refSummaryStats.get("minStartExecutionDate").toString();
+		
+				if (refSummaryStats.get("maxEndExecutionDate")!= null)
+					maxEndDate = refSummaryStats.get("maxEndExecutionDate").toString();
+		
+				refSummaryStats.put("minStartExecutionDate", minStartDate);
+				refSummaryStats.put("maxEndExecutionDate", maxEndDate);
+		
+				//log.info("after calling fnGetReferenceSummaryData");
+			});
+			
+			taskInfo.put("Task Reference Statistics", refSummaryStatsBuf);
+		}
+		
+		
 		return wrapWebServiceResults("SUCCESS", null,taskInfo);
 	}
 
@@ -4573,6 +4618,7 @@ public class Logic extends WebServiceUserCode {
 		response.put("message", message);
 		return response;
 	}
+
 
 }
 

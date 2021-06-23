@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>pp</Name>
+  <ID>tbl_pp</ID>
+  <Columns>
+    <Column name="field1" id="tblCol_59fa169fbaca49fda4db442cc745d0eb" index="0" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

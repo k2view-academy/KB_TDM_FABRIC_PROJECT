@@ -162,6 +162,66 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Initiate Source Entity ID",
+                            "remark": "The Source Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate IID",
+                            "remark": "The IID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate Target Entity ID",
+                            "remark": "The Target Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -273,66 +333,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Initiate Source Entity ID",
-                            "remark": "The Source Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Initiate IID",
-                            "remark": "The IID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "IID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Initiate Target Entity ID",
-                            "remark": "The Target Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -371,7 +371,7 @@
                             }
                         },
                         {
-                            "name": "SplitIIDAndCloneNumber_Actor2",
+                            "name": "Split IID And Clone Number",
                             "actorType": {
                                 "parentType": "SplitIIDAndCloneNumber_Actor",
                                 "inputs": [
@@ -394,6 +394,50 @@
                                         "name": "key",
                                         "const": "IID_START_DATETIME",
                                         "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "get  TDM Replace Sequence Indicator",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_REPLACE_SEQUENCES"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "get  Mask Flag",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "variableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "MASK_FLAG"
                                     }
                                 ],
                                 "outputs": []
@@ -434,8 +478,29 @@
                     "isTransactional": false,
                     "actors": [
                         {
+                            "name": "Set TTL for Clone Instance",
+                            "actorType": {
+                                "parentType": "setCloneInstanceTTL_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "cloneNo",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Set IID",
-                            "minHeight": 139,
+                            "minHeight": 171,
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -467,6 +532,26 @@
                             }
                         },
                         {
+                            "name": "Initiate Target Entity ID after IID Split",
+                            "remark": "The Target Entity ID should be initiated in case the flows fails during the next stage and before setting this ID as it is used in the Error handler",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Set Source Entity ID",
                             "minHeight": 110,
                             "actorType": {
@@ -487,13 +572,13 @@
                             }
                         },
                         {
-                            "name": "Set Task Execution ID",
+                            "name": "Set Replace Sequence Ind",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "execution_id",
+                                        "const": "enable_sequences",
                                         "isDefault": false
                                     },
                                     {
@@ -506,14 +591,43 @@
                             }
                         },
                         {
-                            "name": "Initiate Target Entity ID after IID Split",
-                            "remark": "The Target Entity ID should be initiated with the instance id in case of delete only tasks, otherwise it will not have IID value which includes the env name",
+                            "name": "Check if Masking Flag is set",
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Set Task Execution ID",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
+                                        "const": "execution_id",
                                         "isDefault": false
                                     },
                                     {
@@ -611,6 +725,25 @@
                             "actorType": {
                                 "parentType": "Now",
                                 "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Indicator",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -746,7 +879,7 @@
         },
         {
             "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "actor": "Split IID And Clone Number",
                 "name": "cloneNo"
             },
             "rightPort": {
@@ -756,7 +889,7 @@
         },
         {
             "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "actor": "Split IID And Clone Number",
                 "name": "instanceID"
             },
             "rightPort": {
@@ -766,7 +899,7 @@
         },
         {
             "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "actor": "Split IID And Clone Number",
                 "name": "UID"
             },
             "rightPort": {
@@ -776,7 +909,17 @@
         },
         {
             "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "actor": "Split IID And Clone Number",
+                "name": "cloneNo"
+            },
+            "rightPort": {
+                "actor": "Set TTL for Clone Instance",
+                "name": "cloneNo"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split IID And Clone Number",
                 "name": "instanceID"
             },
             "rightPort": {
@@ -786,11 +929,41 @@
         },
         {
             "leftPort": {
+                "actor": "get  TDM Replace Sequence Indicator",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Set Replace Sequence Ind",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get  Mask Flag",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Check if Masking Flag is set",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "get TDM Task Execution ID",
                 "name": "variableValue"
             },
             "rightPort": {
                 "actor": "Set Task Execution ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check if Masking Flag is set",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Masking Indicator",
                 "name": "value"
             }
         },
@@ -887,6 +1060,36 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate Source Entity ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate Target Entity ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -957,36 +1160,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Initiate Source Entity ID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Initiate IID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Initiate Target Entity ID",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "globals"
             },
             "rightPort": {
@@ -1000,7 +1173,7 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor2",
+                "actor": "Split IID And Clone Number",
                 "name": "iid"
             }
         },
@@ -1010,7 +1183,37 @@
                 "name": "luName"
             },
             "rightPort": {
+                "actor": "get  TDM Replace Sequence Indicator",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "get  Mask Flag",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
                 "actor": "get TDM Task Execution ID",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Set TTL for Clone Instance",
                 "name": "luName"
             }
         },
