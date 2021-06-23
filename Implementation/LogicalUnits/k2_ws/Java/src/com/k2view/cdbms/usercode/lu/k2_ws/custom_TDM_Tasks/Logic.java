@@ -26,15 +26,28 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
-		@desc("Gets regular tasks for a user:\r\n" +
-			"- Get all extract tasks that do not require special permissions if the user has at least one Read TDM environment role\r\n" +
-			"- Get all extract tasks that require special permissions of the user has at least one Read TDM environment role with these permissions\r\n" +
-			"- Get all load tasks that do not require special permissions if the user has at least one Read TDM environment role and one Write TDM environment role\r\n" +
-			"- Get all load tasks that require special permissions of the user has at least one Read TDM environment role and one TDM Write role with these permissions")
-	@webService(path = "regualTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets regular active tasks (task_status and task_execution_status columns are active) for a user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment roles:\r\n" +
+			"\r\n" +
+			"Admin Users:\r\n" +
+			"- Get all active tasks.\r\n" +
+			"\r\n" +
+			"Owner Users:\r\n" +
+			"- Get all active extract tasks if the user is the owner of at least one source environment.\r\n" +
+			"- Get all active load tasks if the user is the owner of at least one source environment and one target environment.\r\n" +
+			"- Get all active extract tasks that do not require special permissions if the user has at least one Read TDM Environment role.\r\n" +
+			"- Get all active extract tasks that require special permissions of the user has at least one Read TDM Environment role with these permissions.\r\n" +
+			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
+			"- Get all active load tasks that require special permissions of the user has at least one Read TDM Environment role, and one Write TDM Environment role with these permissions.\r\n" +
+			"\r\n" +
+			"Tester Users:   \r\n" +
+			"- Get all active extract tasks that do not require special permissions if the user has at least one Read TDM Environment role.\r\n" +
+			"- Get all active extract tasks that require special permissions of the user has at least one Read TDM Environment role with these permissions.\r\n" +
+			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
+			"- Get all active load tasks that require special permissions of the user has at least one Read TDM environment role, and one Write TDM Environment role with these permissions.")
+	@webService(path = "regularTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -53,7 +66,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsRegualTasksByUser() throws Exception {
+	public static Object wsRegularTasksByUser() throws Exception {
 		List<Map<String, Object>> result = new ArrayList<>();
 		try {
 			String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
@@ -85,13 +98,9 @@ public class Logic extends WebServiceUserCode {
 						}
 					}
 				}
-
+		
 				List<String> srcRoleIds = (ArrayList<String>)roleIdsByEnvType.get("source environments");
 				List<String> tarRoleIds = (ArrayList<String>)roleIdsByEnvType.get("target environments");
-				List<String> srcAndTarRoleIds = (ArrayList<String>)roleIdsByEnvType.get("source and target environments");
-				srcRoleIds.addAll(srcAndTarRoleIds);
-				tarRoleIds.addAll(srcAndTarRoleIds);
-
 
 				if(!srcRoleIds.isEmpty()){
 					// Get all extract tasks that do not require special permissions except read permissions
@@ -106,7 +115,7 @@ public class Logic extends WebServiceUserCode {
 							"and lower(t.task_type) = 'extract'\n" +
 							"and t.version_ind = false\n" +
 							"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
-							"and t.refresh_reference_data <> true\n" +
+							"and t.refresh_reference_data is not true\n" +
 							"and lower(COALESCE(t.sync_mode, 'on')) <> 'force'";
 					// Get all extract tasks with special permissions
 					sql += "UNION\n" +
@@ -118,7 +127,7 @@ public class Logic extends WebServiceUserCode {
 							"and lower(t.task_type) = 'extract'\n" +
 							"and t.version_ind = false\n" +
 							"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
-							"and (t.refresh_reference_data <> true or src.allowed_refresh_reference_data = true)\n" +
+							"and (t.refresh_reference_data is not true or src.allowed_refresh_reference_data = true)\n" +
 							"and (lower(COALESCE(t.sync_mode, 'on')) <> 'force' or src.allowed_request_of_Fresh_data = true)\n" +
 							") extTaskList\n" +
 							"group by task_id, task_title";
@@ -133,7 +142,7 @@ public class Logic extends WebServiceUserCode {
 						result.add(rowMap);
 					}
 				}
-
+		
 				if(srcRoleIds.size()>0&&tarRoleIds.size()>0) {
 					// Get all load regular tasks and their available roles. The user needs to be assigned at least to on of the source TDM environment role IDs
 					String sql = "select array_Agg(src_role_id) as src_role_list, array_Agg(tar_role_id) as tar_role_list, task_id, task_title\n" +
@@ -150,7 +159,7 @@ public class Logic extends WebServiceUserCode {
 							"and t.version_ind = false\n" +
 							"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
 							"and t.selection_method not in ('S', 'R')\n" +
-							"and t.refresh_reference_data <> true\n" +
+							"and t.refresh_reference_data is not true\n" +
 							"and t.delete_before_load <> true\n" +
 							"and t.replace_sequences <> true\n" +
 							"and lower(COALESCE(t.sync_mode, 'on')) <> 'force'\n" +
@@ -166,14 +175,14 @@ public class Logic extends WebServiceUserCode {
 							"and t.version_ind = false\n" +
 							"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
 							"and (t.selection_method not in ('S', 'R') or (t.selection_method = 'S' and tar.allowed_creation_of_synthetic_data = true) or (t.selection_method = 'R' and tar.allowed_random_entity_selection = true))\n" +
-							"and (t.refresh_reference_data <> true or tar.allowed_refresh_reference_data = true )\n" +
-							"and (t.delete_before_load <> true or tar.allowed_delete_before_load = true)\n" +
-							"and (t.replace_sequences <> true or tar.allowed_replace_sequences = true)\n" +
+							"and (t.refresh_reference_data is not true or tar.allowed_refresh_reference_data = true )\n" +
+							"and (t.delete_before_load is not true or tar.allowed_delete_before_load = true)\n" +
+							"and (t.replace_sequences is not true or tar.allowed_replace_sequences = true)\n" +
 							"and (lower(COALESCE(t.sync_mode, 'on')) <> 'force' or src.allowed_request_of_Fresh_data = true)\n" +
 							") loadTaskList\n" +
 							"group by task_id, task_title";
 					Db.Rows rows = db("TDM").fetch(sql);
-
+		
 					List<String> columnNames = rows.getColumnNames();
 					for (Db.Row row : rows) {
 						ResultSet resultSet = row.resultSet();
@@ -199,38 +208,38 @@ public class Logic extends WebServiceUserCode {
 						if ("owner".equals(env.get("role_id").toString())) {
 							roleIdsAsOwner.add(env.get("role_id").toString());
 						}
-						else if ("user".equals(env.get("role_id").toString())) {
+						else if ("user".equals(env.get("assignment_type").toString())) {
 							roleIdsAsTester.add(env.get("role_id").toString());
 						}
 					}
 				}
-
+		
 				List<String> srcRoleIdsAsOwner = (ArrayList<String>)roleIdsByEnvTypeAsOwner.get("source environments");
 				List<String> tarRoleIdsAsOwner = (ArrayList<String>)roleIdsByEnvTypeAsOwner.get("target environments");
-				List<String> srcAndTarRoleIdsAsOwner = (ArrayList<String>)roleIdsByEnvTypeAsOwner.get("source and target environments");
-				srcRoleIdsAsOwner.addAll(srcAndTarRoleIdsAsOwner);
-				tarRoleIdsAsOwner.addAll(srcAndTarRoleIdsAsOwner);
-
+		
 				List srcRoleIdsAsTester = (ArrayList<String>)roleIdsByEnvTypeAsTester.get("source environments");
 				List tarRoleIdsAsTester = (ArrayList<String>)roleIdsByEnvTypeAsTester.get("target environments");
-				List srcAndTarRoleIdsAsTester = (ArrayList<String>)roleIdsByEnvTypeAsTester.get("source and target environments");
-				srcRoleIdsAsTester.addAll(srcAndTarRoleIdsAsTester);
-				tarRoleIdsAsTester.addAll(srcAndTarRoleIdsAsTester);
+
+				/*if(true) return "srcRoleIdsAsTester: " + String.join(",",srcRoleIdsAsTester) +
+						" tarRoleIdsAsTester: " + String.join(",",tarRoleIdsAsTester) +
+						" srcRoleIdsAsOwner: " + String.join(",",srcRoleIdsAsOwner) +
+						" tarRoleIdsAsOwner: " + String.join(",",tarRoleIdsAsOwner) ;
+				 */
 
 				//"-- Owner- Extract tasks
 				String sql = "select task_id, task_title\n" +
 						"from\n" +
 						"(\n" +
 						// Get all extract tasks where the user is the owner of at least one source environment\n" +
-						"select distinct 'owner' as src_role_id, t.task_id, t.task_title\n" +
+						"select  t.task_id, t.task_title\n" +
 						"from tasks t\n" +
 						"where lower(task_type) = 'extract' and lower(task_status) = 'active'\n" +
 						"and lower(task_execution_status) = 'active'\n" +
 						"and 1 = "+ (srcRoleIdsAsOwner.size()>0?"1 ":"0 "); //1 if the user is the owner of at least one source env. Else- it will be zero
-						if(srcRoleIdsAsTester.size()>0)
-						sql+="UNION\n" +
+				if(srcRoleIdsAsTester.size()>0)
+					sql+="UNION\n" +
 						// Get all extract tasks that do not require special permissions except read permissions
-						"SELECT distinct src.role_id as src_role_id, t.task_id, t.task_title\n" +
+						"SELECT t.task_id, t.task_title\n" +
 						"FROM public.tasks t, environment_roles src\n" +
 						"where\n" +
 								//check the list of the user's TDM environment roles of the source environments
@@ -239,10 +248,11 @@ public class Logic extends WebServiceUserCode {
 						"and lower(t.task_type) = 'extract'\n" +
 						"and t.version_ind = false\n" +
 						"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
-						"and t.refresh_reference_data <> true\n" +
+						"and t.refresh_reference_data is not true\n" +
 						"and lower(COALESCE(t.sync_mode, 'on')) <> 'force'\n";
-						sql+=")extTaskList\n" +
+				sql+=")extTaskList\n" +
 						"group by task_id, task_title";
+
 				Db.Rows rows = db("TDM").fetch(sql);
 				List<String> columnNames = rows.getColumnNames();
 				for (Db.Row row : rows) {
@@ -253,8 +263,8 @@ public class Logic extends WebServiceUserCode {
 					}
 					result.add(rowMap);
 				}
-
-
+		
+		
 				//-- Owner- Load tasks-
 				// Get all load tasks where the user is the owner of at least one source and one target environments\n" +
 				sql = "Select loadTaskList.task_id,\n" +
@@ -296,9 +306,9 @@ public class Logic extends WebServiceUserCode {
 						"and t.version_ind = false\n" +
 						"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
 						"and t.selection_method not in ('S', 'R')\n" +
-						"and t.refresh_reference_data <> true\n" +
-						"and t.delete_before_load <> true\n" +
-						"and t.replace_sequences <> true\n" +
+						"and t.refresh_reference_data is not true\n" +
+						"and t.delete_before_load is not true\n" +
+						"and t.replace_sequences is not true\n" +
 						"and lower(COALESCE(t.sync_mode, 'on')) <> 'force'\n" +
 					    "UNION\n" +
 						// Get all load tasks with special permissions
@@ -319,9 +329,9 @@ public class Logic extends WebServiceUserCode {
 						"and t.version_ind = false\n" +
 						"and lower(task_status) = 'active' and lower(task_execution_status) = 'active'\n" +
 						"and (t.selection_method not in ('S', 'R') or (t.selection_method = 'S' and tar.allowed_creation_of_synthetic_data = true) or (t.selection_method = 'R' and tar.allowed_random_entity_selection = true))\n" +
-						"and (t.refresh_reference_data <> true or tar.allowed_refresh_reference_data = true )\n" +
-						"and (t.delete_before_load <> true or tar.allowed_delete_before_load = true)\n" +
-						"and (t.replace_sequences <> true or tar.allowed_replace_sequences = true)\n" +
+						"and (t.refresh_reference_data is not true or tar.allowed_refresh_reference_data = true )\n" +
+						"and (t.delete_before_load is not true or tar.allowed_delete_before_load = true)\n" +
+						"and (t.replace_sequences is not true or tar.allowed_replace_sequences = true)\n" +
 						"and (lower(COALESCE(t.sync_mode, 'on')) <> 'force' " +
 							(srcRoleIdsAsTester.size()>0?"or exists (select 1 from environment_roles src where src.role_id in ("+String.join(",",srcRoleIdsAsTester)+") " +
 						// check the list of the user's TDM environment roles of the source environments
@@ -330,7 +340,7 @@ public class Logic extends WebServiceUserCode {
 						"group by task_id, task_title";
 
 				rows = db("TDM").fetch(sql);
-
+		
 				columnNames = rows.getColumnNames();
 				for (Db.Row row : rows) {
 					ResultSet resultSet = row.resultSet();
@@ -340,10 +350,10 @@ public class Logic extends WebServiceUserCode {
 					}
 					result.add(rowMap);
 				}
-
+		
 			}
-
-
+		
+		
 			List<Map<String, Object>> returnedResult = new ArrayList<>();
 			for(Map<String, Object> row:result){
 				Map<String, Object> Data=new HashMap<>();
@@ -351,7 +361,7 @@ public class Logic extends WebServiceUserCode {
 				Data.put("task_id",row.get("task_id"));
 				returnedResult.add(Data);
 			}
-
+		
 			return SharedLogic.wrapWebServiceResults("SUCCESS",null,returnedResult);
 		}catch(Exception e){
 			return SharedLogic.wrapWebServiceResults("FAIL",e.getMessage(),null);

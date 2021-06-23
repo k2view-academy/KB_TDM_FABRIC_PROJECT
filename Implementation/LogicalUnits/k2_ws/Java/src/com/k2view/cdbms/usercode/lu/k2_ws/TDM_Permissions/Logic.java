@@ -33,7 +33,7 @@ import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unchecked"})
 public class Logic extends WebServiceUserCode {
 
 	private static final String TDM_INTERFACE_NAME = "TDM";

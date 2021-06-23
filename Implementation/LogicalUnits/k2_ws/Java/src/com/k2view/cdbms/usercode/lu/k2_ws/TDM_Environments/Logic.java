@@ -39,11 +39,11 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getFabricResponse;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
 	static final String schema = "public";
-	static final String role = "admin";
+	static final String admin = "admin";
 	static final String adi_only = "false";
 
 	static String ldapUrlString = "ldap://62.90.46.136:10389";
@@ -762,7 +762,6 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String, Object> result = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		if (role == "admin") {
 			try {
 				String sql = "INSERT INTO \"" + schema + "\".environments (environment_name, environment_description, " +
 						"environment_point_of_contact_first_name, environment_point_of_contact_last_name, " +
@@ -816,10 +815,6 @@ public class Logic extends WebServiceUserCode {
 				message = e.getMessage();
 				log.error(message);
 			}
-		} else {
-			message = "Permission denied";
-			errorCode = "FAIL";
-		}
 		
 		response.put("errorCode", errorCode);
 		response.put("message", message);
@@ -1456,28 +1451,17 @@ public class Logic extends WebServiceUserCode {
 			}
 			int minRead = fnGetMinRoleByType(testerRoles, "allowed_number_of_entities_to_read", "allow_read");
 			int minWrite = fnGetMinRoleByType(testerRoles, "allowed_number_of_entities_to_copy", "allow_write");
-			
-			log.info("TESTTT- minRead: " + minRead + ", minWrite: " + minWrite);
-		
-			// Fix - move the creation of allRoles outside the if condition
+
 			List<Map<String,Object>> allRoles=new ArrayList<>();
-		
 			if (minRead == -1 || minWrite == -1) {
 				if (userRole!=null) {
 					userRole = results.get(0);
 				}
-		
-				//List<Map<String,Object>> allRoles=new ArrayList<>();
+
 				for(Map<String,Object> role:results){
-					log.info("TESTTT - user id: " + role.get("user_id").toString());
-					if("-1".equals(role.get("user_id").toString()))
-					{
-						log.info("TESTTT -adding a role to allRoles");
-						 allRoles.add(role);
-						log.info("TESTTT22 -adding a role to allRoles");
-					}
+					if("-1".equals(role.get("user_id").toString())) allRoles.add(role);
 				}
-				
+		
 				if (minRead == -1) {
 					minRead = fnGetMinRoleByType(allRoles, "allowed_number_of_entities_to_read", "allow_read");
 				}
@@ -1489,25 +1473,19 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> returnedData=new HashMap<>();
 			returnedData.put("minRead",minRead);
 			returnedData.put("minWrite",minWrite);
-		
-			// FIX
-			//log.info("userROle size: " + userRole.size()); 
-			//log.info("allRoles: " + allRoles.get(3));
-			//log.info("TALI- TESTSSS");
+			returnedData.put("userRole",userRole);
+
 			if(userRole == null && allRoles.size() > 0 )
 			{
 				returnedData.put("userRole",allRoles);
-		
 			}
 			else {
 				returnedData.put("userRole", userRole);
 			}
 		
-		
 			response.put("result",returnedData);
 			errorCode="SUCCESS";
 		} catch(Exception e){
-		    log.info("exception: " + e.getMessage());
 			message=e.getMessage();
 			errorCode="FAIL";
 		}
@@ -1518,31 +1496,21 @@ public class Logic extends WebServiceUserCode {
 
 	private static int fnGetMinRoleByType(List<Map<String,Object>> roles, String type, String isAllowed) {
 		int min = -1;
-		log.info("fnGetMinRoleByType - input role array size: " + roles.size());
 		for (int i = 0; i < roles.size(); i++) {
-			log.info("roles.get(i).get(isAllowed).toString()" + roles.get(i).get(isAllowed).toString());
-			//if ("true".equals(roles.get(i).get(isAllowed).toString().equals("true"))) {
-			// Fix
-			if (roles.get(i).get(isAllowed).toString().equals("true")) {
-				log.info("la la la");
+			if ("true".equals(roles.get(i).get(isAllowed).toString())) {
 				if (min == -1) {
-					log.info("la la1- input type: " + type);
-					log.info("role.get(i): " + roles.get(i).toString());
-					log.info("roles.get(i).get(type).toString(): " + roles.get(i).get(type).toString());
 					min = Integer.parseInt(roles.get(i).get(type).toString());
-					log.info("min: " + min);
 				} else if (min > Integer.parseInt(roles.get(i).get(type).toString())) {
-					log.info("la la2");
 					min = Integer.parseInt(roles.get(i).get(type).toString());
 				}
 			}
 		}
-		log.info("min2: " + min);
 		return min;
 	}
 
 
-	@desc("Gets Environments By User")
+
+	@desc("Get details for environments in which the user is associated with a role or the user is the owner.")
 	@webService(path = "environmentsbyuser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -1596,68 +1564,10 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		String user_id = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+		String userId = sessionUser().name();
 		
 		try {
-			String sql= "SELECT * FROM \"" + schema + "\".environments " +
-			"INNER JOIN \"" + schema + "\".environment_role_users " +
-			"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".environment_role_users.environment_id) " +
-			"INNER JOIN \"" + schema + "\".environment_roles " +
-			"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".environment_roles.environment_id AND " +
-			"\"" + schema + "\".environment_roles.role_status = \'Active\' AND \"" + schema + "\".environment_role_users.role_id = \"" + schema + "\".environment_roles.role_id ) " +
-			"WHERE user_id = \'" + user_id + "\' OR user_id = \'-1\'";
-			Db.Rows rows = db("TDM").fetch(sql);
-		
-			List<Map<String,Object>> firstResult=new ArrayList<>();
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
-				}
-				firstResult.add(rowMap);
-			}
-		
-		
-			sql= "SELECT * FROM \"" + schema + "\".environments " +
-					"INNER JOIN \"" + schema + "\".environment_owners " +
-					"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".environment_owners.environment_id) " +
-					"WHERE user_id = \'" + user_id + "\'";
-			rows = db("TDM").fetch(sql);
-		
-			List<Map<String,Object>> results=new ArrayList<>();
-			columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
-				}
-				results.add(rowMap);
-			}
-			results.addAll(firstResult);
-		
-			List<Map<String,Object>> newResult=new ArrayList<>();
-			if(results.size()>0){
-				for(Map<String,Object> environment:results){
-					Map<String,Object> found=null;
-					for(Map<String,Object> otherEnv:newResult){
-						if(otherEnv.get("environment_id").equals(environment.get("environment_id"))) found=otherEnv;
-					}
-					if(found!=null){
-						if ("-1".equals(environment.get("user_id"))  && "ALL".equals(environment.get("username"))){
-							newResult.remove(found);
-							newResult.add(environment);
-						}
-					} else{
-						newResult.add(environment);
-					}
-				}
-			}
-		
-		
-			response.put("result",newResult);
+			response.put("result",fnGetEnvsByuser(userId));
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
@@ -1667,6 +1577,8 @@ public class Logic extends WebServiceUserCode {
 		response.put("message", message);
 		return response;
 	}
+
+
 
 
 	@desc("Gets the list of Global variables defined in the Fabric project except the TDM product Globals. This API is invoked when the user adds a Global to the TDM Environment to override its value in this environment.")
@@ -2612,21 +2524,8 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"source environments\": []\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"target environments\": [\r\n" +
-			"        {\r\n" +
-			"          \"environment_id\": 4,\r\n" +
-			"          \"role_id\": 6,\r\n" +
-			"          \"assignment_type\": \"user\",\r\n" +
-			"          \"environment_name\": \"ENV3\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"source and target environments\": [\r\n" +
-			"        {\r\n" +
+			"      \"source environments\": [\r\n" +
+			"\t\t{\r\n" +
 			"          \"environment_id\": 3,\r\n" +
 			"          \"role_id\": \"owner\",\r\n" +
 			"          \"assignment_type\": \"owner\",\r\n" +
@@ -2637,6 +2536,16 @@ public class Logic extends WebServiceUserCode {
 			"          \"role_id\": 5,\r\n" +
 			"          \"assignment_type\": \"user\",\r\n" +
 			"          \"environment_name\": \"ENV1\"\r\n" +
+			"        }\r\n" +
+			"\t  ]\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"target environments\": [\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": 4,\r\n" +
+			"          \"role_id\": 6,\r\n" +
+			"          \"assignment_type\": \"user\",\r\n" +
+			"          \"environment_name\": \"ENV3\"\r\n" +
 			"        }\r\n" +
 			"      ]\r\n" +
 			"    }\r\n" +
@@ -2651,11 +2560,11 @@ public class Logic extends WebServiceUserCode {
 		try{
 			List<Map<String, Object>> rowsList = new ArrayList<>();
 			String userId = "" + fabric().fetch("set username").firstValue();
-		
+
 			//Check the permission group of the user.
 			//If the permission group is Admin => select all the active environments
 			String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-			if ("admin".equals(permissionGroup)){
+			if (admin.equalsIgnoreCase(permissionGroup)){
 				String allEnvs = "Select env.environment_id,env.environment_name,\n" +
 						"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'\n" +
 						"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'\n" +
@@ -2674,135 +2583,135 @@ public class Logic extends WebServiceUserCode {
 					}
 					rowsList.add(rowMap);
 				}
-		
+
 			} else {
-				//get the environments where the user is the owner
-				String query1 = "select env.environment_id, environment_name, " +
-						"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
-						"from environments env, environment_owners o " +
-						"where env.environment_id = o.environment_id " +
-						"and o.user_id = (?) " +
-						"and env.environment_status = 'Active'";
-				Db.Rows rows = db("TDM").fetch(query1,userId);
-		
-				List<String> columnNames = rows.getColumnNames();
-				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
-					Map<String, Object> rowMap = new HashMap<>();
-					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
-					}
-					rowsList.add(rowMap);
-				}
-		
-				String envIds="(";
-				if(!rowsList.isEmpty()){
-					for(Map<String,Object> row:rowsList) envIds+=row.get("environment_id")+",";
-					envIds=envIds.substring(0,envIds.length()-1);}
-				envIds+=")";
-		
-				//get the environments where the user is assigned to a role by their username
-				String query2 = "select env.environment_id, environment_name, " +
-						"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-						"from environments env, environment_roles r, environment_role_users u " +
-						"where env.environment_id = r.environment_id " +
-						"and lower(r.role_status) = 'active' " +
-						"and r.role_id = u.role_id " +
-						"and u.user_id = (?) " +
-						"and env.environment_status = 'Active'";
-				// remove the list of environments returned by query 1;
-				query2+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
-				rows = db("TDM").fetch(query2,userId);
-		
-				columnNames = rows.getColumnNames();
-				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
-					Map<String, Object> rowMap = new HashMap<>();
-					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
-					}
-					rowsList.add(rowMap);
-				}
-		
-				envIds="(";
-				if(!rowsList.isEmpty()) {
-					for(Map<String,Object> row:rowsList) envIds+=row.get("environment_id")+",";
-					envIds=envIds.substring(0,envIds.length()-1);
-				}
-				envIds+=")";
-		
-				//get the environments where the user is assigned to a role by 'ALL' assignment
-				String query3 = "select env.environment_id, environment_name, " +
-						"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
-						", r.role_id, 'all' as assignment_type " +
-						"from environments env, environment_roles r, environment_role_users u " +
-						"where env.environment_id = r.environment_id " +
-						"and lower(r.role_status) = 'active' " +
-						"and r.role_id = u.role_id " +
-						"and lower(u.username) = 'all' " +
-						"and env.environment_status = 'Active'";
-				// remove the list of environments returned by queries 1+2;
-				query3+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
-				rows = db("TDM").fetch(query3);
-		
-				columnNames = rows.getColumnNames();
-				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
-					Map<String, Object> rowMap = new HashMap<>();
-					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
-					}
-					rowsList.add(rowMap);
-				}
+				rowsList.addAll(fnGetEnvsByuser(userId));
 			}
-		
+
 			List<Map<String, Object>> result = new ArrayList<>();
 			List<Map<String, Object>> sourceEnvs = new ArrayList<>();
 			List<Map<String, Object>> targetEnvs = new ArrayList<>();
-			List<Map<String, Object>> sourceAndTargetEnvs = new ArrayList<>();
+
 			for(Map<String, Object> row:rowsList){
 				Map<String, Object> envData=new HashMap<>();
 				envData.put("environment_id",row.get("environment_id"));
 				envData.put("environment_name",row.get("environment_name"));
 				envData.put("role_id",row.get("role_id"));
 				envData.put("assignment_type",row.get("assignment_type"));
-		
-				if("SOURCE".equals(row.get("environment_type"))){
+
+				if("SOURCE".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
 					sourceEnvs.add(envData);
 				}
-				else if("TARGET".equals(row.get("environment_type"))){
+				if("TARGET".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
 					targetEnvs.add(envData);
 				}
-				else if("BOTH".equals(row.get("environment_type"))){
-					sourceAndTargetEnvs.add(envData);
-				}
 			}
-		
+
 			Map<String, Object> sourceEnvsMap=new HashMap<>();
 			sourceEnvsMap.put("source environments",sourceEnvs);
 			result.add(sourceEnvsMap);
 			Map<String, Object> targetEnvsMap=new HashMap<>();
 			targetEnvsMap.put("target environments",targetEnvs);
 			result.add(targetEnvsMap);
-			Map<String, Object> sourceAndTargetEnvMap=new HashMap<>();
-			sourceAndTargetEnvMap.put("source and target environments",sourceAndTargetEnvs);
-			result.add(sourceAndTargetEnvMap);
+
 			errorCode="SUCCESS";
 			response.put("result",result);
-		
+
 		} catch (Exception e) {
 			errorCode = "FAIL";
 			message = e.getMessage();
 			log.error(message);
 		}
-		
+
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}
 
+	static List<Map<String,Object>> fnGetEnvsByuser(String userId) throws Exception{
+		List<Map<String, Object>> rowsList = new ArrayList<>();
 
-	//end from TDM.logic
+		//get the environments where the user is the owner
+		String query1 = "select *, " +
+				"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
+				"from environments env, environment_owners o " +
+				"where env.environment_id = o.environment_id " +
+				"and o.user_id = (?) " +
+				"and env.environment_status = 'Active'";
+		Db.Rows rows = db("TDM").fetch(query1,userId);
+
+		List<String> columnNames = rows.getColumnNames();
+		for (Db.Row row : rows) {
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
+		}
+
+		String envIds="(";
+		if(!rowsList.isEmpty()){
+			for(Map<String,Object> row:rowsList) envIds+=row.get("environment_id")+",";
+			envIds=envIds.substring(0,envIds.length()-1);}
+		envIds+=")";
+
+		//get the environments where the user is assigned to a role by their username
+		String query2 = "select *, " +
+				"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+				"from environments env, environment_roles r, environment_role_users u " +
+				"where env.environment_id = r.environment_id " +
+				"and lower(r.role_status) = 'active' " +
+				"and r.role_id = u.role_id " +
+				"and u.user_id = (?) " +
+				"and env.environment_status = 'Active'";
+		// remove the list of environments returned by query 1;
+		query2+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
+		rows = db("TDM").fetch(query2,userId);
+
+		columnNames = rows.getColumnNames();
+		for (Db.Row row : rows) {
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
+		}
+
+		envIds="(";
+		if(!rowsList.isEmpty()) {
+			for(Map<String,Object> row:rowsList) envIds+=row.get("environment_id")+",";
+			envIds=envIds.substring(0,envIds.length()-1);
+		}
+		envIds+=")";
+
+		//get the environments where the user is assigned to a role by 'ALL' assignment
+		String query3 = "select *, " +
+				"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
+				", r.role_id, 'all' as assignment_type " +
+				"from environments env, environment_roles r, environment_role_users u " +
+				"where env.environment_id = r.environment_id " +
+				"and lower(r.role_status) = 'active' " +
+				"and r.role_id = u.role_id " +
+				"and lower(u.username) = 'all' " +
+				"and env.environment_status = 'Active'";
+		// remove the list of environments returned by queries 1+2;
+		query3+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
+		rows = db("TDM").fetch(query3);
+
+		columnNames = rows.getColumnNames();
+		for (Db.Row row : rows) {
+			ResultSet resultSet = row.resultSet();
+			Map<String, Object> rowMap = new HashMap<>();
+			for (String columnName : columnNames) {
+				rowMap.put(columnName, resultSet.getObject(columnName));
+			}
+			rowsList.add(rowMap);
+		}
+		return rowsList;
+	}
+
 
 	static  String fnGetInterval(String interval){
 		if ("Day".equals(interval)){
