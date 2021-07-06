@@ -32,54 +32,6 @@ import static com.k2view.cdbms.usercode.lu.Collection.Globals.*;
 public class Logic extends UserCode {
 
 
-	@type(RootFunction)
-	@out(name = "customer_id", type = Double.class, desc = "")
-	@out(name = "collection_id", type = Double.class, desc = "")
-	@out(name = "last_update", type = String.class, desc = "")
-	@out(name = "collection_status", type = String.class, desc = "")
-	public static void fnPop_collection(String input) throws Exception {
-		// Check the TDM_INSERT_TO_TARGET, TDM_DELETE_BEFORE_LOAD and TDM_SYNC_SOURCE_DATA.
-		// Note: if both globals - TDM_SYNC_SOURCE_DATA is false and TDM_DELETE_BEFORE_LOAD - are false, the Init flow needs to set the sync mode to OFF
-		
-		String luName = getLuType().luName;
-		String tdmInsertToTarget = "" +fabric().fetch("SET " + luName +".TDM_INSERT_TO_TARGET").firstValue();
-		String tdmSyncSourceData = "" + fabric().fetch("SET " + luName +".TDM_SYNC_SOURCE_DATA").firstValue();
-		String tdmVersionName  =  "" + fabric().fetch("SET " + luName +".TDM_VERSION_NAME").firstValue();
-		
-		/**************************************************************************************************
-		/* Check TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA:
-		/* If the TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA are true, and the task is not a DataFlux
-		/* load task, then select the data from the source and yield the results.
-		/**************************************************************************************************/
-		
-		// Defect fix- 13.6.21 - add a check of the tdmVersionName to avoid the re-sync of the entity 
-		// on DataFlux load tasks 
-		if(tdmInsertToTarget.equals("true") && (tdmVersionName == null || tdmVersionName.equals(""))) 
-		{
-			if (tdmSyncSourceData.equals("false")) {
-				// If this is the first sync (the instance is not in Fabric) - throw exception
-				if (isFirstSync()) {
-					throw new Exception("The instance does not exist in Fabric and sync from source is off");
-				}
-		
-			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
-			{
-		
-				// Indicates if any of the source root table has the instance id
-				AtomicBoolean instanceExists = new AtomicBoolean(false);
-		
-				String sql = "SELECT customer_id, collection_id, last_update, collection_status FROM collection where collection_id = ?";
-				db("COLLECTION_DB").fetch(sql, input).each(row->{
-					instanceExists.set(true);
-					yield(row.cells());
-				});
-		
-				if(!instanceExists.get()) {
-					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
-				}
-			}
-		}
-	}
 
 	
 	

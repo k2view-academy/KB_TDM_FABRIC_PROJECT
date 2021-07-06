@@ -4,7 +4,7 @@
   <ID>tbl_SUBSCRIBER</ID>
   <EntityId>tblCol_c5d92c0d073b4dd39fa1676e8355cf6f</EntityId>
   <Columns>
-    <Column name="SUBSCRIBER_ID" id="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" index="0" datatype="text" mandatory="true" />
+    <Column name="subscriber_id" id="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" index="0" datatype="text" mandatory="true" />
     <Column name="MSISDN" id="tblCol_02aa5273a27d462bbc3f5a3b79d6455d" index="1" datatype="Text" />
     <Column name="IMSI" id="tblCol_5a5fed5404e04cec848480f131b02191" index="2" datatype="Text" />
     <Column name="SIM" id="tblCol_1746ce1e8771495c9f45a9a9492dc812" index="3" datatype="Text" />

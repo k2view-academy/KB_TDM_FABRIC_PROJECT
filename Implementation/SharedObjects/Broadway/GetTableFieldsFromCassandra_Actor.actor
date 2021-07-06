@@ -1,7 +1,7 @@
 {
   "type": "GetTableFieldsFromCassandra_Actor",
-  "actorClass": null,
   "parentType": "InnerFlow",
+  "actorClass": null,
   "inputs": [
     {
       "name": "cassandraInterface",

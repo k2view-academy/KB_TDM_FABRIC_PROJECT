@@ -349,12 +349,17 @@
                         },
                         {
                             "name": "Logger3",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
                                     {
                                         "name": "message",
                                         "const": "Cluster ID is: <${clustID}>"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
                                     },
                                     {
                                         "name": "clustID",

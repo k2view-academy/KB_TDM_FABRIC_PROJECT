@@ -33,7 +33,7 @@ import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
 	private static final String TDM_INTERFACE_NAME = "TDM";
@@ -146,6 +146,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsAddPermissionGroupMapping(String description, @param(description="Fabric role") String role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		try {
 			String userName = sessionUser().name();
 			db(TDM_INTERFACE_NAME).execute(INSERT_PERMISSION_GROUP_MAPPINGS, description, role, permission_group, userName, userName);
@@ -163,6 +165,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdatePermissionGroupMapping(String description, String old_role, String new_role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		try {
 			String userName = sessionUser().name();
 			db(TDM_INTERFACE_NAME).execute(UPDATE_PERMISSION_GROUP_MAPPINGS, description, new_role, permission_group, userName, old_role);
@@ -180,6 +184,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeletePermissionGroupMapping(String role) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		try {
 			db(TDM_INTERFACE_NAME).execute(DELETE_PERMISSION_GROUP_MAPPINGS, role);
 			return wrapWebServiceResults("SUCCESS", null, null);
@@ -227,6 +233,32 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetUserFabricRoles() throws Exception {
 		return wrapWebServiceResults("SUCCESS", null, sessionUser().roles());
+	}
+
+
+	@desc("Gets users assigned to a given fabric role.")
+	@webService(path = "getUsersByFabricRole", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    \"admin\"\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetUsersByFabricRole(String fabricRole) throws Exception {
+		List<String> users = new ArrayList<>();
+		try {
+			fabric().fetch("list users;").forEach(r->{
+				for (String role : ((String) r.get("roles")).split(",")) {
+					if (fabricRole.equals(role)) {
+						users.add((String) r.get("user"));
+					}
+				}
+			});
+			return wrapWebServiceResults("SUCCESS", null, users);
+		} catch (Exception e) {
+			return wrapWebServiceResults("FAIL", e.getMessage(), null);
+		}
 	}
 
 }

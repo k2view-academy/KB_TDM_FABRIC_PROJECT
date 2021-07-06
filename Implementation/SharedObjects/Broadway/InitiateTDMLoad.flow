@@ -255,21 +255,6 @@
                             }
                         },
                         {
-                            "name": "Set Sync Mode",
-                            "actorType": {
-                                "parentType": "setSyncMode_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "syncMode",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Format Start Time",
                             "actorType": {
                                 "parentType": "DateFormat",
@@ -859,16 +844,6 @@
         },
         {
             "leftPort": {
-                "actor": "Set Sync Mode",
-                "name": "updatedSyncMode"
-            },
-            "rightPort": {
-                "actor": "Get Entity",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Format Start Time",
                 "name": "string"
             },
@@ -1100,36 +1075,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Set Sync Mode",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "insertToTarget"
-            },
-            "rightPort": {
-                "actor": "Set Sync Mode",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "Set Sync Mode",
-                "name": "deleteBeforeLoad"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "iid"
             },
             "rightPort": {
@@ -1235,6 +1180,16 @@
             "rightPort": {
                 "actor": "Get Entity",
                 "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "syncMode"
+            },
+            "rightPort": {
+                "actor": "Get Entity",
+                "name": "syncMode"
             }
         },
         {

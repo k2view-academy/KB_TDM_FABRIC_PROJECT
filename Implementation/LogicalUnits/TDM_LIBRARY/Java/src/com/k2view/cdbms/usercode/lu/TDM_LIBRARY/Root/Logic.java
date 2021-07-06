@@ -45,6 +45,7 @@ public class Logic extends UserCode {
 		String tdmInsertToTarget = "" +fabric().fetch("SET " + luName +".TDM_INSERT_TO_TARGET").firstValue();
 		String tdmSyncSourceData = "" + fabric().fetch("SET " + luName +".TDM_SYNC_SOURCE_DATA").firstValue();
 		String tdmVersionName  =  "" + fabric().fetch("SET " + luName +".TDM_VERSION_NAME").firstValue();
+		String taskType =  "" + fabric().fetch("SET " + luName +".TDM_TASK_TYPE").firstValue(); // the global needs to be added and set by the tdm execution process
 		
 		/**************************************************************************************************
 		/* Check TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA:
@@ -54,7 +55,7 @@ public class Logic extends UserCode {
 		
 		// Defect fix- 13.6.21 - add a check of the tdmVersionName to avoid the re-sync of the entity 
 		// on DataFlux load tasks 
-		if(tdmInsertToTarget.equals("true") && (tdmVersionName == null || tdmVersionName.equals(""))) 
+		if(tdmInsertToTarget.equals("true") && (taskType.equals("EXTRACT") || tdmVersionName == null || tdmVersionName.equals(""))) 
 		{
 			if (tdmSyncSourceData.equals("false")) {
 				// If this is the first sync (the instance is not in Fabric) - throw exception

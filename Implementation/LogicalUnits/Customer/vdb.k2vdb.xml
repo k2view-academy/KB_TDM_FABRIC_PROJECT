@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.10">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.0.13">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -7,8 +7,6 @@
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
-    <NumberOfPartitionsInPriority>0</NumberOfPartitionsInPriority>
-    <NumberOfJobsInPriority>0</NumberOfJobsInPriority>
     <OrderValidationTime>00:05:00</OrderValidationTime>
     <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
     <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
@@ -68,7 +66,7 @@
     </TableProperties>
     <TableProperties name="CUSTOMER">
       <Populations>
-        <Population name="popCustomer" order="2" disabled="false" populationType="Regular" />
+        <Population name="popCustomer.flow" order="3" disabled="false" populationType="Flow" />
         <Population name="populationCustomerMaskSSN.flow" order="3" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
@@ -155,23 +153,23 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="popCustomer" column="input" columnId="fi_7.0" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
       <To tableType="TableObject" table="TAR_CUSTOMER" populationObjectName="populationTarCustomer.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
       <To tableType="TableObject" table="collection" populationObjectName="popCollection" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
       <To tableType="TableObject" table="TDM_LU_TYPE_REL_TAR_EID" populationObjectName="pop_TDM_LU_TYPE_REL_TAR_EID" column="dummy_input" columnId="fi_9.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="popCustomer.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CASES" column="CASE_ID" columnId="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
@@ -186,15 +184,15 @@
       <To tableType="TableObject" table="orders" populationObjectName="query_main_orders" column="contract_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
       <To tableType="TableObject" table="CONTRACT" populationObjectName="query_CONTRACT" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
       <To tableType="TableObject" table="ACTIVITY" populationObjectName="query_main_ACTIVITY" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="CUSTOMER" column="CUSTOMER_ID" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
       <To tableType="TableObject" table="ADDRESS" populationObjectName="query_main_ADDRESS" column="customer_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
@@ -223,7 +221,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
+    <Graph version="6.5.0.13" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="345 33.4544334" size="265 743.0912" wasexpanded="false" expanded="true">
         <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="349 52.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
@@ -238,7 +236,7 @@
         <Node name="orders" pos="1245 61.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="CONTRACT" pos="943 36.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="ACTIVITY" pos="943 236.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="CUSTOMER" pos="641 227.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
+        <Node name="CUSTOMER" pos="641 259.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Node name="collection" pos="1305 433" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="Target Tables for Delete " pos="638 625.9544" size="869 530.0911" wasexpanded="false" expanded="true">

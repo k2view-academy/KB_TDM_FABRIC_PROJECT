@@ -135,43 +135,45 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {
-		String message=null;
-		String errorCode="";
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		String sql = "INSERT INTO \"" + schema + "\".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) " +
-		            "VALUES (?, ?, ?, ?, ?, ?, ?)" +  
-					"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status";
-		try {
-			String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-			Db.Row row = db("TDM").fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active").firstRow();
-			errorCode= "SUCCESS";
-			HashMap<String,Object> businessEntity=new HashMap<>();
-			businessEntity.put("be_id",Integer.parseInt(row.cell(0).toString()));
-			businessEntity.put("be_name", row.cell(1));
-			businessEntity.put("be_description", row.cell(2));
-			businessEntity.put("be_created_by", row.cell(3));
-			businessEntity.put("be_creation_date", row.cell(4));
-			businessEntity.put("be_last_updated_date", row.cell(5));
-			businessEntity.put("be_last_updated_by", row.cell(6));
-			businessEntity.put("be_status", row.cell(7));
-		
-			String activityDesc = "Business entity " + be_name + " was created";
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if ("admin".equals(permissionGroup)) {
 			try {
-				fnInsertActivity("create", "Business entities", activityDesc);
+				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+						.withZone(ZoneOffset.UTC)
+						.format(Instant.now());
+				String sql = "INSERT INTO \"" + schema + "\".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) " +
+						"VALUES (?, ?, ?, ?, ?, ?, ?)" +
+						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status";
+
+				String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+				Db.Row row = db("TDM").fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active").firstRow();
+				HashMap<String,Object> businessEntity=new HashMap<>();
+				businessEntity.put("be_id",Integer.parseInt(row.cell(0).toString()));
+				businessEntity.put("be_name", row.cell(1));
+				businessEntity.put("be_description", row.cell(2));
+				businessEntity.put("be_created_by", row.cell(3));
+				businessEntity.put("be_creation_date", row.cell(4));
+				businessEntity.put("be_last_updated_date", row.cell(5));
+				businessEntity.put("be_last_updated_by", row.cell(6));
+				businessEntity.put("be_status", row.cell(7));
+
+				String activityDesc = "Business entity " + be_name + " was created";
+				try {
+					fnInsertActivity("create", "Business entities", activityDesc);
+				}
+				catch(Exception e){
+					log.error(e.getMessage());
+				}
+
+				return wrapWebServiceResults("SUCCESS",null,businessEntity);
 			}
-			catch(Exception e){
-				log.error(e.getMessage());
+			catch (Exception e){
+				String message=e.getMessage();
+				log.error(message);
+				return wrapWebServiceResults("FAIL",message,null);
 			}
-		
-			return wrapWebServiceResults(errorCode,message,businessEntity);
-		}
-		catch (Exception e){
-			message=e.getMessage();
-			errorCode= "FAIL";
-			log.error(message);
-			return wrapWebServiceResults(errorCode,message,null);
+		}else {
+			return wrapWebServiceResults("FAIL","Permission denied",null);
 		}
 	}
 
@@ -185,33 +187,41 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		String sql = "UPDATE \"" + schema + "\".business_entities " +
-		            "SET be_description=(?)," +
-		            "be_last_updated_date=(?)," +
-		            "be_last_updated_by=(?) " +
-		            "WHERE be_id = " + beId + "RETURNING be_name";
-		
-		try{
-			String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-			Db.Row row = db("TDM").fetch(sql, be_description,now,username).firstRow();
-			errorCode= "SUCCESS";
-		
-			String activityDesc = "Business entity " + row.cell(0) + " was updated";
-			try {
-				fnInsertActivity("update", "Business entities", activityDesc);
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if ("admin".equals(permissionGroup)) {
+			try{
+				String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+
+				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+						.withZone(ZoneOffset.UTC)
+						.format(Instant.now());
+				String sql = "UPDATE \"" + schema + "\".business_entities " +
+						"SET be_description=(?)," +
+						"be_last_updated_date=(?)," +
+						"be_last_updated_by=(?) " +
+						"WHERE be_id = " + beId + "RETURNING be_name";
+
+				Db.Row row = db("TDM").fetch(sql, be_description,now,username).firstRow();
+				errorCode= "SUCCESS";
+
+				String activityDesc = "Business entity " + row.cell(0) + " was updated";
+				try {
+					fnInsertActivity("update", "Business entities", activityDesc);
+				}
+				catch(Exception e){
+					log.error(e.getMessage());
+				}
+
 			}
 			catch(Exception e){
-				log.error(e.getMessage());
+				errorCode= "FAIL";
+				message=e.getMessage();
+				log.error(message);
 			}
-		
-		}
-		catch(Exception e){
+
+		} else {
+			message = "Permission denied";
 			errorCode= "FAIL";
-			message=e.getMessage();
-			log.error(message);
 		}
 		response.put("errorCode",errorCode);
 		response.put("message",message);
@@ -229,50 +239,56 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		
-		String sql = "UPDATE \"" + schema + "\".business_entities SET be_status=(?) " +
-		"WHERE be_id = " + beId + "  RETURNING be_name";
-		try {
-			Db.Rows rows = db("TDM").fetch(sql, "Inactive");
-			Db.Row firstRec = rows.firstRow();
-			String beName="";
-			if (!firstRec.isEmpty()) beName = "" + firstRec.cell(0);
-		
-			String updateEnvironmentProductsSql = "UPDATE \"public\".environment_products " +
-					"SET status= (?) " +
-					"from ( " +
-					"select product_id, count(product_id) " +
-					"from \"public\".product_logical_units " +
-					"WHERE be_id = " + beId + "  AND  " +
-					"product_id not in (select product_id from \"public\".product_logical_units where be_id <> " + beId + " AND product_id <> -1) " +
-					"GROUP BY product_id ) l " +
-					"WHERE \"public\".environment_products.status = 'Active' AND l.product_id = \"public\".environment_products.product_id AND l.count = 1";
-			db("TDM").execute(updateEnvironmentProductsSql, "Inactive");
-		
-			String updateProductLUsSql = "UPDATE \"" + schema + "\".product_logical_units " +
-					"SET product_id=(?) " +
-					"WHERE be_id = " + beId;
-			db("TDM").execute(updateProductLUsSql, -1);
-		
-			String updateTasksSql = "UPDATE \"" + schema + "\".tasks " +
-					"SET task_status=(?) " +
-					"WHERE be_id = " + beId;
-			db("TDM").execute(updateTasksSql, "Inactive");
-		
-			errorCode="SUCCESS";
-		
-			String activityDesc = "Business entity " + beName + " was deleted";
+
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if ("admin".equals(permissionGroup)) {
 			try {
-				fnInsertActivity("delete", "Business entities", activityDesc);
+				String sql = "UPDATE \"" + schema + "\".business_entities SET be_status=(?) " +
+						"WHERE be_id = " + beId + "  RETURNING be_name";
+				Db.Rows rows = db("TDM").fetch(sql, "Inactive");
+				Db.Row firstRec = rows.firstRow();
+				String beName="";
+				if (!firstRec.isEmpty()) beName = "" + firstRec.cell(0);
+
+				String updateEnvironmentProductsSql = "UPDATE \"public\".environment_products " +
+						"SET status= (?) " +
+						"from ( " +
+						"select product_id, count(product_id) " +
+						"from \"public\".product_logical_units " +
+						"WHERE be_id = " + beId + "  AND  " +
+						"product_id not in (select product_id from \"public\".product_logical_units where be_id <> " + beId + " AND product_id <> -1) " +
+						"GROUP BY product_id ) l " +
+						"WHERE \"public\".environment_products.status = 'Active' AND l.product_id = \"public\".environment_products.product_id AND l.count = 1";
+				db("TDM").execute(updateEnvironmentProductsSql, "Inactive");
+
+				String updateProductLUsSql = "UPDATE \"" + schema + "\".product_logical_units " +
+						"SET product_id=(?) " +
+						"WHERE be_id = " + beId;
+				db("TDM").execute(updateProductLUsSql, -1);
+
+				String updateTasksSql = "UPDATE \"" + schema + "\".tasks " +
+						"SET task_status=(?) " +
+						"WHERE be_id = " + beId;
+				db("TDM").execute(updateTasksSql, "Inactive");
+
+				errorCode="SUCCESS";
+
+				String activityDesc = "Business entity " + beName + " was deleted";
+				try {
+					fnInsertActivity("delete", "Business entities", activityDesc);
+				}
+				catch(Exception e){
+					log.error(e.getMessage());
+				}
+
+			} catch(Exception e){
+				message=e.getMessage();
+				errorCode= "FAIL";
+				log.error(message);
 			}
-			catch(Exception e){
-				log.error(e.getMessage());
-			}
-		
-		} catch(Exception e){
-			message=e.getMessage();
+		} else {
+			message = "Permission denied";
 			errorCode= "FAIL";
-			log.error(message);
 		}
 		
 		response.put("errorCode",errorCode);
@@ -426,6 +442,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateLogicalUnitsInBusinessEntity(@param(description="Business Entity ID", required=true) Long beId, @param(description="LU ID", required=true) Long luId, Map<String,Object> logicalUnit) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -512,6 +531,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateBusinessEntityLogicalUnits(@param(required=true) Long beId, Long product_id, String product_name, List<Map<String,Object>> logicalUnits) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -554,6 +576,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteLogicalUnitForBusinessEntity(@param(required=true) Long luId, @param(required=true) Long beId, @param(required=true) String beName, @param(required=true) String luName) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -630,6 +654,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsAddLogicalUnitsForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, List<Map<String,Object>> logicalUnits) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -724,6 +751,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeletePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long id, @param(required=true) String name) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -783,6 +813,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsAddPostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(description="This is the Broadway flow name that needs to run as a post task execution process") String process_name, @param(description="Execution order of the post exeuction process. Several processes canhave the same execution order.") Integer execution_order, String process_description) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -884,6 +917,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdatePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long id, String process_name, Integer execution_order, String process_description) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";

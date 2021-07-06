@@ -34,59 +34,6 @@ public class Logic extends UserCode {
 
 
 
-	@type(RootFunction)
-	@out(name = "SUBSCRIBER_ID", type = Double.class, desc = "")
-	@out(name = "MSISDN", type = String.class, desc = "")
-	@out(name = "IMSI", type = String.class, desc = "")
-	@out(name = "SIM", type = String.class, desc = "")
-	@out(name = "FIRST_NAME", type = String.class, desc = "")
-	@out(name = "LAST_NAME", type = String.class, desc = "")
-	@out(name = "SUBSCRIBER_TYPE", type = String.class, desc = "")
-	@out(name = "VIP_STATUS", type = String.class, desc = "")
-	public static void fnPop_SUBSCRIBER(String input) throws Exception {
-		// Check the TDM_INSERT_TO_TARGET, TDM_DELETE_BEFORE_LOAD and TDM_SYNC_SOURCE_DATA.
-		// Note: if both globals - TDM_SYNC_SOURCE_DATA is false and TDM_DELETE_BEFORE_LOAD - are false, the Init flow needs to set the sync mode to OFF
-		
-		String luName = getLuType().luName;
-		String tdmInsertToTarget = "" +fabric().fetch("SET " + luName +".TDM_INSERT_TO_TARGET").firstValue();
-		String tdmSyncSourceData = "" + fabric().fetch("SET " + luName +".TDM_SYNC_SOURCE_DATA").firstValue();
-		String tdmVersionName  =  "" + fabric().fetch("SET " + luName +".TDM_VERSION_NAME").firstValue();
-		
-		/**************************************************************************************************
-		/* Check TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA:
-		/* If the TDM_INSERT_TO_TARGET and TDM_SYNC_SOURCE_DATA are true, and the task is not a DataFlux
-		/* load task, then select the data from the source and yield the results.
-		/**************************************************************************************************/
-		
-		// Defect fix- 13.6.21 - add a check of the tdmVersionName to avoid the re-sync of the entity 
-		// on DataFlux load tasks 
-		if(tdmInsertToTarget.equals("true") && (tdmVersionName == null || tdmVersionName.equals(""))) 
-		{
-			if (tdmSyncSourceData.equals("false")) {
-				// If this is the first sync (the instance is not in Fabric) - throw exception
-				if (isFirstSync()) {
-					throw new Exception("The instance does not exist in Fabric and sync from source is off");
-				}
-		
-			} else // if the TDM_SYNC_SOURCE_DATA is true - select the data from the source and yield the results
-			{
-		
-				// Indicates if any of the source root table has the instance id
-				AtomicBoolean instanceExists = new AtomicBoolean(false);
-		
-				String sql = "SELECT SUBSCRIBER_ID, MSISDN, IMSI, SIM, FIRST_NAME, LAST_NAME, SUBSCRIBER_TYPE, VIP_STATUS FROM SUBSCRIBER where subscriber_id = ?";
-				db("BILLING_DB").fetch(sql, input).each(row->{
-					instanceExists.set(true);
-					yield(row.cells());
-				});
-		
-				if(!instanceExists.get()) {
-					throw new Exception("Instance " + getInstanceID() + " is not found in the Source");
-				}
-				
-			}
-		} 
-	}
 
 	
 	

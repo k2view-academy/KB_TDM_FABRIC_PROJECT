@@ -1,22 +1,8 @@
 {
   "type": "InitiateTDMLoad_Actor",
-  "actorClass": null,
   "parentType": "InnerFlow",
+  "actorClass": null,
   "inputs": [
-    {
-      "name": "luName",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "iid",
-      "schema": {
-        "type": "string"
-      },
-      "const": null
-    },
     {
       "name": "sourceEnv",
       "schema": {
@@ -25,7 +11,14 @@
       "const": null
     },
     {
-      "name": "targetEnv",
+      "name": "deleteBeforeLoad",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "insertToTarget",
       "schema": {
         "type": "Any"
       },
@@ -39,21 +32,28 @@
       "const": null
     },
     {
-      "name": "syncMode",
-      "schema": {
-        "type": "String"
-      },
-      "const": null
-    },
-    {
-      "name": "insertToTarget",
+      "name": "luName",
       "schema": {
         "type": "Any"
       },
       "const": null
     },
     {
-      "name": "deleteBeforeLoad",
+      "name": "iid",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "syncMode",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "targetEnv",
       "schema": {
         "type": "Any"
       },

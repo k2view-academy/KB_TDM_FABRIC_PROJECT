@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.4.1.10">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.0.13">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -7,8 +7,6 @@
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
-    <NumberOfPartitionsInPriority>0</NumberOfPartitionsInPriority>
-    <NumberOfJobsInPriority>0</NumberOfJobsInPriority>
     <OrderValidationTime>00:05:00</OrderValidationTime>
     <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
     <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
@@ -66,7 +64,7 @@
     </TableProperties>
     <TableProperties name="SUBSCRIBER">
       <Populations>
-        <Population name="popSubscriber" order="2" disabled="false" populationType="Regular" />
+        <Population name="popSubscriber.flow" order="2" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_INVOICE">
@@ -102,26 +100,26 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="SUBSCRIBER" populationObjectName="popSubscriber" column="input" columnId="fi_11.0" />
+      <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="population_tar_subscriber.flow" column="subscriber_id" columnId="tblCol_d78b5d3e85764f2c918b40943907711e" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="TAR_SUBSCRIBER" populationObjectName="population_tar_subscriber.flow" column="subscriber_id" columnId="tblCol_d78b5d3e85764f2c918b40943907711e" />
+      <To tableType="TableObject" table="SUBSCRIBER" populationObjectName="popSubscriber.flow" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
       <To tableType="TableObject" table="PAYMENT" populationObjectName="query_main_PAYMENT_Development" column="invoice_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
       <To tableType="TableObject" table="BALANCE" populationObjectName="query_main_BALANCE" column="subscriber_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
       <To tableType="TableObject" table="INVOICE" populationObjectName="query_main_INVOICE" column="subscriber_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="SUBSCRIBER" column="SUBSCRIBER_ID" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
       <To tableType="TableObject" table="OFFER" populationObjectName="query_main_OFFER" column="subscriber_id" columnId="queryCol_0" />
     </Relation>
     <Relation>
@@ -142,17 +140,17 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.4.1.10" name="vdb.k2vdb.xml">
+    <Graph version="6.5.0.13" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="310 193.40892" size="267 315.091125" wasexpanded="false" expanded="true">
         <Node name="LU_PARAMS" pos="316 212.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="INSTANCE_TABLE_COUNT" pos="314 368.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="686 139.454437" size="869 559.0912" wasexpanded="false" expanded="true">
-        <Node name="SUBSCRIBER" pos="690 333.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Group name="Source Tables" pos="686 155.454437" size="869 543.0912" wasexpanded="false" expanded="true">
+        <Node name="SUBSCRIBER" pos="690 317.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="OFFER" pos="992 558.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="INVOICE" pos="992 358.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="BALANCE" pos="992 158.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
+        <Node name="BALANCE" pos="992 174.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
         <Node name="PAYMENT" pos="1294 383.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Group name="Target Tables for Delete" pos="312 774.621033" size="855.666748 183.4245" wasexpanded="false" expanded="true">

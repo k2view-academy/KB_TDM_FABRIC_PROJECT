@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.k2view.fabric.common.Util.safeClose;
+
 @SuppressWarnings({"unchecked"})
 public class StatsLoader implements Actor {
     private static final String QUERY_INSERT = "INSERT INTO public.task_exe_stats_detailed (" +

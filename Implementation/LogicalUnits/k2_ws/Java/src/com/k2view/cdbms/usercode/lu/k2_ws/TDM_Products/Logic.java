@@ -30,8 +30,9 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	final static String schema="public";
 
@@ -167,6 +168,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsPostProduct(String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -221,6 +224,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateProduct(@param(required=true) Long prodId, String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -274,10 +279,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"be_created_by\": \"k2view\",\r\n" +
 			"      \"product_name\": \"PROD\",\r\n" +
 			"      \"be_name\": \"BE\",\r\n" +
-			"      \"last_executed_lu\": \"false\",\r\n" +
 			"      \"lu_description\": \"null\",\r\n" +
-			"      \"lu_is_ref\": \"null\",\r\n" +
-			"      \"execution_plan_name\": \"epLuName\",\r\n" +
 			"      \"lu_parent_name\": \"parentName\",\r\n" +
 			"      \"lu_name\": \"luName\",\r\n" +
 			"      \"product_id\": 1,\r\n" +
@@ -309,13 +311,14 @@ public class Logic extends WebServiceUserCode {
 				productLogicalUnit.put("lu_description", row.cell(1));
 				productLogicalUnit.put("be_id", Long.parseLong(row.cell(2).toString()));
 				productLogicalUnit.put("lu_parent_id",row.cell(3)!=null? Long.parseLong(row.cell(3).toString()):null);
-				productLogicalUnit.put("lu_is_ref",row.cell(4)!=null?Boolean.parseBoolean(row.cell(4).toString()):null);
 				productLogicalUnit.put("lu_id", Long.parseLong(row.cell(5).toString()));
 				productLogicalUnit.put("product_name", row.cell(6));
 				productLogicalUnit.put("lu_parent_name", row.cell(7));
 				productLogicalUnit.put("product_id", Long.parseLong(row.cell(8).toString()));
-				productLogicalUnit.put("execution_plan_name", row.cell(9));
-				productLogicalUnit.put("last_executed_lu",row.cell(10)!=null?Boolean.parseBoolean(row.cell(10).toString()):null);
+				// Remove ADI Fields
+				//productLogicalUnit.put("execution_plan_name", row.cell(9));
+				//productLogicalUnit.put("last_executed_lu",row.cell(10)!=null?Boolean.parseBoolean(row.cell(10).toString()):null);
+				//productLogicalUnit.put("lu_is_ref",row.cell(4)!=null?Boolean.parseBoolean(row.cell(4).toString()):null);
 				productLogicalUnit.put("lu_dc_name", row.cell(11));
 				//business_entities
 				productLogicalUnit.put("be_name", row.cell(12));
@@ -356,10 +359,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"be_created_by\": \"k2view\",\r\n" +
 			"      \"product_name\": \"null\",\r\n" +
 			"      \"be_name\": \"BE\",\r\n" +
-			"      \"last_executed_lu\": \"false\",\r\n" +
 			"      \"lu_description\": \"description\",\r\n" +
-			"      \"lu_is_ref\": \"null\",\r\n" +
-			"      \"execution_plan_name\": \"epluName\",\r\n" +
 			"      \"lu_parent_name\": \"null\",\r\n" +
 			"      \"lu_name\": \"luName\",\r\n" +
 			"      \"product_id\": -1,\r\n" +
@@ -391,13 +391,14 @@ public class Logic extends WebServiceUserCode {
 				productLogicalUnit.put("lu_description", row.cell(1));
 				productLogicalUnit.put("be_id", Long.parseLong(row.cell(2).toString()));
 				productLogicalUnit.put("lu_parent_id",row.cell(3)!=null? Long.parseLong(row.cell(3).toString()):null);
-				productLogicalUnit.put("lu_is_ref",row.cell(4)!=null? Boolean.parseBoolean(row.cell(4).toString()):null);
 				productLogicalUnit.put("lu_id", Long.parseLong(row.cell(5).toString()));
 				productLogicalUnit.put("product_name", row.cell(6));
 				productLogicalUnit.put("lu_parent_name", row.cell(7));
 				productLogicalUnit.put("product_id", Long.parseLong(row.cell(8).toString()));
-				productLogicalUnit.put("execution_plan_name", row.cell(9));
-				productLogicalUnit.put("last_executed_lu",row.cell(10)!=null?Boolean.parseBoolean(row.cell(10).toString()):null);
+				// Remove ADI fields
+				//productLogicalUnit.put("execution_plan_name", row.cell(9));
+				//productLogicalUnit.put("last_executed_lu",row.cell(10)!=null?Boolean.parseBoolean(row.cell(10).toString()):null);
+				//productLogicalUnit.put("lu_is_ref",row.cell(4)!=null? Boolean.parseBoolean(row.cell(4).toString()):null);
 				productLogicalUnit.put("lu_dc_name", row.cell(11));
 				//business_entities
 				productLogicalUnit.put("be_name", row.cell(12));
@@ -431,6 +432,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteProduct(@param(required=true) Long prodId) throws Exception {
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -463,14 +466,14 @@ public class Logic extends WebServiceUserCode {
 				db("TDM").execute(updateEnvironmentProducts,"Inactive");
 			}
 		
+			/*
 			{
 				// relation environment_product_interfaces no longer exist
-				/*
 				String updateEnvironmentProductInterfaces = "UPDATE \"" + schema + "\".environment_product_interfaces SET " +
 					"env_product_interface_status=(?) " +
 					"WHERE product_id = " + prodId;
 				db("TDM").execute(updateEnvironmentProductInterfaces,"Inactive");
-				 */
+
 			}
 		
 			{
@@ -492,6 +495,7 @@ public class Logic extends WebServiceUserCode {
 						"WHERE \"" + schema + "\".tasks.task_id = sq.task_id AND \"" + schema + "\".tasks.task_status = \'Active\'";
 				db("TDM").execute(updateTasks,"Inactive","Inactive");
 			}
+			 */
 		
 			try {
 				String activityDesc = "Product " + prodName + " was deleted";

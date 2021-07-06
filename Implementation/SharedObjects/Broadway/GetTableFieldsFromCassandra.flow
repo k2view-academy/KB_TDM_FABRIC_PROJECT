@@ -132,8 +132,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "self.result = new Array();\r\nfor (var x in tableData) {\r\n  if (x.toLowerCase() != 'source_env_name' && x.toLowerCase() != 'tdm_task_execution_id' && x.toLowerCase() != 'rec_id') {\r\n     self.result.push(x.toLowerCase());\r\n     self.result;\r\n  }\r\n}",
-                                            "script": "self.result = new Array();\n\nfor (var x in tableData) {\n  if (x.toLowerCase() != 'source_env_name' && x.toLowerCase() != 'tdm_task_execution_id' && x.toLowerCase() != 'rec_id') {\n    self.result.push(x.toLowerCase());\n    self.result;\n  }\n}"
+                                            "userCode": "self.result = new Array();\r\nfor (var x in tableData) {\r\n  if (x.toLowerCase() != 'source_env_name' && x.toLowerCase() != 'tdm_task_execution_id' && x.toLowerCase() != 'tdm_rec_id') {\r\n     self.result.push(x.toLowerCase());\r\n     self.result;\r\n  }\r\n}",
+                                            "script": "self.result = new Array();\n\nfor (var x in tableData) {\n  if (x.toLowerCase() != 'source_env_name' && x.toLowerCase() != 'tdm_task_execution_id' && x.toLowerCase() != 'tdm_rec_id') {\n    self.result.push(x.toLowerCase());\n    self.result;\n  }\n}"
                                         }
                                     },
                                     {

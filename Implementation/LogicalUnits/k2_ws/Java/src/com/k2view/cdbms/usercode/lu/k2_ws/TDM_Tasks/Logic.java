@@ -27,6 +27,7 @@ import com.k2view.cdbms.usercode.lu.k2_ws.*;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import org.apache.avro.generic.GenericData;
+import org.apache.kafka.common.protocol.types.Field;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -113,8 +114,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("This is the main API to get the task details. This API gets the list of all TDM tasks or a list of given task IDs if the input task_ids parameter is populated. \r\n" +
-			"The input **task_ids** is an optional parameter that can be populated to return the data of a given list of tasks. The ID(s) of the required task(s), will be supplied in this parameter separated by comma. For example, task_ids=4 or task_ids=3,2,6. \r\n" +
+	@desc("This is the main API to get the task details. This API gets the list of all TDM tasks or a list of given task IDs if the input task_ids parameter is populated. The input task_ids is an optional parameter that can be populated to return the data of a given list of tasks. The ID(s) of the required task(s), will be supplied in this parameter separated by comma. For example, task_ids=4 or task_ids=3,2,6.\r\n" +
 			"\r\n" +
 			"If task_ids parameter is not populated, the data of all tasks will be returned by the API.")
 	@webService(path = "tasks", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -213,7 +213,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_creation_date\": \"date\"\r\n" +
 			"    }\r\n" +
 			"]")
-	public static Object wsGetTasks(String task_ids) throws Exception {
+	public static Object wsGetTasks(@param(description="list of task IDs separated by a comma") String task_ids) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -604,9 +604,7 @@ public class Logic extends WebServiceUserCode {
 		if (selectAllEntites!=null&&selectAllEntites==true) {
 			selection_method = "ALL";
 		}
-
-		if (refList!=null && refList.size() > 0) refresh_reference_data=true;
-
+		
 		try{
 			String sql= "INSERT INTO \"" + schema + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
 					"number_of_entities_to_copy,selection_method,selection_param_value,entity_exclusion_list, task_execution_status, " +
@@ -754,8 +752,8 @@ public class Logic extends WebServiceUserCode {
 		try {
 			db("TDM").execute("UPDATE \"" + schema + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
-
-			if(refList!=null && refList.size() > 0) refresh_reference_data=true;
+		
+		
 			if(refList!=null) {
 				Iterator<Map<String, Object>> iter = refList.iterator();
 				while (iter.hasNext()) {
@@ -1033,19 +1031,29 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the task's Logical Units.")
+	@desc("This API gets the task's Logical Units. Note that the Business Entity (BE) ID and name are returned by /tasks API in be_id and be_name output attributes.")
 	@webService(path = "task/{taskId}/logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"lu_name\": \"luName\",\r\n" +
-			"      \"lu_id\": 27,\r\n" +
-			"      \"task_id\": 145\r\n" +
+			"      \"lu_name\": \"Collection\",\r\n" +
+			"      \"lu_id\": 23,\r\n" +
+			"      \"task_id\": 291\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"lu_name\": \"luName2\",\r\n" +
-			"      \"lu_id\": 8,\r\n" +
-			"      \"task_id\": 145\r\n" +
+			"      \"lu_name\": \"Customer\",\r\n" +
+			"      \"lu_id\": 20,\r\n" +
+			"      \"task_id\": 291\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"lu_name\": \"Billing\",\r\n" +
+			"      \"lu_id\": 22,\r\n" +
+			"      \"task_id\": 291\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"lu_name\": \"Orders\",\r\n" +
+			"      \"lu_id\": 21,\r\n" +
+			"      \"task_id\": 291\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -1082,7 +1090,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the task's Globals if they exist. Note that task_globals attribute of  /tasks API indicates if the task has globals. This attribute is populated by true if the task has Globals.")
+	@desc("This API gets the task's Globals if they exist. Note that task_globals attribute of /tasks API indicates if the task has globals. This attribute is populated by true if the task has Globals.")
 	@webService(path = "task/{taskId}/globals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -1211,66 +1219,6 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-/*
-	@desc("Returns all the Logical Units connected to the given SRC/TAGRET env")
-	@webService(path = "sourceenvid/{srcEnvId}/targetendid/{targetEnvId}/logicalUnits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"environment_product_id\": 3,\r\n" +
-			"      \"be_id\": 1,\r\n" +
-			"      \"product_vendor\": null,\r\n" +
-			"      \"environment_id\": 4,\r\n" +
-			"      \"lu_parent_id\": null,\r\n" +
-			"      \"product_status\": \"Active\",\r\n" +
-			"      \"lu_dc_name\": null,\r\n" +
-			"      \"lu_description\": description\",\r\n" +
-			"      \"lu_is_ref\": null,\r\n" +
-			"      \"execution_plan_name\": \"epLuName\",\r\n" +
-			"      \"last_updated_by\": \"k2view\",\r\n" +
-			"      \"lu_parent_name\": null,\r\n" +
-			"      \"product_id\": 1,\r\n" +
-			"      \"product_description\": null,\r\n" +
-			"      \"last_updated_date\": \"2020-12-07 08:14:48.336\",\r\n" +
-			"      \"product_version\": \"1\",\r\n" +
-			"      \"product_last_updated_date\": \"2021-03-18 17:23:16.622\",\r\n" +
-			"      \"product_created_by\": \"k2view\",\r\n" +
-			"      \"creation_date\": \"2020-12-07 08:14:48.336\",\r\n" +
-			"      \"product_name\": \"PROD\",\r\n" +
-			"      \"created_by\": \"k2view\",\r\n" +
-			"      \"last_executed_lu\": false,\r\n" +
-			"      \"product_versions\": \"1\",\r\n" +
-			"      \"product_last_updated_by\": \"K2View\",\r\n" +
-			"      \"data_center_name\": \"DC1\",\r\n" +
-			"      \"lu_name\": \"luName\",\r\n" +
-			"      \"lu_id\": 1,\r\n" +
-			"      \"product_creation_date\": \"2020-10-01 08:26:42.899\",\r\n" +
-			"      \"status\": \"Active\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsGetLogicalUnitsForSourceAndTargetEnv(@param(required=true) Long srcEnvId, @param(required=true) Long targetEnvId) throws Exception {
-		HashMap<String,Object> response=new HashMap<>();
-		String message=null;
-		String errorCode="";
-		try {
-			List<Map<String,Object>> result = fnGetLogicalUnitsForSourceAndTargetEnv(targetEnvId,srcEnvId);
-			response.put("result",result);
-			errorCode="SUCCESS";
-		} catch(Exception e){
-			message=e.getMessage();
-			log.error(message);
-			errorCode="FAIL";
-		}
-		response.put("errorCode",errorCode);
-		response.put("message", message);
-		return response;
-	}
-
- */
-
 
 	@desc("Gets a list of available versions within a given time interval when creating load Data Flux tasks.\r\n" +
 			"\r\n" +
@@ -1326,89 +1274,60 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"be_id\": 10,\r\n" +
-			"      \"environment_id\": 10,\r\n" +
-			"      \"tot_num_of_succeeded_post_executions\": 0,\r\n" +
-			"      \"task_execution_id\": 487,\r\n" +
-			"      \"task_id\": 293,\r\n" +
-			"      \"source_environment_id\": 9,\r\n" +
-			"      \"version_datetime\": \"2021-06-16 15:35:01.947\",\r\n" +
-			"      \"execution_status\": \"completed\",\r\n" +
-			"      \"source_env_name\": \"SRC\",\r\n" +
-			"      \"tot_num_of_processed_root_entities\": 50,\r\n" +
+			"      \"be_id\": 1,\r\n" +
+			"      \"environment_id\": 1,\r\n" +
+			"      \"tot_num_of_succeeded_post_executions\": null,\r\n" +
+			"      \"task_execution_id\": 1,\r\n" +
+			"      \"task_id\": 1,\r\n" +
+			"      \"source_environment_id\": 1,\r\n" +
+			"      \"version_datetime\": \"2020-10-01 08:29:29.170\",\r\n" +
+			"      \"execution_status\": \"failed\",\r\n" +
+			"      \"source_env_name\": \"ENV1\",\r\n" +
+			"      \"tot_num_of_processed_root_entities\": 0,\r\n" +
 			"      \"fabric_environment_name\": null,\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
+			"      \"environment_name\": \"SRC\",\r\n" +
 			"      \"tot_num_of_failed_ref_tables\": 0,\r\n" +
-			"      \"start_execution_time\": \"2021-06-16 15:35:12.000\",\r\n" +
-			"      \"tot_num_of_processed_post_executions\": 0,\r\n" +
-			"      \"creation_date\": \"2021-06-16 15:35:01.949\",\r\n" +
-			"      \"tot_num_of_copied_root_entities\": 50,\r\n" +
-			"      \"be_name\": \"CUSTOMER\",\r\n" +
+			"      \"start_execution_time\": \"1970-01-01 00:00:00.000\",\r\n" +
+			"      \"tot_num_of_processed_post_executions\": null,\r\n" +
+			"      \"creation_date\": \"2020-10-01 08:29:29.173\",\r\n" +
+			"      \"tot_num_of_copied_root_entities\": 0,\r\n" +
+			"      \"be_name\": \"BE\",\r\n" +
 			"      \"tot_num_of_copied_ref_tables\": 0,\r\n" +
-			"      \"update_date\": \"2021-06-16 15:35:32.580\",\r\n" +
-			"      \"tot_num_of_failed_post_executions\": 0,\r\n" +
+			"      \"update_date\": \"2020-12-30 08:40:17.576\",\r\n" +
+			"      \"tot_num_of_failed_post_executions\": null,\r\n" +
 			"      \"version_expiration_date\": null,\r\n" +
-			"      \"end_execution_time\": \"2021-06-16 15:35:28.000\",\r\n" +
+			"      \"end_execution_time\": \"1970-01-01 00:00:00.000\",\r\n" +
 			"      \"tot_num_of_processed_ref_tables\": 0,\r\n" +
-			"      \"task_type\": \"LOAD\",\r\n" +
+			"      \"task_type\": \"EXTRACT\",\r\n" +
 			"      \"tot_num_of_failed_root_entities\": 0,\r\n" +
 			"      \"task_executed_by\": null\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"be_id\": 10,\r\n" +
-			"      \"environment_id\": 10,\r\n" +
-			"      \"tot_num_of_succeeded_post_executions\": 0,\r\n" +
-			"      \"task_execution_id\": 488,\r\n" +
-			"      \"task_id\": 293,\r\n" +
-			"      \"source_environment_id\": 9,\r\n" +
-			"      \"version_datetime\": \"2021-06-16 15:36:00.055\",\r\n" +
+			"      \"be_id\": 1,\r\n" +
+			"      \"environment_id\": 1,\r\n" +
+			"      \"tot_num_of_succeeded_post_executions\": null,\r\n" +
+			"      \"task_execution_id\": 3,\r\n" +
+			"      \"task_id\": 1,\r\n" +
+			"      \"source_environment_id\": 1,\r\n" +
+			"      \"version_datetime\": \"2020-10-12 20:06:25.487\",\r\n" +
 			"      \"execution_status\": \"completed\",\r\n" +
-			"      \"source_env_name\": \"SRC\",\r\n" +
-			"      \"tot_num_of_processed_root_entities\": 50,\r\n" +
+			"      \"source_env_name\": \"ENV1\",\r\n" +
+			"      \"tot_num_of_processed_root_entities\": 5,\r\n" +
 			"      \"fabric_environment_name\": null,\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
+			"      \"environment_name\": \"SRC\",\r\n" +
 			"      \"tot_num_of_failed_ref_tables\": 0,\r\n" +
-			"      \"start_execution_time\": \"2021-06-16 15:36:02.000\",\r\n" +
-			"      \"tot_num_of_processed_post_executions\": 0,\r\n" +
-			"      \"creation_date\": \"2021-06-16 15:36:00.058\",\r\n" +
-			"      \"tot_num_of_copied_root_entities\": 50,\r\n" +
-			"      \"be_name\": \"CUSTOMER\",\r\n" +
+			"      \"start_execution_time\": \"2020-10-12 20:06:29.000\",\r\n" +
+			"      \"tot_num_of_processed_post_executions\": null,\r\n" +
+			"      \"creation_date\": \"2020-10-12 20:06:25.539\",\r\n" +
+			"      \"tot_num_of_copied_root_entities\": 5,\r\n" +
+			"      \"be_name\": \"BE\",\r\n" +
 			"      \"tot_num_of_copied_ref_tables\": 0,\r\n" +
-			"      \"update_date\": \"2021-06-16 15:36:33.832\",\r\n" +
-			"      \"tot_num_of_failed_post_executions\": 0,\r\n" +
+			"      \"update_date\": \"2020-10-12 20:06:46.098\",\r\n" +
+			"      \"tot_num_of_failed_post_executions\": null,\r\n" +
 			"      \"version_expiration_date\": null,\r\n" +
-			"      \"end_execution_time\": \"2021-06-16 15:36:27.000\",\r\n" +
+			"      \"end_execution_time\": \"2020-10-12 20:06:31.000\",\r\n" +
 			"      \"tot_num_of_processed_ref_tables\": 0,\r\n" +
-			"      \"task_type\": \"LOAD\",\r\n" +
-			"      \"tot_num_of_failed_root_entities\": 0,\r\n" +
-			"      \"task_executed_by\": null\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"be_id\": 10,\r\n" +
-			"      \"environment_id\": 10,\r\n" +
-			"      \"tot_num_of_succeeded_post_executions\": 0,\r\n" +
-			"      \"task_execution_id\": 489,\r\n" +
-			"      \"task_id\": 293,\r\n" +
-			"      \"source_environment_id\": 9,\r\n" +
-			"      \"version_datetime\": \"2021-06-16 15:51:39.623\",\r\n" +
-			"      \"execution_status\": \"completed\",\r\n" +
-			"      \"source_env_name\": \"SRC\",\r\n" +
-			"      \"tot_num_of_processed_root_entities\": 50,\r\n" +
-			"      \"fabric_environment_name\": null,\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
-			"      \"tot_num_of_failed_ref_tables\": 0,\r\n" +
-			"      \"start_execution_time\": \"2021-06-16 15:51:45.000\",\r\n" +
-			"      \"tot_num_of_processed_post_executions\": 0,\r\n" +
-			"      \"creation_date\": \"2021-06-16 15:51:39.625\",\r\n" +
-			"      \"tot_num_of_copied_root_entities\": 50,\r\n" +
-			"      \"be_name\": \"CUSTOMER\",\r\n" +
-			"      \"tot_num_of_copied_ref_tables\": 0,\r\n" +
-			"      \"update_date\": \"2021-06-16 15:52:07.418\",\r\n" +
-			"      \"tot_num_of_failed_post_executions\": 0,\r\n" +
-			"      \"version_expiration_date\": null,\r\n" +
-			"      \"end_execution_time\": \"2021-06-16 15:52:00.000\",\r\n" +
-			"      \"tot_num_of_processed_ref_tables\": 0,\r\n" +
-			"      \"task_type\": \"LOAD\",\r\n" +
+			"      \"task_type\": \"EXTRACT\",\r\n" +
 			"      \"tot_num_of_failed_root_entities\": 0,\r\n" +
 			"      \"task_executed_by\": null\r\n" +
 			"    }\r\n" +
@@ -1450,752 +1369,36 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the task execution details:\r\n" +
+	@desc("Gets task execution details:\r\n" +
 			"\r\n" +
-			"- List of copied and Failed Entities.\r\n" +
-			"- Task's Logical Units hierarchy tree.\r\n" +
-			"- List of copied and failed reference tables.\r\n" +
+			"> List of copied and Failed Entities.\r\n" +
 			"\r\n" +
-			"The information can be retrieved on the following levels based on the input BODY request parameters:\r\n" +
+			"> Task's Logical Units hierarchy tree.\r\n" +
 			"\r\n" +
-			"- Get the execution details of the root Logical Unit\r\n" +
-			"- Get the execution details of a selected Logical Unit\r\n" +
-			"- Get the execution details of a selected Logical Unit and entity ID\r\n" +
-			"\r\n" +
-			"The taskExecutionId parameter is mandatory. Other parameters are optional.\r\n" +
-			"\r\n" +
-			"The type parameter is an optional attribute to filter the returned data when the luName attribute is populated, but the targetId, parentTargetId, and entityId attributes are not populated. The type can be populated by the following values:\r\n" +
-			"\r\n" +
-			"- Copied entities per execution\r\n" +
-			"- Failed entities per execution\r\n" +
-			"- Copied Reference per execution\r\n" +
-			"- Failed Reference per execution \r\n" +
+			"> List of copied and failed reference tables.\r\n" +
 			"\r\n" +
 			"Examples of a request body:\r\n" +
 			"\r\n" +
-			"- Get the execution details of the root Logical Unit: \r\n" +
-			"{taskExecutionId: \"490\"}\r\n" +
+			"> Get the execution details of the root Logical Unit: \r\n" +
+			"{taskExecutionId: \"69\"}\r\n" +
 			"\r\n" +
-			"- Get the execution details of a selected Logical Unit:\r\n" +
-			"{taskExecutionId: \"490\", lu_name: \"Billing\"}\r\n" +
+			"> Get the execution details of a selected Logical Unit:\r\n" +
+			"{taskExecutionId: \"69\", lu_name: \"PATIENT_VISITS\"}\r\n" +
 			"\r\n" +
-			"- Get the execution details of a selected Logical Unit and entity ID:\r\n" +
-			"{taskExecutionId: \"490\", targetId: \"102\", lu_name: \"Billing\"}\r\n" +
-			"\r\n" +
-			"- Get the List of Children Entities Related to a Given Parent ID:\r\n" +
-			"{\"parentTargetId\": \"36\", \"taskExecutionId\": \"490\", \"lu_name\": \"Billing\"}\r\n" +
-			"\r\n" +
-			"- Get the List of Children Entities Related to a Given Root Entity ID: {\"entityID\": \"36\", \"taskExecutionId\": \"490\", \"lu_name\": \"Billing\"}\r\n" +
-			"\r\n" +
-			"- Get the Failed Entities of a Selected Task's LU:\r\n" +
-			"{\"type\": \"Failed entities per execution\", \"taskExecutionId\": \"448\", \"lu_name\":\"Collection\"}")
+			"> Gets the execution details of a selected Logical Unit and entity ID:\r\n" +
+			"{taskExecutionId: \"69\", targetId: \"400\", lu_name: \"PATIENT_VISITS\"}")
 	@webService(path = "taskStats", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "1. Task Execution Level (Root Logical Unit)- \r\n" +
 			"\r\n" +
-			"{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"luTree\": [\r\n" +
-			"      {\r\n" +
-			"        \"isRoot\": true,\r\n" +
-			"        \"test\": true,\r\n" +
-			"        \"hasChildren\": true,\r\n" +
-			"        \"collapsed\": true,\r\n" +
-			"        \"lu_name\": \"Customer\",\r\n" +
-			"        \"task_execution_id\": 490,\r\n" +
-			"        \"count\": 3,\r\n" +
-			"        \"lu_id\": 20,\r\n" +
-			"        \"test1\": true,\r\n" +
-			"        \"lu_status\": \"completed\",\r\n" +
-			"        \"selected\": true,\r\n" +
-			"        \"status\": \"completed\"\r\n" +
-			"      }\r\n" +
-			"    ],\r\n" +
-			"    \"data\": {\r\n" +
-			"      \"Copied entities per execution\": {\r\n" +
-			"        \"entitiesList\": [\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"36\",\r\n" +
-			"            \"parentLuName\": \"\",\r\n" +
-			"            \"parentTargetId\": \"\",\r\n" +
-			"            \"targetId\": \"36\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Customer\",\r\n" +
-			"            \"parentSourceId\": \"\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"532\",\r\n" +
-			"            \"parentLuName\": \"\",\r\n" +
-			"            \"parentTargetId\": \"\",\r\n" +
-			"            \"targetId\": \"532\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Customer\",\r\n" +
-			"            \"parentSourceId\": \"\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"577\",\r\n" +
-			"            \"parentLuName\": \"\",\r\n" +
-			"            \"parentTargetId\": \"\",\r\n" +
-			"            \"targetId\": \"577\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Customer\",\r\n" +
-			"            \"parentSourceId\": \"\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"627\",\r\n" +
-			"            \"parentLuName\": \"\",\r\n" +
-			"            \"parentTargetId\": \"\",\r\n" +
-			"            \"targetId\": \"627\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Customer\",\r\n" +
-			"            \"parentSourceId\": \"\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"627\",\r\n" +
-			"            \"rootTargetId\": \"627\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"794\",\r\n" +
-			"            \"parentLuName\": \"\",\r\n" +
-			"            \"parentTargetId\": \"\",\r\n" +
-			"            \"targetId\": \"794\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Customer\",\r\n" +
-			"            \"parentSourceId\": \"\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"NoOfEntities\": \"5\"\r\n" +
-			"      },\r\n" +
-			"      \"Failed entities per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": \"0\"\r\n" +
-			"      },\r\n" +
-			"      \"Copied Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Failed Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Roots Status\": {\r\n" +
-			"        \"Customer\": \"completed\"\r\n" +
-			"      }\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}\r\n" +
+			"{\"result\":{\"luTree\":[{\"isRoot\":true,\"test\":true,\"hasChildren\":true,\"collapsed\":true,\"lu_name\":\"PATIENT_LU\",\"task_execution_id\":69,\"count\":1,\"lu_id\":1,\"test1\":true,\"lu_status\":\"completed\",\"selected\":true,\"status\":\"completed\"}],\"data\":{\"Copied entities per execution\":{\"entitiesList\":[{\"sourceId\":\"1\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"1\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"},{\"sourceId\":\"2\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"2\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"3\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"3\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"4\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"4\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"5\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"5\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"6\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"6\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"6\",\"rootTargetId\":\"6\"},{\"sourceId\":\"7\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"7\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"8\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"8\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"}],\"NoOfEntities\":\"8\"},\"Failed entities per execution\":{\"entitiesList\":[],\"NoOfEntities\":\"0\"},\"Copied Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Failed Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Roots Status\":{\"PATIENT_LU\":\"completed\"}}},\"errorCode\":\"SUCCESS\",\"message\":null}\r\n" +
 			"\r\n" +
-			"2. Get the Information on a Selected Task's LU\r\n" +
-			"{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"data\": {\r\n" +
-			"      \"Copied entities per execution\": {\r\n" +
-			"        \"entitiesList\": [\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"102\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"102\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"103\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"103\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"104\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"104\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"105\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"105\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"106\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"106\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1324\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"532\",\r\n" +
-			"            \"targetId\": \"1324\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"532\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1325\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"532\",\r\n" +
-			"            \"targetId\": \"1325\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"532\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1326\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"532\",\r\n" +
-			"            \"targetId\": \"1326\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"532\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1429\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1429\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1430\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1430\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1431\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1431\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1432\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1432\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1537\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"627\",\r\n" +
-			"            \"targetId\": \"1537\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"627\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"627\",\r\n" +
-			"            \"rootTargetId\": \"627\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1538\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"627\",\r\n" +
-			"            \"targetId\": \"1538\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"627\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"627\",\r\n" +
-			"            \"rootTargetId\": \"627\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1965\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"794\",\r\n" +
-			"            \"targetId\": \"1965\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"794\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1966\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"794\",\r\n" +
-			"            \"targetId\": \"1966\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"794\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1967\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"794\",\r\n" +
-			"            \"targetId\": \"1967\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"794\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"NoOfEntities\": \"17\"\r\n" +
-			"      },\r\n" +
-			"      \"Failed entities per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": \"0\"\r\n" +
-			"      },\r\n" +
-			"      \"Copied Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Failed Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Roots Status\": {\r\n" +
-			"        \"Customer\": \"completed\"\r\n" +
-			"      }\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}\r\n" +
+			"2. Logical Unit Level - \r\n" +
 			"\r\n" +
-			"3. Get the Information on a Selected Task's LU and Entity ID\r\n" +
-			"{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"data\": {\r\n" +
-			"      \"Copied entities per execution\": {\r\n" +
-			"        \"entitiesList\": [\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"102\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"102\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"NoOfEntities\": \"1\"\r\n" +
-			"      },\r\n" +
-			"      \"Failed entities per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": \"0\"\r\n" +
-			"      },\r\n" +
-			"      \"Copied Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Failed Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Roots Status\": {\r\n" +
-			"        \"Customer\": \"completed\"\r\n" +
-			"      }\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}\r\n" +
+			"{\"result\":{\"data\":{\"Copied entities per execution\":{\"entitiesList\":[{\"sourceId\":\"24900\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"24900\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"},{\"sourceId\":\"24901\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"24901\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"},{\"sourceId\":\"24902\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"24902\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"},{\"sourceId\":\"24903\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"24903\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"},{\"sourceId\":\"24913\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24913\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24914\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24914\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24915\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24915\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24916\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24916\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24917\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24917\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24918\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24918\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24919\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24919\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24920\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24920\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24921\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"2\",\"targetId\":\"24921\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"2\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"24925\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"4\",\"targetId\":\"24925\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"4\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"24926\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"4\",\"targetId\":\"24926\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"4\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"24927\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"4\",\"targetId\":\"24927\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"4\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"24928\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"4\",\"targetId\":\"24928\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"4\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"24929\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"4\",\"targetId\":\"24929\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"4\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"24934\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24934\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24935\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24935\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24936\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24936\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24937\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24937\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24938\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24938\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24939\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24939\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24940\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"7\",\"targetId\":\"24940\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"7\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"24959\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"6\",\"targetId\":\"24959\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"6\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"6\",\"rootTargetId\":\"6\"},{\"sourceId\":\"24960\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"6\",\"targetId\":\"24960\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"6\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"6\",\"rootTargetId\":\"6\"},{\"sourceId\":\"24963\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24963\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24964\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24964\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24965\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24965\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24967\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24967\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24969\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24969\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24971\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24971\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24973\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24973\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"24974\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"8\",\"targetId\":\"24974\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"8\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"},{\"sourceId\":\"25072\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"5\",\"targetId\":\"25072\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"5\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"25085\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"5\",\"targetId\":\"25085\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"5\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"25089\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"5\",\"targetId\":\"25089\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"5\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"25092\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"5\",\"targetId\":\"25092\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"5\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"25094\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"5\",\"targetId\":\"25094\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"5\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"25112\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25112\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"25114\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25114\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"25115\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25115\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"25116\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25116\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"25120\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25120\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"25122\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25122\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"25134\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"3\",\"targetId\":\"25134\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"3\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"400\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"400\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"}],\"NoOfEntities\":\"48\"},\"Failed entities per execution\":{\"entitiesList\":[],\"NoOfEntities\":\"0\"},\"Copied Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Failed Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Roots Status\":{\"PATIENT_LU\":\"completed\"}}},\"errorCode\":\"SUCCESS\",\"message\":null} \r\n" +
 			"\r\n" +
-			"4. Get the List of Children Entities Related to a Given Parent ID\r\n" +
-			"{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"data\": {\r\n" +
-			"      \"Copied entities per execution\": {\r\n" +
-			"        \"entitiesList\": [\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"102\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"102\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"103\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"103\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"104\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"104\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"105\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"105\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"106\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"106\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"NoOfEntities\": \"5\"\r\n" +
-			"      },\r\n" +
-			"      \"Failed entities per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": \"0\"\r\n" +
-			"      },\r\n" +
-			"      \"Copied Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Failed Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Roots Status\": {\r\n" +
-			"        \"Customer\": \"completed\"\r\n" +
-			"      }\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}\r\n" +
+			"3. Logical Unit and Entity ID level -\r\n" +
 			"\r\n" +
-			"5. Get the List of Children Entities Related to a Given Root Entity ID\r\n" +
-			"{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"data\": {\r\n" +
-			"      \"Copied entities per execution\": {\r\n" +
-			"        \"entitiesList\": [\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"102\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"102\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"103\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"103\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"104\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"104\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"105\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"105\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"106\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"36\",\r\n" +
-			"            \"targetId\": \"106\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"36\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"36\",\r\n" +
-			"            \"rootTargetId\": \"36\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1324\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"532\",\r\n" +
-			"            \"targetId\": \"1324\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"532\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1325\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"532\",\r\n" +
-			"            \"targetId\": \"1325\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"532\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1326\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"532\",\r\n" +
-			"            \"targetId\": \"1326\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"532\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"532\",\r\n" +
-			"            \"rootTargetId\": \"532\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1429\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1429\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1430\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1430\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1431\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1431\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1432\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"577\",\r\n" +
-			"            \"targetId\": \"1432\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"577\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"577\",\r\n" +
-			"            \"rootTargetId\": \"577\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1537\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"627\",\r\n" +
-			"            \"targetId\": \"1537\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"627\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"627\",\r\n" +
-			"            \"rootTargetId\": \"627\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1538\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"627\",\r\n" +
-			"            \"targetId\": \"1538\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"627\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"627\",\r\n" +
-			"            \"rootTargetId\": \"627\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1965\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"794\",\r\n" +
-			"            \"targetId\": \"1965\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"794\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1966\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"794\",\r\n" +
-			"            \"targetId\": \"1966\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"794\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"sourceId\": \"1967\",\r\n" +
-			"            \"parentLuName\": \"Customer\",\r\n" +
-			"            \"parentTargetId\": \"794\",\r\n" +
-			"            \"targetId\": \"1967\",\r\n" +
-			"            \"copyEntityStatus\": \"Copied\",\r\n" +
-			"            \"luName\": \"Billing\",\r\n" +
-			"            \"parentSourceId\": \"794\",\r\n" +
-			"            \"copyHierarchyStatus\": \"Copied\",\r\n" +
-			"            \"rootSourceId\": \"794\",\r\n" +
-			"            \"rootTargetId\": \"794\"\r\n" +
-			"          }\r\n" +
-			"        ],\r\n" +
-			"        \"NoOfEntities\": \"17\"\r\n" +
-			"      },\r\n" +
-			"      \"Failed entities per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": \"0\"\r\n" +
-			"      },\r\n" +
-			"      \"Copied Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Failed Reference per execution\": {\r\n" +
-			"        \"entitiesList\": [],\r\n" +
-			"        \"NoOfEntities\": 0\r\n" +
-			"      },\r\n" +
-			"      \"Roots Status\": {\r\n" +
-			"        \"Customer\": \"completed\"\r\n" +
-			"      }\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+			"{\"result\":{\"data\":{\"Copied entities per execution\":{\"entitiesList\":[{\"sourceId\":\"400\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"400\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"}],\"NoOfEntities\":\"1\"},\"Failed entities per execution\":{\"entitiesList\":[],\"NoOfEntities\":\"0\"},\"Copied Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Failed Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Roots Status\":{\"PATIENT_LU\":\"completed\"}}},\"errorCode\":\"SUCCESS\",\"message\":null}")
 	public static Object wsGetTaskStats(Long targetId, Long parentTargetId, String taskExecutionId, String lu_name, Long entityId, String type) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		if (targetId != null || parentTargetId != null) {
@@ -2382,7 +1585,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"num_of_copied_entities\": 0,\r\n" +
 			"      \"fabric_execution_id\": \"e51b4541-a24b-4f0d-a22c-9294ef7e55d1\",\r\n" +
 			"      \"be_last_updated_date\": \"2021-04-19 07:38:03.456\",\r\n" +
-			"      \"execution_plan_name\": \"epPATIENT_LU\",\r\n" +
 			"      \"product_id\": 1,\r\n" +
 			"      \"load_entity\": true,\r\n" +
 			"      \"selected_version_task_exe_id\": null,\r\n" +
@@ -2395,7 +1597,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"be_status\": \"Active\",\r\n" +
 			"      \"creation_date\": \"2021-04-19 08:09:40.071\",\r\n" +
 			"      \"selected_version_datetime\": null,\r\n" +
-			"      \"last_executed_lu\": false,\r\n" +
 			"      \"task_last_updated_by\": \"K2View\",\r\n" +
 			"      \"selected_ref_version_task_exe_id\": null,\r\n" +
 			"      \"task_execution_status\": \"Active\",\r\n" +
@@ -2434,7 +1635,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"task_execution_id\": 1,\r\n" +
 			"      \"lu_dc_name\": null,\r\n" +
 			"      \"refcount\": 0,\r\n" +
-			"      \"lu_is_ref\": null,\r\n" +
 			"      \"lu_parent_name\": null,\r\n" +
 			"      \"process_name\": null,\r\n" +
 			"      \"be_last_updated_by\": \"K2View\",\r\n" +
@@ -2559,8 +1759,8 @@ public class Logic extends WebServiceUserCode {
 	//end from logic.TDM
 
 	@desc("Gets task summary report.")
-	@webService(path = "taskSummaryReport/{executionId}/luName/{luName}", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	public static Object wsTaskSummaryReport(@param(required=true) String executionId, @param(description="Will be populated by 'ALL' to get one unified summary report to all Logical Units of the task execution. Populate this parameter by the Logical Unit name to get a report of a given Logical Unit.", required=true) String luName) throws Exception {
+	@webService(path = "taskSummaryReport/{executionId}/luName/{luName}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	public static Object wsTaskSummaryReport(@param(description="Task execution ID", required=true) String executionId, @param(description="Will be populated by 'ALL' to get one unified summary report to all Logical Units of the task execution. Populate this parameter by the Logical Unit name to get a report of a given Logical Unit.", required=true) String luName) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -2907,25 +2107,18 @@ public class Logic extends WebServiceUserCode {
 			" \r\n" +
 			"> 'D': detailed execution. Returning a detailed information of all reference tables their execution status.\r\n" +
 			"\r\n" +
-			" > 'S': summary information of the execution\r\n" +
-			"\r\n" +
-			"Examples of a request body:\r\n" +
-			"- Summary Information:\r\n" +
-			"{taskExecutionId: 494, type: \"S\"}\r\n" +
-			"\r\n" +
-			"- Detailed Information:\r\n" +
-			"{taskExecutionId: 494, type: \"D\"}")
+			" > 'S': summary information of the execution")
 	@webService(path = "extractrefstats", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "- Example 1 - Summary Information: \r\n" +
+	@resultMetaData(mediaType = Produce.JSON, example = "Example 1 - Summary Information: \r\n" +
 			"{\r\n" +
 			"  \"result\": {\r\n" +
-			"    \"Customer\": {\r\n" +
-			"      \"minStartExecutionDate\": \"Thu Jun 17 06:31:15 UTC 2021\",\r\n" +
-			"      \"maxEndExecutionDate\": \"Thu Jun 17 06:31:17 UTC 2021\",\r\n" +
-			"      \"totNumOfTablesToProcess\": 1,\r\n" +
-			"      \"numOfProcessedRefTables\": 1,\r\n" +
-			"      \"numOfCopiedRefTables\": 1,\r\n" +
-			"      \"numOfFailedRefTables\": 0,\r\n" +
+			"    \"PATIENT_LU\": {\r\n" +
+			"      \"minStartExecutionDate\": \"Sun May 09 09:08:42 UTC 2021\",\r\n" +
+			"      \"maxEndExecutionDate\": \"Sun May 09 09:08:42 UTC 2021\",\r\n" +
+			"      \"totNumOfTablesToProcess\": 3,\r\n" +
+			"      \"numOfProcessedRefTables\": 3,\r\n" +
+			"      \"numOfCopiedRefTables\": 0,\r\n" +
+			"      \"numOfFailedRefTables\": 3,\r\n" +
 			"      \"numOfProcessingRefTables\": 0,\r\n" +
 			"      \"numberOfNotStartedRefTables\": 0\r\n" +
 			"    }\r\n" +
@@ -2933,19 +2126,41 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}\r\n" +
-			"\r\n" +
-			"- Example 2 - Detailed Information:\r\n" +
-			"\r\n" +
+			"Example 2 - Detailed Information:\r\n" +
+			"{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"start_time\": \"2021-06-17 06:31:15.036\",\r\n" +
-			"      \"ref_table_name\": \"DEVICESTABLE2017\",\r\n" +
-			"      \"lu_name\": \"Customer\",\r\n" +
-			"      \"execution_status\": \"completed\",\r\n" +
-			"      \"end_time\": \"2021-06-17 06:31:17.090\",\r\n" +
-			"      \"coalesce\": 3752,\r\n" +
-			"      \"estimated_remaining_duration\": \"0\",\r\n" +
-			"      \"number_of_records_to_process\": 3752\r\n" +
+			"      \"start_time\": \"2021-05-09 09:08:42.622\",\r\n" +
+			"      \"error_msg\": \"java.lang.NullPointerException\",\r\n" +
+			"      \"ref_table_name\": \"REF_GIBRISH\",\r\n" +
+			"      \"number_of_processed_records\": null,\r\n" +
+			"      \"lu_name\": \"PATIENT_LU\",\r\n" +
+			"      \"execution_status\": \"failed\",\r\n" +
+			"      \"end_time\": \"2021-05-09 09:08:42.622\",\r\n" +
+			"      \"estimated_remaining_duration\": null,\r\n" +
+			"      \"number_of_records_to_process\": 0\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"start_time\": \"2021-05-09 09:08:42.613\",\r\n" +
+			"      \"error_msg\": \"java.lang.NullPointerException\",\r\n" +
+			"      \"ref_table_name\": \"PATIENT_REF\",\r\n" +
+			"      \"number_of_processed_records\": null,\r\n" +
+			"      \"lu_name\": \"PATIENT_LU\",\r\n" +
+			"      \"execution_status\": \"failed\",\r\n" +
+			"      \"end_time\": \"2021-05-09 09:08:42.613\",\r\n" +
+			"      \"estimated_remaining_duration\": null,\r\n" +
+			"      \"number_of_records_to_process\": 0\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"start_time\": \"2021-05-09 09:08:42.617\",\r\n" +
+			"      \"error_msg\": \"java.lang.NullPointerException\",\r\n" +
+			"      \"ref_table_name\": \"REF_COMPLEX\",\r\n" +
+			"      \"number_of_processed_records\": null,\r\n" +
+			"      \"lu_name\": \"PATIENT_LU\",\r\n" +
+			"      \"execution_status\": \"failed\",\r\n" +
+			"      \"end_time\": \"2021-05-09 09:08:42.617\",\r\n" +
+			"      \"estimated_remaining_duration\": null,\r\n" +
+			"      \"number_of_records_to_process\": 0\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -2972,32 +2187,7 @@ public class Logic extends WebServiceUserCode {
 	//from TDM.logic
 	@desc("Gets the hierarchy of a given entity and LU name within the task execution")
 	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"Customer\": {\r\n" +
-			"      \"luName\": \"Customer\",\r\n" +
-			"      \"targetId\": \"36\",\r\n" +
-			"      \"sourceId\": \"36\",\r\n" +
-			"      \"entityStatus\": \"completed\",\r\n" +
-			"      \"parentLuName\": \"\",\r\n" +
-			"      \"parentTargetId\": \"\",\r\n" +
-			"      \"children\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"Billing\",\r\n" +
-			"          \"targetId\": \"102\",\r\n" +
-			"          \"sourceId\": \"102\",\r\n" +
-			"          \"entityStatus\": \"completed\",\r\n" +
-			"          \"parentLuName\": \"Customer\",\r\n" +
-			"          \"parentTargetId\": \"36\",\r\n" +
-			"          \"luStatus\": \"completed\"\r\n" +
-			"        }\r\n" +
-			"      ],\r\n" +
-			"      \"luStatus\": \"completed\"\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
+	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"PATIENT_LU\": {\n      \"luName\": \"PATIENT_LU\",\n      \"targetId\": \"1\",\n      \"sourceId\": \"1\",\n      \"entityStatus\": \"completed\",\n      \"parentLuName\": \"\",\n      \"parentTargetId\": \"\",\n      \"children\": [\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24900\",\n          \"sourceId\": \"24900\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24901\",\n          \"sourceId\": \"24901\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24902\",\n          \"sourceId\": \"24902\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24903\",\n          \"sourceId\": \"24903\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"400\",\n          \"sourceId\": \"400\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        }\n      ],\n      \"luStatus\": \"completed\"\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	public static Object wsGetTaskExeStatsForEntity(String taskExecutionId, String luName, String targetId) throws Exception {
 		String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
 				"execution_status luStatus from TDM.task_Execution_link_entities  " +
@@ -3182,7 +2372,7 @@ public class Logic extends WebServiceUserCode {
 				Long luID = (Long) batchInfo.get("lu_id");
 				String luName = "" + batchInfo.get("lu_name");
 				String taskExecutionID = "" + task_execution_id;
-				ludb().execute("cancel batch '" + fabricExecID +"'");
+				ludb().execute("batch_pause '" + fabricExecID +"'");
 				// TDM 7.1 Fix, stop execution of reference tables.
 				//log.info("fnStopTaskExecution - Stopping the reference Handling for task_execution_id: " + task_execution_id + ", task_type: " + taskType);
 				SharedLogic.fnTdmCopyReference(String.valueOf(task_execution_id),taskType);
@@ -3225,20 +2415,120 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Start task execution: initiates an execution of a given task. The 'forced' parameter indicates if the execution should ignore a failure of the task's environment connections validation. If the 'forced' parameter is set to 'true', then the execution ignores the validation failure and executes the task. If the 'forced' parameter is set to 'false' and the environment validation fails, the execution is not initiated.")
+	@desc("Starts an execution of a given task. The 'forced' parameter indicates if the execution should ignore a failure of the task's environment connections validation. If the 'forced' parameter is set to 'true', then the execution ignores the validation failure and executes the task. If the 'forced' parameter is set to 'false' and the environment validation fails, the execution is not initiated.")
 	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"taskExecutionId\": 48\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
-	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced) throws Exception {
+	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced,
+	 String entitieslist, String sourceEnvironmentName, String targetEnvironmentName,
+	 List<Map<String,String>> taskGlobals,Integer numberOfEntities) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		
+
+		Map<String,Object> overrideParams=new HashMap<>();
+		String selectionMethod = entitieslist!=null?"L":null;
+		if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
+		if (sourceEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
+		if (sourceEnvironmentName!=null) overrideParams.put("ENTITY_LIST",entitieslist);
+		if (sourceEnvironmentName!=null) overrideParams.put("SELECTION_METHOD",selectionMethod);
+		if (sourceEnvironmentName!=null) overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
+		if (sourceEnvironmentName!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
+
+		if(!fnValidateParallelExecutions(taskId,overrideParams)) throw new Exception("Task already running");
+
+		Map<String, Object> taskData;
 		try {
-			Long count=(Long)fnIsTaskRunning(taskId);
-			if(count>0) throw new Exception("Task already running");
-			fnIsTaskActive(taskId);
+			taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
+		} catch(Exception e) {
+			throw new Exception("Task is not found");
+		}
+
+		if(!fnIsTaskActive(taskId)) throw new Exception("Task is not active");
+
+		List<String> taskLogicalUnitsIds=new ArrayList<>();
+		try {
+			List<Map<String, Object>> LogicalUnitsList = (List<Map<String, Object>>) ((Map<String, Object>) wsGetTaskLogicalUnits(taskId)).get("result");
+			for(Map<String, Object> lu:LogicalUnitsList){
+				taskLogicalUnitsIds.add(lu.get("lu_id").toString());
+			}
+		} catch(Exception e) {
+			throw new Exception("can't get task's logicalunits");
+		}
+
+		Map<String,Object> be_lus=new HashMap<>();
+		be_lus.put("be_id",taskData.get("be_id").toString());
+		be_lus.put("LU List",taskLogicalUnitsIds);
+
+		Integer finalNumberOfEntityList=0;
+		if(entitieslist!=null)finalNumberOfEntityList=(entitieslist.split(",")).length;
+		else if(taskData.get("selection_param_value")!=null&&"L".equalsIgnoreCase(taskData.get("selection_method").toString())){
+			String[] entityList=((String)taskData.get("selection_param_value")).split(",");
+			finalNumberOfEntityList=entityList.length;
+		}
+
+		Integer finalNumberOfTaskEntites=0;
+		if(numberOfEntities!=null)finalNumberOfTaskEntites=numberOfEntities;
+		else finalNumberOfTaskEntites = (Integer)(taskData.get("number_of_entities_to_copy"));
+
+		List<Map<String,Object>> sourceRolesList =
+				fnGetUserRoleIdsAndEnvTypeByEnvName(sourceEnvironmentName!=null?sourceEnvironmentName:taskData.get("source_env_name").toString())
+				.stream().filter(role->(role.get("environment_type").toString().equalsIgnoreCase("SOURCE")||
+						role.get("environment_type").toString().equalsIgnoreCase("BOTH"))).collect(Collectors.toList());
+		if(sourceRolesList.isEmpty()) throw new Exception("Environment is not exist or user has no read permission on this environment");
+
+
+		Boolean sourceEnvValidation=false;
+		List<Map<String,String>> sourceValidationsErrorMesssagesByRole=new ArrayList<>();
+		for(Map<String,Object> role:sourceRolesList){
+			Map<String,String> sourceValidationsErrorMesssages=new HashMap<>();
+			Boolean entityTest=false;
+			entityTest=fnValidateNubmerOfEntities(finalNumberOfEntityList,finalNumberOfTaskEntites, role.get("role_id").toString());
+			sourceValidationsErrorMesssages=fnValidateSourceEnvForTask(be_lus, (Integer)taskData.get("refcount"),
+					selectionMethod!=null?selectionMethod:(String)taskData.get("selection_method"),
+					(String)taskData.get("sync_mode"), (Boolean)taskData.get("version_ind"), (String)taskData.get("task_type"), role);
+			if(!entityTest) sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
+			if(entityTest&&sourceValidationsErrorMesssages.isEmpty()){sourceEnvValidation=true;break;}
+			sourceValidationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
+		}
+		if(!sourceEnvValidation) return wrapWebServiceResults("FAIL","validation failure",sourceValidationsErrorMesssagesByRole);
+
+
+		if("load".equalsIgnoreCase(taskData.get("task_type").toString())) {
+
+			List<Map<String, Object>> targetRolesList = fnGetUserRoleIdsAndEnvTypeByEnvName(targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString())
+					.stream().filter(role->(role.get("environment_type").toString().equalsIgnoreCase("TARGET") || role.get("environment_type").toString().equalsIgnoreCase("BOTH"))).collect(Collectors.toList());
+			if(targetRolesList.isEmpty()) throw new Exception("Environment is not exist or user has no write permission on this environment");
+
+			Boolean targetEnvValidation = false;
+			List<Map<String, String>> targetValidationsErrorMesssagesByRole = new ArrayList<>();
+			for (Map<String, Object> role : targetRolesList) {
+				Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
+				Boolean entityTest = false;
+				entityTest = fnValidateNubmerOfEntities(finalNumberOfEntityList, finalNumberOfTaskEntites, role.get("role_id").toString());
+				targetValidationsErrorMesssages = fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
+						selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
+						(Boolean) taskData.get("version_ind"),
+						(Boolean) taskData.get("replace_sequences"), (Boolean) taskData.get("delete_before_load"), (String) taskData.get("task_type"), role);
+				if (!entityTest) targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
+				if (entityTest && targetValidationsErrorMesssages.isEmpty()) { targetEnvValidation = true;break; }
+				targetValidationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+			}
+			if (!targetEnvValidation) return wrapWebServiceResults("FAIL", "validation failure", targetValidationsErrorMesssagesByRole);
+		}
+
+		if(!overrideParams.isEmpty()){
+			try{
+				fnSaveTaskOverrideParameters(taskId,overrideParams);
+			}catch(Exception e){
+				throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
+			}
+		}
+
+		try {
+			//Long count=(Long)fnIsTaskRunning(taskId);
+			//if(count>0) throw new Exception("Task already running");
 			fnTestTaskInterfaces(taskId,forced);
-		
+
 			List<Map<String,Object>> taskExecutions = fnGetActiveTaskForActivation(taskId);
 			if (taskExecutions == null || taskExecutions.size() == 0) {
 				throw new Exception("Failed to execute Task");
@@ -3253,14 +2543,14 @@ public class Logic extends WebServiceUserCode {
 			fnStartTaskExecutions(taskExecutions, taskExecutionId);
 			fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId);
 		
-			/*
+
 			try {
-				String activityDesc = "Execution list of task " + taskName + " was updated";
+				String activityDesc = "Execution list of task " + taskData.get("task_title");
 				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
-			 */
+
 		
 			Map<String,Object> map=new HashMap<>();
 			map.put("taskExecutionId",taskExecutionId);
@@ -3429,7 +2719,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of Reference tables included in a given task. Note that refcount attribute of  /tasks API is populated by the number of Reference tables included in the task. If the refcount attribute is populated by zero, the task does not have Reference tables.")
+	@desc("Gets the list of reference table included in a given task. Note that refcount attribute of /tasks API is populated by the number of Reference tables included in the task. If the refcount attribute is populated by zero, the task does not have Reference tables.")
 	@webService(path = "task/refsTable/{task_id}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -3837,8 +3127,8 @@ public class Logic extends WebServiceUserCode {
 			for(Map<String,Object> entry:taskExecutions){
 				String query = "INSERT INTO \"" + schema + "\".task_execution_list " +
 						"(task_id, task_execution_id, creation_date, be_id, environment_id, product_id, product_version, lu_id, " +
-						"data_center_name ,execution_status,last_executed_lu,parent_lu_id,source_env_name, task_executed_by, task_type, version_datetime, source_environment_id, process_id) " +
-						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+						"data_center_name ,execution_status,parent_lu_id,source_env_name, task_executed_by, task_type, version_datetime, source_environment_id, process_id) " +
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 				String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
 				db("TDM").execute(query,
 						entry.get("task_id"),
@@ -3851,7 +3141,6 @@ public class Logic extends WebServiceUserCode {
 						entry.get("lu_id"),
 						entry.get("data_center_name"),
 						"Pending",
-						entry.get("last_executed_lu"),
 						entry.get("lu_parent_id"),
 						entry.get("source_env_name"),
 						username,
@@ -5041,166 +4330,106 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Returns the details of the current/last execution of the given task_id. If the task is pending, it will return only its status, else it will return the statistics of the entities it is handling/handled.")
 	@webService(path = "wsTaskMonitor/{taskID}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\r\n" +
-			"  <result>\r\n" +
-			"    <Task ID>10</Task ID>\r\n" +
-			"    <Task Details>\r\n" +
-			"      <Fabric Batch ID>cc02e34d-2367-4a15-aae7-79dcb4c3e48e</Fabric Batch ID>\r\n" +
-			"      <Task Statistics>\r\n" +
-			"        <Status>\r\n" +
-			"        </Status>\r\n" +
-			"        <Ent./sec (avg.)>2.9</Ent./sec (avg.)>\r\n" +
-			"        <Added>0</Added>\r\n" +
-			"        <Ent./sec (pace)>2.9</Ent./sec (pace)>\r\n" +
-			"        <Updated>3</Updated>\r\n" +
-			"        <Failed>0</Failed>\r\n" +
-			"        <Duration>00:00:01</Duration>\r\n" +
-			"        <End time>2021-06-17 12:23:42.464</End time>\r\n" +
-			"        <Name>b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8</Name>\r\n" +
-			"        <Succeeded>3</Succeeded>\r\n" +
-			"        <Total>--</Total>\r\n" +
-			"        <Level>Node</Level>\r\n" +
-			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
-			"        <Remaining>0</Remaining>\r\n" +
-			"        <Start time>2021-06-17 12:23:41.429</Start time>\r\n" +
-			"        <Unchanged>0</Unchanged>\r\n" +
-			"        <% Completed>100</% Completed>\r\n" +
-			"      </Task Statistics>\r\n" +
-			"      <Task Statistics>\r\n" +
-			"        <Status>\r\n" +
-			"        </Status>\r\n" +
-			"        <Ent./sec (avg.)>2.9</Ent./sec (avg.)>\r\n" +
-			"        <Added>0</Added>\r\n" +
-			"        <Ent./sec (pace)>2.9</Ent./sec (pace)>\r\n" +
-			"        <Updated>3</Updated>\r\n" +
-			"        <Failed>0</Failed>\r\n" +
-			"        <Duration>00:00:01</Duration>\r\n" +
-			"        <End time>2021-06-17 12:23:42.464</End time>\r\n" +
-			"        <Name>DC1</Name>\r\n" +
-			"        <Succeeded>3</Succeeded>\r\n" +
-			"        <Total>--</Total>\r\n" +
-			"        <Level>DC</Level>\r\n" +
-			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
-			"        <Remaining>0</Remaining>\r\n" +
-			"        <Start time>2021-06-17 12:23:41.429</Start time>\r\n" +
-			"        <Unchanged>0</Unchanged>\r\n" +
-			"        <% Completed>100</% Completed>\r\n" +
-			"      </Task Statistics>\r\n" +
-			"      <Task Statistics>\r\n" +
-			"        <Status>DONE</Status>\r\n" +
-			"        <Ent./sec (avg.)>2.9</Ent./sec (avg.)>\r\n" +
-			"        <Added>0</Added>\r\n" +
-			"        <Ent./sec (pace)>2.9</Ent./sec (pace)>\r\n" +
-			"        <Updated>3</Updated>\r\n" +
-			"        <Failed>0</Failed>\r\n" +
-			"        <Duration>00:00:01</Duration>\r\n" +
-			"        <End time>2021-06-17 12:23:42.464</End time>\r\n" +
-			"        <Name>--</Name>\r\n" +
-			"        <Succeeded>3</Succeeded>\r\n" +
-			"        <Total>3</Total>\r\n" +
-			"        <Level>Cluster</Level>\r\n" +
-			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
-			"        <Remaining>0</Remaining>\r\n" +
-			"        <Start time>2021-06-17 12:23:41.429</Start time>\r\n" +
-			"        <Unchanged>0</Unchanged>\r\n" +
-			"        <% Completed>100</% Completed>\r\n" +
-			"      </Task Statistics>\r\n" +
-			"      <Task Status>completed</Task Status>\r\n" +
-			"      <LU Name>PATIENT_LU</LU Name>\r\n" +
-			"    </Task Details>\r\n" +
-			"    <Task Details>\r\n" +
-			"      <Fabric Batch ID>cef3e9fb-2f11-437f-8859-da535300930a</Fabric Batch ID>\r\n" +
-			"      <Task Statistics>\r\n" +
-			"        <Status>\r\n" +
-			"        </Status>\r\n" +
-			"        <Ent./sec (avg.)>6.23</Ent./sec (avg.)>\r\n" +
-			"        <Added>0</Added>\r\n" +
-			"        <Ent./sec (pace)>6.23</Ent./sec (pace)>\r\n" +
-			"        <Updated>19</Updated>\r\n" +
-			"        <Failed>0</Failed>\r\n" +
-			"        <Duration>00:00:03</Duration>\r\n" +
-			"        <End time>2021-06-17 12:24:05.572</End time>\r\n" +
-			"        <Name>b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8</Name>\r\n" +
-			"        <Succeeded>19</Succeeded>\r\n" +
-			"        <Total>--</Total>\r\n" +
-			"        <Level>Node</Level>\r\n" +
-			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
-			"        <Remaining>0</Remaining>\r\n" +
-			"        <Start time>2021-06-17 12:24:02.523</Start time>\r\n" +
-			"        <Unchanged>0</Unchanged>\r\n" +
-			"        <% Completed>100</% Completed>\r\n" +
-			"      </Task Statistics>\r\n" +
-			"      <Task Statistics>\r\n" +
-			"        <Status>\r\n" +
-			"        </Status>\r\n" +
-			"        <Ent./sec (avg.)>6.23</Ent./sec (avg.)>\r\n" +
-			"        <Added>0</Added>\r\n" +
-			"        <Ent./sec (pace)>6.23</Ent./sec (pace)>\r\n" +
-			"        <Updated>19</Updated>\r\n" +
-			"        <Failed>0</Failed>\r\n" +
-			"        <Duration>00:00:03</Duration>\r\n" +
-			"        <End time>2021-06-17 12:24:05.572</End time>\r\n" +
-			"        <Name>DC1</Name>\r\n" +
-			"        <Succeeded>19</Succeeded>\r\n" +
-			"        <Total>--</Total>\r\n" +
-			"        <Level>DC</Level>\r\n" +
-			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
-			"        <Remaining>0</Remaining>\r\n" +
-			"        <Start time>2021-06-17 12:24:02.523</Start time>\r\n" +
-			"        <Unchanged>0</Unchanged>\r\n" +
-			"        <% Completed>100</% Completed>\r\n" +
-			"      </Task Statistics>\r\n" +
-			"      <Task Statistics>\r\n" +
-			"        <Status>DONE</Status>\r\n" +
-			"        <Ent./sec (avg.)>6.23</Ent./sec (avg.)>\r\n" +
-			"        <Added>0</Added>\r\n" +
-			"        <Ent./sec (pace)>6.23</Ent./sec (pace)>\r\n" +
-			"        <Updated>19</Updated>\r\n" +
-			"        <Failed>0</Failed>\r\n" +
-			"        <Duration>00:00:03</Duration>\r\n" +
-			"        <End time>2021-06-17 12:24:05.572</End time>\r\n" +
-			"        <Name>--</Name>\r\n" +
-			"        <Succeeded>19</Succeeded>\r\n" +
-			"        <Total>19</Total>\r\n" +
-			"        <Level>Cluster</Level>\r\n" +
-			"        <Remaining dur.>00:00:00</Remaining dur.>\r\n" +
-			"        <Remaining>0</Remaining>\r\n" +
-			"        <Start time>2021-06-17 12:24:02.523</Start time>\r\n" +
-			"        <Unchanged>0</Unchanged>\r\n" +
-			"        <% Completed>100</% Completed>\r\n" +
-			"      </Task Statistics>\r\n" +
-			"      <Task Status>completed</Task Status>\r\n" +
-			"      <LU Name>PATIENT_VISITS</LU Name>\r\n" +
-			"    </Task Details>\r\n" +
-			"    <Task Name>Extract2</Task Name>\r\n" +
-			"    <Task Execution ID>50</Task Execution ID>\r\n" +
-			"    <Task Reference Statistics>\r\n" +
-			"      <PATIENT_LU>\r\n" +
-			"        <minStartExecutionDate>Thu Jun 17 12:23:41 UTC 2021</minStartExecutionDate>\r\n" +
-			"        <maxEndExecutionDate>Thu Jun 17 12:23:42 UTC 2021</maxEndExecutionDate>\r\n" +
-			"        <totNumOfTablesToProcess>2</totNumOfTablesToProcess>\r\n" +
-			"        <numOfProcessedRefTables>2</numOfProcessedRefTables>\r\n" +
-			"        <numOfCopiedRefTables>2</numOfCopiedRefTables>\r\n" +
-			"        <numOfFailedRefTables>0</numOfFailedRefTables>\r\n" +
-			"        <numOfProcessingRefTables>0</numOfProcessingRefTables>\r\n" +
-			"        <numberOfNotStartedRefTables>0</numberOfNotStartedRefTables>\r\n" +
-			"      </PATIENT_LU>\r\n" +
-			"      <PATIENT_VISITS>\r\n" +
-			"        <minStartExecutionDate>Thu Jun 17 12:23:41 UTC 2021</minStartExecutionDate>\r\n" +
-			"        <maxEndExecutionDate>Thu Jun 17 12:23:52 UTC 2021</maxEndExecutionDate>\r\n" +
-			"        <totNumOfTablesToProcess>1</totNumOfTablesToProcess>\r\n" +
-			"        <numOfProcessedRefTables>1</numOfProcessedRefTables>\r\n" +
-			"        <numOfCopiedRefTables>1</numOfCopiedRefTables>\r\n" +
-			"        <numOfFailedRefTables>0</numOfFailedRefTables>\r\n" +
-			"        <numOfProcessingRefTables>0</numOfProcessingRefTables>\r\n" +
-			"        <numberOfNotStartedRefTables>0</numberOfNotStartedRefTables>\r\n" +
-			"      </PATIENT_VISITS>\r\n" +
-			"    </Task Reference Statistics>\r\n" +
-			"  </result>\r\n" +
-			"  <errorCode>SUCCESS</errorCode>\r\n" +
-			"  <message/>\r\n" +
-			"</HashMap>")
-	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"Task ID\": \"10\",\n    \"Task Details\": [\n      {\n        \"Fabric Batch ID\": \"cc02e34d-2367-4a15-aae7-79dcb4c3e48e\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"Node\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"DC1\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"DC\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"DONE\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"3\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          }\n        ],\n        \"Task Status\": \"completed\",\n        \"LU Name\": \"PATIENT_LU\"\n      },\n      {\n        \"Fabric Batch ID\": \"cef3e9fb-2f11-437f-8859-da535300930a\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"IN_PROGRESS\",\n            \"Ent./sec (avg.)\": \"0\",\n            \"Ent./sec (pace)\": \"0\",\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"-\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"0\",\n            \"Total\": \"19\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:01\",\n            \"Remaining\": \"19\",\n            \"Start time\": \"2021-06-17 12:24:02.523\",\n            \"% Completed\": \"0\"\n          }\n        ],\n        \"Task Status\": \"running\",\n        \"LU Name\": \"PATIENT_VISITS\"\n      }\n    ],\n    \"Task Name\": \"Extract2\",\n    \"Task Execution ID\": 50,\n    \"Task Reference Statistics\": {\n      \"PATIENT_LU\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:42 UTC 2021\",\n        \"totNumOfTablesToProcess\": 2,\n        \"numOfProcessedRefTables\": 2,\n        \"numOfCopiedRefTables\": 2,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      },\n      \"PATIENT_VISITS\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:52 UTC 2021\",\n        \"totNumOfTablesToProcess\": 1,\n        \"numOfProcessedRefTables\": 1,\n        \"numOfCopiedRefTables\": 1,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      }\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
+	@resultMetaData(mediaType = Produce.XML, example = "{\n  \"result\": {\n    \"Task ID\": \"10\",\n    \"Task Details\": [\n      {\n        \"Fabric Batch ID\": \"cc02e34d-2367-4a15-aae7-79dcb4c3e48e\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"Node\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"DC1\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"DC\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"DONE\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"3\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          }\n        ],\n        \"Task Status\": \"completed\",\n        \"LU Name\": \"PATIENT_LU\"\n      },\n      {\n        \"Fabric Batch ID\": \"cef3e9fb-2f11-437f-8859-da535300930a\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"IN_PROGRESS\",\n            \"Ent./sec (avg.)\": \"0\",\n            \"Ent./sec (pace)\": \"0\",\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"-\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"0\",\n            \"Total\": \"19\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:01\",\n            \"Remaining\": \"19\",\n            \"Start time\": \"2021-06-17 12:24:02.523\",\n            \"% Completed\": \"0\"\n          }\n        ],\n        \"Task Status\": \"running\",\n        \"LU Name\": \"PATIENT_VISITS\"\n      }\n    ],\n    \"Task Name\": \"Extract2\",\n    \"Task Execution ID\": 50,\n    \"Task Reference Statistics\": {\n      \"PATIENT_LU\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:42 UTC 2021\",\n        \"totNumOfTablesToProcess\": 2,\n        \"numOfProcessedRefTables\": 2,\n        \"numOfCopiedRefTables\": 2,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      },\n      \"PATIENT_VISITS\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:52 UTC 2021\",\n        \"totNumOfTablesToProcess\": 1,\n        \"numOfProcessedRefTables\": 1,\n        \"numOfCopiedRefTables\": 1,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      }\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": {\r\n" +
+			"    \"Task ID\": \"300\",\r\n" +
+			"    \"Task Details\": [\r\n" +
+			"      {\r\n" +
+			"        \"Task Status\": \"Pending\",\r\n" +
+			"        \"LU Name\": \"Billing\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"Task Status\": \"Pending\",\r\n" +
+			"        \"LU Name\": \"Collection\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"Task Status\": \"Pending\",\r\n" +
+			"        \"LU Name\": \"Orders\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"Fabric Batch ID\": \"c03d06e2-3766-428c-8465-79e6487b2887\",\r\n" +
+			"        \"Task Statistics\": [\r\n" +
+			"          {\r\n" +
+			"            \"Status\": \"\",\r\n" +
+			"            \"Ent./sec (avg.)\": \"242.01\",\r\n" +
+			"            \"Added\": 0,\r\n" +
+			"            \"Ent./sec (pace)\": \"242.01\",\r\n" +
+			"            \"Updated\": 1000,\r\n" +
+			"            \"Failed\": \"0\",\r\n" +
+			"            \"Duration\": \"00:00:04\",\r\n" +
+			"            \"End time\": \"2021-06-20 09:08:19.487\",\r\n" +
+			"            \"Name\": \"2373be01-f751-47ee-926b-c6e9312aab6e\",\r\n" +
+			"            \"Succeeded\": \"1000\",\r\n" +
+			"            \"Total\": \"--\",\r\n" +
+			"            \"Level\": \"Node\",\r\n" +
+			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
+			"            \"Remaining\": \"0\",\r\n" +
+			"            \"Start time\": \"2021-06-20 09:08:15.355\",\r\n" +
+			"            \"Unchanged\": 0,\r\n" +
+			"            \"% Completed\": \"100\"\r\n" +
+			"          },\r\n" +
+			"          {\r\n" +
+			"            \"Status\": \"\",\r\n" +
+			"            \"Ent./sec (avg.)\": \"242.01\",\r\n" +
+			"            \"Added\": 0,\r\n" +
+			"            \"Ent./sec (pace)\": \"242.01\",\r\n" +
+			"            \"Updated\": 1000,\r\n" +
+			"            \"Failed\": \"0\",\r\n" +
+			"            \"Duration\": \"00:00:04\",\r\n" +
+			"            \"End time\": \"2021-06-20 09:08:19.487\",\r\n" +
+			"            \"Name\": \"DC1\",\r\n" +
+			"            \"Succeeded\": \"1000\",\r\n" +
+			"            \"Total\": \"--\",\r\n" +
+			"            \"Level\": \"DC\",\r\n" +
+			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
+			"            \"Remaining\": \"0\",\r\n" +
+			"            \"Start time\": \"2021-06-20 09:08:15.355\",\r\n" +
+			"            \"Unchanged\": 0,\r\n" +
+			"            \"% Completed\": \"100\"\r\n" +
+			"          },\r\n" +
+			"          {\r\n" +
+			"            \"Status\": \"DONE\",\r\n" +
+			"            \"Ent./sec (avg.)\": \"242.01\",\r\n" +
+			"            \"Added\": 0,\r\n" +
+			"            \"Ent./sec (pace)\": \"242.01\",\r\n" +
+			"            \"Updated\": 1000,\r\n" +
+			"            \"Failed\": \"0\",\r\n" +
+			"            \"Duration\": \"00:00:04\",\r\n" +
+			"            \"End time\": \"2021-06-20 09:08:19.487\",\r\n" +
+			"            \"Name\": \"--\",\r\n" +
+			"            \"Succeeded\": \"1000\",\r\n" +
+			"            \"Total\": \"1000\",\r\n" +
+			"            \"Level\": \"Cluster\",\r\n" +
+			"            \"Remaining dur.\": \"00:00:00\",\r\n" +
+			"            \"Remaining\": \"0\",\r\n" +
+			"            \"Start time\": \"2021-06-20 09:08:15.355\",\r\n" +
+			"            \"Unchanged\": 0,\r\n" +
+			"            \"% Completed\": \"100\"\r\n" +
+			"          }\r\n" +
+			"        ],\r\n" +
+			"        \"Task Status\": \"running\",\r\n" +
+			"        \"LU Name\": \"Customer\"\r\n" +
+			"      }\r\n" +
+			"    ],\r\n" +
+			"    \"Task Name\": \"testRefAndEntities\",\r\n" +
+			"    \"Task Execution ID\": 499,\r\n" +
+			"    \"Task Reference Statistics\": {\r\n" +
+			"      \"Customer\": {\r\n" +
+			"        \"minStartExecutionDate\": \"Sun Jun 20 09:08:15 UTC 2021\",\r\n" +
+			"        \"maxEndExecutionDate\": \"Sun Jun 20 09:08:20 UTC 2021\",\r\n" +
+			"        \"totNumOfTablesToProcess\": 1,\r\n" +
+			"        \"numOfProcessedRefTables\": 1,\r\n" +
+			"        \"numOfCopiedRefTables\": 1,\r\n" +
+			"        \"numOfFailedRefTables\": 0,\r\n" +
+			"        \"numOfProcessingRefTables\": 0,\r\n" +
+			"        \"numberOfNotStartedRefTables\": 0\r\n" +
+			"      }\r\n" +
+			"    }\r\n" +
+			"  },\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
 	public static Object wsTaskMonitor(@param(required=true) String taskID) throws Exception {
 		String getExecIDsQuery = "SELECT task_execution_id, execution_status, fabric_execution_id, " +
 				"lu_name as name, task_title, 'LU' as type " +
@@ -5242,15 +4471,8 @@ public class Logic extends WebServiceUserCode {
 			taskLUInfo.put("Task Status", execStatus);
 		
 			if (!"pending".equalsIgnoreCase(execStatus)) {
-				String fabricExecutionId = "" + execRec.get("fabric_execution_id");
-				taskLUInfo.put("Fabric Batch ID", fabricExecutionId);
-				if (!"".equals(fabricExecutionId) && !"null".equals(fabricExecutionId)) {
-					taskLUInfo.put("Task Statistics", fnBatchStats(fabricExecutionId, "S"));
-				} else {
-					taskLUInfo.put("Task Statistics", "");
-				}
-				
-				
+				taskLUInfo.put("Fabric Batch ID", execRec.get("fabric_execution_id"));
+				taskLUInfo.put("Task Statistics", fnBatchStats("" + execRec.get("fabric_execution_id"), "S"));
 			}
 		
 			taskList.add(taskLUInfo);
@@ -5380,6 +4602,355 @@ public class Logic extends WebServiceUserCode {
 		response.put("message", message);
 		return response;
 	}
+
+
+	private static Map<String,String> fnValidateSourceEnvForTask(Map<String,Object> be_lus, Integer refCount,String selection_method,
+																 String sync_mode,boolean version_ind,String task_type,
+																 Map<String,Object> envDetails) throws Exception{
+
+		Object res = null;
+		Boolean ownerOrAdminRole;
+		ArrayList<String> lusList;
+		String env_id, role_id, beId;
+		Map<String,String> errorMessages=new HashMap<>();
+
+		String beAndLus_sql = "SELECT  ep.environment_id FROM environment_products ep,( select ARRAY_AGG(p.lu_id) lu_list , p.be_id , p.product_id from product_logical_units p where p.be_id = ? group by p.be_id, p.product_id) lu " +
+				"where ep.environment_id =? and lower(ep.status) = 'active' and ep.product_id = lu.product_id ";
+		String reference_sql = "select environment_id from environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
+		String syntheticData_sql = "select environment_id from environment_roles where role_id = ?  and allowed_creation_of_synthetic_data = true;";
+		String randomSelection_sql = "select environment_id from environment_roles where role_id = ?  and allowed_random_entity_selection = true;";
+		String syncMode_sql = "select environment_id from environment_roles where role_id = ?  and allowed_request_of_fresh_data = true;";
+		String versioning_sql = "select environment_id from environment_roles where role_id = ?  and allowed_entity_versioning = true;";
+
+
+		beId = (String) be_lus.get("be_id");
+		lusList = (ArrayList<String>) be_lus.get("LU List");
+		for (String lu_str : lusList) {
+			beAndLus_sql += "and " + lu_str + "=ANY(lu.lu_list) ";
+		}
+
+		env_id = "" + envDetails.get("environment_id");
+		role_id = "" + envDetails.get("role_id");
+		ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
+
+		//check if source env satisfy BE and LUs filtering
+		res = db("TDM").fetch(beAndLus_sql, beId, env_id).firstValue();
+		if (res==null)
+			errorMessages.put("BEandLUs","The user cannot start the task with the specified logical units and business entity in source environment.");
+
+		if ("extract".equalsIgnoreCase(task_type)) {
+			// check if source env satisfy reference filtering
+			if (refCount!=null && refCount > 0 && !ownerOrAdminRole) {
+				res = db("TDM").fetch(reference_sql, role_id).firstValue();
+				if (res == null) {
+					errorMessages.put("reference", "The user has no permissions to run tasks on Reference tables on source environment");
+				}
+				//check if source env satisfy selection method filtering
+				if (!("L".equalsIgnoreCase(selection_method) || ("ALL".equalsIgnoreCase(selection_method) && ownerOrAdminRole)))
+					errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's source environment");
+			}
+			// in case task type is load, "selection method" and "reference" filtering are not relevant(not required)
+		}
+
+		//check if source env satisfy sync mode  filtering
+		if ("FORCE".equalsIgnoreCase(sync_mode) && !ownerOrAdminRole) {
+			res = db("TDM").fetch(syncMode_sql, role_id).firstValue();
+			if (res==null) errorMessages.put("syncMode","the user has no permissions to ask to always sync the data from the source.");
+		}
+
+		//check if source env satisfy versioning filtering
+		if (version_ind && !ownerOrAdminRole) {
+			res = db("TDM").fetch(versioning_sql, role_id).firstValue();
+			if (res == null)
+				errorMessages.put("versioning","The user has no permissions to run Data Flux tasks on the task's source environment");
+		}
+
+		//if (!errorMessages.isEmpty())  => test fails
+		return errorMessages;
+	}
+
+
+	private static Map<String,String> fnValidateTargetEnvForTask(Map<String,Object> be_lus, Integer refCount,String selection_method,
+																 boolean version_ind,boolean replace_sequences,boolean delete_before_load,
+																 String task_type,Map<String,Object> envDetails) throws Exception{
+		Map<String,String> errorMessages=new HashMap<>();
+		Object res = null;
+		Boolean ownerOrAdminRole;
+		ArrayList<String> lusList;
+		String env_id, role_id, beId;
+
+		String beAndLus_sql = "SELECT  ep.environment_id FROM environment_products ep,( select ARRAY_AGG(p.lu_id) lu_list , p.be_id , p.product_id from product_logical_units p where p.be_id = ? group by p.be_id, p.product_id) lu " +
+				"where ep.environment_id =? and lower(ep.status) = 'active' and ep.product_id = lu.product_id ";
+		String reference_sql = "select environment_id from environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
+		String syntheticData_sql = "select environment_id from environment_roles where role_id = ?  and allowed_creation_of_synthetic_data = true;";
+		String randomSelection_sql = "select environment_id from environment_roles where role_id = ?  and allowed_random_entity_selection = true;";
+		String versioning_sql = "select environment_id from environment_roles where role_id = ?  and allowed_entity_versioning = true;";
+		String replaceSequence_sql = "select environment_id from environment_roles where role_id = ?  and allowed_replace_sequences = true;";
+		String deleteBeforeLoad_sql = "select environment_id from environment_roles where role_id = ?  and  allowed_delete_before_load = true;";
+
+		beId = (String) be_lus.get("be_id");
+		lusList = (ArrayList<String>) be_lus.get("LU List");
+		for (String lu_str : lusList) {
+			beAndLus_sql += "and " + lu_str + "=ANY(lu.lu_list) ";
+		}
+
+		env_id = "" + envDetails.get("environment_id");
+		role_id = "" + envDetails.get("role_id");
+		ownerOrAdminRole = ("admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id));
+
+		//check if target env satisfy BE and LUs filtering
+		res = db("TDM").fetch(beAndLus_sql, beId, env_id).firstValue();
+		if (res==null)
+			errorMessages.put("BEandLUs", "The user cannot start the task with the specified logical units and business entity in target environment.");
+
+		//check if target env satisfy reference filtering
+		if (refCount!=null && refCount > 0 && !ownerOrAdminRole) {
+			res = db("TDM").fetch(reference_sql, role_id).firstValue();
+			if (res == null)
+				errorMessages.put("reference", "The user has no permissions to run tasks on Reference tables on target environment");
+		}
+
+
+		//check if target env satisfy selection method filtering
+		if ("R".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
+			res = db("TDM").fetch(randomSelection_sql, role_id).firstValue();
+			if (res==null)
+				errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
+		} else if ("S".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
+			res = db("TDM").fetch(syntheticData_sql, role_id).firstValue();
+			if (res==null)
+				errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
+		}
+		else if("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole)
+			errorMessages.put("selectionMethod", "Only admin and owner users are allowed to create an extract task to extract all entities");
+
+
+		//check if target env satisfy versioning filtering
+		if (version_ind && !ownerOrAdminRole)
+			res = db("TDM").fetch(versioning_sql, role_id).firstValue();
+		if (res==null)
+			errorMessages.put("versioning", "The user has no permissions to run Data Flux tasks on the task's target environment");
+
+
+		//check if target env satisfy replace sequence filtering
+		if (replace_sequences && !ownerOrAdminRole) {
+			res = db("TDM").fetch(replaceSequence_sql, role_id).firstValue();
+			if (res == null)
+				errorMessages.put("replaceSequence", "The user has no permissions to replace the entities sequences.");
+		}
+
+		//check if target env satisfy delete before load filtering
+		if (delete_before_load && !ownerOrAdminRole) {
+			res =  db("TDM").fetch(deleteBeforeLoad_sql, role_id).firstValue();
+			if (res == null)
+				errorMessages.put("deleteBeforeLoad", "The user has no permissions to delete entities from the target.");
+		}
+
+		//if (!errorMessages.isEmpty())  => test fails
+		return errorMessages;
+	}
+
+
+	@desc("Get the list of environments that are aligned with the input filtering parameters. The input filtering parameters:\r\n" +
+			"- If the task type is Extract , then validate and return the list of available source environments.\r\n" +
+			"- If the task type is Load, then validate and return both - source and target environments.\r\n" +
+			"\r\n" +
+			"Example if the be_lus input:\r\n" +
+			"{\r\n" +
+			"  \"be_id:\" \"10\",\r\n" +
+			"  \"LU List:\" [\"20\", \"21\", \"22\"]\r\n" +
+			"}")
+	@webService(path = "getEnvironmentsForTaskAttributes", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the BE ID and the list of LU IDs.") Map<String,Object> be_lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (randpm selection), \"S\" (entity cloning), \"PR\" (parameters wil a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\" or \"load\"") String task_type) throws Exception {
+		// variables declaration
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "";
+		String env_id;
+		String role_id;
+		String env_name;
+		
+		List<Map<String, Object>> finalSourceEnvs = new ArrayList<>();
+		List<Map<String, Object>> finalTargetEnvs = new ArrayList<>();
+		
+		
+		try {
+		
+			HashMap<String, Object> wsOutput = (HashMap<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser();
+			List<Map<String, Object>> allUserEnvsTypes = (List<Map<String, Object>>) wsOutput.get("result");
+			for (Map<String, Object> envType : allUserEnvsTypes) {
+		
+				List<Map<String, Object>> allSourceEnvs = (List<Map<String, Object>>) (envType.get("source environments"));
+				List<Map<String, Object>> allTargetEnvs = (List<Map<String, Object>>) (envType.get("target environments"));
+				// loop over user source envs
+				for (Map<String, Object> sourceEnvMap : allSourceEnvs) {
+		
+					env_id = "" + sourceEnvMap.get("environment_id");
+					role_id = "" + sourceEnvMap.get("role_id");
+					env_name = "" + sourceEnvMap.get("environment_name");
+		
+					//check if source env satisfies all relevant cases
+					if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap).isEmpty()) {
+						Map<String, Object> envData = new HashMap<>();
+						envData.put("environment_id", env_id);
+						envData.put("environment_name", env_name);
+						envData.put("role_id", role_id);
+						finalSourceEnvs.add(envData);
+		
+					}
+		
+		
+				}
+		
+		
+				// loop over user target envs only if it is a load task, otherwsie target envs are not relevant
+				if ("load".equalsIgnoreCase(task_type)) {
+					for (Map<String, Object> targetEnvMap : allTargetEnvs) {
+		
+						env_id = "" + targetEnvMap.get("environment_id");
+						role_id = "" + targetEnvMap.get("role_id");
+						env_name = "" + targetEnvMap.get("environment_name");
+		
+						//check if target env satisfies all relevant cases
+						if (fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, targetEnvMap).isEmpty()) {
+							Map<String, Object> envData = new HashMap<>();
+							envData.put("environment_id", env_id);
+							envData.put("environment_name", env_name);
+							envData.put("role_id", role_id);
+							finalTargetEnvs.add(envData);
+		
+						}
+		
+		
+					}
+				}
+		
+			}
+		
+		
+			List<Map<String, Object>> result = new ArrayList<>();
+			Map<String, Object> sourceEnvsMap = new HashMap<>();
+			sourceEnvsMap.put("source environments", finalSourceEnvs);
+			result.add(sourceEnvsMap);
+			Map<String, Object> targetEnvsMap = new HashMap<>();
+			targetEnvsMap.put("target environments", finalTargetEnvs);
+			result.add(targetEnvsMap);
+		
+			response.put("result", result);
+			errorCode = "SUCCESS";
+		} catch (Exception e) {
+			message = e.getMessage();
+			errorCode = "FAIL";
+		}
+		
+		
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+	 private static List<Map<String,Object>> fnGetUserRoleIdsAndEnvTypeByEnvName(String envName) throws Exception{
+		List<Map<String, Object>> results = new ArrayList<>();
+		String userId = sessionUser().name();
+		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+		if ("admin".equalsIgnoreCase(permissionGroup)){
+			String allEnvs = "Select env.environment_id,env.environment_name,\n" +
+					"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'\n" +
+					"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'\n" +
+					"  End As environment_type,\n" +
+					"  'admin' As role_id,\n" +
+					"  'admin' As assignment_type\n" +
+					"From environments env\n" +
+					"Where env.environment_status = 'Active' and env.environment_name=(?)";
+			Db.Rows rows= db("TDM").fetch(allEnvs,envName);
+			List<String> columnNames = rows.getColumnNames();
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				Map<String, Object> rowMap = new HashMap<>();
+				for (String columnName : columnNames) {
+					rowMap.put(columnName, resultSet.getObject(columnName));
+				}
+				results.add(rowMap);
+			}
+
+		} else {
+			String sql = "select CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+					"from environments env, environment_roles r, environment_role_users u " +
+					"where env.environment_id = r.environment_id " +
+					"and lower(r.role_status) = 'active' " +
+					"and r.role_id = u.role_id " +
+					"and (u.user_id = (?) or lower(u.username) = 'all') " +
+					"and env.environment_status = 'Active' and env.environment_name=(?)";
+			Db.Rows rows = db("TDM").fetch(sql, userId, envName);
+
+			List<String> columnNames = rows.getColumnNames();
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				Map<String, Object> rowMap = new HashMap<>();
+				for (String columnName : columnNames) {
+					rowMap.put(columnName, resultSet.getObject(columnName));
+				}
+				results.add(rowMap);
+			}
+
+			String query1 = "select CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
+					"from environments env, environment_owners o " +
+					"where env.environment_id = o.environment_id " +
+					"and o.user_id = (?) " +
+					"and env.environment_status = 'Active' and env.environment_name=(?)";
+			rows = db("TDM").fetch(query1, userId, envName);
+			columnNames = rows.getColumnNames();
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				Map<String, Object> rowMap = new HashMap<>();
+				for (String columnName : columnNames) {
+					rowMap.put(columnName, resultSet.getObject(columnName));
+				}
+				results.add(rowMap);
+			}
+		}
+		return results;
+	}
+
+
+	private static Boolean fnValidateNubmerOfEntities(Integer entityListSize, Integer number_of_entities_to_copy, String role_id) throws Exception{
+		if("admin".equalsIgnoreCase(role_id)||"owner".equalsIgnoreCase(role_id)) return true;
+		String numberOfEntities_sql = "select environment_id from environment_roles where role_id = ?  and allowed_number_of_entities_to_read<= ? and allowed_number_of_entities_to_read<= ?";
+		Object res = db("TDM").fetch(numberOfEntities_sql, role_id, entityListSize, number_of_entities_to_copy).firstValue();
+		if (res!=null) return true;
+		return false;
+	}
+
+	private static void fnSaveTaskOverrideParameters(Long taskId, Map<String,Object> overrideParameters) throws Exception{
+		if(overrideParameters.get("ENTITY_LIST")!=null){
+			String[] entityList=((String)overrideParameters.get("ENTITY_LIST")).split(",");
+			Arrays.sort(entityList);
+			overrideParameters.put("ENTITY_LIST",String.join(",",entityList));
+		}
+		String sql = "INSERT INTO task_execution_override_attrs (task_id,override_parameters) VALUES (?,?)";
+		String params_str = new JSONObject(overrideParameters).toString();
+		db("TDM").execute(sql,taskId,params_str);
+	}
+
+	private static Boolean fnValidateParallelExecutions(Long taskId, Map<String,Object> overrideParameters) throws Exception{
+		// If overrideParameters is null and already exists an execution without override parameters -> don't add a new execution
+		if(overrideParameters.isEmpty()) {
+			String sql = "select count(*) from task_execution_list tl where tl.task_id = ? And UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and not exists (select 1 from task_execution_override_attrs o where tl.task_execution_id = o.task_execution_id)";
+			Object count = db("TDM").fetch(sql,taskId).firstValue();
+			if (Integer.parseInt(count.toString()) > 0) return false;
+		} else {
+			// If already exists an execution with the same override parameters -> don't add a new execution
+			String sql = "select count(*) from task_execution_list tl, task_execution_override_attrs o where tl.task_id = ? " +
+					"And UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and  " +
+					"tl.task_execution_id = o.task_execution_id " +
+					"and (CAST(o.override_parameters AS JSONB) @> (?)::jsonb AND (?)::jsonb @> CAST(o.override_parameters AS JSONB))" ;
+			String params_str = new JSONObject(overrideParameters).toString();
+			Object count = db("TDM").fetch(sql,taskId,params_str,params_str).firstValue();
+			if (Integer.parseInt(count.toString())>0) return false;
+		}
+		return true;
+	}
+
 
 
 }
