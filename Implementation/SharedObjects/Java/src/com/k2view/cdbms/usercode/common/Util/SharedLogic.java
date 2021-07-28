@@ -152,20 +152,46 @@ public class SharedLogic {
 
 	@out(name = "columns", type = Object[].class, desc = "")
 	@out(name = "pks", type = Object[].class, desc = "")
-	public static Object[] getDbTableColumns(String dbInterfaceName, String schema, String table) throws Exception {
+	public static Object[] getDbTableColumns(String dbInterfaceName, String catalogSchema, String table) throws Exception {
 		ResultSet rs = null;
 		String[] types = {"TABLE"};
 		String targetTableName = table;
-		//Object[] result = new Object[2];
+		String catalog = null;
+		String schema = null;
+		
 		try {
 			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-			rs = md.getTables(null, schema, "%", types);
+			
+			ResultSet schemas = md.getSchemas();
+			while (schemas.next()) {
+				//log.info("getDbTableColumns - Schema: " + schemas.getString("TABLE_SCHEM"));
+				if (catalogSchema.equalsIgnoreCase(schemas.getString("TABLE_SCHEM"))) {
+					 schema = schemas.getString("TABLE_SCHEM");
+					 break;
+				}
+			}
+			if (schema == null) {
+				ResultSet catalogs = md.getCatalogs();
+				while (catalogs.next()) {
+					//log.info("getDbTableColumns - Catalog: " + catalogs.getString("TABLE_CAT"));
+					if (catalogSchema.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
+						catalog = catalogs.getString("TABLE_CAT");
+						break;
+					}
+				}
+			}
+
+			//log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
+			rs = md.getTables(catalog, schema, "%", types);
+			
 			while (rs.next()) {
 				if (table.equalsIgnoreCase(rs.getString(3))) {
 					targetTableName = rs.getString(3);
+					//log.info("getDbTableColumns - tableName: " + targetTableName);
 					break;
 				}
 			}
+						
 			rs = md.getColumns(null, schema, targetTableName, null);
 			List<String> al = new ArrayList<>();
 			while (rs.next()) {

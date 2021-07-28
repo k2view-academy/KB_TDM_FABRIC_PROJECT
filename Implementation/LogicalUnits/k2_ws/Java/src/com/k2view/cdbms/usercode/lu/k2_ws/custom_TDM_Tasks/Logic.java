@@ -20,11 +20,13 @@ import com.k2view.cdbms.func.oracle.OracleRownum;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
 import com.k2view.cdbms.usercode.lu.k2_ws.*;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
+import org.json.JSONObject;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.Logic.wsGetTasks;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -368,6 +370,100 @@ public class Logic extends WebServiceUserCode {
 		}
 	}
 
+@desc("Get the list of tasks that are aligned with the input filtering parameters. The input is a dynamic json string, currently it supports the following 6 filtering parameters : \r\n" +
+			"1) task_type : LOAD/EXTRACT\r\n" +
+			"2) version_ind : true/false\r\n" +
+			"3) load_entity : true/false\r\n" +
+			"4) delete_before_load : true/false\r\n" +
+			"5) selection_method : 'L' (entity list), 'P' (parameters), 'S' (Synthetic), 'R' (random)\r\n" +
+			"6) sync_mode : OFF/FORCE\r\n" +
+			"\r\n" +
+			"In case any of the filtering parameters is not required, do not add it to the json string. \r\n" +
+			"In case no input was provided, the API will return all user tasks.\r\n" +
+			"\r\n" +
+			"Input example containing all supported filtering params : \r\n" +
+			"{task_type:EXTRACT,\r\n" +
+			" version_ind:true,\r\n" +
+			" load_entity :false,\r\n" +
+			" delete_before_load:false, \r\n" +
+			" selection_method :L,\r\n" +
+			" sync_mode:OFF}\r\n" +
+			" \r\n" +
+			"Input example containing only part of the supported filtering params (load_entity and delete_before_load are not required for example) : \r\n" +
+			"{task_type:EXTRACT,\r\n" +
+			" version_ind:true,\r\n" +
+			" selection_method :L,\r\n" +
+			" sync_mode:OFF}")
+	@webService(path = "getTasksByParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    \r\n" +
+			"        {\r\n" +
+			"          \"task_id\": \"4\",\r\n" +
+			"          \"task_title\": \"Task1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"task_id\": \"1\",\r\n" +
+			"          \"task_title\": \"Task2\"\r\n" +
+			"        }\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetTasksByParams(@param(description="Json string containg the filtering patams set as key and value. Example in method description.") String filteringParams) throws Exception {
+		String message = null;
+		String errorCode = "";
+		String task_type=null,selection_method=null,sync_mode=null;
+		Boolean version_ind=null,load_entity=null,delete_before_load=null;
+		HashMap<String, Object> response = new HashMap<>();
+		List<Map<String, Object>> finalTasksList  = new ArrayList<>();
+		
+		
+		try{
+		
+		if(filteringParams !=null){
+			JSONObject jsonInput = new JSONObject(filteringParams);
+			task_type=jsonInput.has("task_type") ? jsonInput.get("task_type").toString() : null;
+			selection_method=jsonInput.has("selection_method") ? jsonInput.get("selection_method").toString() : null;
+			sync_mode=jsonInput.has("sync_mode") ? jsonInput.get("sync_mode").toString() : null;
+			version_ind=jsonInput.has("version_ind") ? (Boolean) jsonInput.get("version_ind") : null;
+			load_entity=jsonInput.has("load_entity") ? (Boolean) jsonInput.get("load_entity") : null;
+			delete_before_load=jsonInput.has("delete_before_load") ? (Boolean) jsonInput.get("delete_before_load") : null;
+		}
+		HashMap<String, Object> wsUserTasks = (HashMap<String, Object>) wsRegularTasksByUser();
+		List<Map<String, Object>> allUserTasks = (List<Map<String, Object>>) wsUserTasks.get("result");
+		for(Map<String,Object> task : allUserTasks){
+			HashMap<String, Object> wsTaskDetails = (HashMap<String, Object>)wsGetTasks(task.get("task_id").toString());
+			List<Map<String, Object>> allTaskDetails = (List<Map<String, Object>>) wsTaskDetails.get("result");
+			if(task_type!=null && !task_type.equalsIgnoreCase(allTaskDetails.get(0).get("task_type").toString()))
+				continue;
+			if(version_ind!=null && version_ind != allTaskDetails.get(0).get("version_ind"))
+				continue;
+			if(load_entity!=null && load_entity != allTaskDetails.get(0).get("load_entity"))
+				continue;
+			if(delete_before_load!=null && delete_before_load != allTaskDetails.get(0).get("delete_before_load"))
+				continue;
+			if(selection_method!=null && !selection_method.equalsIgnoreCase(allTaskDetails.get(0).get("selection_method").toString()))
+				continue;
+			if(sync_mode!=null && !sync_mode.equalsIgnoreCase(allTaskDetails.get(0).get("sync_mode").toString()))
+				continue;
+		
+			HashMap<String, Object> finalTaskMap = new HashMap<>();
+			finalTaskMap.put("task_id",task.get("task_id").toString());
+			finalTaskMap.put("task_title",task.get("task_title").toString());
+			finalTasksList.add(finalTaskMap);
+		}
+			response.put("result", finalTasksList);
+			errorCode = "SUCCESS";
+		} catch (Exception e) {
+			message = e.getMessage();
+			errorCode = "FAIL";
+		}
+		
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
 
 
 }

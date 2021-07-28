@@ -44,6 +44,7 @@ public class Logic extends WebServiceUserCode {
 
 	static final String schema = "public";
 	static final String admin = "admin";
+	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	static final String adi_only = "false";
 
 	static String ldapUrlString = "ldap://62.90.46.136:10389";
@@ -272,13 +273,15 @@ public class Logic extends WebServiceUserCode {
 
 				if (ownersTemp.length() > 0) {
 					userNameSubQuery = " AND username IN (" + ownersTemp + ")";
+					db("TDM").execute("DELETE FROM \"" + schema + "\".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, envId);
 				}
-				db("TDM").execute("DELETE FROM \"" + schema + "\".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, envId);
 
 				for (Map<String, String> owner : owners) {
 					db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name) VALUES (?, ?, ?)",
 							envId, owner.get("user_id"), owner.get("username") != null ? owner.get("username") : owner.get("user_name"));
 				}
+			} else if (owners!=null&&!owners.isEmpty()){
+				message="The sent owners list was ignored, you need administrative permissions to add or remove owners.";
 			}
 
 			errorCode = "SUCCESS";
@@ -303,7 +306,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsDeleteEnvironment(@param(required=true) Long envId, @param(required=true) String envName) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -703,7 +706,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_request_of_fresh_data, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_refresh_reference_data, String role_expiration_date, Boolean allowed_replace_sequences, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure) throws Exception {
+	public static Object wsCreateEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_request_of_fresh_data, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_refresh_reference_data, Boolean allowed_replace_sequences, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
 		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
@@ -745,7 +748,7 @@ public class Logic extends WebServiceUserCode {
 					username,
 					now,
 					now,
-					role_expiration_date,
+					null,
 					username,
 					"Active",
 					allowed_replace_sequences,
@@ -802,9 +805,20 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateEnvironment(@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) String environment_name, @param(description="Optional parameter") String environment_description, @param(description="Optional parameter") String environment_point_of_contact_fist_name, @param(description="Optional parameter") String environment_point_of_contact_last_name, @param(description="Optional parameter") String environment_point_of_contact_phone1, @param(description="Optional parameter") String environment_point_of_contact_phone2, @param(description="Optional parameter") String environment_point_of_contact_email, @param(description="Identical to the environment name", required=true) String fabric_environment_name, @param(description="Will be populated by true if the environment can be used as a target environment", required=true) Boolean allow_write, @param(description="Will be populated by true when the environment can be used as a source environment", required=true) Boolean allow_read, @param(description="Can be populated by one of the following values: \"OFF\" or \"FORCE\"") String sync_mode, @param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
+	public static Object wsCreateEnvironment(@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) String environment_name,
+											 @param(description="Optional parameter") String environment_description,
+											 @param(description="Optional parameter") String environment_point_of_contact_fist_name,
+											 @param(description="Optional parameter") String environment_point_of_contact_last_name,
+											 @param(description="Optional parameter") String environment_point_of_contact_phone1,
+											 @param(description="Optional parameter") String environment_point_of_contact_phone2,
+											 @param(description="Optional parameter") String environment_point_of_contact_email,
+											 @param(description="Identical to the environment name", required=true) String fabric_environment_name,
+											 @param(description="Will be populated by true if the environment can be used as a target environment", required=true) Boolean allow_write,
+											 @param(description="Will be populated by true when the environment can be used as a source environment", required=true) Boolean allow_read,
+											 @param(description="Can be populated by one of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
+											 @param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String, Object> response = new HashMap<>();
 		HashMap<String, Object> result = new HashMap<>();
 		String message = null;
@@ -1196,14 +1210,18 @@ public class Logic extends WebServiceUserCode {
 		List<HashMap<String, Object>> result = new ArrayList<>();
 		String message = null;
 		String errorCode = "";
-		
 		try {
 			String sql = "UPDATE \"" + schema + "\".environment_roles SET " +
-					"role_status=(?) " +
+					"role_status=(?),role_expiration_date=(?) " +
 					"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
 			db("TDM").execute(sql,
-					"Inactive");
-		
+					"Inactive",DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+							.withZone(ZoneOffset.UTC)
+							.format(Instant.now()));
+
+			// cleanup environment_role_users table
+			db("TDM").execute("DELETE from \"" + schema + "\".environment_role_users WHERE environment_id=" + envId + " AND role_id=" + roleId);
+
 			String activityDesc = "Role " + roleName + " of environment " + envName + " was deleted";
 			try {
 				fnInsertActivity("update", "Environments", activityDesc);
@@ -1686,7 +1704,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of Global variables defined in the Fabric project except the TDM product Globals. This API is invoked when the user adds a Global to the TDM Environment to override its value in this environment.")
+	@desc("Gets the list of Global variables defined in the Fabric project except the TDM product Globals. This API is invoked when the user adds a Global to the TDM Environment to override its value in this environment. The parameter \"lus\" should contain LU names divided by comma, it is optional, in case it is not null the API will return defined by the param LUs only.")
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -1734,7 +1752,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetAllFabricGlobals() throws Exception {
+	public static Object wsGetAllFabricGlobals(@param(required=false) String lus) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -1749,6 +1767,8 @@ public class Logic extends WebServiceUserCode {
 				if (keyParts.length == 3 && "Global".equals(keyParts[0])) {
 					if (!"TDM_DELETE_BEFORE_LOAD".equals(keyParts[2]) &&
 						!"TDM_INSERT_TO_TARGET".equals(keyParts[2]) &&
+						!"TDM_SOURCE_PRODUCT_VERSION".equals(keyParts[2]) &&
+						!"TDM_TARGET_PRODUCT_VERSION".equals(keyParts[2]) &&
 						!"TDM_SYNC_SOURCE_DATA".equals(keyParts[2]) &&
 						!"ROOT_TABLE_NAME".equals(keyParts[2]) &&
 						!"ROOT_COLUMN_NAME".equals(keyParts[2]) &&
@@ -1768,12 +1788,10 @@ public class Logic extends WebServiceUserCode {
 							// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
 							Map<String, Object> sharedGlobals = globalsShared.computeIfAbsent(keyParts[1], k -> new HashMap<>());
 							sharedGlobals.put(keyParts[2], ((Map<String, Object>) var).get("value"));
-						} else {
-							if (!"k2_ref".equals(keyParts[1]) &&  !"TDM".equals(keyParts[1])) {
-								Map<String, Object> luGlobals = globalsPerLu.computeIfAbsent(keyParts[1], k -> new HashMap<>());
-									luGlobals.put(keyParts[2], ((Map<String, Object>) var).get("value"));
-								}
-							}
+						} else if (!"k2_ref".equals(keyParts[1]) &&  !"TDM".equals(keyParts[1])) {
+							Map<String, Object> luGlobals = globalsPerLu.computeIfAbsent(keyParts[1], k -> new HashMap<>());
+							luGlobals.put(keyParts[2], ((Map<String, Object>) var).get("value"));
+						}
 					}
 				}
 			});
@@ -1783,7 +1801,6 @@ public class Logic extends WebServiceUserCode {
 		
 			// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
 			for (Map.Entry<String, Map<String, Object>> entry : globalsShared.entrySet()) {
-				String luName = entry.getKey();
 				Map<String,Object> value = entry.getValue();
 				for (String varName : value.keySet()) {
 					HashMap<String,Object> global=new HashMap<>();
@@ -1792,9 +1809,20 @@ public class Logic extends WebServiceUserCode {
 					globals.add(global);
 				}
 			}
-			
+
+			List luNames = null;
+			if (lus != null && !lus.isEmpty()) {
+				luNames = new ArrayList();
+				List finalLuNames = luNames;
+				Arrays.stream(lus.split(",")).forEach(lu -> {
+					finalLuNames.add(lu.trim());
+				});
+			}
 			for (Map.Entry<String, Map<String, Object>> entry : globalsPerLu.entrySet()) {
 				String luName = entry.getKey();
+				if (luNames != null && !luNames.contains(luName)) {
+					continue;
+				}
 				Map<String,Object> value = entry.getValue();
 				for (String varName : value.keySet()) {
 					HashMap<String,Object> global=new HashMap<>();
@@ -1875,12 +1903,12 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes Environment Global")
-	@webService(path = "environment/{envId}/envname/{envName}/global/{globalId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/global/{globalName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) String globalId) throws Exception {
+	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) String globalName) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
 		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
@@ -1898,7 +1926,7 @@ public class Logic extends WebServiceUserCode {
 		fnUpdateEnvironmentDate(envId);
 		
 		try {
-			String sql= "DELETE FROM \"" + schema + "\".tdm_env_globals" + " WHERE environment_id = " + envId + " AND global_name = \'" + globalId +"\'";
+			String sql= "DELETE FROM \"" + schema + "\".tdm_env_globals" + " WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
 			db("TDM").execute(sql);
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
@@ -3147,6 +3175,7 @@ public class Logic extends WebServiceUserCode {
 			}
 		}
 	}
+
 
 	static void fnUpdateEnvironmentRolesPermissions(Long environment_id, String type, boolean value){
 		try {

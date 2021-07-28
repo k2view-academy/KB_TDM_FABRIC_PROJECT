@@ -35,6 +35,7 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceRes
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	final static String schema="public";
+	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 
 	@desc("Gets all TDM Products (Active and Inactive) to populate Products window")
 	@webService(path = "products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -169,7 +170,8 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsPostProduct(String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		if(product_name==null||product_versions==null) return wrapWebServiceResults("FAIL","product_name and product_versions are mandatory fields.",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -225,7 +227,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsUpdateProduct(@param(required=true) Long prodId, String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -433,7 +435,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsDeleteProduct(@param(required=true) Long prodId) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";

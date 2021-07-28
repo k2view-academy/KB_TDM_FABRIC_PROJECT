@@ -232,11 +232,11 @@ public class SharedLogic {
 					//log.info("Running Create table: " + sbCreStmt.toString());
 					ciTDM.execute(sbCreStmt.toString());
 				}catch (Exception e) {
-					//log.error("fnEnrichmentLuParams - Error Message: " + e.getMessage());
-					if (e.getMessage().toString().contains("duplicate key value violates unique constraint")) {
-						log.warn("fnEnrichmentLuParams - Paramaters table " + tblName + " already exists, no need to create it");
-						ciTDM.execute("rollback");
-					}
+					log.error("fnEnrichmentLuParams - Error Message: " + e.getMessage());
+					//if (e.getMessage().toString().contains("duplicate key value violates unique constraint")) {
+					//	log.warn("fnEnrichmentLuParams - Paramaters table " + tblName + " already exists, no need to create it");
+					//	ciTDM.execute("rollback");
+					//}
 		    	}
 		    }
 		}else{
@@ -2269,7 +2269,7 @@ private static String getParamsSql(String sourceEnv, String rootLu, String rootL
 		return response;
 	}
 
-public static void fnTdmCopyReference(String taskExecutionID, String taskType) throws Exception {
+	public static void fnTdmCopyReference(String taskExecutionID, String taskType) throws Exception {
 		//log.info("-- START Reference JOB for Task Type: " + taskType + " Task Execution ID: " + taskExecutionID + "---");
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -2399,7 +2399,6 @@ public static void fnTdmCopyReference(String taskExecutionID, String taskType) t
 									}
 									break;
 							}
-							break;
 						} catch (Exception e) {
 							if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
 								e.printStackTrace();

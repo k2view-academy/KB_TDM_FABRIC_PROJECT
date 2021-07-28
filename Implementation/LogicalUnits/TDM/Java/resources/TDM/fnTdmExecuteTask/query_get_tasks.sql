@@ -1,15 +1,3 @@
-WITH task_max_execution_id AS
-    (
-        SELECT
-            task_id                AS max_task_id
-          , lu_id                  AS max_lu_id
-          , max(task_execution_id) AS max_task_execution_id
-        FROM
-            TASK_EXECUTION_LIST
-        GROUP BY
-            task_id
-          , lu_id
-    )
 SELECT DISTINCT
     tt.task_id
   , tt.be_id
@@ -31,15 +19,11 @@ SELECT DISTINCT
   , e2.fabric_environment_name as target_environment_name
 FROM
     TASK_EXECUTION_LIST tt
-   , task_max_execution_id
   , environments         e
   , environments         e2
   , environment_products ep
 WHERE
-    tt.task_id                       = max_task_id
-    AND tt.task_execution_id         = max_task_execution_id
-    AND tt.lu_id                     = max_lu_id
-    AND UPPER(ep.status) = 'ACTIVE'
+    UPPER(ep.status)                 = 'ACTIVE'
     AND UPPER(tt.execution_status)   = 'PENDING'
     AND (
         tt.parent_lu_id is null
@@ -77,15 +61,11 @@ SELECT DISTINCT
 FROM
     TASK_EXECUTION_LIST tt
   , TASK_EXECUTION_LIST p
-  , task_max_execution_id
   , environments         e
   , environments         e2
   , environment_products ep
 WHERE
-    tt.task_id                       = max_task_id
-    AND tt.task_execution_id         = max_task_execution_id
-    AND tt.lu_id                     = max_lu_id
-    AND UPPER(tt.execution_status)   = 'PENDING'
+    UPPER(tt.execution_status)       = 'PENDING'
     AND tt.task_execution_id         = p.task_execution_id
     AND tt.parent_lu_id              = p.lu_id
     AND UPPER(p.execution_status) in ('STOPPED', 'FAILED' , 'KILLED' ,'COMPLETED')
@@ -118,14 +98,11 @@ SELECT DISTINCT
 FROM
       TASK_EXECUTION_LIST tt
     , TASK_EXECUTION_LIST p
-    , task_max_execution_id
     , environments         e
     , environments         e2
     , environment_products ep
 WHERE
-    tt.task_id                       = max_task_id
-    AND tt.task_execution_id         = max_task_execution_id
-    AND UPPER(ep.status)             = 'ACTIVE'
+    UPPER(ep.status)                 = 'ACTIVE'
     AND UPPER(tt.execution_status)   = 'PENDING'
     AND tt.source_environment_id     = e.environment_id
     AND tt.environment_id            = e2.environment_id

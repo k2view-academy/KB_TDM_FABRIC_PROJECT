@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.lang.reflect.Type;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 				 
@@ -444,8 +445,18 @@ public class TdmExecuteTask {
 
         Util.rte(() -> db(TDM).fetch(globalsQuery, params).forEach(res ->Util.rte(() -> globals.put(res.resultSet().getString("global_name"), res.resultSet().getString("global_value")))));
         Gson gson = new Gson();
+		
+		//TDM 7.2 - Get task execution override globals and add them to the task's globals.
+		Map <String, Object> taskOverrideAttrs = getTaskExecOverrideAttrs(TASK_ID.get(taskProperties), TASK_EXECUTION_ID.get(taskProperties));
+		String overrideGlobalsStr = "" + taskOverrideAttrs.get("TASK_GLOBALS");
+		//log.info("TdmExecuteTask - overrideGlobalsStr : " + overrideGlobalsStr);
 	
-	
+		if (!"".equals(overrideGlobalsStr) && !"null".equals(overrideGlobalsStr)) {
+			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+			Map <String, Object> overrideGlobals = gson.fromJson(overrideGlobalsStr, mapType);
+			globals.putAll(overrideGlobals);
+		}
+		
 		if (selectionMethod.equals("S")) {
 			globals.keySet().removeIf(key -> key.contains("MASK_FLAG"));
 			globals.put("MASK_FLAG", "1");
@@ -469,7 +480,7 @@ public class TdmExecuteTask {
 	
 	private static String getSrcSyncDataVal(Map<String, Object> taskProperties) {
 		String syncSrcData = "true";
-		log.info("SYNC_MODE: " + SYNC_MODE.get(taskProperties) + ", TASK_TYPE: " + TASK_TYPE.get(taskProperties) + ", VERSION_IND: " + VERSION_IND.get(taskProperties) + ", LOAD_ENTITY: " + LOAD_ENTITY.get(taskProperties));
+		//log.info("SYNC_MODE: " + SYNC_MODE.get(taskProperties) + ", TASK_TYPE: " + TASK_TYPE.get(taskProperties) + ", VERSION_IND: " + VERSION_IND.get(taskProperties) + ", LOAD_ENTITY: " + LOAD_ENTITY.get(taskProperties));
 		if("off".equalsIgnoreCase(SYNC_MODE.get(taskProperties))) {
 			syncSrcData = "false";
 		} else {
@@ -479,7 +490,7 @@ public class TdmExecuteTask {
 				syncSrcData = "false";
 			}
 		}
-		log.info("getSrcSyncDataVal - syncSrcData: " + syncSrcData);
+		//log.info("getSrcSyncDataVal - syncSrcData: " + syncSrcData);
 		return syncSrcData;
 	}
 	
@@ -568,6 +579,44 @@ public class TdmExecuteTask {
         } catch (Exception e) {
             log.error("Can't get task properties for task_execution_id=" + row.get("task_execution_id"), e);
         }
+	
+		//TDM 7.2 - Get task execution override attributes and use them to override the task's attributes
+		Map <String, Object> taskOverrideAttrs = getTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
+		String overrideValue = "";
+		try {
+			for (String attrName : taskOverrideAttrs.keySet()) {
+				
+				if (!"task_globals".equals(attrName)) {
+					overrideValue = "" + taskOverrideAttrs.get(attrName);
+					//log.info("getTaskProperties - attrName: " + attrName + ", overrideValue: " + overrideValue);
+					attrName = attrName.toLowerCase();
+					switch (attrName) {
+						case "entity_list" :
+							taskProperties.put("selection_param_value", overrideValue);
+							break;
+						case "no_of_entities" : 
+							taskProperties.put("number_of_entities_to_copy", overrideValue);
+							break;
+						case "source_environment_name":
+							taskProperties.put(attrName, overrideValue);
+							String srcEnvId = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+							taskProperties.put("source_environment_id", srcEnvId);
+							
+							break;
+						case "target_environment_name":
+							taskProperties.put(attrName, overrideValue);
+							String tarEnvId = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+							taskProperties.put("environment_id", tarEnvId);
+							break;
+						default:
+							taskProperties.put(attrName, overrideValue);
+							break;
+					}
+				}
+			}
+		} catch (SQLException e) {
+            log.error("Can't Get Environment ID of Environment Name: " + overrideValue, e);
+        }
 
         return taskProperties;
     }
@@ -643,6 +692,7 @@ public class TdmExecuteTask {
             log.error("Can't update status in task_ref_exe_stats for task_execution_id=" + taskExecutionId, e);
         }
 	}
+
     private static void updateTaskExecutionStatus(String status, Long taskExecutionID, Long luID, Object... params) {
         try {
             db(TDM).execute("UPDATE public.task_execution_list SET " +
@@ -667,6 +717,28 @@ public class TdmExecuteTask {
             log.error("Can't update status in task summary table for task_execution_id=" + taskExecutionId, e);
         }
     }
+	//TDM 7.2 - This function gets the Override Attributes supplied when the task was executed.
+	private static Map<String, Object> getTaskExecOverrideAttrs(Long taskId, Long taskExecutionId) {
+		
+		Map<String, Object> overrideAttrubtes = new HashMap<>();
+		String sql = "SELECT override_parameters FROM task_execution_override_attrs WHERE task_id = ? and task_execution_id = ?";
+		//log.info("getTaskExecOverrideAttrs - Starting");
+		try {
+			Object overrideAttrVal = db(TDM).fetch(sql, taskId, taskExecutionId).firstValue();
+			String overrideAttrStr = overrideAttrVal != null ?  overrideAttrVal.toString() : "";
+			//log.info("getTaskExecOverrideAttrs - overrideAttrStr: " + overrideAttrStr);
+			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+			if (!"".equals(overrideAttrStr)) {
+				Gson gson = new Gson();
+				overrideAttrubtes = gson.fromJson(overrideAttrStr, mapType);
+			}
+		} catch (SQLException e) {
+			log.error("Failed to get override attributes for task_execution_id: " + taskExecutionId);
+			return null;
+		}
+		//log.info("getTaskExecOverrideAttrs - overrideAttrubtes: " + overrideAttrubtes);
+		return overrideAttrubtes;
+	}
 
     public enum TASK_PROPERTIES {
         TASK_ID(null),

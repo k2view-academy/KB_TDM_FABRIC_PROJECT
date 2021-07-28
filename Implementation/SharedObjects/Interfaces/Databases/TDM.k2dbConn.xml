@@ -1,16 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnPostgreSQL" name="TDM" type="PostgreSQL" version="6.4.1.10">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="6.5.0.13">
   <Active>true</Active>
-  <DataSource>localhost</DataSource>
-  <PortNum>5432</PortNum>
-  <DataBase>TDMDB</DataBase>
-  <UserId>tdm</UserId>
-  <Password>luJGpApwvoZjOlUGXYb02e6VpCs31IsL+tMawr1q0sE=:eV+t1+ac5jDq2C/BycGhGErWHld4ULubbWhGpQHY4fc=</Password>
-  <ConnectionStringClient>Server='localhost';Port=5432;Database='TDMDB';User Id='tdm';Password='[PASSWORD]';</ConnectionStringClient>
-  <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
+  <DataSource>10.21.3.4</DataSource>
+  <PortNum>5437</PortNum>
+  <DataBase>postgres</DataBase>
+  <UserId>postgres</UserId>
+  <Password>7ZzuT5PdMQHLA6v4FlDT4sAlqi6wYzNCM681xT/q6mI=:kz6zLL/uW/edVnqxnejJDLLVN6qYSwPxRn2YsjAloC4=</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+  <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+  <OfflineMode>true</OfflineMode>
   <CommandList />
-  <ProviderType>Npgsql</ProviderType>
+  <JdbcDriverName>PostgreSQL</JdbcDriverName>
+  <ConnectionProperties />
 </DBConn>

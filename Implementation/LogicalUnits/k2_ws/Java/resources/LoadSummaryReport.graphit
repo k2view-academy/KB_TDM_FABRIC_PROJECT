@@ -12,7 +12,35 @@
         {
           "name": "Task Execution Summary",
           "type": "sql",
-          "code": "Select LU_NAME,\n  FABRIC_EXECUTION_ID,\n  PARENT_LU_NAME,\n  DATA_CENTER_NAME,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME,\n  NUM_OF_PROCESSED_ENTITIES,\n  NUM_OF_COPIED_ENTITIES,\n  NUM_OF_FAILED_ENTITIES,\n  NUM_OF_PROCESSED_REF_TABLES,\n  NUM_OF_COPIED_REF_TABLES,\n  NUM_OF_FAILED_REF_TABLES\nFrom TDM.TASK_EXECUTION_LIST"
+          "code": "select lu_id, lu_name, process_id, process_name from task_execution_list",
+          "children": [
+            {
+              "type": "condition",
+              "code": "lu_id > 0",
+              "children": [
+                {
+                  "name": "LUs",
+                  "children": [
+                    {
+                      "name": "LU Load Summary",
+                      "type": "sql",
+                      "code": "Select LU_NAME,\n  FABRIC_EXECUTION_ID,\n  PARENT_LU_NAME,\n  DATA_CENTER_NAME,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME,\n  NUM_OF_PROCESSED_ENTITIES,\n  NUM_OF_COPIED_ENTITIES,\n  NUM_OF_FAILED_ENTITIES,\n  NUM_OF_PROCESSED_REF_TABLES,\n  NUM_OF_COPIED_REF_TABLES,\n  NUM_OF_FAILED_REF_TABLES\nFrom TDM.TASK_EXECUTION_LIST\nWhere lu_id = ${lu_id}"
+                    }
+                  ]
+                },
+                {
+                  "name": "Post Execution Processes",
+                  "children": [
+                    {
+                      "name": "Post Execution Processes Summary",
+                      "type": "sql",
+                      "code": "Select PROCESS_NAME,\n  FABRIC_EXECUTION_ID,\n  DATA_CENTER_NAME,\n  EXECUTION_STATUS,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME\n From TDM.TASK_EXECUTION_LIST\n Where process_id = ${process_id}"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "List of Root Entities",
@@ -96,5 +124,6 @@
       "type": "string",
       "code": ""
     }
-  ]
+  ],
+  "params": []
 }

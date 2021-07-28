@@ -48,7 +48,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String MAX_VALUE = "MAX_VALUE";
 	public static final String MIN_VALUE = "MIN_VALUE";
 	public static final String LU_SQL = "SELECT product_id as productID, product_name as productName, lu_id as logicalUnitID, lu_name as logicalUnitName FROM product_logical_units WHERE be_id = ? ORDER BY lu_id";
-
+	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	public enum PARAM_TYPES{
 		COMBO, NUMBER, TEXT;
 
@@ -173,7 +173,7 @@ public class Logic extends WebServiceUserCode {
 				return wrapWebServiceResults("FAIL",message,null);
 			}
 		}else {
-			return wrapWebServiceResults("FAIL","Permission denied",null);
+			return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		}
 	}
 
@@ -220,7 +220,7 @@ public class Logic extends WebServiceUserCode {
 			}
 
 		} else {
-			message = "Permission denied";
+			message = admin_pg_access_denied_msg;
 			errorCode= "FAIL";
 		}
 		response.put("errorCode",errorCode);
@@ -287,7 +287,7 @@ public class Logic extends WebServiceUserCode {
 				log.error(message);
 			}
 		} else {
-			message = "Permission denied";
+			message = admin_pg_access_denied_msg;
 			errorCode= "FAIL";
 		}
 		
@@ -350,8 +350,6 @@ public class Logic extends WebServiceUserCode {
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
 			"      \"lu_description\": \"description\",\r\n" +
-			"      \"lu_is_ref\": \"false\",\r\n" +
-			"      \"execution_plan_name\": \"epName\",\r\n" +
 			"      \"be_id\": 1,\r\n" +
 			"      \"lu_parent_id\": 13,\r\n" +
 			"      \"lu_parent_name\": \"parentName\",\r\n" +
@@ -359,13 +357,10 @@ public class Logic extends WebServiceUserCode {
 			"      \"product_id\": 2,\r\n" +
 			"      \"lu_id\": 2,\r\n" +
 			"      \"lu_dc_name\": \"dcName\",\r\n" +
-			"      \"product_name\": \"productName\",\r\n" +
-			"      \"last_executed_lu\": \"false\"\r\n" +
+			"      \"product_name\": \"productName\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"lu_description\": \"description\",\r\n" +
-			"      \"lu_is_ref\": \"false\",\r\n" +
-			"      \"execution_plan_name\": \"epName\",\r\n" +
 			"      \"be_id\": 1,\r\n" +
 			"      \"lu_parent_id\": 14,\r\n" +
 			"      \"lu_parent_name\": \"parentName\",\r\n" +
@@ -373,8 +368,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"product_id\": 3,\r\n" +
 			"      \"lu_id\": 4,\r\n" +
 			"      \"lu_dc_name\": \"dcName\",\r\n" +
-			"      \"product_name\": \"productName\",\r\n" +
-			"      \"last_executed_lu\": \"false\"\r\n" +
+			"      \"product_name\": \"productName\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -393,18 +387,15 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> logicalUnit;
 			for(Db.Row row:rows) {
 				logicalUnit=new HashMap<>();
-				logicalUnit.put("lu_name", row.cell(0));
-				logicalUnit.put("lu_description",row.cell(1));
-				logicalUnit.put("be_id", Long.parseLong(row.cell(2).toString()));
-				logicalUnit.put("lu_parent_id",row.cell(3)!=null?Long.parseLong(row.cell(3).toString()):null);
-				logicalUnit.put("lu_is_ref",row.cell(4)!=null?Boolean.parseBoolean(row.cell(4).toString()):null);
-				logicalUnit.put("lu_id", Long.parseLong(row.cell(5).toString()));
-				logicalUnit.put("product_name",row.cell(6));
-				logicalUnit.put("lu_parent_name",row.cell(7));
-				logicalUnit.put("product_id", row.cell(8)!=null?Long.parseLong(row.cell(8).toString()):null);
-				logicalUnit.put("execution_plan_name",row.cell(9));
-				logicalUnit.put("last_executed_lu",row.cell(10));
-				logicalUnit.put("lu_dc_name",row.cell(11));
+				logicalUnit.put("lu_name", row.get("lu_name"));
+				logicalUnit.put("lu_description",row.get("lu_description"));
+				logicalUnit.put("be_id", Long.parseLong(row.get("be_id").toString()));
+				logicalUnit.put("lu_parent_id",row.get("lu_parent_id")!=null?Long.parseLong(row.get("lu_parent_id").toString()):null);
+				logicalUnit.put("lu_id", Long.parseLong(row.get("lu_id").toString()));
+				logicalUnit.put("product_name",row.get("product_name"));
+				logicalUnit.put("lu_parent_name",row.get("lu_parent_name"));
+				logicalUnit.put("product_id", row.get("product_id")!=null?Long.parseLong(row.get("product_id").toString()):null);
+				logicalUnit.put("lu_dc_name",row.get("lu_dc_name"));
 				logicalUnits.add(logicalUnit);
 			}
 			errorCode= "SUCCESS";
@@ -443,7 +434,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsUpdateLogicalUnitsInBusinessEntity(@param(description="Business Entity ID", required=true) Long beId, @param(description="LU ID", required=true) Long luId, Map<String,Object> logicalUnit) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
@@ -456,7 +447,6 @@ public class Logic extends WebServiceUserCode {
 		logicalUnit.put("lu_description", lu_description);
 		logicalUnit.put("product_id", product_id);
 		logicalUnit.put("product_name", product_name);
-		logicalUnit.put("last_executed_lu", last_executed_lu);
 		logicalUnit.put("lu_dc_name", lu_dc_name);
 		*/
 		try {
@@ -532,7 +522,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsUpdateBusinessEntityLogicalUnits(@param(required=true) Long beId, Long product_id, String product_name, List<Map<String,Object>> logicalUnits) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
@@ -577,7 +567,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsDeleteLogicalUnitForBusinessEntity(@param(required=true) Long luId, @param(required=true) Long beId, @param(required=true) String beName, @param(required=true) String luName) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -635,14 +625,12 @@ public class Logic extends WebServiceUserCode {
 			"      \"lu_description\": \"description\",\r\n" +
 			"      \"lu_name\": \"luName\",\r\n" +
 			"      \"lu_dc_name\": \"dcName\",\r\n" +
-			"      \"last_executed_lu\": \"false\",\r\n" +
 			"      \"lu_id\": 25\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"lu_description\": \"description\",\r\n" +
 			"      \"lu_name\": \"luName2\",\r\n" +
 			"      \"lu_dc_name\": \"dcName\",\r\n" +
-			"      \"last_executed_lu\": \"false\",\r\n" +
 			"      \"lu_parent\": {\r\n" +
 			"        \"logical_unit\": \"luName\",\r\n" +
 			"        \"lu_id\": 25\r\n" +
@@ -655,7 +643,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsAddLogicalUnitsForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, List<Map<String,Object>> logicalUnits) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
@@ -745,14 +733,14 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes a Post Execution Process from the selected Business Entity.")
-	@webService(path = "businessentity/{beId}/bename/{beName}/postexecutionprocess/{id}/{name}", verb = {MethodType.DELETE}, version = "", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity/{beId}/bename/{beName}/postexecutionprocess/{process_id}/{name}", verb = {MethodType.DELETE}, version = "", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsDeletePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long id, @param(required=true) String name) throws Exception {
+	public static Object wsDeletePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long process_id, @param(required=true) String name) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
@@ -767,7 +755,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try{
 			String sql= "DELETE FROM \"" + schema + "\".TDM_BE_POST_EXE_PROCESS WHERE process_id = (?) RETURNING process_id";
-			db("TDM").execute(sql,id);
+			db("TDM").execute(sql,process_id);
 		
 			try{
 				String activityDesc = "Post Execution Process " + name + " of business entity " + beName + " was deleted";
@@ -781,7 +769,7 @@ public class Logic extends WebServiceUserCode {
 				String updateTasksSql= "UPDATE \"public\".tasks " +
 						"SET task_status= (?) " +
 						"FROM ( SELECT \"" + schema + "\".TASKS_POST_EXE_PROCESS.task_id FROM \"" + schema + "\".TASKS_POST_EXE_PROCESS " +
-						"WHERE \"" + schema + "\".TASKS_POST_EXE_PROCESS.process_id = " + id + " ) AS TaskPostExec " +
+						"WHERE \"" + schema + "\".TASKS_POST_EXE_PROCESS.process_id = " + process_id + " ) AS TaskPostExec " +
 						"WHERE TaskPostExec.task_id = tasks.task_id ";
 				db("tdm").execute(updateTasksSql,"Inactive");
 			}
@@ -814,7 +802,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsAddPostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(description="This is the Broadway flow name that needs to run as a post task execution process") String process_name, @param(description="Execution order of the post exeuction process. Several processes canhave the same execution order.") Integer execution_order, String process_description) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
@@ -889,11 +877,11 @@ public class Logic extends WebServiceUserCode {
 			HashMap<String,Object> process;
 			for(Db.Row row: rows){
 				process=new HashMap<>();
-				process.put("process_id", Long.parseLong(row.cell(0).toString()));
-				process.put("process_name", row.cell(1));
-				process.put("process_description",row.cell(2));
-				process.put("be_id",row.cell(3)!=null?Long.parseLong(row.cell(3).toString()):null);
-				process.put("execution_order",row.cell(4)!=null?Long.parseLong(row.cell(4).toString()):null);
+				process.put("process_id", Long.parseLong(row.get("process_id").toString()));
+				process.put("process_name", row.get("process_name"));
+				process.put("process_description",row.get("process_description"));
+				process.put("be_id",row.get("be_id")!=null?Long.parseLong(row.get("be_id").toString()):null);
+				process.put("execution_order",row.get("execution_order")!=null?Long.parseLong(row.get("execution_order").toString()):null);
 				result.add(process);
 			}
 			errorCode="SUCCESS";
@@ -911,14 +899,14 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Updates a Post Execution Process in a Business Entity: updates the description or execution order settings of the Post Execution Process.")
-	@webService(path = "businessentity/{beId}/bename/{beName}/postexecutionprocess/{id}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity/{beId}/bename/{beName}/postexecutionprocess/{process_id}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdatePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long id, String process_name, Integer execution_order, String process_description) throws Exception {
+	public static Object wsUpdatePostExecutionForBusinessEntity(@param(required=true) Long beId, @param(required=true) String beName, @param(required=true) Long process_id, String process_name, Integer execution_order, String process_description) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL","Permission denied",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
@@ -934,7 +922,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql= "UPDATE \"" + schema + "\".TDM_BE_POST_EXE_PROCESS " +
 			"SET process_name=(?), execution_order=(?), process_description=(?)" +
-					"WHERE process_id = " + id;
+					"WHERE process_id = " + process_id;
 		
 			db("TDM").execute(sql,process_name, execution_order, process_description);
 		
@@ -976,7 +964,6 @@ public class Logic extends WebServiceUserCode {
 				"lu_description=(?), " +
 				"product_id=(?), " +
 				"product_name=(?), " +
-				"last_executed_lu=(?), " +
 				"lu_dc_name=(?) " +
 				"WHERE lu_id = " + logicalUnit.get("lu_id");
 		db("TDM").execute(sql,
@@ -985,7 +972,6 @@ public class Logic extends WebServiceUserCode {
 				logicalUnit.get("lu_description"),
 				logicalUnit.get("product_id"),
 				logicalUnit.get("product_name"),
-				logicalUnit.get("last_executed_lu"),
 				logicalUnit.get("lu_dc_name"));
 	}
 
@@ -994,8 +980,8 @@ public class Logic extends WebServiceUserCode {
 		for(Map<String,Object> logicalUnit:logicalUnits){
 			Map<String,Object> luParent = (Map<String,Object>)logicalUnit.get("lu_parent");
 			String sql = "INSERT INTO \"" + schema + "\".product_logical_units " +
-					"(lu_name, lu_description, be_id, lu_parent_id, lu_parent_name, product_id,execution_plan_name,last_executed_lu,lu_dc_name) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING lu_id,lu_name";
+					"(lu_name, lu_description, be_id, lu_parent_id, lu_parent_name, product_id,lu_dc_name) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING lu_id,lu_name";
 
 			Db.Rows rows = db("TDM").fetch(sql, logicalUnit.get("lu_name"),
 					logicalUnit.get("lu_description"),
@@ -1003,10 +989,8 @@ public class Logic extends WebServiceUserCode {
 					(luParent !=null)? luParent.get("lu_id"):null,
 					(luParent !=null)? luParent.get("logical_unit"):null,
 					-1,
-					"ep" + logicalUnit.get("lu_name"),
-					logicalUnit.get("last_executed_lu"),
 					logicalUnit.get("lu_dc_name"));
-			logicalUnit.put("lu_id",rows.firstRow().cell(0)) ;
+			logicalUnit.put("lu_id",rows.firstRow().get("lu_id")) ;
 		}
 		fn_updateParentLogicalUnits(logicalUnits);
 	}

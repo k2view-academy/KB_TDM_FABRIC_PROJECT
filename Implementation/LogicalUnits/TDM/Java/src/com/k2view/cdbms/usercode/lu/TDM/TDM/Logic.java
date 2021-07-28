@@ -442,7 +442,7 @@ public class Logic extends UserCode {
 			}
 		}catch(Exception e)
 		{
-			log.error("Failed to clean redis for load task execution id: " + taskExecutionId + ". Error message: " + e.getMessage(),e);
+			log.error("Error message: " + e.getMessage(),e);
 			throw e;
 			
 		} finally {
@@ -477,7 +477,6 @@ public class Logic extends UserCode {
 		
 		
 		//log.info("tdmCopyRefTablesForTDM - sourceEnv = " + sourceEnv);
-		//DBExecute(DB_FABRIC, "set environment='" + sourceEnv + "'", null);
 		fabric().execute("set environment='" + sourceEnv + "'");
 		
 		//log.info("tdmCopyRefTablesForTDM- input task_ref_table_id: " + taskRefTableID+ ", task execution id: " + taskExecID);
@@ -644,8 +643,6 @@ public class Logic extends UserCode {
 		int tdm_rec_id = 1;
 		while (refTableRS.next()) {
 			if (failed.get()) {
-				//DBExecute("TDM", "update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, updated_by = ? " +
-				//		"where task_execution_id = ? and task_ref_table_id = ?; ", new Object[]{FAILED, " failed to insert " , TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID});
 				db("TDM").execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, updated_by = ? " +
 					"where task_execution_id = ? and task_ref_table_id = ?; ", FAILED, " failed to insert " , TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
 
@@ -667,11 +664,8 @@ public class Logic extends UserCode {
 				//log.info("TEST=- insert statement for loader: " + insertStmt.toString() + Arrays.toString(row));
 
                 loader.submit(insertStmt.toString(), row);
-                //Thread.sleep(5000);
             }
             catch(Exception e) {
-				//DBExecute("TDM", "Update " + TASK_REF_EXE_STATS + " set execution_status = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, number_of_records_to_process=?, number_of_processed_records=?, updated_by = ? " +
-				//		"where task_execution_id = ? and task_ref_table_id = ?; ", new Object[]{FAILED, e.getMessage(), null, null, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID});
 				db("TDM").execute("Update " + TASK_REF_EXE_STATS + " set execution_status = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, " +
 						"number_of_records_to_process=?, number_of_processed_records=?, updated_by = ? " +
 						"where task_execution_id = ? and task_ref_table_id = ?; ", 
@@ -680,16 +674,12 @@ public class Logic extends UserCode {
 				throw new RuntimeException(e.getMessage());
             }
 			processedCounter++;
-			//DBExecute("TDM", "Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
-			//		"where task_execution_id = ? and task_ref_table_id = ?; ", new Object[]{processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID});
 			db("TDM").execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
 					"where task_execution_id = ? and task_ref_table_id = ?; ", processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
 		}
 		loader.join();
 		loader.close();
 
-		//DBExecute("TDM", "update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
-		//		"where task_execution_id = ? and task_ref_table_id = ? and execution_status != ?; ", new Object[]{COMPLETED, TDM_COPY_REF_TABLES_FOR_TDM, null, taskExecID, taskRefTableID, FAILED});
 		db("TDM").execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
 				"where task_execution_id = ? and task_ref_table_id = ? and execution_status != ?; ", COMPLETED, TDM_COPY_REF_TABLES_FOR_TDM, null, taskExecID, taskRefTableID, FAILED);
 	}
@@ -1348,18 +1338,14 @@ public class Logic extends UserCode {
 
 				// Update the task_execution_list and expire the entries related to the rebuilt reference table
 				//log.info("Updating the task_ref_exe_stats table");
-				//DBExecute("TDM", updateStatement.toString(),null);
 				db("TDM").execute("" + updateStatement);
 				//log.info("Dropping the table");
-				//DBExecute(DBCASSANDRA,"DROP TABLE " + table, null);
 				db(DBCASSANDRA).execute("DROP TABLE " + table);
 				//log.info("Creating the table after dropping");
-				//DBExecute(DBCASSANDRA, createStmt.toString(), null);
 				db(DBCASSANDRA).execute("" + createStmt);
 
 			} else if (originColumns.size() == 0) {
 				//log.info("Creating the table as it does not exist");
-				//DBExecute(DBCASSANDRA, createStmt.toString(), null);
 				db(DBCASSANDRA).execute("" + createStmt);
 			}
 			select.close();

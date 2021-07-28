@@ -4,42 +4,37 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks;
 
+import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.user.WebServiceUserCode;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
+import com.k2view.fabric.api.endpoint.Endpoint.*;
+import com.k2view.fabric.common.Log;
+import com.k2view.fabric.common.Util;
+import org.json.JSONObject;
+
+import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
-import java.util.stream.Collectors;
-
 import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
-import com.k2view.fabric.api.endpoint.Endpoint.*;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
-import com.k2view.fabric.common.Log;
-import com.k2view.fabric.common.Util;
-import org.apache.avro.generic.GenericData;
-import org.apache.kafka.common.protocol.types.Field;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.xml.transform.Result;
-
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -1438,13 +1433,13 @@ public class Logic extends WebServiceUserCode {
 					dataObj.put("data",statsData);
 					taskStatsAns.put(root_lu.get("lu_name").toString(), dataObj);
 				}
-		
+				//iterate through root lus
 				for (String key : taskStatsAns.keySet()) {
 					Map<String,Object> statsObj = (Map<String,Object>)taskStatsAns.get(key);
 					if (statsObj == null) {
 						continue;
 					}
-					tree.get(0).put("test1",true);
+					//tree.get(0).put("test1",true);
 					//statsObj{data:Map<String,Map>}
 					Map<String, Map> stats_Data = (Map<String, Map>) statsObj.get("data");
 					Map<String, Object> statsDataFailedEntities = null;
@@ -1466,7 +1461,7 @@ public class Logic extends WebServiceUserCode {
 						Map<String, Map> statsData = (Map<String, Map>) statsObj.get("data");
 						Map<String, String> statsDateRootsStatus = (Map<String, String>) statsData.get("Roots Status");
 						node.put("status", statsDateRootsStatus != null? statsDateRootsStatus.get(node.get("lu_name")) : null);
-						node.put("test",true);
+						//node.put("test",true);
 					}
 				}
 		
@@ -2415,36 +2410,106 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Starts an execution of a given task. The 'forced' parameter indicates if the execution should ignore a failure of the task's environment connections validation. If the 'forced' parameter is set to 'true', then the execution ignores the validation failure and executes the task. If the 'forced' parameter is set to 'false' and the environment validation fails, the execution is not initiated.")
+	@desc("Starts an execution of a TDM task.\r\n" +
+			"A task execution can override the number of entities, entities list, globals, source or target environment. \r\n" +
+			"If an entity list is provided, the selection method is set to L and the number of entities is set based on the entity list.\t\r\n" +
+			"The task execution is validated whether the execution parameters are overridden or taken from the task itself:\r\n" +
+			"\r\n" +
+			"- Test the connection details of the source and target environments of the task execution if the 'forced' parameter is false.\r\n" +
+			"\r\n" +
+			"- Do not enable an execution if another execution with the same execution parameters is already running on the task.\r\n" +
+			"\r\n" +
+			"- Validate the task's BE and LUs with the TDM products of the task execution's source and target environment.\r\n" +
+			"\r\n" +
+			"- Verify that the user is permitted to execute the task on the task execution's source and target environment. For example, the user cannot run a Load task with a sequence replacement on environment X if the user does not have permissions to run such a task on this environment.\r\n" +
+			"\r\n" +
+			"\r\n" +
+			"If at least one of the validations fail, the API does not start the task. Instead it returns a FAILED status and populated the list of validation errors in the results.\r\n" +
+			"\r\n" +
+			"Below is the list of the validation codes, returned by the API:\r\n" +
+			"\r\n" +
+			"- BEandLUs\r\n" +
+			"\r\n" +
+			"- Reference\r\n" +
+			"\r\n" +
+			"- selectionMethod\r\n" +
+			"\r\n" +
+			"- Versioning \r\n" +
+			"\r\n" +
+			"- ReplaceSequence\r\n" +
+			"\r\n" +
+			"- DeleteBeforeLoad\r\n" +
+			"\r\n" +
+			"- syncMode\r\n" +
+			"\r\n" +
+			"Request body example:\r\n" +
+			"{\r\n" +
+			"  \"entitieslist\": \"1,2,4,9,8,11\",\r\n" +
+			"  \"sourceEnvironmentName\": \"SRC1\",\r\n" +
+			"  \"targetEnvironmentName\": \"TAR1\",\r\n" +
+			"  \"taskGlobals\": {\r\n" +
+			"    \"Global1\": \"value1\",\r\n" +
+			"    \"Global2\": \"value2\"\r\n" +
+			"  },\r\n" +
+			"  \"numberOfEntities\": 14\r\n" +
+			"}")
 	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"taskExecutionId\": 48\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
-	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced,
-	 String entitieslist, String sourceEnvironmentName, String targetEnvironmentName,
-	 List<Map<String,String>> taskGlobals,Integer numberOfEntities) throws Exception {
+	@resultMetaData(mediaType = Produce.JSON, example = "1. Succesful Execution:\r\n" +
+			"\r\n" +
+			"{\r\n" +
+			"  \"result\": {\r\n" +
+			"    \"taskExecutionId\": 43\r\n" +
+			"  },\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}\r\n" +
+			"\r\n" +
+			"2. Validation Failure:\r\n" +
+			"\r\n" +
+			"{\r\n" +
+			"    \"result\":[{\"Number of entity\":\"The number of entities exceeds the number of entities in the write permission\",\"selectionMethod\":\"The User has no permissions to run the task's selection method on the task's target environment\"}],\r\n" +
+			"    \"errorCode\":\"FAIL\",\r\n" +
+			"    \"message\":\"validation failure\"\r\n" +
+			"}\r\n" +
+			"\r\n" +
+			"{ \r\n" +
+			"    \"result\": \r\n" +
+			"    [{\"reference\": \"The user has no permissions to run tasks on Reference tables on source environment\", \r\n" +
+			"      \"syncMode\": \"the user has no permissions to ask to always sync the data from the source.\"    } ], \r\n" +
+			"    \"errorCode\": \"FAIL\",\r\n" +
+			"    \"message\": \"validation failure\"\r\n" +
+			"}")
+	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, Integer numberOfEntities) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-
+		
 		Map<String,Object> overrideParams=new HashMap<>();
 		String selectionMethod = entitieslist!=null?"L":null;
 		if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
-		if (sourceEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
-		if (sourceEnvironmentName!=null) overrideParams.put("ENTITY_LIST",entitieslist);
-		if (sourceEnvironmentName!=null) overrideParams.put("SELECTION_METHOD",selectionMethod);
-		if (sourceEnvironmentName!=null) overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
-		if (sourceEnvironmentName!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
-
+		if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
+		if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
+		if (selectionMethod!=null) overrideParams.put("SELECTION_METHOD",selectionMethod);
+		if (numberOfEntities!=null) overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
+		if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
+		
+		if(overrideParams.get("ENTITY_LIST")!=null){
+			String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
+			Arrays.sort(entityList);
+			overrideParams.put("ENTITY_LIST",String.join(",",entityList));
+		}
+		
 		if(!fnValidateParallelExecutions(taskId,overrideParams)) throw new Exception("Task already running");
-
+		
 		Map<String, Object> taskData;
 		try {
 			taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
 		} catch(Exception e) {
 			throw new Exception("Task is not found");
 		}
-
+		
 		if(!fnIsTaskActive(taskId)) throw new Exception("Task is not active");
-
+		
 		List<String> taskLogicalUnitsIds=new ArrayList<>();
 		try {
 			List<Map<String, Object>> LogicalUnitsList = (List<Map<String, Object>>) ((Map<String, Object>) wsGetTaskLogicalUnits(taskId)).get("result");
@@ -2454,57 +2519,75 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e) {
 			throw new Exception("can't get task's logicalunits");
 		}
-
+		
 		Map<String,Object> be_lus=new HashMap<>();
 		be_lus.put("be_id",taskData.get("be_id").toString());
 		be_lus.put("LU List",taskLogicalUnitsIds);
-
-		Integer finalNumberOfEntityList=0;
-		if(entitieslist!=null)finalNumberOfEntityList=(entitieslist.split(",")).length;
-		else if(taskData.get("selection_param_value")!=null&&"L".equalsIgnoreCase(taskData.get("selection_method").toString())){
-			String[] entityList=((String)taskData.get("selection_param_value")).split(",");
-			finalNumberOfEntityList=entityList.length;
+		
+		Integer entityListSize = 0;
+		if (entitieslist != null) {
+			entityListSize = (entitieslist.split(",")).length;
+		} else if (taskData.get("selection_param_value") != null && "L".equalsIgnoreCase(taskData.get("selection_method").toString())) {
+			String[] entityList = ((String) taskData.get("selection_param_value")).split(",");
+			entityListSize = entityList.length;
 		}
-
-		Integer finalNumberOfTaskEntites=0;
-		if(numberOfEntities!=null)finalNumberOfTaskEntites=numberOfEntities;
-		else finalNumberOfTaskEntites = (Integer)(taskData.get("number_of_entities_to_copy"));
-
+		
+		Integer numberOfRequestedEntites = 0;
+		if (numberOfEntities != null) {
+			numberOfRequestedEntites = numberOfEntities;
+		} else {
+			numberOfRequestedEntites = (Integer) (taskData.get("number_of_entities_to_copy"));
+		}
+		
+		String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.get("source_env_name").toString();
 		List<Map<String,Object>> sourceRolesList =
-				fnGetUserRoleIdsAndEnvTypeByEnvName(sourceEnvironmentName!=null?sourceEnvironmentName:taskData.get("source_env_name").toString())
-				.stream().filter(role->(role.get("environment_type").toString().equalsIgnoreCase("SOURCE")||
+				fnGetUserRoleIdsAndEnvTypeByEnvName(sourceEnvName)
+						.stream().filter(role -> (role.get("environment_type").toString().equalsIgnoreCase("SOURCE") ||
 						role.get("environment_type").toString().equalsIgnoreCase("BOTH"))).collect(Collectors.toList());
-		if(sourceRolesList.isEmpty()) throw new Exception("Environment is not exist or user has no read permission on this environment");
-
-
-		Boolean sourceEnvValidation=false;
-		List<Map<String,String>> sourceValidationsErrorMesssagesByRole=new ArrayList<>();
-		for(Map<String,Object> role:sourceRolesList){
-			Map<String,String> sourceValidationsErrorMesssages=new HashMap<>();
-			Boolean entityTest=false;
-			entityTest=fnValidateNubmerOfEntities(finalNumberOfEntityList,finalNumberOfTaskEntites, role.get("role_id").toString());
-			sourceValidationsErrorMesssages=fnValidateSourceEnvForTask(be_lus, (Integer)taskData.get("refcount"),
-					selectionMethod!=null?selectionMethod:(String)taskData.get("selection_method"),
-					(String)taskData.get("sync_mode"), (Boolean)taskData.get("version_ind"), (String)taskData.get("task_type"), role);
-			if(!entityTest) sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
-			if(entityTest&&sourceValidationsErrorMesssages.isEmpty()){sourceEnvValidation=true;break;}
+		
+		if (sourceRolesList.isEmpty()) {
+			throw new Exception("Environment does not exist or user has no read permission on this environment");
+		}
+		
+		Boolean sourceEnvValidation = false;
+		List<Map<String, String>> sourceValidationsErrorMesssagesByRole = new ArrayList<>();
+		for (Map<String, Object> role : sourceRolesList) {
+		
+			int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+			Boolean entityTest = fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString());
+		
+			Map<String, String> sourceValidationsErrorMesssages = fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
+					selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
+					(String) taskData.get("sync_mode"), (Boolean) taskData.get("version_ind"), (String) taskData.get("task_type"), role);
+		
+			if (!entityTest) {
+				sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
+			} else if (sourceValidationsErrorMesssages.isEmpty()) {
+				sourceEnvValidation = true;
+				break;
+			}
+		
 			sourceValidationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
 		}
-		if(!sourceEnvValidation) return wrapWebServiceResults("FAIL","validation failure",sourceValidationsErrorMesssagesByRole);
-
-
+		
+		if (!sourceEnvValidation) {
+			return wrapWebServiceResults("FAIL", "validation failure", sourceValidationsErrorMesssagesByRole);
+		}
+		
 		if("load".equalsIgnoreCase(taskData.get("task_type").toString())) {
-
+		
 			List<Map<String, Object>> targetRolesList = fnGetUserRoleIdsAndEnvTypeByEnvName(targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString())
 					.stream().filter(role->(role.get("environment_type").toString().equalsIgnoreCase("TARGET") || role.get("environment_type").toString().equalsIgnoreCase("BOTH"))).collect(Collectors.toList());
-			if(targetRolesList.isEmpty()) throw new Exception("Environment is not exist or user has no write permission on this environment");
-
+			if(targetRolesList.isEmpty()) throw new Exception("Environment does not exist or user has no write permission on this environment");
+		
 			Boolean targetEnvValidation = false;
 			List<Map<String, String>> targetValidationsErrorMesssagesByRole = new ArrayList<>();
 			for (Map<String, Object> role : targetRolesList) {
 				Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
 				Boolean entityTest = false;
-				entityTest = fnValidateNubmerOfEntities(finalNumberOfEntityList, finalNumberOfTaskEntites, role.get("role_id").toString());
+		
+				int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+				entityTest = fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString());
 				targetValidationsErrorMesssages = fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
 						selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
 						(Boolean) taskData.get("version_ind"),
@@ -2515,20 +2598,17 @@ public class Logic extends WebServiceUserCode {
 			}
 			if (!targetEnvValidation) return wrapWebServiceResults("FAIL", "validation failure", targetValidationsErrorMesssagesByRole);
 		}
-
-		if(!overrideParams.isEmpty()){
-			try{
-				fnSaveTaskOverrideParameters(taskId,overrideParams);
-			}catch(Exception e){
-				throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
-			}
-		}
-
+		
 		try {
 			//Long count=(Long)fnIsTaskRunning(taskId);
 			//if(count>0) throw new Exception("Task already running");
-			fnTestTaskInterfaces(taskId,forced);
-
+		
+			String envIdByName_sql= "select environment_id from environments where environment_name=(?) and environment_status = 'Active'";
+			Long overridenSrcEnvId=(Long)db("TDM").fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
+			Long overridenTarEnvId=(Long)db("TDM").fetch(envIdByName_sql,targetEnvironmentName).firstValue();
+		
+			fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
+		
 			List<Map<String,Object>> taskExecutions = fnGetActiveTaskForActivation(taskId);
 			if (taskExecutions == null || taskExecutions.size() == 0) {
 				throw new Exception("Failed to execute Task");
@@ -2540,17 +2620,30 @@ public class Logic extends WebServiceUserCode {
 					fnSaveRefExeTablestoTask((Long)taskExecutions.get(0).get("task_id"), taskExecutionId);
 				}
 		
-			fnStartTaskExecutions(taskExecutions, taskExecutionId);
-			fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId);
+			fnStartTaskExecutions(taskExecutions,taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
+					overridenTarEnvId!=null?overridenTarEnvId:null,
+					overridenSrcEnvId!=null?overridenSrcEnvId:null);
 		
-
+			if(!overrideParams.isEmpty()){
+				try{
+					fnSaveTaskOverrideParameters(taskId,overrideParams,taskExecutionId);
+				}catch(Exception e){
+					throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
+				}
+			}
+		
+			fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
+					overridenTarEnvId!=null?overridenTarEnvId:null,
+					overridenSrcEnvId!=null?overridenSrcEnvId:null);
+		
+		
 			try {
 				String activityDesc = "Execution list of task " + taskData.get("task_title");
 				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
-
+		
 		
 			Map<String,Object> map=new HashMap<>();
 			map.put("taskExecutionId",taskExecutionId);
@@ -2564,6 +2657,19 @@ public class Logic extends WebServiceUserCode {
 		response.put("errorCode",errorCode);
 		response.put("message", message);
 		return response;
+	}
+
+	private static int getAllowedEntitySize(Integer entityListSize, Integer numberOfRequestedEntites) {
+		int allowedEntitySize = -1;
+		if (entityListSize > 0) {
+			allowedEntitySize = entityListSize;
+			if (numberOfRequestedEntites > 0 && numberOfRequestedEntites != entityListSize) {
+				log.warn("The number of entities is set based on the overridden entity list, the given number of entities will be ignored.");
+			}
+		} else if (numberOfRequestedEntites > 0) {
+			allowedEntitySize = numberOfRequestedEntites;
+		}
+		return allowedEntitySize;
 	}
 
 
@@ -2777,17 +2883,17 @@ public class Logic extends WebServiceUserCode {
 
 
 
-	static Boolean fnTestTaskInterfaces(Long task_id, Boolean forced) throws Exception {
+	static Boolean fnTestTaskInterfaces(Long task_id, Boolean forced,Long srcEnvId,Long tarEnvId) throws Exception {
 		if (task_id !=null && forced == true) return true;
-		fnTestEnvTargetInterfaces(task_id, forced);
-		fnTestEnvSourceInterfaces(task_id);
+		fnTestEnvTargetInterfaces(task_id, tarEnvId, forced);
+		fnTestEnvSourceInterfaces(task_id, srcEnvId);
 		return true;
 	}
 
-	static Boolean fnTestEnvTargetInterfaces(Long taskId,Boolean forced) throws Exception {
+	static Boolean fnTestEnvTargetInterfaces(Long taskId, Long tarEnvId,Boolean forced) throws Exception {
 		List<Map<String, Object>> taskData;
 		try {
-			taskData = fnGetTaskEnvData(taskId, false);
+			taskData = fnGetTaskEnvData(taskId, tarEnvId, false);
 		} catch(Exception e){
 			throw new Exception("Failed to get Task data for target env");
 		}
@@ -2824,7 +2930,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	static List<Map<String,Object>> fnGetTaskEnvData(Long task_id,Boolean source) throws Exception {
+	static List<Map<String,Object>> fnGetTaskEnvData(Long task_id, Long envId, Boolean source) throws Exception {
 		String sql = "SELECT environments.fabric_environment_name, * FROM \"" + schema + "\".tasks " +
 				"INNER JOIN \"" + schema + "\".tasks_logical_units " +
 				"ON (\"" + schema + "\".tasks.task_id = \"" + schema + "\".tasks_logical_units.task_id) " +
@@ -2832,14 +2938,14 @@ public class Logic extends WebServiceUserCode {
 				"ON (\"" + schema + "\".product_logical_units.lu_id = \"" + schema + "\".tasks_logical_units.lu_id ) " +
 				"INNER JOIN \"" + schema + "\".environments " +
 				(source ?
-						"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".tasks.source_environment_id ) " :
-						"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".tasks.environment_id ) "  ) +
+						"ON (\"" + schema + "\".environments.environment_id ="+(envId!=null?envId +") ":"\"" + schema + "\".tasks.source_environment_id ) ") :
+						"ON (\"" + schema + "\".environments.environment_id ="+(envId!=null?envId +") ":"\"" + schema + "\".tasks.environment_id ) ")  ) +
 				"INNER JOIN \"" + schema + "\".environment_products " +
 				"ON (\"" + schema + "\".environment_products.status = \'Active\' " +
 				"AND \"" + schema + "\".environment_products.product_id = \"" + schema + "\".product_logical_units.product_id " +
 				(source ?
-						"AND (\"" + schema + "\".environment_products.environment_id = \"" + schema + "\".tasks.source_environment_id )) " :
-						"AND (\"" + schema + "\".environment_products.environment_id = \"" + schema + "\".tasks.environment_id )) "  ) +
+						"AND (\"" + schema + "\".environment_products.environment_id ="+(envId!=null?envId+")) ":"\"" + schema + "\".tasks.source_environment_id )) ") :
+						"AND (\"" + schema + "\".environment_products.environment_id ="+(envId!=null?envId+")) ":"\"" + schema + "\".tasks.environment_id )) ")  ) +
 				"WHERE tasks.task_id = " + task_id;
 		Db.Rows rows = db("TDM").fetch(sql);
 
@@ -2856,10 +2962,10 @@ public class Logic extends WebServiceUserCode {
 		return result;
 	}
 
-	static Boolean fnTestEnvSourceInterfaces(Long task_id) throws Exception {
+	static Boolean fnTestEnvSourceInterfaces(Long task_id,Long srcEnvId) throws Exception {
 		List<Map<String, Object>> taskData=null;
 		try {
-			taskData = fnGetTaskEnvData(task_id, true);
+			taskData = fnGetTaskEnvData(task_id,srcEnvId, true);
 		} catch (Exception e){
 			throw new Exception("Failed to get task source env data");
 		}
@@ -3120,7 +3226,7 @@ public class Logic extends WebServiceUserCode {
 			return result;
 	}
 
-	static void fnStartTaskExecutions(List<Map<String,Object>> taskExecutions,Long taskExecutionId) throws Exception{
+	static void fnStartTaskExecutions(List<Map<String,Object>> taskExecutions,Long taskExecutionId, String srcEnvName, Long tarEnvId, Long srcEnvId) throws Exception{
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
@@ -3135,23 +3241,23 @@ public class Logic extends WebServiceUserCode {
 						taskExecutionId,
 						now,
 						entry.get("be_id"),
-						entry.get("environment_id"),
+						tarEnvId!=null?tarEnvId:entry.get("environment_id"),
 						entry.get("product_id"),
 						entry.get("product_version"),
 						entry.get("lu_id"),
 						entry.get("data_center_name"),
 						"Pending",
 						entry.get("lu_parent_id"),
-						entry.get("source_env_name"),
+						srcEnvName!=null?srcEnvName:entry.get("source_env_name"),
 						username,
 						entry.get("task_type"),
 						now,
-						entry.get("source_environment_id"),
+						srcEnvId!=null?srcEnvId:entry.get("source_environment_id"),
 						entry.get("process_id"));
 			}
 	}
 
-	static void fnCreateSummaryRecord(Map<String,Object> taskExecution, Long taskExecutionId) throws Exception{
+	static void fnCreateSummaryRecord(Map<String,Object> taskExecution, Long taskExecutionId, String srcEnvName, Long tarEnvId, Long srcEnvId) throws Exception{
 			Map<String,Object> entry = taskExecution;
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
@@ -3168,7 +3274,7 @@ public class Logic extends WebServiceUserCode {
 					entry.get("task_type"),
 					now,
 					entry.get("be_id"),
-					entry.get("environment_id"),
+					tarEnvId!=null?tarEnvId:entry.get("environment_id"),
 					"Pending",
 					entry.get("start_execution_time"),
 					entry.get("end_execution_time"),
@@ -3178,8 +3284,8 @@ public class Logic extends WebServiceUserCode {
 					entry.get("tot_num_of_processed_ref_tables"),
 					entry.get("tot_num_of_copied_ref_tables"),
 					entry.get("tot_num_of_failed_ref_tables"),
-					entry.get("source_env_name"),
-					entry.get("source_environment_id"),
+					srcEnvName!=null?srcEnvName:entry.get("source_env_name"),
+					srcEnvId!=null?srcEnvId:entry.get("source_environment_id"),
 					entry.get("fabric_environment_name"),
 					entry.get("task_executed_by"),
 					entry.get("version_datetime"),
@@ -3484,10 +3590,13 @@ public class Logic extends WebServiceUserCode {
 			}
 		}
 
-		Map<String,Object> found = null;
 		for(Map<String,Object> rootLU:rootLUs){
+			Map<String,Object> found = null;
 			for(Map<String,Object> e:tree){
-				if(e.get("lu_name").toString().equals(rootLU.get("lu_name").toString())) {found=e; break;}
+				if(e.get("lu_name").toString().equals(rootLU.get("lu_name").toString())) {
+					found=e;
+					break;
+				}
 			}
 
 			if (found!=null) {
@@ -3542,7 +3651,7 @@ public class Logic extends WebServiceUserCode {
 
 				Map<String,Object> found=null;
 				for(Map<String,Object> e:children){
-					if(e.get("lu_name").toString().equals(node.get("luName"))){
+					if(e.get("lu_name").toString().equals(node.get("luName").toString())){
 						found=e;
 						break;
 					}
@@ -3552,7 +3661,7 @@ public class Logic extends WebServiceUserCode {
 					HashMap<String,Object> nodeMap=new HashMap<>();
 					nodeMap.put("lu_name",node.get("luName"));
 					nodeMap.put("children",node.get("children")!=null? node.get("children") : new ArrayList<>());
-					nodeMap.put("collapsed", false);
+					nodeMap.put("collapsed", true);
 					nodeMap.put("hasChildren",true);
 					//Map<String,Object> parentLu = list.get(map.get(node.get("parentLuName")));
 					//List<HashMap<String,Object>> parentLuChildren = (List<HashMap<String,Object>>) parentLu.get("children");
@@ -3570,7 +3679,7 @@ public class Logic extends WebServiceUserCode {
 					HashMap<String,Object> nodeMap=new HashMap<>();
 					nodeMap.put("lu_name",node.get("luName"));
 					nodeMap.put("children",node.get("children")!=null? node.get("children") : new ArrayList<>());
-					nodeMap.put("collapsed", false);
+					nodeMap.put("collapsed", true);
 					nodeMap.put("hasChildren",true);
 					roots.add(nodeMap);
 				}
@@ -3615,25 +3724,14 @@ public class Logic extends WebServiceUserCode {
 		if(Util.isEmpty(env)){
 			env = "_dev";
 		}
+
 		fabric().execute("set environment='" + env + "';");
-		
-		Map<String,String> connResMap= new HashMap<>();
-		Db.Rows dbSources = fabric().fetch("list DB_SOURCES");
-		
-		for (Db.Row source : dbSources) {
-			Boolean active = Boolean.valueOf("" + source.cell(1));
-			String iface = "" + source.cell(0);
-			if(active){
-		
-				String connRes = "" + fabric().fetch( "test_connection DbInterface=?", iface).firstRow().cell(2);
-				connResMap.put(iface, connRes);
-			}else{
-				connResMap.put(iface, ", this interface is not active");
-			}
-		
-		}
-		if (dbSources != null) dbSources.close();
-		
+
+		Map<Object, Object> connResMap= new HashMap<>();
+		fabric().fetch("test_connection active=true;").forEach(i -> {
+			connResMap.put(i.get("interface"), i.get("passed").toString());
+		});
+
 		return wrapWebServiceResults("SUCCESS", null, connResMap);
 	}
 
@@ -4605,7 +4703,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	private static Map<String,String> fnValidateSourceEnvForTask(Map<String,Object> be_lus, Integer refCount,String selection_method,
-																 String sync_mode,boolean version_ind,String task_type,
+																 String sync_mode,Boolean version_ind,String task_type,
 																 Map<String,Object> envDetails) throws Exception{
 
 		Object res = null;
@@ -4614,8 +4712,8 @@ public class Logic extends WebServiceUserCode {
 		String env_id, role_id, beId;
 		Map<String,String> errorMessages=new HashMap<>();
 
-		String beAndLus_sql = "SELECT  ep.environment_id FROM environment_products ep,( select ARRAY_AGG(p.lu_id) lu_list , p.be_id , p.product_id from product_logical_units p where p.be_id = ? group by p.be_id, p.product_id) lu " +
-				"where ep.environment_id =? and lower(ep.status) = 'active' and ep.product_id = lu.product_id ";
+		String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From environment_products ep Inner Join product_logical_units p " +
+				"On ep.product_id = p.product_id Where p.be_id = (?) And ep.environment_id = (?) And Lower(ep.status) = 'active') lu Where 1 = 1 ";
 		String reference_sql = "select environment_id from environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
 		String syntheticData_sql = "select environment_id from environment_roles where role_id = ?  and allowed_creation_of_synthetic_data = true;";
 		String randomSelection_sql = "select environment_id from environment_roles where role_id = ?  and allowed_random_entity_selection = true;";
@@ -4642,24 +4740,24 @@ public class Logic extends WebServiceUserCode {
 			// check if source env satisfy reference filtering
 			if (refCount!=null && refCount > 0 && !ownerOrAdminRole) {
 				res = db("TDM").fetch(reference_sql, role_id).firstValue();
-				if (res == null) {
+				if (res == null)
 					errorMessages.put("reference", "The user has no permissions to run tasks on Reference tables on source environment");
-				}
-				//check if source env satisfy selection method filtering
-				if (!("L".equalsIgnoreCase(selection_method) || ("ALL".equalsIgnoreCase(selection_method) && ownerOrAdminRole)))
-					errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's source environment");
+			}
+			//check if source env satisfy selection method filtering
+			if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
+				errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's source environment");
 			}
 			// in case task type is load, "selection method" and "reference" filtering are not relevant(not required)
 		}
 
 		//check if source env satisfy sync mode  filtering
-		if ("FORCE".equalsIgnoreCase(sync_mode) && !ownerOrAdminRole) {
+		if (sync_mode!=null && "FORCE".equalsIgnoreCase(sync_mode) && !ownerOrAdminRole) {
 			res = db("TDM").fetch(syncMode_sql, role_id).firstValue();
 			if (res==null) errorMessages.put("syncMode","the user has no permissions to ask to always sync the data from the source.");
 		}
 
 		//check if source env satisfy versioning filtering
-		if (version_ind && !ownerOrAdminRole) {
+		if (version_ind!=null && version_ind && !ownerOrAdminRole) {
 			res = db("TDM").fetch(versioning_sql, role_id).firstValue();
 			if (res == null)
 				errorMessages.put("versioning","The user has no permissions to run Data Flux tasks on the task's source environment");
@@ -4671,7 +4769,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	private static Map<String,String> fnValidateTargetEnvForTask(Map<String,Object> be_lus, Integer refCount,String selection_method,
-																 boolean version_ind,boolean replace_sequences,boolean delete_before_load,
+																 Boolean version_ind,Boolean replace_sequences,Boolean delete_before_load,
 																 String task_type,Map<String,Object> envDetails) throws Exception{
 		Map<String,String> errorMessages=new HashMap<>();
 		Object res = null;
@@ -4679,8 +4777,8 @@ public class Logic extends WebServiceUserCode {
 		ArrayList<String> lusList;
 		String env_id, role_id, beId;
 
-		String beAndLus_sql = "SELECT  ep.environment_id FROM environment_products ep,( select ARRAY_AGG(p.lu_id) lu_list , p.be_id , p.product_id from product_logical_units p where p.be_id = ? group by p.be_id, p.product_id) lu " +
-				"where ep.environment_id =? and lower(ep.status) = 'active' and ep.product_id = lu.product_id ";
+		String beAndLus_sql = "Select 1 From (Select Array_Agg(p.lu_id) As lu_list From environment_products ep Inner Join product_logical_units p " +
+				"On ep.product_id = p.product_id Where p.be_id = (?) And ep.environment_id = (?) And Lower(ep.status) = 'active') lu Where 1 = 1 ";
 		String reference_sql = "select environment_id from environment_roles where role_id = ?  and allowed_refresh_reference_data = true;";
 		String syntheticData_sql = "select environment_id from environment_roles where role_id = ?  and allowed_creation_of_synthetic_data = true;";
 		String randomSelection_sql = "select environment_id from environment_roles where role_id = ?  and allowed_random_entity_selection = true;";
@@ -4712,35 +4810,35 @@ public class Logic extends WebServiceUserCode {
 
 
 		//check if target env satisfy selection method filtering
-		if ("R".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
-			res = db("TDM").fetch(randomSelection_sql, role_id).firstValue();
-			if (res==null)
-				errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
-		} else if ("S".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
-			res = db("TDM").fetch(syntheticData_sql, role_id).firstValue();
-			if (res==null)
-				errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
+		if(selection_method!=null) {
+			if ("R".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
+				res = db("TDM").fetch(randomSelection_sql, role_id).firstValue();
+				if (res == null)
+					errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
+			} else if ("S".equalsIgnoreCase(selection_method) && !ownerOrAdminRole) {
+				res = db("TDM").fetch(syntheticData_sql, role_id).firstValue();
+				if (res == null)
+					errorMessages.put("selectionMethod", "The User has no permissions to run the task's selection method on the task's target environment");
+			} else if ("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole)
+				errorMessages.put("selectionMethod", "Only admin and owner users are allowed to create an extract task to extract all entities");
 		}
-		else if("ALL".equalsIgnoreCase(selection_method) && !ownerOrAdminRole)
-			errorMessages.put("selectionMethod", "Only admin and owner users are allowed to create an extract task to extract all entities");
-
 
 		//check if target env satisfy versioning filtering
-		if (version_ind && !ownerOrAdminRole)
+		if (version_ind!=null && version_ind && !ownerOrAdminRole) {
 			res = db("TDM").fetch(versioning_sql, role_id).firstValue();
-		if (res==null)
-			errorMessages.put("versioning", "The user has no permissions to run Data Flux tasks on the task's target environment");
-
+			if (res == null)
+				errorMessages.put("versioning", "The user has no permissions to run Data Flux tasks on the task's target environment");
+		}
 
 		//check if target env satisfy replace sequence filtering
-		if (replace_sequences && !ownerOrAdminRole) {
+		if ( replace_sequences!=null && replace_sequences && !ownerOrAdminRole) {
 			res = db("TDM").fetch(replaceSequence_sql, role_id).firstValue();
 			if (res == null)
 				errorMessages.put("replaceSequence", "The user has no permissions to replace the entities sequences.");
 		}
 
 		//check if target env satisfy delete before load filtering
-		if (delete_before_load && !ownerOrAdminRole) {
+		if (delete_before_load!=null && delete_before_load && !ownerOrAdminRole) {
 			res =  db("TDM").fetch(deleteBeforeLoad_sql, role_id).firstValue();
 			if (res == null)
 				errorMessages.put("deleteBeforeLoad", "The user has no permissions to delete entities from the target.");
@@ -4750,18 +4848,71 @@ public class Logic extends WebServiceUserCode {
 		return errorMessages;
 	}
 
-
+	
 	@desc("Get the list of environments that are aligned with the input filtering parameters. The input filtering parameters:\r\n" +
 			"- If the task type is Extract , then validate and return the list of available source environments.\r\n" +
-			"- If the task type is Load, then validate and return both - source and target environments.\r\n" +
-			"\r\n" +
-			"Example if the be_lus input:\r\n" +
-			"{\r\n" +
-			"  \"be_id:\" \"10\",\r\n" +
-			"  \"LU List:\" [\"20\", \"21\", \"22\"]\r\n" +
+			"- If the task type is Load, then validate and return both - source and target environments.")
+	@webService(path = "getEnvironmentsForTaskAttr", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    {\r\n" +
+			"      \"source environments\": [\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"4\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV6\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"1\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"6\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV3\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"3\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV4\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"9\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"Env9\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"target environments\": [\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"2\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV2\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"5\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV5\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"6\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"ENV3\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"environment_id\": \"9\",\r\n" +
+			"          \"role_id\": \"admin\",\r\n" +
+			"          \"environment_name\": \"Env9\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    }\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
 			"}")
-	@webService(path = "getEnvironmentsForTaskAttributes", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the BE ID and the list of LU IDs.") Map<String,Object> be_lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (randpm selection), \"S\" (entity cloning), \"PR\" (parameters wil a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\" or \"load\"") String task_type) throws Exception {
+	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the task's be_id (Business Entity ID). For example: 1.", required=true) String be, @param(description="Populated by the task's Logical Units (LU IDs), separated by comma. Example : 1,5,6,7", required=true) String lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (random selection), \"S\" (entity cloning), \"PR\" (parameters with a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\" or \"load\"", required=true) String task_type) throws Exception {
 		// variables declaration
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -4773,38 +4924,49 @@ public class Logic extends WebServiceUserCode {
 		List<Map<String, Object>> finalSourceEnvs = new ArrayList<>();
 		List<Map<String, Object>> finalTargetEnvs = new ArrayList<>();
 		
+		lus.replaceAll("\\s+","");
+		String[] lus_arr=lus.split(",");
+		ArrayList<String> lus_list = new ArrayList<String>();
+		for(String str : lus_arr)
+			lus_list.add(str);
+		Map<String,Object> be_lus= new HashMap<String,Object>();
+		be_lus.put("be_id",be);
+		be_lus.put("LU List", lus_list);
 		
 		try {
 		
 			HashMap<String, Object> wsOutput = (HashMap<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser();
 			List<Map<String, Object>> allUserEnvsTypes = (List<Map<String, Object>>) wsOutput.get("result");
+			int i=0;
 			for (Map<String, Object> envType : allUserEnvsTypes) {
-		
 				List<Map<String, Object>> allSourceEnvs = (List<Map<String, Object>>) (envType.get("source environments"));
 				List<Map<String, Object>> allTargetEnvs = (List<Map<String, Object>>) (envType.get("target environments"));
-				// loop over user source envs
-				for (Map<String, Object> sourceEnvMap : allSourceEnvs) {
 		
-					env_id = "" + sourceEnvMap.get("environment_id");
-					role_id = "" + sourceEnvMap.get("role_id");
-					env_name = "" + sourceEnvMap.get("environment_name");
+				if(allSourceEnvs!=null) {
+					// loop over user source envs
+					for (Map<String, Object> sourceEnvMap : allSourceEnvs) {
 		
-					//check if source env satisfies all relevant cases
-					if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap).isEmpty()) {
-						Map<String, Object> envData = new HashMap<>();
-						envData.put("environment_id", env_id);
-						envData.put("environment_name", env_name);
-						envData.put("role_id", role_id);
-						finalSourceEnvs.add(envData);
+						env_id = "" + sourceEnvMap.get("environment_id");
+						role_id = "" + sourceEnvMap.get("role_id");
+						env_name = "" + sourceEnvMap.get("environment_name");
+		
+						//check if source env satisfies all relevant cases
+						if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap).isEmpty()) {
+							Map<String, Object> envData = new HashMap<>();
+							envData.put("environment_id", env_id);
+							envData.put("environment_name", env_name);
+							envData.put("role_id", role_id);
+							finalSourceEnvs.add(envData);
+		
+						}
+		
 		
 					}
-		
-		
 				}
 		
 		
 				// loop over user target envs only if it is a load task, otherwsie target envs are not relevant
-				if ("load".equalsIgnoreCase(task_type)) {
+				if ("load".equalsIgnoreCase(task_type) && allTargetEnvs!=null) {
 					for (Map<String, Object> targetEnvMap : allTargetEnvs) {
 		
 						env_id = "" + targetEnvMap.get("environment_id");
@@ -4874,7 +5036,7 @@ public class Logic extends WebServiceUserCode {
 			}
 
 		} else {
-			String sql = "select CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+			String sql = "select env.environment_id, CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
 					"from environments env, environment_roles r, environment_role_users u " +
 					"where env.environment_id = r.environment_id " +
 					"and lower(r.role_status) = 'active' " +
@@ -4893,7 +5055,7 @@ public class Logic extends WebServiceUserCode {
 				results.add(rowMap);
 			}
 
-			String query1 = "select CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
+			String query1 = "select env.environment_id, CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
 					"from environments env, environment_owners o " +
 					"where env.environment_id = o.environment_id " +
 					"and o.user_id = (?) " +
@@ -4913,23 +5075,27 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	private static Boolean fnValidateNubmerOfEntities(Integer entityListSize, Integer number_of_entities_to_copy, String role_id) throws Exception{
-		if("admin".equalsIgnoreCase(role_id)||"owner".equalsIgnoreCase(role_id)) return true;
-		String numberOfEntities_sql = "select environment_id from environment_roles where role_id = ?  and allowed_number_of_entities_to_read<= ? and allowed_number_of_entities_to_read<= ?";
-		Object res = db("TDM").fetch(numberOfEntities_sql, role_id, entityListSize, number_of_entities_to_copy).firstValue();
-		if (res!=null) return true;
-		return false;
+	private static Boolean fnValidateNumberOfReadEntities(Integer numberOfEntities, String role_id) throws Exception {
+		return fnValidateNumberOfEntities(numberOfEntities, role_id, "allowed_number_of_entities_to_read");
 	}
 
-	private static void fnSaveTaskOverrideParameters(Long taskId, Map<String,Object> overrideParameters) throws Exception{
-		if(overrideParameters.get("ENTITY_LIST")!=null){
-			String[] entityList=((String)overrideParameters.get("ENTITY_LIST")).split(",");
-			Arrays.sort(entityList);
-			overrideParameters.put("ENTITY_LIST",String.join(",",entityList));
+	private static Boolean fnValidateNumberOfCopyEntities(Integer numberOfEntities, String role_id) throws Exception {
+		return fnValidateNumberOfEntities(numberOfEntities, role_id, "allowed_number_of_entities_to_copy");
+	}
+
+	private static Boolean fnValidateNumberOfEntities(Integer numberOfEntities, String role_id, String columnName) throws Exception {
+		if (numberOfEntities == -1 || "admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id)) {
+			return true;
 		}
-		String sql = "INSERT INTO task_execution_override_attrs (task_id,override_parameters) VALUES (?,?)";
+		String numberOfEntities_sql = "select environment_id from environment_roles where role_id = ?  and " + columnName + " >= ?";
+		Object res = db("TDM").fetch(numberOfEntities_sql, role_id, numberOfEntities != null ? numberOfEntities : 0).firstValue();
+		return res != null;
+	}
+
+	private static void fnSaveTaskOverrideParameters(Long taskId, Map<String,Object> overrideParameters, Long taskExecutionId) throws Exception{
+		String sql = "INSERT INTO task_execution_override_attrs (task_id,override_parameters,task_execution_id) VALUES (?,?,?)";
 		String params_str = new JSONObject(overrideParameters).toString();
-		db("TDM").execute(sql,taskId,params_str);
+		db("TDM").execute(sql,taskId,params_str,taskExecutionId);
 	}
 
 	private static Boolean fnValidateParallelExecutions(Long taskId, Map<String,Object> overrideParameters) throws Exception{
@@ -4940,6 +5106,16 @@ public class Logic extends WebServiceUserCode {
 			if (Integer.parseInt(count.toString()) > 0) return false;
 		} else {
 			// If already exists an execution with the same override parameters -> don't add a new execution
+			String leftSideContainmentTest_sql = "select array_to_string(array_agg(o.task_execution_id), ',') from task_execution_list tl, task_execution_override_attrs o where tl.task_id = ? " +
+					"and UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and " +
+					"tl.task_execution_id = o.task_execution_id " +
+					"and o.override_parameters::JSONB @> (?)::jsonb";
+			String params_str = new JSONObject(overrideParameters).toString();
+			String executionIds = (String)db("TDM").fetch(leftSideContainmentTest_sql,taskId,params_str).firstValue();
+			String rightSideContainmentTest_sql  = "select count(*) from task_execution_override_attrs o where o.task_id = (?) AND (?)::jsonb @> o.override_parameters::JSONB AND o.task_execution_id IN ("+executionIds+")";
+			Object count = db("TDM").fetch(rightSideContainmentTest_sql,taskId,params_str).firstValue();
+			if (Integer.parseInt(count.toString()) > 0) return false;
+			/*
 			String sql = "select count(*) from task_execution_list tl, task_execution_override_attrs o where tl.task_id = ? " +
 					"And UPPER(tl.execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING') and  " +
 					"tl.task_execution_id = o.task_execution_id " +
@@ -4947,12 +5123,11 @@ public class Logic extends WebServiceUserCode {
 			String params_str = new JSONObject(overrideParameters).toString();
 			Object count = db("TDM").fetch(sql,taskId,params_str,params_str).firstValue();
 			if (Integer.parseInt(count.toString())>0) return false;
+			 */
 		}
 		return true;
 	}
-
-
-
+	
 }
 
 

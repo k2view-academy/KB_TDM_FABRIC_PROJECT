@@ -15,6 +15,8 @@ public class Globals extends SharedGlobals {
 	@category("TDM")
 	public static String ROOT_COLUMN_NAME = "SUBSCRIBER_ID";
 
+	public static String TEST_GLOBAL = "1";
+
 	
 
 

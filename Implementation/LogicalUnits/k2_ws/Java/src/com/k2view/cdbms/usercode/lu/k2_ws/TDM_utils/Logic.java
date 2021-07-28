@@ -28,11 +28,13 @@ import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
 import com.k2view.cdbms.usercode.lu.k2_ws.*;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
+import com.k2view.fabric.common.Json;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -169,8 +171,58 @@ public class Logic extends WebServiceUserCode {
 		//FabricEncryption.decrypt(passTodDcrypt);
 	}
 
+
 	//end tdm
 
-
+	@desc("This API provides configuration for TDM GUI")
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": {\r\n" +
+			"    \"maxRetentionPeriod\": 90,\r\n" +
+			"    \"defaultPeriod\": {\r\n" +
+			"      \"unit\": \"Days\",\r\n" +
+			"      \"value\": 5\r\n" +
+			"    },\r\n" +
+			"    \"permissionGroups\": [\r\n" +
+			"      \"admin\",\r\n" +
+			"      \"owner\",\r\n" +
+			"      \"tester\"\r\n" +
+			"    ],\r\n" +
+			"    \"availableOptions\": [\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Minutes\",\r\n" +
+			"        \"units\": 0.00069444444\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Hours\",\r\n" +
+			"        \"units\": 0.04166666666\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Days\",\r\n" +
+			"        \"units\": 1\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Weeks\",\r\n" +
+			"        \"units\": 7\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Years\",\r\n" +
+			"        \"units\": 365\r\n" +
+			"      }\r\n" +
+			"    ]\r\n" +
+			"  },\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": \"\"\r\n" +
+			"}")
+	public static Object getTdmGuiParams() throws Exception {
+		try {
+			String sql = "select * from \"public\".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+			Object params = db("TDM").fetch(sql).firstRow().get("param_value");
+			Map result = Json.get().fromJson((String) params, Map.class);
+			return wrapWebServiceResults("SUCCESS", "", result);
+		} catch (Throwable t) {
+			return wrapWebServiceResults("FAIL", t.getMessage(), null);
+		}
+	}
 
 }

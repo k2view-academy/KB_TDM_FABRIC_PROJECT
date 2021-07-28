@@ -280,6 +280,7 @@ public class Logic extends UserCode {
 	@out(name = "fabric_execution_id", type = String.class, desc = "")
 	@out(name = "task_executed_by", type = String.class, desc = "")
 	@out(name = "process_id", type = String.class, desc = "")
+	@out(name = "process_name", type = String.class, desc = "")
 	public static void fnPopTaskExecutionList(String task_execution_id) throws Exception {
 		String lu_id = "";
 		String parent_lu_id = "";
@@ -305,19 +306,28 @@ public class Logic extends UserCode {
 		String fabric_execution_id = "";
 		String task_executed_by = "";
 		String process_id = "";
+		String process_name = "";
 		
 		Db ciTDM = db("TDM");
 		Db.Rows tdmTaslExecList = ciTDM.fetch("SELECT * FROM task_execution_list where task_execution_id = ?", task_execution_id);
 		
 		for (Db.Row tdmTaskExecRec: tdmTaslExecList) {
 			lu_id = "" + tdmTaskExecRec.get("lu_id");
+			process_id = "" + tdmTaskExecRec.get("process_id");
 			parent_lu_id = "" + tdmTaskExecRec.get("parent_lu_id");
 			task_id = "" + tdmTaskExecRec.get("task_id");
 			data_center_name = "" + tdmTaskExecRec.get("data_center_name");
+		
 			
-			Db.Row luNames = ciTDM.fetch("SELECT lu_name, lu_parent_name from product_logical_units where lu_id = ?", Integer.valueOf(lu_id)).firstRow();
-			lu_name = "" + luNames.get("lu_name");
-			parent_lu_name = "" + luNames.get("lu_parent_name");
+			// LU Name and Parent LU Name will be populated only if the LU_ID is not zero, otherwise the Process Name will be populated
+			if (!"0".equals(lu_id)) {
+				Db.Row luNames = ciTDM.fetch("SELECT lu_name, lu_parent_name from product_logical_units where lu_id = ?", Integer.valueOf(lu_id)).firstRow();
+				lu_name = "" + luNames.get("lu_name");
+				parent_lu_name = "" + luNames.get("lu_parent_name");
+			} else {
+				 process_name = "" + ciTDM.fetch("SELECT process_name from tasks_post_exe_process where task_id = ? and process_id = ?", 
+					Integer.valueOf(task_id), Integer.valueOf(process_id)).firstValue();
+			}
 			
 			Db.Row taskInfo = ciTDM.fetch("SELECT version_ind, task_title from tasks where task_id = ?", task_id).firstRow();
 			version_ind = "" + taskInfo.cell(0);
@@ -343,12 +353,11 @@ public class Logic extends UserCode {
 			num_of_failed_ref_tables = "" + tdmTaskExecRec.get("num_of_failed_ref_tables");
 			fabric_execution_id = "" + tdmTaskExecRec.get("fabric_execution_id");
 			task_executed_by = "" + tdmTaskExecRec.get("task_executed_by");
-			process_id = "" + tdmTaskExecRec.get("process_id");
 			
 			yield(new Object[]{task_execution_id,task_id,lu_id,lu_name, parent_lu_id, parent_lu_name, version_ind,version_name,version_datetime,
 				version_expiration_date,execution_status,start_execution_time,end_execution_time,num_of_processed_entities,
 				num_of_copied_entities,num_of_failed_entities,data_center_name,num_of_processed_ref_tables,num_of_copied_ref_tables,
-				num_of_failed_ref_tables,fabric_execution_id, task_executed_by,process_id});
+				num_of_failed_ref_tables,fabric_execution_id, task_executed_by,process_id,process_name});
 		
 		}
 		

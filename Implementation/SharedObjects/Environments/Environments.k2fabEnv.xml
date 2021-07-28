@@ -58,15 +58,16 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface k2StudioObjectName="TDM" dbType="postgresql" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>10.21.3.4</dbHost>
           <dbPort>5437</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>0meBhQeupRAp2SOuwWNmTAFlRe5V645BDbVaV2x335g=:IetwKtkBMuxacnOylNv9XrtgnAJKDiNJj64DWEN81aw=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>BVnikQh4hMB8pvNUSrF/Tk9Rvwx3iGvDWcXopdZxLkk=:DfYiJDDFZlSzUPJiCBsFtwe/NGFlUx6T2rpXdJMU9s4=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -124,6 +125,14 @@
         <Global name="TDM_VERSION_NAME" luName="">
           <Value />
         </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
+          <Value>Days</Value>
+          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
+        </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
+          <Value>1</Value>
+          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
+        </Global>
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
@@ -134,19 +143,14 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Billing">
           <Value>SUBSCRIBER_ID</Value>
+        </Global>
+        <Global name="TEST_GLOBAL" luName="Billing">
+          <Value>1</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
@@ -168,92 +172,63 @@
         <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
-            <Property name="Servers" dataType="string" mandatory="true">
-              <Value>10.21.3.4:6379</Value>
+            <Property name="Servers">
+              <Value>10.21.1.71:6379</Value>
             </Property>
-            <Property name="Password" dataType="password">
+            <Property name="Password">
               <Value>tXnZP+vtLXw+YU7kO+ym28Q8+c65UQphxijezHZvTXY=:3+8/2ap3EWhqn+PKWwnn1HdQ3DbjlH8uACjaP0p8jjI=</Value>
             </Property>
-            <Property name="ConnectionTimeout" dataType="integer">
+            <Property name="ConnectionTimeout">
               <Value>10000</Value>
             </Property>
-            <Property name="SoTimeout" dataType="integer">
+            <Property name="SoTimeout">
               <Value>10000</Value>
             </Property>
-            <Property name="MaxAttempts" dataType="integer">
+            <Property name="MaxAttempts">
               <Value>10</Value>
             </Property>
-            <Property name="MaxTotal" dataType="integer">
+            <Property name="MaxTotal">
               <Value>128</Value>
             </Property>
-            <Property name="MaxIdle" dataType="integer">
+            <Property name="MaxIdle">
               <Value>128</Value>
             </Property>
-            <Property name="MinIdle" dataType="integer">
+            <Property name="MinIdle">
               <Value>16</Value>
             </Property>
-            <Property name="TestOnBorrow" dataType="boolean">
+            <Property name="TestOnBorrow">
               <Value>True</Value>
             </Property>
-            <Property name="TestOnReturn" dataType="boolean">
+            <Property name="TestOnReturn">
               <Value>True</Value>
             </Property>
-            <Property name="TestWhileIdle" dataType="boolean">
+            <Property name="TestWhileIdle">
               <Value>True</Value>
             </Property>
-            <Property name="MinEvictableIdle" dataType="long">
+            <Property name="MinEvictableIdle">
               <Value>60000</Value>
             </Property>
-            <Property name="EvictionRunIntervals" dataType="long">
+            <Property name="EvictionRunIntervals">
               <Value>30000</Value>
             </Property>
-            <Property name="TestPerEviction" dataType="int">
+            <Property name="TestPerEviction">
               <Value>3</Value>
             </Property>
-            <Property name="BlockWhenExhausted" dataType="boolean">
+            <Property name="BlockWhenExhausted">
               <Value>False</Value>
             </Property>
           </Properties>
-          <TestConnection enabled="false" />
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.3">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.3">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
-            <Property name="WorkingDir" dataType="string" mandatory="true">
+            <Property name="WorkingDir">
               <Value>C:\k2view\TDM_APIDOC</Value>
             </Property>
-            <Property name="FilesFilter" dataType="string">
+            <Property name="FilesFilter">
               <Value />
             </Property>
           </Properties>
-          <TestConnection enabled="false" />
-        </GenericInterface>
-        <GenericInterface type="HTTP" displayName="HTTP" enabled="true" version="1.6">
-          <Name>httpTest</Name>
-          <Properties>
-            <Property name="ProtocolType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
-              <Value>HTTP</Value>
-            </Property>
-            <Property name="HOST" dataType="string" mandatory="true">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT" dataType="integer" mandatory="true" clearValueOnEnvOverride="false">
-              <Value>80</Value>
-            </Property>
-            <Property name="Path" dataType="string" clearValueOnEnvOverride="false">
-              <Value>http://localhost:3213/api</Value>
-            </Property>
-            <Property name="AuthenticationType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
-              <Value>Basic</Value>
-            </Property>
-            <Property name="User" dataType="string" mandatory="true">
-              <Value>admin</Value>
-            </Property>
-            <Property name="Password" dataType="password" mandatory="true">
-              <Value>jYD5Du5s85+5lsjpqSsBhbEts7kC/Nb3VqoVtF4jlIk=:A2kqq4Os20x4aeZLTvQCSxQKxafNrjCXSp3IJuzgGPo=</Value>
-            </Property>
-          </Properties>
-          <TestConnection enabled="false" />
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
@@ -313,15 +288,16 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface k2StudioObjectName="TDM" dbType="postgresql" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>10.21.3.4</dbHost>
           <dbPort>5437</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>tLTOfbw160deR+SNtO7PKSkAsrhfbaHiooLnTbNpSCw=:GUXtvF8aH6cDVXrGkWg70x/l12/UHO0YdWZQiKM5mc0=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>LLJYEP8qj5a0lWlZEWd2KCDUZ8QrTNJ5QJAX9gse2kA=:XRTEIH4tnaYFtIVGnm0JgbOKSUUb+rAGQeZFnWWSzrg=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
@@ -379,6 +355,14 @@
         <Global name="TDM_VERSION_NAME" luName="">
           <Value />
         </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
+          <Value>Days</Value>
+          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
+        </Global>
+        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
+          <Value>1</Value>
+          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
+        </Global>
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
@@ -389,19 +373,14 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="Billing">
           <Value>SUBSCRIBER_ID</Value>
+        </Global>
+        <Global name="TEST_GLOBAL" luName="Billing">
+          <Value>1</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
@@ -423,92 +402,63 @@
         <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
-            <Property name="Servers" dataType="string" mandatory="true">
-              <Value>10.21.3.4:6379</Value>
+            <Property name="Servers">
+              <Value>10.21.1.71:6379</Value>
             </Property>
-            <Property name="Password" dataType="password">
+            <Property name="Password">
               <Value>zWUUoUzrvd2Efl1cNHQg9gtxRxhw+62JtCXH2CWk0kc=:lzxfoN2U2AGp+oS7dGJ1y676OYhqLUhokZ2DayEpqYM=</Value>
             </Property>
-            <Property name="ConnectionTimeout" dataType="integer">
+            <Property name="ConnectionTimeout">
               <Value>10000</Value>
             </Property>
-            <Property name="SoTimeout" dataType="integer">
+            <Property name="SoTimeout">
               <Value>10000</Value>
             </Property>
-            <Property name="MaxAttempts" dataType="integer">
+            <Property name="MaxAttempts">
               <Value>10</Value>
             </Property>
-            <Property name="MaxTotal" dataType="integer">
+            <Property name="MaxTotal">
               <Value>128</Value>
             </Property>
-            <Property name="MaxIdle" dataType="integer">
+            <Property name="MaxIdle">
               <Value>128</Value>
             </Property>
-            <Property name="MinIdle" dataType="integer">
+            <Property name="MinIdle">
               <Value>16</Value>
             </Property>
-            <Property name="TestOnBorrow" dataType="boolean">
+            <Property name="TestOnBorrow">
               <Value>True</Value>
             </Property>
-            <Property name="TestOnReturn" dataType="boolean">
+            <Property name="TestOnReturn">
               <Value>True</Value>
             </Property>
-            <Property name="TestWhileIdle" dataType="boolean">
+            <Property name="TestWhileIdle">
               <Value>True</Value>
             </Property>
-            <Property name="MinEvictableIdle" dataType="long">
+            <Property name="MinEvictableIdle">
               <Value>60000</Value>
             </Property>
-            <Property name="EvictionRunIntervals" dataType="long">
+            <Property name="EvictionRunIntervals">
               <Value>30000</Value>
             </Property>
-            <Property name="TestPerEviction" dataType="int">
+            <Property name="TestPerEviction">
               <Value>3</Value>
             </Property>
-            <Property name="BlockWhenExhausted" dataType="boolean">
+            <Property name="BlockWhenExhausted">
               <Value>False</Value>
             </Property>
           </Properties>
-          <TestConnection enabled="false" />
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.3">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.3">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
-            <Property name="WorkingDir" dataType="string" mandatory="true">
+            <Property name="WorkingDir">
               <Value>C:\k2view\TDM_APIDOC</Value>
             </Property>
-            <Property name="FilesFilter" dataType="string">
+            <Property name="FilesFilter">
               <Value />
             </Property>
           </Properties>
-          <TestConnection enabled="false" />
-        </GenericInterface>
-        <GenericInterface type="HTTP" displayName="HTTP" enabled="true" version="1.6">
-          <Name>httpTest</Name>
-          <Properties>
-            <Property name="ProtocolType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
-              <Value>HTTP</Value>
-            </Property>
-            <Property name="HOST" dataType="string" mandatory="true">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT" dataType="integer" mandatory="true" clearValueOnEnvOverride="false">
-              <Value>80</Value>
-            </Property>
-            <Property name="Path" dataType="string" clearValueOnEnvOverride="false">
-              <Value>http://localhost:3213/api</Value>
-            </Property>
-            <Property name="AuthenticationType" dataType="OptionsList" mandatory="true" clearValueOnEnvOverride="false">
-              <Value>Basic</Value>
-            </Property>
-            <Property name="User" dataType="string" mandatory="true">
-              <Value>admin</Value>
-            </Property>
-            <Property name="Password" dataType="password" mandatory="true">
-              <Value>XkXwKPmC7XhSxQTlo8xYftJRXlm7n44jNj+z8VtaWL4=:YkSub2UHQ0rhN7KQG7yHAIjASh62WPqkiPcuZFozFbU=</Value>
-            </Property>
-          </Properties>
-          <TestConnection enabled="false" />
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
