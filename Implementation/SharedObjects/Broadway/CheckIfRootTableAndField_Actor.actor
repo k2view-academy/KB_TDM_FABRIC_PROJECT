@@ -1,0 +1,47 @@
+{
+  "type": "CheckIfRootTableAndField_Actor",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "tableName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "fieldName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "luName",
+      "schema": {
+        "type": "string"
+      },
+      "const": null
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "CheckIfRootTableAndField"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "root_indicator",
+      "schema": {
+        "type": "boolean"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

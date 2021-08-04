@@ -1,8 +1,15 @@
 {
   "type": "InitiateTDMReferenceLoad_Actor",
-  "actorClass": null,
   "parentType": "InnerFlow",
+  "actorClass": null,
   "inputs": [
+    {
+      "name": "luName",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
     {
       "name": "taskExecutionID",
       "schema": {
@@ -18,13 +25,6 @@
       "const": null
     },
     {
-      "name": "luName",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
       "name": "selectedRefVersionTaskName",
       "schema": {
         "type": "Any"
@@ -33,6 +33,13 @@
     },
     {
       "name": "selectedRefVersionDateTime",
+      "schema": {
+        "type": "Any"
+      },
+      "const": null
+    },
+    {
+      "name": "targetEnvName",
       "schema": {
         "type": "Any"
       },

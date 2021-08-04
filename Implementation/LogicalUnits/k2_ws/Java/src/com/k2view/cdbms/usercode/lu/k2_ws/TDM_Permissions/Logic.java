@@ -9,7 +9,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
 
@@ -20,6 +19,7 @@ public class Logic extends WebServiceUserCode {
 	private static final String SELECT_PERMISSION_GROUP = "select permission_group from public.permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
 	private static final String SELECT_FABRIC_ROLES = "select fabric_role from public.permission_groups_mapping where permission_group=?";
 	private static final String SELECT_PERMISSION_GROUP_MAPPINGS = "select * from public.permission_groups_mapping";
+	private static final String SELECT_PERMISSION_GROUP_BY_ROLE = "select permission_group from public.permission_groups_mapping where fabric_role=?";
 	private static final String INSERT_PERMISSION_GROUP_MAPPINGS = "insert into public.permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date) values (?, ?, ?, ?, ?, NOW(), NOW())";
 	private static final String UPDATE_PERMISSION_GROUP_MAPPINGS = "update public.permission_groups_mapping set description=?, fabric_role=?, permission_group=?, updated_by=?, update_date=NOW() where fabric_role=?";
 	private static final String DELETE_PERMISSION_GROUP_MAPPINGS = "delete from public.permission_groups_mapping where fabric_role=? RETURNING permission_group";
@@ -150,30 +150,21 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdatePermissionGroupMapping(String description, String old_role, String new_role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(sessionUserPermissionGroup)) {
+			return wrapWebServiceResults("FAIL", admin_pg_access_denied_msg, null);
+		}
+
 		try {
 			String userName = sessionUser().name(); //assigned to updated by
 			String OldMappingPG = (String)db(TDM_INTERFACE_NAME).fetch("select permission_group from public.permission_groups_mapping where fabric_role=(?)",old_role).firstValue();
 			db(TDM_INTERFACE_NAME).execute(UPDATE_PERMISSION_GROUP_MAPPINGS, description, new_role, permission_group, userName, old_role);
 
-			if("owner".equals(OldMappingPG)){
-				List<String> users= (List<String>)((Map<String,Object>)wsGetUsersByFabricRole(old_role)).get("result");
-
-				if(users!=null&&!users.isEmpty()){
-					//check that the user is no longer assigned to owner PG using anther fabric role
-					Iterator<String> usersIter= users.iterator();
-					while(usersIter.hasNext()){
-						if(!"owner".equalsIgnoreCase((String)((Map<String,Object>)wsGetPermissionGroupByUser(usersIter.next())).get("result")))
-							usersIter.remove();
-					}
-					if(!users.isEmpty()) {
-						users.stream().map(user -> "'" + user + "'").collect(Collectors.toList());
-
-						String deletOwnersSql = "DELETE FROM environment_owners WHERE user_name in (" + String.join(",", users) + ")";
-						db(TDM_INTERFACE_NAME).execute(deletOwnersSql);
-					}
-				}
+			List<String> usersByFabricRole = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(old_role)).get("result");
+			if ("owner".equals(OldMappingPG)) {
+				cleanupUsersByPermissionGroup(usersByFabricRole, "owner", "DELETE FROM environment_owners WHERE user_name IN");
+			} else if ("tester".equals(OldMappingPG)) {
+				cleanupUsersByPermissionGroup(usersByFabricRole, "tester", "DELETE FROM environment_role_users WHERE username IN");
 			}
 
 			return wrapWebServiceResults("SUCCESS", null, null);
@@ -190,32 +181,40 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeletePermissionGroupMapping(@param(required=true) String role) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) {
+		String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
+		if (!"admin".equals(sessionUserPermissionGroup)) {
 			return wrapWebServiceResults("FAIL", admin_pg_access_denied_msg, null);
 		}
+
 		try {
-			String mappingPG = "" + db(TDM_INTERFACE_NAME).fetch(DELETE_PERMISSION_GROUP_MAPPINGS, role).firstValue();
-			if ("owner".equals(mappingPG)) {
-				List<String> users = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(role)).get("result");
-				if (users != null && !users.isEmpty()) {
-					String usersJoin = String.join("','", users);
-					String deleteOwnersSql = "DELETE FROM environment_owners WHERE user_name in ('" + usersJoin + "')";
-					db(TDM_INTERFACE_NAME).execute(deleteOwnersSql);
-				}
-			} else if ("tester".equals(mappingPG)) {
-				List<String> users = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(role)).get("result");
-				if (users != null && !users.isEmpty()) {
-					if (!users.isEmpty()) {
-						users.stream().map(user -> "'" + user + "'").collect(Collectors.toList());
-						String deletTestersSql = "DELETE FROM environment_role_users WHERE username IN ('" + String.join(",", users) + "')";
-						db(TDM_INTERFACE_NAME).execute(deletTestersSql);
-					}
-				}
+			List<String> usersByFabricRole = (List<String>) ((Map<String, Object>) wsGetUsersByFabricRole(role)).get("result");
+			String permissionGroup = (String) db(TDM_INTERFACE_NAME).fetch(DELETE_PERMISSION_GROUP_MAPPINGS, role).firstValue();
+
+			if ("owner".equals(permissionGroup)) {
+				cleanupUsersByPermissionGroup(usersByFabricRole, "owner", "DELETE FROM environment_owners WHERE user_name IN");
+			} else if ("tester".equals(permissionGroup)) {
+				cleanupUsersByPermissionGroup(usersByFabricRole, "tester", "DELETE FROM environment_role_users WHERE username IN");
 			}
+
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
 			return wrapWebServiceResults("FAIL", "Can't delete new permission group mapping: " + e.getMessage(), null);
+		}
+	}
+
+	private static void cleanupUsersByPermissionGroup(List<String> users, String permissionGroup, String queryPrefix) throws Exception {
+		if (users != null && !users.isEmpty()) {
+			// check that the user is no longer assigned to the same PG using anther fabric role
+			List<String> usersToDelete = new ArrayList<>();
+			for (String user : users) {
+				if (!permissionGroup.equalsIgnoreCase((String) ((Map<String, Object>) wsGetPermissionGroupByUser(user)).get("result"))) {
+					usersToDelete.add(user);
+				}
+			}
+			if (!usersToDelete.isEmpty()) {
+				String deleteUsersSql = queryPrefix + " ('" + String.join("','", usersToDelete) + "')";
+				db(TDM_INTERFACE_NAME).execute(deleteUsersSql);
+			}
 		}
 	}
 
@@ -279,6 +278,7 @@ public class Logic extends WebServiceUserCode {
 			for (String role : ((String) r.get("roles")).split(",")) {
 				if (roles.contains(role)) {
 					users.add((String) r.get("user"));
+					break;
 				}
 			}
 		});
@@ -301,7 +301,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets users assigned to a given fabric role.")
+	@desc("Gets users assigned to a given Fabric role.")
 	@webService(path = "getUsersByFabricRole", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -310,7 +310,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetUsersByFabricRole(String fabricRole) throws Exception {
+	public static Object wsGetUsersByFabricRole(@param(required=true) String fabricRole) throws Exception {
 		List<String> users = new ArrayList<>();
 		try {
 			fabric().fetch("list users;").forEach(r -> {

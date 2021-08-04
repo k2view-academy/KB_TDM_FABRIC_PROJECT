@@ -217,6 +217,36 @@
         {
             "stages": [
                 {
+                    "name": "Set Target Environment",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Environment",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get ClusterID",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -303,19 +333,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Cluster ID is EMPTY"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 },
@@ -339,30 +356,6 @@
                                     },
                                     {
                                         "name": "clusterId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Logger3",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Cluster ID is: <${clustID}>"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "clustID",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -430,16 +423,6 @@
             "rightPort": {
                 "actor": "Concatenate cluster ID to Key Space",
                 "name": "clusterId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Cluster ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger3",
-                "name": "clustID"
             }
         },
         {
@@ -569,6 +552,16 @@
             },
             "rightPort": {
                 "actor": "Set Version DateTime",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnvName"
+            },
+            "rightPort": {
+                "actor": "Set Environment",
                 "name": "value"
             }
         }

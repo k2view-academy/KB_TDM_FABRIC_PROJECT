@@ -14,6 +14,7 @@ INSERT INTO TASK_EXECUTION_LIST(
     source_environment_id,
     source_env_name,
     task_type,
-    version_datetime
+    version_datetime,
+	task_executed_by
     )
-VALUES(?,?,localtimestamp,?,?,?,?,?,'pending',?,?,?,?,?,?,localtimestamp);
+VALUES(?,?,localtimestamp,?,?,?,?,?,'pending',?,?,?,?,?,?,localtimestamp,?);

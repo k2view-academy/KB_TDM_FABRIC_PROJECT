@@ -10,7 +10,8 @@ SELECT  task_id,
         source_env_name,
         task_type,
         version_ind,
-        source_environment_id
+        source_environment_id,
+		task_created_by
 FROM TASKS
 WHERE UPPER(task_status) = 'ACTIVE'
 AND UPPER(task_execution_status) = 'ACTIVE'

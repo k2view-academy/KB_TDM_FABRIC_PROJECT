@@ -13,6 +13,7 @@ INSERT INTO TASK_EXECUTION_LIST(
     parent_lu_id,
     source_environment_id,
     source_env_name,
-    task_type
+    task_type,
+	task_executed_by
     )
-VALUES(?,?,localtimestamp,?,?,?,?,?,'pending',?,?,?,?,?,?)
+VALUES(?,?,localtimestamp,?,?,?,?,?,'pending',?,?,?,?,?,?,?)

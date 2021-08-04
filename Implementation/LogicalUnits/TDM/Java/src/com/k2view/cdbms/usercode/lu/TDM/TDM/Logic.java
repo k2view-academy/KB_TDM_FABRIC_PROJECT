@@ -442,7 +442,7 @@ public class Logic extends UserCode {
 			}
 		}catch(Exception e)
 		{
-			log.error("Error message: " + e.getMessage(),e);
+			log.error("Failed to clean redis for load task execution id: " + taskExecutionId + ". Error message: " + e.getMessage(),e);
 			throw e;
 			
 		} finally {

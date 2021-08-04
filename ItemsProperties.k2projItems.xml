@@ -78,16 +78,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>setSyncMode.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>setSyncMode_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>SplitIIDAndCloneNumber.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\SplitIIDAndCloneNumber.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
@@ -188,16 +178,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>TDMSeqList.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDMFilterOutTargetTables.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>setTargetEntityId.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setTargetEntityId.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
@@ -216,6 +196,26 @@
       <NodeName>CheckIfRootTableAndField_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckIfRootTableAndField_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>setSyncMode.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>setSyncMode_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMSeqList.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMFilterOutTargetTables.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>deleteAndLoadTarRelTable_Actor.actor</NodeName>
@@ -527,16 +527,16 @@
       <Key>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
-      <Name>Delete_Target</Name>
-      <Key>Implementation\SharedObjects\Broadway@TDM@Delete_Target</Key>
-    </ProjectItemsCategory>
-    <ProjectItemsCategory>
       <Name>Init</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@Init</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>ScriptsForTemplates</Name>
       <Key>Implementation\SharedObjects\Broadway@ScriptsForTemplates</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>Delete_Target</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@Delete_Target</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>Sequences</Name>

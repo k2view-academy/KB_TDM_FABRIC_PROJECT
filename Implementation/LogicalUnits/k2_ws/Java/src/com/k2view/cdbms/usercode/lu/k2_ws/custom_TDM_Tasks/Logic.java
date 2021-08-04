@@ -31,7 +31,7 @@ import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.Logic.wsGetTasks;
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
-	@desc("Gets regular active tasks (task_status and task_execution_status columns are active) for a user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment roles:\r\n" +
+	@desc("Gets regular (version_ind is false) active tasks (task_status and task_execution_status columns are 'Active') for a user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment roles:\r\n" +
 			"\r\n" +
 			"Admin Users:\r\n" +
 			"- Get all active tasks.\r\n" +
@@ -40,15 +40,15 @@ public class Logic extends WebServiceUserCode {
 			"- Get all active extract tasks if the user is the owner of at least one source environment.\r\n" +
 			"- Get all active load tasks if the user is the owner of at least one source environment and one target environment.\r\n" +
 			"- Get all active extract tasks that do not require special permissions if the user has at least one Read TDM Environment role.\r\n" +
-			"- Get all active extract tasks that require special permissions of the user has at least one Read TDM Environment role with these permissions.\r\n" +
+			"- Get all active extract tasks that require special permissions if the user has at least one Read TDM Environment role with these permissions.\r\n" +
 			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
-			"- Get all active load tasks that require special permissions of the user has at least one Read TDM Environment role, and one Write TDM Environment role with these permissions.\r\n" +
+			"- Get all active load tasks that require special permissions if the user has at least one Read TDM Environment role, and one Write TDM Environment role with these permissions.\r\n" +
 			"\r\n" +
-			"Tester Users:   \r\n" +
+			"Tester Users:\r\n" +
 			"- Get all active extract tasks that do not require special permissions if the user has at least one Read TDM Environment role.\r\n" +
-			"- Get all active extract tasks that require special permissions of the user has at least one Read TDM Environment role with these permissions.\r\n" +
+			"- Get all active extract tasks that require special permissions if the user has at least one Read TDM Environment role with these permissions.\r\n" +
 			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
-			"- Get all active load tasks that require special permissions of the user has at least one Read TDM environment role, and one Write TDM Environment role with these permissions.")
+			"- Get all active load tasks that require special permissions if the user has at least one Read TDM environment role, and one Write TDM Environment role with these permissions.")
 	@webService(path = "regularTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -100,10 +100,10 @@ public class Logic extends WebServiceUserCode {
 						}
 					}
 				}
-
+		
 				List<String> srcRoleIds = (ArrayList<String>)roleIdsByEnvType.get("source environments");
 				List<String> tarRoleIds = (ArrayList<String>)roleIdsByEnvType.get("target environments");
-
+		
 				if(!srcRoleIds.isEmpty()){
 					// Get all extract tasks that do not require special permissions except read permissions
 					String sql = "select array_Agg(src_role_id) as src_role_list, task_id, task_title\n" +
@@ -144,7 +144,7 @@ public class Logic extends WebServiceUserCode {
 						result.add(rowMap);
 					}
 				}
-
+		
 				if(srcRoleIds.size()>0&&tarRoleIds.size()>0) {
 					// Get all load regular tasks and their available roles. The user needs to be assigned at least to on of the source TDM environment role IDs
 					String sql = "select array_Agg(src_role_id) as src_role_list, array_Agg(tar_role_id) as tar_role_list, task_id, task_title\n" +
@@ -184,7 +184,7 @@ public class Logic extends WebServiceUserCode {
 							") loadTaskList\n" +
 							"group by task_id, task_title";
 					Db.Rows rows = db("TDM").fetch(sql);
-
+		
 					List<String> columnNames = rows.getColumnNames();
 					for (Db.Row row : rows) {
 						ResultSet resultSet = row.resultSet();
@@ -215,19 +215,19 @@ public class Logic extends WebServiceUserCode {
 						}
 					}
 				}
-
+		
 				List<String> srcRoleIdsAsOwner = (ArrayList<String>)roleIdsByEnvTypeAsOwner.get("source environments");
 				List<String> tarRoleIdsAsOwner = (ArrayList<String>)roleIdsByEnvTypeAsOwner.get("target environments");
-
+		
 				List srcRoleIdsAsTester = (ArrayList<String>)roleIdsByEnvTypeAsTester.get("source environments");
 				List tarRoleIdsAsTester = (ArrayList<String>)roleIdsByEnvTypeAsTester.get("target environments");
-
+		
 				/*if(true) return "srcRoleIdsAsTester: " + String.join(",",srcRoleIdsAsTester) +
 						" tarRoleIdsAsTester: " + String.join(",",tarRoleIdsAsTester) +
 						" srcRoleIdsAsOwner: " + String.join(",",srcRoleIdsAsOwner) +
 						" tarRoleIdsAsOwner: " + String.join(",",tarRoleIdsAsOwner) ;
 				 */
-
+		
 				//"-- Owner- Extract tasks
 				String sql = "select task_id, task_title\n" +
 						"from\n" +
@@ -254,7 +254,7 @@ public class Logic extends WebServiceUserCode {
 							"and lower(COALESCE(t.sync_mode, 'on')) <> 'force' and t.selection_method <> 'ALL'\n";
 				sql+=")extTaskList\n" +
 						"group by task_id, task_title";
-
+		
 				Db.Rows rows = db("TDM").fetch(sql);
 				List<String> columnNames = rows.getColumnNames();
 				for (Db.Row row : rows) {
@@ -265,8 +265,8 @@ public class Logic extends WebServiceUserCode {
 					}
 					result.add(rowMap);
 				}
-
-
+		
+		
 				//-- Owner- Load tasks-
 				// Get all load tasks where the user is the owner of at least one source and one target environments\n" +
 				sql = "Select loadTaskList.task_id,\n" +
@@ -340,9 +340,9 @@ public class Logic extends WebServiceUserCode {
 								"and src.allow_read = true and src.allowed_request_of_Fresh_data = true)":"")+")\n";
 				sql+=") loadTaskList\n" +
 						"group by task_id, task_title";
-
+		
 				rows = db("TDM").fetch(sql);
-
+		
 				columnNames = rows.getColumnNames();
 				for (Db.Row row : rows) {
 					ResultSet resultSet = row.resultSet();
@@ -352,10 +352,10 @@ public class Logic extends WebServiceUserCode {
 					}
 					result.add(rowMap);
 				}
-
+		
 			}
-
-
+		
+		
 			List<Map<String, Object>> returnedResult = new ArrayList<>();
 			for(Map<String, Object> row:result){
 				Map<String, Object> Data=new HashMap<>();
@@ -363,37 +363,34 @@ public class Logic extends WebServiceUserCode {
 				Data.put("task_id",row.get("task_id"));
 				returnedResult.add(Data);
 			}
-
+		
 			return SharedLogic.wrapWebServiceResults("SUCCESS",null,returnedResult);
 		}catch(Exception e){
 			return SharedLogic.wrapWebServiceResults("FAIL",e.getMessage(),null);
 		}
 	}
 
-@desc("Get the list of tasks that are aligned with the input filtering parameters. The input is a dynamic json string, currently it supports the following 6 filtering parameters : \r\n" +
-			"1) task_type : LOAD/EXTRACT\r\n" +
-			"2) version_ind : true/false\r\n" +
-			"3) load_entity : true/false\r\n" +
-			"4) delete_before_load : true/false\r\n" +
-			"5) selection_method : 'L' (entity list), 'P' (parameters), 'S' (Synthetic), 'R' (random)\r\n" +
-			"6) sync_mode : OFF/FORCE\r\n" +
+	@desc("Filters the tasks, returned by /regularTasksByUser API according the the input filtering parameters. The input is a dynamic JSON string. Currently it supports the following filtering parameters:\r\n" +
 			"\r\n" +
-			"In case any of the filtering parameters is not required, do not add it to the json string. \r\n" +
-			"In case no input was provided, the API will return all user tasks.\r\n" +
+			"- task_type : LOAD/EXTRACT\r\n" +
+			"- version_ind : true/false\r\n" +
+			"- load_entity : true/false\r\n" +
+			"- delete_before_load : true/false\r\n" +
+			"- selection_method : below is the list of the valid values:\r\n" +
+			"    - 'L' (Entity list)\r\n" +
+			"    - 'P' or 'PR' (Parameters),\r\n" +
+			"    - 'S' (Synthetic),\r\n" +
+			"    - 'R' (Random)\r\n" +
 			"\r\n" +
-			"Input example containing all supported filtering params : \r\n" +
-			"{task_type:EXTRACT,\r\n" +
-			" version_ind:true,\r\n" +
-			" load_entity :false,\r\n" +
-			" delete_before_load:false, \r\n" +
-			" selection_method :L,\r\n" +
-			" sync_mode:OFF}\r\n" +
-			" \r\n" +
-			"Input example containing only part of the supported filtering params (load_entity and delete_before_load are not required for example) : \r\n" +
-			"{task_type:EXTRACT,\r\n" +
-			" version_ind:true,\r\n" +
-			" selection_method :L,\r\n" +
-			" sync_mode:OFF}")
+			"- sync_mode : OFF/FORCE/ON\r\n" +
+			"\r\n" +
+			"The JSON filtering parameter is optional. If is it not populated, the API returns all user's tasks.\r\n" +
+			"\r\n" +
+			"Input examples:\r\n" +
+			"\r\n" +
+			"{\"task_type\":\"EXTRACT\", \"version_ind\":true, \"selection_method\":\"L\", \"sync_mode\":\"OFF\"}\r\n" +
+			"\r\n" +
+			"{\"task_type\":\"EXTRACT\", \"version_ind\": false, \"load_entity\": true, \"delete_before_load\": true, \"selection_method\":\"L\", \"sync_mode\":\"FORCE\"}")
 	@webService(path = "getTasksByParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -417,7 +414,6 @@ public class Logic extends WebServiceUserCode {
 		Boolean version_ind=null,load_entity=null,delete_before_load=null;
 		HashMap<String, Object> response = new HashMap<>();
 		List<Map<String, Object>> finalTasksList  = new ArrayList<>();
-		
 		
 		try{
 		
@@ -445,7 +441,8 @@ public class Logic extends WebServiceUserCode {
 				continue;
 			if(selection_method!=null && !selection_method.equalsIgnoreCase(allTaskDetails.get(0).get("selection_method").toString()))
 				continue;
-			if(sync_mode!=null && !sync_mode.equalsIgnoreCase(allTaskDetails.get(0).get("sync_mode").toString()))
+			String syncModeFromTaskDetails= (allTaskDetails.get(0).get("sync_mode") !=null) ? allTaskDetails.get(0).get("sync_mode").toString() : "ON";
+			if(sync_mode!=null && !sync_mode.equalsIgnoreCase(syncModeFromTaskDetails))
 				continue;
 		
 			HashMap<String, Object> finalTaskMap = new HashMap<>();

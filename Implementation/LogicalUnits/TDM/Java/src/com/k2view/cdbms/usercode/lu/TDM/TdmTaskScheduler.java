@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.getLuType;
+import static com.k2view.cdbms.shared.user.UserCode.*;
 
 public class TdmTaskScheduler {
 
@@ -45,6 +46,7 @@ public class TdmTaskScheduler {
             //Long numOfProcessedEntities = Util.rte(() -> resultSet.getLong("number_of_entities_to_copy"));
             Timestamp schedulingEndDate = Util.rte(() -> resultSet.getTimestamp("scheduling_end_date"));
             Timestamp localTime = (Timestamp) Util.rte(() -> db("TDM").fetch("SELECT localtimestamp").firstValue());
+			String taskCreatedBy = Util.rte(() -> resultSet.getString("task_created_by"));
             log.info("task with id: " + taskID + " beid: " + beID + " tasktype: " + taskType + " cronexpression: " + cronExpression);
             if(schedulingEndDate != null && localTime.compareTo(schedulingEndDate) > 0){
                 log.info(" updating task to immediate.....");
@@ -89,7 +91,8 @@ public class TdmTaskScheduler {
                                     parentLuID,
                                     sourceEnvID,
                                     sourceEnvName,
-                                    taskType));
+                                    taskType,
+									taskCreatedBy));
 
                     //post execution
                     Util.rte(() -> db(TDM).fetch("select * from tasks_post_exe_process where task_id = ?", taskID).forEach( s -> {
@@ -119,7 +122,8 @@ public class TdmTaskScheduler {
                     Util.rte(() -> db(TDM).execute(insertToRefQuery, taskExecutionID, taskID, luName));
 
                     // insert to summary
-                    Util.rte(() -> db(TDM).execute(insertToSummaryQuery, taskID, taskExecutionID, 0, 0, 0, 0, 0, 0, environmentID, taskType, beID, sourceEnvName, sourceEnvID));
+					String username= "" + Util.rte(() -> fabric().fetch("set username").firstValue());
+                    Util.rte(() -> db(TDM).execute(insertToSummaryQuery, taskID, taskExecutionID, 0, 0, 0, 0, 0, 0, environmentID, taskType, beID, sourceEnvName, sourceEnvID,username));
                 }));
             }
         });

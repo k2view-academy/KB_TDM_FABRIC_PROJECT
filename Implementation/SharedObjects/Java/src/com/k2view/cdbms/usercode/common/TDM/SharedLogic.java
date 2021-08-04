@@ -232,11 +232,11 @@ public class SharedLogic {
 					//log.info("Running Create table: " + sbCreStmt.toString());
 					ciTDM.execute(sbCreStmt.toString());
 				}catch (Exception e) {
-					log.error("fnEnrichmentLuParams - Error Message: " + e.getMessage());
-					//if (e.getMessage().toString().contains("duplicate key value violates unique constraint")) {
-					//	log.warn("fnEnrichmentLuParams - Paramaters table " + tblName + " already exists, no need to create it");
-					//	ciTDM.execute("rollback");
-					//}
+					//log.error("fnEnrichmentLuParams - Error Message: " + e.getMessage());
+					if (e.getMessage().toString().contains("duplicate key value violates unique constraint")) {
+						log.warn("fnEnrichmentLuParams - Paramaters table " + tblName + " already exists, no need to create it");
+						ciTDM.execute("rollback");
+					}
 		    	}
 		    }
 		}else{
@@ -338,11 +338,15 @@ public class SharedLogic {
 			        StringBuilder values = new StringBuilder();
 			
 			        Map<String,String> valMap = data.get(index);
-			        // Tali- 29-Nov-18- add luParamColName for the insert into the ludb
-			        String luParamColName = valMap.get("COLUMN_NAME");
+			    
+					// Ticket #23164- add a trim of leading and trailing spaces for the column name 				
+			        String luParamColName = valMap.get("COLUMN_NAME").trim();
 			
-			        String columnName = "\"" + LuName + "."+ (valMap.get("COLUMN_NAME")).toUpperCase() + "\"";
-			        String sql = valMap.get("SQL");
+			        //String columnName = "\"" + LuName + "."+ (valMap.get("COLUMN_NAME")).toUpperCase() + "\"";
+			        String columnName = "\"" + LuName + "."+ luParamColName.toUpperCase() + "\"";
+					String sql = valMap.get("SQL");
+				
+					//log.info("LU Param column name: " +  columnName + ", sql: " + sql);
 			
 			        //Check if SQL query contains distinct and add it if not
 			        if (!sql.contains("distinct")){
@@ -490,76 +494,85 @@ public class SharedLogic {
 		}
 		//log.info("fnEnrichmentChildLink after removing params: " + uid);
 		//log.info("fnEnrichmentChildLink - cloneId: " + cloneId);
-		//TDM 7.2 - The relation tables should be handled (delete old data and load new data) only if handling one instance (no cloning) 
+		
+		Object[] splitUID = fnSplitUID(uid);
+		String instanceId = "" + splitUID[0];
+		String srcEnv = "" + splitUID[1];
+		//TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key
+		String verName = "" + splitUID[2];
+		String verDateTime = "" + splitUID[3];
+		Date verDateTimeDate = null;
+		
+		if (!"".equals(verDateTime)) {
+			verDateTimeDate = formatter.parse(verDateTime);
+			verDateTime = sdf.format(verDateTimeDate);
+		}
+		
+		//log.info("fnEnrichmentChildLink - srcEnv: " + srcEnv + ", instanceId: "  + instanceId + ", verName: " + verName + ", verDateTime: " + verDateTime);
+		String parentLU = getLuType().luName;
+		
+		Set<String> keyset = trnChildLinkVals.keySet();
+		
+		Db.Rows childEIDs = null;
+		Db.Rows childTarEIDs = null;
+		//Get the LU Name, as the tdm_lu_type_relation_eid is part of more than one LU
+		String tableName = parentLU + ".tdm_lu_type_relation_eid";
+		String tableNameTar = parentLU + ".tdm_lu_type_rel_tar_eid";
+		//log.info("fnEnrichmentChildLink - Fabric Table: " + tableName);
+		if (!inDebugMode()) {
+			ciTDM.beginTransaction();
+		}
+		//TALI- Fix ticket #9523- delete the parent IID records, if exist, before the insert
+		//log.info("before delete");
+		//Add the LU Name to the table name
+		// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
+		//String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
+		String verAddition = verName.equals("") ? "" : "and version_name = ? and version_datetime = ?";
+		String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? " + 
+					verAddition;
+		
+		//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
+			// Fix the query- add the child LU to the condition
+		String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
+		String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
+		
+		String currDate = sdf.format(new java.util.Date());
+		
+		//TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
 		// or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
 		// be done only once.
+		// For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
 		
 		if ("".equals(cloneId) || "1".equals(cloneId)) {
-			Object[] splitUID = fnSplitUID(uid);
-			String instanceId = "" + splitUID[0];
-			String srcEnv = "" + splitUID[1];
-			//TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key
-			String verName = "" + splitUID[2];
-			String verDateTime = "" + splitUID[3];
-			Date verDateTimeDate = null;
-			
-			if (!"".equals(verDateTime)) {
-				verDateTimeDate = formatter.parse(verDateTime);
-				verDateTime = sdf.format(verDateTimeDate);
-			}
-			
-			//log.info("fnEnrichmentChildLink - srcEnv: " + srcEnv + ", instanceId: "  + instanceId + ", verName: " + verName + ", verDateTime: " + verDateTime);
-			String parentLU = getLuType().luName;
-			
-			Set<String> keyset = trnChildLinkVals.keySet();
-			
-			Db.Rows childEIDs = null;
-			Db.Rows childTarEIDs = null;
-			//Get the LU Name, as the tdm_lu_type_relation_eid is part of more than one LU
-			String tableName = parentLU + ".tdm_lu_type_relation_eid";
-			String tableNameTar = parentLU + ".tdm_lu_type_rel_tar_eid";
-			//log.info("fnEnrichmentChildLink - Fabric Table: " + tableName);
-			if (!inDebugMode()) {
-				ciTDM.beginTransaction();
-			}
-			//TALI- Fix ticket #9523- delete the parent IID records, if exist, before the insert
-			//log.info("before delete");
-			//Add the LU Name to the table name
-			// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
-			//String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
-			String verAddition = verName.equals("") ? "" : "and version_name = ? and version_datetime = ?";
-			String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? " + 
-						verAddition;
-			
-			//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
-				// Fix the query- add the child LU to the condition
-			String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
-			String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
-			
-			String currDate = sdf.format(new java.util.Date());
-			
 			//log.info("DELETE_SQL: " + DELETE_SQL + " for instance: " + uid);
 			if (verName.equals("")) {
 				ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId);
 			} else {
 				ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, verName, verDateTime);
 			}
+		}
+		
+		//log.info("after the delete");
 			
-			//log.info("after the delete");
-				
-			for (String key : keyset) {
-				//log.info ("fnEnrichmentChildLink - key: " + key + " for instance: " + uid);
-				Map<String, String> mapVal = trnChildLinkVals.get(key);
-				String sql = mapVal.get("child_lu_eid_sql");
-				String sqlTar = mapVal.get("child_lu_tar_eid_sql");
-			    
-				//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql);
-				childEIDs = ludb().fetch(sql);
-				
+		for (String key : keyset) {
+			//log.info ("fnEnrichmentChildLink - key: " + key + " for instance: " + uid);
+			Map<String, String> mapVal = trnChildLinkVals.get(key);
+			String sql = mapVal.get("child_lu_eid_sql");
+			String sqlTar = mapVal.get("child_lu_tar_eid_sql");
+		    
+			//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql);
+			childEIDs = ludb().fetch(sql);
+		
+			//TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
+			// or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
+			// be done only once.
+			// For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
+		
+			if ("".equals(cloneId) || "1".equals(cloneId)) {		
 				for (Db.Row row : childEIDs) {
 				
 					//log.info("Adding child record for instance: " + uid + " and LU Type: " + key + ". child instance: " + row.cell(0));
-			    
+		    	
 					// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 					Object[] values;
 					Object[] valuesLUDB;
@@ -568,14 +581,14 @@ public class SharedLogic {
 					} else {
 						values = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, verName, verDateTime, currDate};
 					}
-			
+		
 					// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 					if (verName.equals("")) {
 						valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, "''", "''"};
 					} else {
 						valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, verName, verDateTime};
 					}
-						
+					
 					// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 					//log.info("Inserting into Fabric to tdm_lu_type_relation_eid table for lu type: " + key);
 					ludb().execute("insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) values(?,?,?,?,?,?,?,?)",valuesLUDB);
@@ -592,33 +605,33 @@ public class SharedLogic {
 						}
 					}
 				}
-				
-				//TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated 
-				if (fnDecisionDeleteFromTarget()) {
-					//log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
-					ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
-					
-					childTarEIDs = ludb().fetch(sqlTar);
-					for (Db.Row row : childTarEIDs) {
-						
-			    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDate};
-				
-						ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
+			}
 			
-						if (!inDebugMode()) {
-							ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
-						}
+			//TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated 
+			if (fnDecisionDeleteFromTarget()) {
+				//log.info("TEST- deleting tdm_lu_type_rel_Tar_eid TDM table for parent LU: " + parentLU+ ", Parent ID: " +instanceId + ", and child LU: " + key );
+				ciTDM.execute(DELETE_TAR_SQL, targetEnv, parentLU, instanceId, key);
+				
+				childTarEIDs = ludb().fetch(sqlTar);
+				for (Db.Row row : childTarEIDs) {
+					
+		    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDate};
+			
+					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
+		
+					if (!inDebugMode()) {
+						ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
 					}
 				}
-			
 			}
 		
-			if (childEIDs != null) {
-				childEIDs.close();	
-			}
-			if (!inDebugMode()) {
-				ciTDM.commit();
-			}
+		}
+		
+		if (childEIDs != null) {
+			childEIDs.close();	
+		}
+		if (!inDebugMode()) {
+			ciTDM.commit();
 		}
 	}
 
@@ -1017,8 +1030,10 @@ public class SharedLogic {
 				
 		String selectDetailedRefTablesStats = "SELECT rt.lu_name, es.ref_table_name, es.execution_status, es.start_time, es.end_time, " +
 			"CASE WHEN execution_status = 'running' THEN " +
-			"to_char(((CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - start_time )/number_of_processed_records) * (number_of_records_to_process- number_of_processed_records), 'HH24:MI:SS') " + 
-			"ELSE '0' END estimated_remaining_duration, number_of_records_to_process, coalesce(number_of_processed_records, 0), coalesce(error_msg, '') " +
+			"to_char(((CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - start_time )/number_of_processed_records) * " +
+			"(number_of_records_to_process - number_of_processed_records), 'HH24:MI:SS') " + 
+			"ELSE '0' END estimated_remaining_duration, number_of_records_to_process, " +
+			"coalesce(number_of_processed_records, 0) as number_of_processed_records, coalesce(error_msg, '') as error_msg " +
 			"FROM TASK_REF_EXE_STATS es, task_ref_tables rt where task_execution_id = ? and es.task_id = rt.task_id " +
 			"and es.task_ref_table_id = rt.task_ref_table_id"; 
 			
@@ -2300,9 +2315,12 @@ private static String getParamsSql(String sourceEnv, String rootLu, String rootL
 				
 				//log.info("fnTdmCopyReference - execution_status: " + execStatus);
 		
-				Db.Row taskParams = db(TDM).fetch("Select source_env_name, version_ind, retention_period_type, retention_period_value, " +
-					"selection_method, selected_ref_version_task_name, selected_ref_version_datetime, selected_ref_version_task_exe_id from " +
-					TASKS + " where task_id = ?", taskID).firstRow();
+				Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name, t.version_ind, " +
+					"t.retention_period_type, t.retention_period_value, t.selection_method, t.selected_ref_version_task_name, " +
+					"t.selected_ref_version_datetime, t.selected_ref_version_task_exe_id " +
+					"from TASKS t, TASK_EXECUTION_LIST l, ENVIRONMENTS e " +
+					"where task_execution_id = ? and l.task_id = ? and t.task_id = l.task_id and l.environment_id = e.environment_id",
+					taskExecutionID, taskID).firstRow();
 		
 				String versionInd = "false";
 				if(taskParams.get("version_ind") != null) {
@@ -2359,9 +2377,9 @@ private static String getParamsSql(String sourceEnv, String rootLu, String rootL
 				//int count = 0;
 				//int retries = 5;
 				
-				String sourceEnv;
-		
-				sourceEnv = "" + taskParams.get("source_env_name");
+				String sourceEnv = "" + taskParams.get("source_env_name");
+				String targetEnv = "" + taskParams.get("target_env_name");
+				//log.info("fnTdmCopyReference - sourceEnv: " + sourceEnv + ", targetEnv: " + targetEnv);
 				
 				if (taskType.equalsIgnoreCase("extract")) {
 				
@@ -2432,8 +2450,10 @@ private static String getParamsSql(String sourceEnv, String rootLu, String rootL
 									selectedRefVersionDateTime = "" + taskParams.get("selected_ref_version_datetime");
 									selectedRefVersionTaskExeId = "" + taskParams.get("selected_ref_version_task_exe_id");
 								}
-								String loadRefCmd = "BATCH " + luName + ".('" + taskExecutionID + "_" + refTableName + "') fabric_command=\"broadway " + luName + ".TDMReferenceLoader " +
-		                            "iid=?, taskExecutionID="+ taskExecutionID + ", luName=" + luName + ", refTableName=" + refTableName + ", sourceEnvName=" + sourceEnv + 
+								String loadRefCmd = "BATCH " + luName + ".('" + taskExecutionID + "_" + refTableName + "') " +
+									"fabric_command=\"broadway " + luName + ".TDMReferenceLoader " +
+		                            "iid=?, taskExecutionID="+ taskExecutionID + ", luName=" + luName + ", refTableName=" + refTableName + 
+									", sourceEnvName=" + sourceEnv + ", targetEnvName=" + targetEnv +
 									", selectedRefVersionTaskName='" + selectedRefVersionTaskName +"', selectedRefVersionDateTime=" +
 									selectedRefVersionDateTime + ", selectedRefVersionTaskExeId=" + selectedRefVersionTaskExeId +"\" with async='true'";
 									
@@ -2454,7 +2474,6 @@ private static String getParamsSql(String sourceEnv, String rootLu, String rootL
 								//log.info("------------------------------------- After resume case ------------------------------------");
 								break;
 						}
-						//break;
 					} catch (Exception e) {
 						log.error("Reference Table handling had an exception: " + e);
 						if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
@@ -2512,6 +2531,5 @@ private static String getParamsSql(String sourceEnv, String rootLu, String rootL
 		if (lusWithoutRef != null) {
 			lusWithoutRef.close();
 		}
-					
 	}
 }

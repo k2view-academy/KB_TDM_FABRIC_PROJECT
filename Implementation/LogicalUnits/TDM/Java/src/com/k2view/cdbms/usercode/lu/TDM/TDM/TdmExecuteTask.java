@@ -536,7 +536,7 @@ public class TdmExecuteTask {
             }
             return exclusionList;
         } else {
-            return environment + separator + entityID.trim();
+            return entityID.trim();
         }
     }
 

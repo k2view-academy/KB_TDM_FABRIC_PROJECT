@@ -18,7 +18,8 @@ INSERT INTO TASK_EXECUTION_SUMMARY (
     update_date,
     execution_status,
     source_env_name,
-    source_environment_id
+    source_environment_id,
+	task_executed_by
     )
-VALUES(?,?,localtimestamp,localtimestamp,?,?,?,?,?,?,?,?,?,localtimestamp,localtimestamp,localtimestamp,localtimestamp,'pending',?,?)
+VALUES(?,?,localtimestamp,localtimestamp,?,?,?,?,?,?,?,?,?,localtimestamp,localtimestamp,localtimestamp,localtimestamp,'pending',?,?,?)
  ON CONFLICT ON CONSTRAINT task_execution_summary_pkey DO NOTHING;

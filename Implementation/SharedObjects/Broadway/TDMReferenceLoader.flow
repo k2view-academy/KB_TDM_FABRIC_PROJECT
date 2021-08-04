@@ -14,6 +14,12 @@
                                 "parentType": "InitiateTDMReferenceLoad_Actor",
                                 "inputs": [
                                     {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
                                         "name": "taskExecutionID",
                                         "schema": {
                                             "type": "string"
@@ -26,12 +32,6 @@
                                         }
                                     },
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "selectedRefVersionTaskName",
                                         "schema": {
                                             "type": "string"
@@ -39,6 +39,12 @@
                                     },
                                     {
                                         "name": "selectedRefVersionDateTime",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetEnvName",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -502,9 +508,9 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": false,
+                                                    "suppress": true,
                                                     "log": true,
-                                                    "flowName": ""
+                                                    "flowName": "PopulateTableErrorsForRef"
                                                 }
                                             }
                                         ]
@@ -543,16 +549,62 @@
                             }
                         },
                         {
+                            "name": "Set Entity Status to Failed",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "failed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "PopulateTaskExecutionEntities for failed table",
+                            "actorType": {
+                                "parentType": "PopulateTaskExecutionEntities_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "idType",
+                                        "const": "REFERENCE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Commit Changes",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "commit"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "JavaScript1",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
                                     {
                                         "name": "script",
-                                        "const": {
-                                            "userCode": "throw new \"Empty Source Table in Cassandra\"",
-                                            "script": "throw new \"Empty Source Table in Cassandra\"();"
-                                        }
+                                        "const": "throw \"Empty Source Table in Cassandra\""
                                     }
                                 ],
                                 "outputs": []
@@ -566,7 +618,9 @@
             "stages": [
                 {
                     "name": "Load Data to Target",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Get Reference Data and Fields List"
+                    ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
@@ -623,6 +677,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -630,7 +693,9 @@
             "stages": [
                 {
                     "name": "Count Records",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Load Data to Target"
+                    ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
@@ -664,6 +729,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -671,7 +745,9 @@
             "stages": [
                 {
                     "name": "Update Count",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Count Records"
+                    ],
                     "isLast": 1,
                     "isTransactional": false,
                     "actors": [
@@ -767,6 +843,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -774,7 +859,9 @@
             "stages": [
                 {
                     "name": "Update TDMDB Table",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Update Count"
+                    ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
@@ -901,6 +988,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         }
@@ -1100,6 +1196,16 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "taskExecutionID"
             },
             "rightPort": {
@@ -1120,16 +1226,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "selectedRefVersionTaskName"
             },
             "rightPort": {
@@ -1145,6 +1241,16 @@
             "rightPort": {
                 "actor": "InitiateTDMReferenceLoad_Actor1",
                 "name": "selectedRefVersionDateTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnvName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "name": "targetEnvName"
             }
         },
         {

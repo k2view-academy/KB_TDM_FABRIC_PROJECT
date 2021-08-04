@@ -1448,7 +1448,7 @@ public class Logic extends WebServiceUserCode {
 				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -1463,14 +1463,16 @@ public class Logic extends WebServiceUserCode {
 				db("TDM").execute(queryString, "Inactive");
 			}
 			{
+				// 28-Jul-21- fix the query to check if the task's environment id or the source_environment_id in the where condition
 				String queryString = "UPDATE \"public\".tasks SET task_status = \'Inactive\' " +
 						"FROM ( SELECT \"public\".tasks_logical_units.task_id " +
 						"FROM \"public\".tasks_logical_units " +
 						"INNER JOIN \"public\".product_logical_units " +
 						"ON (\"public\".product_logical_units.lu_id = \"public\".tasks_logical_units.lu_id) " +
 						"WHERE \"public\".product_logical_units.product_id = " + prodId + " ) AS sq  " +
-						"WHERE \"public\".tasks.task_id = sq.task_id AND \"public\".tasks.task_status = \'Active\' ";
-				db("TDM").execute(queryString);
+						"WHERE \"public\".tasks.task_id = sq.task_id AND \"public\".tasks.task_status = \'Active\' " + 
+						"AND (environment_id = ? or source_environment_id = ?) ";
+				db("TDM").execute(queryString, envId, envId);
 			}
 		
 			String activityDesc = "Products of environment " + envName + " were updated";
@@ -1704,7 +1706,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of Global variables defined in the Fabric project except the TDM product Globals. This API is invoked when the user adds a Global to the TDM Environment to override its value in this environment. The parameter \"lus\" should contain LU names divided by comma, it is optional, in case it is not null the API will return defined by the param LUs only.")
+	@desc("Gets the list of all Global variables defined in the Fabric project except the TDM product Globals. If the optional input \"lus\" parameter is populated, return only shared Globals or Globals defined in the input LUs.")
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -1752,7 +1754,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetAllFabricGlobals(@param(required=false) String lus) throws Exception {
+	public static Object wsGetAllFabricGlobals(@param(description="Populated by a list LU names seperated by a comma") String lus) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -1809,7 +1811,7 @@ public class Logic extends WebServiceUserCode {
 					globals.add(global);
 				}
 			}
-
+		
 			List luNames = null;
 			if (lus != null && !lus.isEmpty()) {
 				luNames = new ArrayList();
@@ -2812,6 +2814,8 @@ public class Logic extends WebServiceUserCode {
 				"where env.environment_id = o.environment_id " +
 				"and o.user_id = (?) " +
 				"and env.environment_status = 'Active'";
+		
+		log.info("TEST1 - fnGetEnvsByuser - query 1 for user id " + userId + "is: " +  query1 ); 
 		Db.Rows rows = db("TDM").fetch(query1,userId);
 
 		List<String> columnNames = rows.getColumnNames();
@@ -2842,6 +2846,8 @@ public class Logic extends WebServiceUserCode {
 		// remove the list of environments returned by query 1;
 		query2+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
 		rows = db("TDM").fetch(query2,userId);
+		
+		log.info("TEST2 - fnGetEnvsByuser - query 2 for user id " + userId + "is: " +  query2 ); 
 
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
@@ -2871,8 +2877,10 @@ public class Logic extends WebServiceUserCode {
 				"and lower(u.username) = 'all' " +
 				"and env.environment_status = 'Active'";
 		// remove the list of environments returned by queries 1+2;
-		query3+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
+		query3+="()".equals(envIds)?"": "and env.environment_id not in " + envIds; 
 		rows = db("TDM").fetch(query3);
+		
+		log.info("TEST2 - fnGetEnvsByuser - query 3 (get ALL roles) for user id " + userId + "is: " +  query3 ); 
 
 		columnNames = rows.getColumnNames();
 		for (Db.Row row : rows) {
