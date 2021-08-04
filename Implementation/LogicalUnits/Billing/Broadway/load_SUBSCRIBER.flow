@@ -26,25 +26,13 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "sourceEnv",
                                         "schema": {
                                             "type": "string"
                                         }
                                     },
                                     {
-                                        "name": "targetEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "syncMode",
+                                        "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -56,7 +44,19 @@
                                         }
                                     },
                                     {
-                                        "name": "deleteBeforeLoad",
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -99,14 +99,30 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "SUBSCRIBER_ID": {},
-                                                    "MSISDN": {},
-                                                    "IMSI": {},
-                                                    "SIM": {},
-                                                    "FIRST_NAME": {},
-                                                    "LAST_NAME": {},
-                                                    "SUBSCRIBER_TYPE": {},
-                                                    "VIP_STATUS": {}
+                                                    "SUBSCRIBER_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "MSISDN": {
+                                                        "type": "string"
+                                                    },
+                                                    "IMSI": {
+                                                        "type": "string"
+                                                    },
+                                                    "SIM": {
+                                                        "type": "string"
+                                                    },
+                                                    "FIRST_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "LAST_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "SUBSCRIBER_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "VIP_STATUS": {
+                                                        "type": "string"
+                                                    }
                                                 }
                                             }
                                         }
@@ -163,7 +179,16 @@
                     "name": "Transformation 2",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "setTargetEntityId_Actor1",
+                            "actorType": {
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -421,6 +446,16 @@
         },
         {
             "leftPort": {
+                "actor": "CONTRACT_ID_SEQ_Actor1",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "setTargetEntityId_Actor1",
+                "name": "target_entity_id"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Read Stats",
                 "name": "flow"
             },
@@ -432,6 +467,46 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "globals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -452,36 +527,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "targetEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "targetEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {
@@ -492,21 +537,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "insertToTarget"
+                "name": "targetEnv"
             },
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "deleteBeforeLoad"
+                "name": "targetEnv"
             }
         }
     ]
