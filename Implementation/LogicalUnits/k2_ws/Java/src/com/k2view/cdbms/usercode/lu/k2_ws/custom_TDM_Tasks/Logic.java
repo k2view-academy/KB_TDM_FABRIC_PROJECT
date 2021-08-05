@@ -410,53 +410,53 @@ public class Logic extends WebServiceUserCode {
 	public static Object wsGetTasksByParams(@param(description="Json string containg the filtering patams set as key and value. Example in method description.") String filteringParams) throws Exception {
 		String message = null;
 		String errorCode = "";
-		String task_type=null,selection_method=null,sync_mode=null;
-		Boolean version_ind=null,load_entity=null,delete_before_load=null;
+		String task_type = null, selection_method = null, sync_mode = null;
+		Boolean version_ind = null, load_entity = null, delete_before_load = null;
 		HashMap<String, Object> response = new HashMap<>();
-		List<Map<String, Object>> finalTasksList  = new ArrayList<>();
-		
-		try{
-		
-		if(filteringParams !=null){
-			JSONObject jsonInput = new JSONObject(filteringParams);
-			task_type=jsonInput.has("task_type") ? jsonInput.get("task_type").toString() : null;
-			selection_method=jsonInput.has("selection_method") ? jsonInput.get("selection_method").toString() : null;
-			sync_mode=jsonInput.has("sync_mode") ? jsonInput.get("sync_mode").toString() : null;
-			version_ind=jsonInput.has("version_ind") ? (Boolean) jsonInput.get("version_ind") : null;
-			load_entity=jsonInput.has("load_entity") ? (Boolean) jsonInput.get("load_entity") : null;
-			delete_before_load=jsonInput.has("delete_before_load") ? (Boolean) jsonInput.get("delete_before_load") : null;
-		}
-		HashMap<String, Object> wsUserTasks = (HashMap<String, Object>) wsRegularTasksByUser();
-		List<Map<String, Object>> allUserTasks = (List<Map<String, Object>>) wsUserTasks.get("result");
-		for(Map<String,Object> task : allUserTasks){
-			HashMap<String, Object> wsTaskDetails = (HashMap<String, Object>)wsGetTasks(task.get("task_id").toString());
-			List<Map<String, Object>> allTaskDetails = (List<Map<String, Object>>) wsTaskDetails.get("result");
-			if(task_type!=null && !task_type.equalsIgnoreCase(allTaskDetails.get(0).get("task_type").toString()))
-				continue;
-			if(version_ind!=null && version_ind != allTaskDetails.get(0).get("version_ind"))
-				continue;
-			if(load_entity!=null && load_entity != allTaskDetails.get(0).get("load_entity"))
-				continue;
-			if(delete_before_load!=null && delete_before_load != allTaskDetails.get(0).get("delete_before_load"))
-				continue;
-			if(selection_method!=null && !selection_method.equalsIgnoreCase(allTaskDetails.get(0).get("selection_method").toString()))
-				continue;
-			String syncModeFromTaskDetails= (allTaskDetails.get(0).get("sync_mode") !=null) ? allTaskDetails.get(0).get("sync_mode").toString() : "ON";
-			if(sync_mode!=null && !sync_mode.equalsIgnoreCase(syncModeFromTaskDetails))
-				continue;
-		
-			HashMap<String, Object> finalTaskMap = new HashMap<>();
-			finalTaskMap.put("task_id",task.get("task_id").toString());
-			finalTaskMap.put("task_title",task.get("task_title").toString());
-			finalTasksList.add(finalTaskMap);
-		}
+		List<Map<String, Object>> finalTasksList = new ArrayList<>();
+
+		try {
+
+			if (filteringParams != null) {
+				JSONObject jsonInput = new JSONObject(filteringParams);
+				task_type = jsonInput.has("task_type") ? jsonInput.get("task_type").toString() : null;
+				selection_method = jsonInput.has("selection_method") ? jsonInput.get("selection_method").toString() : null;
+				sync_mode = jsonInput.has("sync_mode") ? jsonInput.get("sync_mode").toString() : null;
+				version_ind = jsonInput.has("version_ind") ? (Boolean) jsonInput.get("version_ind") : null;
+				load_entity = jsonInput.has("load_entity") ? (Boolean) jsonInput.get("load_entity") : null;
+				delete_before_load = jsonInput.has("delete_before_load") ? (Boolean) jsonInput.get("delete_before_load") : null;
+			}
+			HashMap<String, Object> wsUserTasks = (HashMap<String, Object>) wsRegularTasksByUser();
+			List<Map<String, Object>> allUserTasks = (List<Map<String, Object>>) wsUserTasks.get("result");
+			for (Map<String, Object> task : allUserTasks) {
+				HashMap<String, Object> wsTaskDetails = (HashMap<String, Object>) wsGetTasks(task.get("task_id").toString());
+				List<Map<String, Object>> allTaskDetails = (List<Map<String, Object>>) wsTaskDetails.get("result");
+				if (task_type != null && !task_type.equalsIgnoreCase(allTaskDetails.get(0).get("task_type").toString()))
+					continue;
+				if (version_ind != null && version_ind != allTaskDetails.get(0).get("version_ind"))
+					continue;
+				if (load_entity != null && load_entity != allTaskDetails.get(0).get("load_entity"))
+					continue;
+				if (delete_before_load != null && delete_before_load != allTaskDetails.get(0).get("delete_before_load"))
+					continue;
+				if (selection_method != null && allTaskDetails.get(0).get("selection_method") != null && !selection_method.equalsIgnoreCase(allTaskDetails.get(0).get("selection_method").toString()))
+					continue;
+				String syncModeFromTaskDetails = (allTaskDetails.get(0).get("sync_mode") != null) ? allTaskDetails.get(0).get("sync_mode").toString() : "ON";
+				if (sync_mode != null && !sync_mode.equalsIgnoreCase(syncModeFromTaskDetails))
+					continue;
+
+				HashMap<String, Object> finalTaskMap = new HashMap<>();
+				finalTaskMap.put("task_id", task.get("task_id").toString());
+				finalTaskMap.put("task_title", task.get("task_title").toString());
+				finalTasksList.add(finalTaskMap);
+			}
 			response.put("result", finalTasksList);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
 			message = e.getMessage();
 			errorCode = "FAIL";
 		}
-		
+
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;

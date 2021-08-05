@@ -547,7 +547,7 @@ public class TdmExecuteTask {
         String close = (String) separators[1];
 		//log.info("getEntityIDSelect - separator: " + separator);
         String entityIdSelect = "||'" + separator + "'||" + (!Util.isEmpty(open) ? "'" + open + "'||" + name :  name);
-        entityIdSelect += !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : "";
+        entityIdSelect = !Util.isEmpty(close) ? entityIdSelect + "||'" + close + "'" : entityIdSelect;
         return entityIdSelect;
     }
 

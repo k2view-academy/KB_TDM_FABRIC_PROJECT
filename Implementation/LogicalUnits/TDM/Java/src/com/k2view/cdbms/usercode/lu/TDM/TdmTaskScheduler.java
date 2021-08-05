@@ -122,8 +122,7 @@ public class TdmTaskScheduler {
                     Util.rte(() -> db(TDM).execute(insertToRefQuery, taskExecutionID, taskID, luName));
 
                     // insert to summary
-					String username= "" + Util.rte(() -> fabric().fetch("set username").firstValue());
-                    Util.rte(() -> db(TDM).execute(insertToSummaryQuery, taskID, taskExecutionID, 0, 0, 0, 0, 0, 0, environmentID, taskType, beID, sourceEnvName, sourceEnvID,username));
+                    Util.rte(() -> db(TDM).execute(insertToSummaryQuery, taskID, taskExecutionID, 0, 0, 0, 0, 0, 0, environmentID, taskType, beID, sourceEnvName, sourceEnvID, taskCreatedBy));
                 }));
             }
         });
