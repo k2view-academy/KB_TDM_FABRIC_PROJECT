@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.0.13">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.2.10">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -75,7 +75,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.0.13" name="vdb.k2vdb.xml">
+    <Graph version="6.5.2.10" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="-4 82" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="298 1.87240314" size="272 344.1276" wasexpanded="false" expanded="true">
         <Node name="LU_PARAMS" pos="309 20.9635468" size="257 136" listGroupSize="250 100" viewType="Table" />
