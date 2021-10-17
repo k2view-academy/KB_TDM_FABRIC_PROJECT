@@ -21,6 +21,19 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "sleep-test",
+                            "actorType": {
+                                "parentType": "Sleep",
+                                "inputs": [
+                                    {
+                                        "name": "millis",
+                                        "const": 100
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
