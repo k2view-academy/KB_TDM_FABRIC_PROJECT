@@ -142,6 +142,12 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "refTablePK",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ]
                             }
@@ -485,7 +491,7 @@
                     ]
                 },
                 {
-                    "name": "Stage 1",
+                    "name": "Empty Source Table",
                     "dependsOnList": [
                         "Count Records in Source Table"
                     ],
@@ -639,7 +645,7 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": false,
+                                                    "suppress": true,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsForRef"
                                                 }
@@ -651,8 +657,26 @@
                             }
                         },
                         {
+                            "name": "Set Record Status to Success",
+                            "minHeight": 179,
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "RECORD_STATUS"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "succeed"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Insert Data To Target Table",
-                            "minHeight": 237,
+                            "minHeight": 308,
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -679,9 +703,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 2",
+                    "name": "Do Nothing",
                     "dependsOnList": [
-                        "Stage 1"
+                        "Empty Source Table"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -692,13 +716,73 @@
         {
             "stages": [
                 {
-                    "name": "Count Records",
+                    "name": "Get Record Status",
                     "dependsOnList": [
                         "Load Data to Target"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "RECORD_STATUS",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing 1",
+                    "dependsOnList": [
+                        "Do Nothing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Count Records in case of load succeeded ",
+                    "dependsOnList": [
+                        "Get Record Status"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Equals2",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "succeed"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Count Loaded Records",
                             "actorType": {
@@ -727,13 +811,124 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Logger4",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Record Status 1: ${recordSts}"
+                                    },
+                                    {
+                                        "name": "recordSts",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
                 {
-                    "name": "Stage 3",
+                    "name": "Count Records in case of  load  failed",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Get Record Status"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Count Loaded Records reduce",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "if (flowArgs.isNewTable == true) {\r\n    flowArgs.isNewTable = false;\r\n    flowArgs.count = 0;\r\n} else {\r\n    flowArgs.count -= affected;\r\n}\r\nflowArgs.count;",
+                                            "script": "if (flowArgs.isNewTable == true) {\n  flowArgs.isNewTable = false;\n  flowArgs.count = 0;\n} else {\n  flowArgs.count -= affected;\n}\n\nflowArgs.count;"
+                                        }
+                                    },
+                                    {
+                                        "name": "affected",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Logger5",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Record Status 2: ${recordSts}"
+                                    },
+                                    {
+                                        "name": "recordSts",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing 2",
+                    "dependsOnList": [
+                        "Do Nothing 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if 100 records were handled",
+                    "dependsOnList": [
+                        "Count Records in case of load succeeded ",
+                        "Count Records in case of  load  failed"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "JavaScript3",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.count % 100;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing 3",
+                    "dependsOnList": [
+                        "Do Nothing 2"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -746,7 +941,7 @@
                 {
                     "name": "Update Count",
                     "dependsOnList": [
-                        "Count Records"
+                        "Check if 100 records were handled"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
@@ -768,7 +963,7 @@
                                         "schema": {
                                             "type": "integer"
                                         },
-                                        "const": 100
+                                        "const": 0
                                     }
                                 ],
                                 "outputs": []
@@ -841,13 +1036,30 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Commit",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "commit;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
                 {
-                    "name": "Stage 4",
+                    "name": "Do Nothing 4",
                     "dependsOnList": [
-                        "Stage 3"
+                        "Do Nothing 3"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
@@ -986,17 +1198,124 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Commit 2",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "commit;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get number of loaded records",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.count;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
                 {
-                    "name": "Stage 5",
+                    "name": "Do Nothing 5",
                     "dependsOnList": [
-                        "Stage 4"
+                        "Do Nothing 4"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If loaded records is less than read records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LessThan1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "LessThan",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Error Handler Of Zero Loaded Records",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JavaScript2",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "throw \"Number of loaded records: \" + loadedRecs + \" is less than expected: \" + expectedRecs + \" for table \" + refTableName"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "loadedRecs",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "expectedRecs",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -1134,6 +1453,26 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LessThan1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JavaScript2",
+                "name": "expectedRecs"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Data From Cassandra",
                 "name": "result"
             },
@@ -1165,6 +1504,36 @@
         },
         {
             "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals2",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger4",
+                "name": "recordSts"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger5",
+                "name": "recordSts"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Count Loaded Records",
                 "name": "result"
             },
@@ -1179,18 +1548,38 @@
                 "name": "result"
             },
             "rightPort": {
+                "actor": "Update TDMDB table during loop",
+                "name": "loadedRecCnt"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript3",
+                "name": "result"
+            },
+            "rightPort": {
                 "actor": "Equals1",
                 "name": "a"
             }
         },
         {
             "leftPort": {
-                "actor": "Count Loaded Records",
+                "actor": "Get number of loaded records",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Update TDMDB table during loop",
-                "name": "loadedRecCnt"
+                "actor": "JavaScript2",
+                "name": "loadedRecs"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get number of loaded records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LessThan1",
+                "name": "a"
             }
         },
         {
@@ -1400,6 +1789,16 @@
             },
             "rightPort": {
                 "actor": "Logger3",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "JavaScript2",
                 "name": "refTableName"
             }
         }

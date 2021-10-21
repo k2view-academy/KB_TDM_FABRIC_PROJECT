@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,6 @@ import java.lang.reflect.Type;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 				 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIdSeparatorsFromTDM;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.generateListOfMatchingEntitiesQuery;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_PROPERTIES.*;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_TYPES.*;
 
@@ -116,7 +116,7 @@ public class TdmExecuteTask {
                 	        	updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId, versionExpDate);
 								try {
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-									SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                    TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 								} catch (Exception e) {
 									log.error("TdmExecuteTask - Update extract task status to failed");
 		                        	updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
@@ -131,7 +131,7 @@ public class TdmExecuteTask {
 						} else {
 							try {
 								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-								SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							} catch (Exception e) {
 								log.error("TdmExecuteTask - Update extract task status to failed");
 								updateLuExecutionStatus(taskExecutionID, luID, "failed", null, versionExpDate);
@@ -152,7 +152,7 @@ public class TdmExecuteTask {
             	        	    if (!executionId.isEmpty()) {
                 	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-									SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                    TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 		                        } else {
     		                        // rollback LU and task status
         		                    updatedFailedStatus(taskExecutionID, luID);
@@ -160,7 +160,7 @@ public class TdmExecuteTask {
                 		        }
 							} else {
 								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-								SharedLogic.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							}
         	            } catch (Exception e) {
              	       	// rollback LU and task status
@@ -383,11 +383,11 @@ public class TdmExecuteTask {
                 //todo - check if should be: env + getEntityIDSelect("'" + entitiesList + "'")
                 break;
             case "P": // In case the task has criteria based on parameters
-                listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
+                listOfMatchingEntities = TdmSharedUtils.generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                 entityInclusion = "SELECT entity_id FROM (SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 WHERE " + entityExclusionListWhere + " LIMIT " + NUMBER_OF_ENTITIES_TO_COPY.get(taskProperties);
                 break;
             case "PR": // In case the task has criteria based on parameters and random list
-                listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
+                listOfMatchingEntities = TdmSharedUtils.generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                 entityInclusion = "SELECT entity_id FROM ( SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 WHERE " + entityExclusionListWhere + "  ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " + NUMBER_OF_ENTITIES_TO_COPY.get(taskProperties);
                 break;
             case "ALL":
@@ -397,7 +397,7 @@ public class TdmExecuteTask {
                     //entityInclusion = "SELECT entityid FROM k2batchprocess.batchprocess_entities_info WHERE bid = '" + rows.firstValue() + "' ALLOW FILTERING";
 					
 					entityInclusion = "SELECT entity_id FROM TASK_EXECUTION_ENTITIES WHERE task_execution_id='" +  SELECTED_VERSION_TASK_EXE_ID.get(taskProperties) +
-										"' and lu_name='" + LU_NAME.get(taskProperties) + "' and lower(execution_status) = 'completed'";
+										"' and lu_name='" + LU_NAME.get(taskProperties) + "' and lower(execution_status) = 'completed' and id_type = 'ENTITY'";
                 }
                 break;
             default: // This column is populated automatically by the application and should not include any other options
@@ -469,11 +469,17 @@ public class TdmExecuteTask {
 			
             globals.keySet().removeIf(key -> key.contains("MASK_FLAG"));
     	    globals.put("MASK_FLAG", "0");
-    	    
-			globals.put("TDM_REPLACE_SEQUENCES", "false");		
+
+			globals.put("TDM_REPLACE_SEQUENCES", "false");
+
+			//TDM 7.3 - Add global to mark dataflux tasks
+			globals.put("TDM_DATAFLUX_TASK", "true");
+
 		} else {
 			globals.put("TDM_VERSION_NAME", "");
     	    globals.put("TDM_VERSION_DATETIME", "19700101000000" );
+			//TDM 7.3 - Add global to mark dataflux tasks
+			globals.put("TDM_DATAFLUX_TASK", "false");
 		}
         return gson.toJson(globals, new TypeToken<HashMap>(){}.getType());
     }
@@ -498,7 +504,7 @@ public class TdmExecuteTask {
 		String sourceEnv = SOURCE_ENVIRONMENT_NAME.get(taskProperties);
 		String syncMode = SYNC_MODE.get(taskProperties);
 		if(Util.isEmpty(syncMode)){
-			syncMode = "" + Util.rte(() -> db(TDM).fetch("SELECT sync_mode FROM environments where environment_status = 'Active' and fabric_environment_name=?", sourceEnv).firstValue());
+			syncMode = "" + Util.rte(() -> db(TDM).fetch("SELECT sync_mode FROM environments where environment_status = 'Active' and environment_name=?", sourceEnv).firstValue());
 			//log.info("TdmExecuteTask - syncMode Environments: <" + syncMode + ">, for Env: " + sourceEnv);
 		}
 		// In case of Load and sync mode is set to OFF and the deleteBeforeLoad is set to TRUE or it is dataflux load task (therefore requires delete before load), 
@@ -636,7 +642,7 @@ public class TdmExecuteTask {
             String syncMode = SYNC_MODE.get(taskProperties);
             String sourceEnv = SOURCE_ENVIRONMENT_NAME.get(taskProperties);
             if(Util.isEmpty(syncMode)){
-                syncMode = "" + Util.rte(() -> db(TDM).fetch("SELECT sync_mode FROM environments where environment_status = 'Active' and fabric_environment_name=?", sourceEnv).firstValue());
+                syncMode = "" + Util.rte(() -> db(TDM).fetch("SELECT sync_mode FROM environments where environment_status = 'Active' and environment_name=?", sourceEnv).firstValue());
             }
 			//log.info("migrateEntitiesForTdmExtract - luName: " + LU_NAME.get(taskProperties) + ", isChild: " + isChildLU(taskProperties));
 			String entitiesList = SELECTION_PARAM_VALUE.get(taskProperties);

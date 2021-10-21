@@ -347,6 +347,7 @@
                     "actors": [
                         {
                             "name": "Concatenate cluster ID to Key Space",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -362,6 +363,29 @@
                                     }
                                 ],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Const2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "k2view_tdm"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -449,6 +473,16 @@
             "leftPort": {
                 "actor": "Concatenate cluster ID to Key Space",
                 "name": "string"
+            },
+            "rightPort": {
+                "actor": "Set Reference Key Space",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
             },
             "rightPort": {
                 "actor": "Set Reference Key Space",

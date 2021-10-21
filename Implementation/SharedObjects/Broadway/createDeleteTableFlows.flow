@@ -144,9 +144,53 @@
         {
             "stages": [
                 {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 1,
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 7"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CheckIfFlowExists_Actor1",
+                            "actorType": {
+                                "parentType": "CheckIfFlowExists_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 7"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
                     "actors": [
                         {
                             "name": "create Delete Flow",
@@ -200,6 +244,134 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Equals2",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "create Delete Flow__1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "createDeleteTableFromTargetFlow"
+                                    },
+                                    {
+                                        "name": "LU_TABLE",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "TARGET_INTERFACE",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "TARGET_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "TARGET_TABLE",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "FLOW_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "The DELETE Flow for table: <${TABLE_NAME}> Exists and it will not recreated. If you want to recreate it please delete its related flow"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "TABLE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
@@ -240,11 +412,32 @@
         },
         {
             "leftPort": {
+                "actor": "filterOutTDMTables_Actor1",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "TABLE_NAME"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
                 "actor": "targetTablePattern",
                 "name": "string"
             },
             "rightPort": {
                 "actor": "create Delete Flow",
+                "name": "TARGET_TABLE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "targetTablePattern",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "create Delete Flow__1",
                 "name": "TARGET_TABLE"
             }
         },
@@ -260,8 +453,38 @@
         },
         {
             "leftPort": {
+                "actor": "flowName",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "create Delete Flow__1",
+                "name": "FLOW_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowName",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "CheckIfFlowExists_Actor1",
+                "name": "FLOW_FILE_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CheckIfFlowExists_Actor1",
+                "name": "SKIP_TABLE"
+            },
+            "rightPort": {
+                "actor": "Equals2",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "geLuTables",
@@ -271,7 +494,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "getDbTargetTablesList",
@@ -281,7 +504,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "filterOutTDMTables_Actor1",
@@ -291,6 +514,26 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "CheckIfFlowExists_Actor1",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "TARGET_INTERFACE"
             },
             "rightPort": {
@@ -311,10 +554,40 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "create Delete Flow",
                 "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_INTERFACE"
             },
             "rightPort": {
-                "actor": "create Delete Flow",
+                "actor": "create Delete Flow__1",
+                "name": "TARGET_INTERFACE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "create Delete Flow__1",
+                "name": "TARGET_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "create Delete Flow__1",
                 "name": "luType"
             }
         }

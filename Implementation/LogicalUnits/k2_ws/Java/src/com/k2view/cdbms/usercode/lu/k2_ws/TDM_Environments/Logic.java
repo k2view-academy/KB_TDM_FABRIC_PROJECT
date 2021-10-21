@@ -4,40 +4,36 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments;
 
+import com.k2view.cdbms.lut.InterfacesManager;
+import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.user.WebServiceUserCode;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.fabric.api.endpoint.Endpoint.*;
+
+import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
-
-import com.k2view.cdbms.FabricEncryption.FabricEncryption;
 import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
-import com.k2view.fabric.api.endpoint.Endpoint.*;
-import com.k2view.fabric.common.Log;
-import com.k2view.fabric.common.Util;
-import org.apache.jasper.tagplugins.jstl.core.Catch;
-//import sun.misc.Cache;
-
-import javax.naming.Context;
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.*;
-
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getFabricResponse;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -46,15 +42,6 @@ public class Logic extends WebServiceUserCode {
 	static final String admin = "admin";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	static final String adi_only = "false";
-
-	static String ldapUrlString = "ldap://62.90.46.136:10389";
-	static String ldapAdminDN = "uid=tdmldap,ou=users,ou=system";
-	static String ldapAdminPassword = "Q1w2e3r4t5";
-	static String ldapOwnersDN = "ou=k2venvownerg,ou=system";
-	static String ldapTestersDN = "ou=k2vtestg,ou=system";
-	static String ldapOwnersGroupName = "k2venvownerg";
-	static String ldapTestersGroupName = "k2vtestg";
-	static String ldapBaseCN = "DC=training,DC=k2view,DC=com";
 
 	@desc("Gets Environments")
 	@webService(path = "environments", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -81,7 +68,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_point_of_contact_last_name\": \"lastName\",\r\n" +
 			"      \"environment_point_of_contact_email\": \"email\",\r\n" +
 			"      \"environment_creation_date\": \"2021-03-25 12:04:01.633\",\r\n" +
-			"      \"fabric_environment_name\": \"fabricEnvName\",\r\n" +
 			"      \"environment_point_of_contact_phone2\": \"phone2\",\r\n" +
 			"      \"environment_name\": \"envName\"\r\n" +
 			"    }\r\n" +
@@ -102,7 +88,7 @@ public class Logic extends WebServiceUserCode {
 					"\"" + schema + "\".environments.environment_point_of_contact_email, \"" + schema + "\".environments.environment_created_by, " +
 					"\"" + schema + "\".environments.environment_creation_date, \"" + schema + "\".environments.environment_last_updated_date, " +
 					"\"" + schema + "\".environments.environment_last_updated_by, \"" + schema + "\".environments.environment_status, " +
-					"\"" + schema + "\".environments.allow_write, \"" + schema + "\".environments.fabric_environment_name, " +
+					"\"" + schema + "\".environments.allow_write, " +
 					"\"" + schema + "\".environments.allow_read, " +
 					"\"" + schema + "\".environments.sync_mode, " +
 					"\"" + schema + "\".environment_owners.user_name " +
@@ -115,24 +101,23 @@ public class Logic extends WebServiceUserCode {
 			Map<String, Object> environment;
 			for (Db.Row row : rows) {
 				environment = new HashMap<>();
-				environment.put("environment_id", Integer.parseInt(row.cell(0).toString()));
-				environment.put("environment_name",  row.cell(1));
-				environment.put("environment_description",  row.cell(2));
-				environment.put("environment_point_of_contact_first_name", row.cell(3));
-				environment.put("environment_point_of_contact_last_name", row.cell(4));
-				environment.put("environment_point_of_contact_phone1", row.cell(5));
-				environment.put("environment_point_of_contact_phone2", row.cell(6));
-				environment.put("environment_point_of_contact_email", row.cell(7));
-				environment.put("environment_created_by", row.cell(8));
-				environment.put("environment_creation_date", row.cell(9));
-				environment.put("environment_last_updated_date", row.cell(10));
-				environment.put("environment_last_updated_by", row.cell(11));
-				environment.put("environment_status", row.cell(12));
-				environment.put("allow_write", row.cell(13)!=null?Boolean.parseBoolean(row.cell(13).toString()):null);
-				environment.put("fabric_environment_name", row.cell(14));
-				environment.put("allow_read", row.cell(15)!=null?Boolean.parseBoolean(row.cell(15).toString()):null);
-				environment.put("sync_mode", row.cell(16));
-				environment.put("user_name", row.cell(17));
+				environment.put("environment_id", Integer.parseInt(row.get("environment_id").toString()));
+				environment.put("environment_name",  row.get("environment_name"));
+				environment.put("environment_description",  row.get("environment_description"));
+				environment.put("environment_point_of_contact_first_name", row.get("environment_point_of_contact_first_name"));
+				environment.put("environment_point_of_contact_last_name", row.get("environment_point_of_contact_last_name"));
+				environment.put("environment_point_of_contact_phone1", row.get("environment_point_of_contact_phone1"));
+				environment.put("environment_point_of_contact_phone2", row.get("environment_point_of_contact_phone2"));
+				environment.put("environment_point_of_contact_email", row.get("environment_point_of_contact_email"));
+				environment.put("environment_created_by", row.get("environment_created_by"));
+				environment.put("environment_creation_date", row.get("environment_creation_date"));
+				environment.put("environment_last_updated_date", row.get("environment_last_updated_date"));
+				environment.put("environment_last_updated_by", row.get("environment_last_updated_by"));
+				environment.put("environment_status", row.get("environment_status"));
+				environment.put("allow_write", row.get("allow_write") != null ? Boolean.parseBoolean(row.get("allow_write").toString()) : null);
+				environment.put("allow_read", row.get("allow_read") != null ? Boolean.parseBoolean(row.get("allow_read").toString()) : null);
+				environment.put("sync_mode", row.get("sync_mode"));
+				environment.put("user_name", row.get("user_name"));
 				result.add(environment);
 			}
 		
@@ -179,7 +164,7 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Modifies Environment's general properties.\r\n" +
 			"The following parameters are mandatory:\r\n" +
-			"emvId, environment_name, fabric_environment_name, allow_write, and allow_read.\r\n" +
+			"emvId, environment_name, allow_write, and allow_read.\r\n" +
 			"\r\n" +
 			"Notes:\r\n" +
 			"\r\n" +
@@ -199,17 +184,30 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsModifyEnvironment(@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) Long envId, @param(description="Optional parameter", required=true) String environment_name, @param(description="Optional parameter") String environment_description, @param(description="Optional parameter") String environment_point_of_contact_first_name, @param(description="Optional parameter") String environment_point_of_contact_last_name, @param(description="Optional parameter") String environment_point_of_contact_phone1, @param(description="Optional parameter") String environment_point_of_contact_phone2, @param(description="Optional parameter") String environment_point_of_contact_email, @param(description="Identical to the environment name", required=true) String fabric_environment_name, @param(description="Will be populated by true if the environment can be used as a target environment. Else- will be false.", required=true) Boolean allow_write, @param(description="Will be populated by true when the environment can be used as a source environment. Else- will be false.", required=true) Boolean allow_read, @param(description="Can be populated by eaither of the following values: \"OFF\" or \"FORCE\"") String sync_mode, @param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
+	public static Object wsModifyEnvironment(
+			@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) Long envId,
+			@param(description="Optional parameter", required=true) String environment_name,
+			@param(description="Optional parameter") String environment_description,
+			@param(description="Optional parameter") String environment_point_of_contact_first_name,
+			@param(description="Optional parameter") String environment_point_of_contact_last_name,
+			@param(description="Optional parameter") String environment_point_of_contact_phone1,
+			@param(description="Optional parameter") String environment_point_of_contact_phone2,
+			@param(description="Optional parameter") String environment_point_of_contact_email,
+			@param(description="Will be populated by true if the environment can be used as a target environment. Else- will be false.", required=true) Boolean allow_write,
+			@param(description="Will be populated by true when the environment can be used as a source environment. Else- will be false.", required=true) Boolean allow_read,
+			@param(description="Can be populated by eaither of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
+			@param(description="List of owners attached to the environment") List<Map<String,String>> owners
+	) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
 		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -227,7 +225,6 @@ public class Logic extends WebServiceUserCode {
 					"environment_point_of_contact_email=(?)," +
 					"environment_last_updated_date=(?)," +
 					"environment_last_updated_by=(?), " +
-					"fabric_environment_name=(?) ," +
 					"allow_write=(?) ," +
 					"allow_read=(?) ," +
 					"sync_mode=(?) " +
@@ -236,54 +233,55 @@ public class Logic extends WebServiceUserCode {
 					environment_name, environment_description, environment_point_of_contact_first_name,
 					environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2,
 					environment_point_of_contact_email, now,
-					(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value"), fabric_environment_name,
+					(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value"),
 					allow_write, (allow_read != null ? allow_read : false), (sync_mode != null ? sync_mode : "ON"));
 		
 			String activityDesc = "Environment " + environment_name + " was updated";
 			try {
-				fnInsertActivity("update", "Environment", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
 			try {
 				if (allow_read != true) {
-					fnUpdateEnvironmentRolesPermissions(envId, "allow_read", false);
+					EnvironmentUtils.fnUpdateEnvironmentRolesPermissions(envId, "allow_read", false);
 				}
 				if (allow_write != true) {
-					fnUpdateEnvironmentRolesPermissions(envId, "allow_write", false);
+					EnvironmentUtils.fnUpdateEnvironmentRolesPermissions(envId, "allow_write", false);
 				}
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
-
-
+		
+		
 			if ("admin".equals(permissionGroup)) {
 				String updateEnvironmentOwners = "DELETE FROM \"" + schema + "\".environment_owners WHERE environment_id = (?)";
 				db("TDM").execute(updateEnvironmentOwners, envId);
-
+		
 				String userNameSubQuery = "";
 				String ownersTemp = "";
-
+		
 				for (Map<String, String> owner : owners) {
 					if (ownersTemp != "")
 						ownersTemp += ",'" + (owner.get("username") != null ? owner.get("username") : owner.get("user_name")) + "'";
 					else
 						ownersTemp += "'" + (owner.get("username") != null ? owner.get("username") : owner.get("user_name")) + "'";
 				}
-
+		
 				if (ownersTemp.length() > 0) {
 					userNameSubQuery = " AND username IN (" + ownersTemp + ")";
 					db("TDM").execute("DELETE FROM \"" + schema + "\".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, envId);
 				}
-
+		
 				for (Map<String, String> owner : owners) {
-					db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name) VALUES (?, ?, ?)",
-							envId, owner.get("user_id"), owner.get("username") != null ? owner.get("username") : owner.get("user_name"));
+					db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
+							envId, owner.get("user_id"), owner.get("username") != null ? owner.get("username") : owner.get("user_name"),
+							owner.get("user_type"));
 				}
 			} else if (owners!=null&&!owners.isEmpty()){
 				message="The sent owners list was ignored, you need administrative permissions to add or remove owners.";
 			}
-
+		
 			errorCode = "SUCCESS";
 		
 		
@@ -336,7 +334,7 @@ public class Logic extends WebServiceUserCode {
 		
 			String activityDesc = "'Environment " + envName + " was deleted";
 			try {
-				fnInsertActivity("delete", "Environment", activityDesc);
+				EnvironmentUtils.fnInsertActivity("delete", "Environment", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -481,30 +479,30 @@ public class Logic extends WebServiceUserCode {
 			List<HashMap<String, Object>> otherProductsList = new ArrayList<>();
 			otherProducts: for (Db.Row row : otherProducts) {
 				for (Map<String, Object> productData : products) {
-					if (productData.get("environment_product_id").toString().equals(row.cell(0).toString()))
+					if (productData.get("environment_product_id").toString().equals(row.get("environment_product_id").toString()))
 						continue otherProducts;
 				}
 				HashMap<String, Object> productData = new HashMap<>();
-				productData.put("environment_product_id", row.cell(0));
-				productData.put("environment_id", row.cell(1));
-				productData.put("product_id", row.cell(2));
-				productData.put("product_version", row.cell(3));
-				productData.put("created_by", row.cell(4));
-				productData.put("creation_date", row.cell(5));
-				productData.put("last_updated_date", row.cell(6));
-				productData.put("last_updated_by", row.cell(7));
-				productData.put("status", row.cell(8));
-				productData.put("data_center_name", row.cell(9));
-				productData.put("product_name", row.cell(10));
-				productData.put("product_description", row.cell(11));
-				productData.put("product_vendor", row.cell(12));
-				productData.put("product_versions", row.cell(13));
-				productData.put("product_id1", row.cell(14));
-				productData.put("product_created_by", row.cell(15));
-				productData.put("product_creation_date", row.cell(16));
-				productData.put("product_last_updated_date", row.cell(17));
-				productData.put("product_last_updated_by", row.cell(18));
-				productData.put("product_status", row.cell(19));
+				productData.put("environment_product_id", row.get("environment_product_id"));
+				productData.put("environment_id", row.get("environment_id"));
+				productData.put("product_id", row.get("product_id"));
+				productData.put("product_version", row.get("product_version"));
+				productData.put("created_by", row.get("created_by"));
+				productData.put("creation_date", row.get("creation_date"));
+				productData.put("last_updated_date", row.get("last_updated_date"));
+				productData.put("last_updated_by", row.get("last_updated_by"));
+				productData.put("status", row.get("status"));
+				productData.put("data_center_name", row.get("data_center_name"));
+				productData.put("product_name", row.get("product_name"));
+				productData.put("product_description", row.get("product_description"));
+				productData.put("product_vendor", row.get("product_vendor"));
+				productData.put("product_versions", row.get("product_versions"));
+				productData.put("product_id1", row.get("product_id"));
+				productData.put("product_created_by", row.get("product_created_by"));
+				productData.put("product_creation_date", row.get("product_creation_date"));
+				productData.put("product_last_updated_date", row.get("product_last_updated_date"));
+				productData.put("product_last_updated_by", row.get("product_last_updated_by"));
+				productData.put("product_status", row.get("product_status"));
 				otherProductsList.add(productData);
 			}
 			products.addAll(otherProductsList);
@@ -539,7 +537,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -557,12 +555,12 @@ public class Logic extends WebServiceUserCode {
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING be_env_exclusion_list_id";
 			Db.Row row = db("TDM").fetch(sql,be_id, envId, exclusion_list, requested_by, now, username,
 					username, now).firstRow();
-			result.put("id", Long.parseLong(row.cell(0).toString()));
+			result.put("id", Long.parseLong(row.get("be_env_exclusion_list_id").toString()));
 			errorCode = "SUCCESS";
 			response.put("result", result);
 			String activityDesc = "Exclusion list of environment " + envId + " was added";
 			try {
-				fnInsertActivity("update", "Environment", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -620,23 +618,7 @@ public class Logic extends WebServiceUserCode {
 				}
 				result.add(rowMap);
 			}
-			/*
-			HashMap<String, Object> El;
-			for (Db.Row row : rows) {
-				El = new HashMap<>();
-				El.put("be_id", Integer.parseInt(row.cell(0).toString()));
-				El.put("environment_id", Integer.parseInt(row.cell(1).toString()));
-				El.put("exclusion_list", row.cell(2));
-				El.put("requested_by", row.cell(3));
-				El.put("update_date", row.cell(4));
-				El.put("created_by", row.cell(5));
-				El.put("updated_by", row.cell(6));
-				El.put("be_env_exclusion_list_id", Integer.parseInt(row.cell(7).toString()));
-				El.put("creation_date", row.cell(8));
-				El.put("be_name", row.cell(9));
-				result.add(El);
-			}
-			 */
+			
 			errorCode = "SUCCESS";
 			response.put("result", result);
 		} catch (Exception e) {
@@ -663,7 +645,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
@@ -680,7 +662,7 @@ public class Logic extends WebServiceUserCode {
 		
 			String activityDesc = "'Global " + global_name + " was added to environment " + envName;
 			try {
-				fnInsertActivity("update", "Environment", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -713,7 +695,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
@@ -758,13 +740,13 @@ public class Logic extends WebServiceUserCode {
 					allowed_entity_versioning,
 					allowed_test_conn_failure).firstRow();
 		
-			Long roleId = Long.parseLong(row.cell(0).toString());
+			Long roleId = Long.parseLong(row.get("role_id").toString());
 			result.put("id", roleId);
 			response.put("result", result);
 		
 			String activityDesc = "Role " + role_name + " was added to environment " + envName;
 			try {
-				fnInsertActivity("update", "Environment", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environment", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -783,7 +765,7 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Creates a new Environment.\r\n" +
 			"The following parameters are mandatory:\r\n" +
-			"environment_name, fabric_environment_name, allow_write, and allow_read.\r\n" +
+			"environment_name, allow_write, and allow_read.\r\n" +
 			"\r\n" +
 			"Notes:\r\n" +
 			"\r\n" +
@@ -796,7 +778,7 @@ public class Logic extends WebServiceUserCode {
 			"> The allow_read parameter is set to true if the environment can be used as a source environment. Else, set this parameter to false.\r\n" +
 			"\r\n" +
 			"Example of a request body:\r\n" +
-			"{\"allow_write\":true,\"environment_name\":\"ENV6\",\"environment_description\":\"test\",\"owners\":[{\"uid\":\"king123\",\"user_id\":\"king123\",\"displayName\":\"king123\",\"username\":\"king123\"}],\"fabric_environment_name\":\"ENV6\"}")
+			"{\"allow_write\":true,\"environment_name\":\"ENV6\",\"environment_description\":\"test\",\"owners\":[{\"uid\":\"king123\",\"user_id\":\"king123\",\"displayName\":\"king123\",\"username\":\"king123\"}]}")
 	@webService(path = "environment", verb = {MethodType.POST}, version = "", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
@@ -806,17 +788,16 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironment(@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) String environment_name,
-											 @param(description="Optional parameter") String environment_description,
-											 @param(description="Optional parameter") String environment_point_of_contact_fist_name,
-											 @param(description="Optional parameter") String environment_point_of_contact_last_name,
-											 @param(description="Optional parameter") String environment_point_of_contact_phone1,
-											 @param(description="Optional parameter") String environment_point_of_contact_phone2,
-											 @param(description="Optional parameter") String environment_point_of_contact_email,
-											 @param(description="Identical to the environment name", required=true) String fabric_environment_name,
-											 @param(description="Will be populated by true if the environment can be used as a target environment", required=true) Boolean allow_write,
-											 @param(description="Will be populated by true when the environment can be used as a source environment", required=true) Boolean allow_read,
-											 @param(description="Can be populated by one of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
-											 @param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
+											@param(description="Optional parameter") String environment_description,
+											@param(description="Optional parameter") String environment_point_of_contact_fist_name,
+											@param(description="Optional parameter") String environment_point_of_contact_last_name,
+											@param(description="Optional parameter") String environment_point_of_contact_phone1,
+											@param(description="Optional parameter") String environment_point_of_contact_phone2,
+											@param(description="Optional parameter") String environment_point_of_contact_email, 
+											@param(description="Will be populated by true if the environment can be used as a target environment", required=true) Boolean allow_write,
+											@param(description="Will be populated by true when the environment can be used as a source environment", required=true) Boolean allow_read,
+											@param(description="Can be populated by one of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
+											@param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
 		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String, Object> response = new HashMap<>();
@@ -827,8 +808,8 @@ public class Logic extends WebServiceUserCode {
 				String sql = "INSERT INTO \"" + schema + "\".environments (environment_name, environment_description, " +
 						"environment_point_of_contact_first_name, environment_point_of_contact_last_name, " +
 						"environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, environment_created_by," +
-						"environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, fabric_environment_name, allow_write, allow_read, sync_mode) " +
-						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING environment_id";
+						"environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, allow_read, sync_mode) " +
+						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING environment_id";
 				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
@@ -845,19 +826,19 @@ public class Logic extends WebServiceUserCode {
 						now,
 						username,
 						"Active",
-						fabric_environment_name,
 						allow_write,
 						allow_read != null ? allow_read : false,
 						sync_mode != null ? sync_mode : "ON"
 				).firstRow();
-				long environmentId = Long.parseLong(row.cell(0).toString());
+				long environmentId = Long.parseLong(row.get("environment_id").toString());
 				result.put("id", environmentId);
 				try {
 					for (Map owner : owners) {
-						db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name) VALUES (?, ?, ?)",
+						db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
 								environmentId,
 								owner.get("user_id"),
-								owner.get("username") != null ? owner.get("username") : owner.get("user_name"));
+								owner.get("username") != null ? owner.get("username") : owner.get("user_name"), 
+								owner.get("user_type"));
 					}
 				} catch (Exception e) {
 					log.error(e.getMessage());
@@ -865,7 +846,7 @@ public class Logic extends WebServiceUserCode {
 				}
 				String activityDesc = "Environment " + environment_name + " was created";
 				try {
-					fnInsertActivity("delete", "Environment", activityDesc);
+					EnvironmentUtils.fnInsertActivity("delete", "Environment", activityDesc);
 				} catch (Exception e) {
 					log.error(e.getMessage());
 				}
@@ -876,7 +857,7 @@ public class Logic extends WebServiceUserCode {
 				message = e.getMessage();
 				log.error(message);
 			}
-
+		
 		
 		response.put("errorCode", errorCode);
 		response.put("message", message);
@@ -896,12 +877,11 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT COUNT (environment_id) FROM \"" + schema + "\".tasks " +
+			String sql = "SELECT COUNT (environment_id) as cnt FROM \"" + schema + "\".tasks " +
 					"WHERE \"" + schema + "\".tasks.environment_id = " + envId;
 			Db.Row row = db("TDM").fetch(sql).firstRow();
 			if (!row.isEmpty()) {
-				response.put("result", row.cell(0));
-				//response.put("result", !row.cell(0).toString().equals("0"));
+				response.put("result", row.get("cnt"));
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
@@ -937,15 +917,16 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT user_id, user_name " +
+			String sql = "SELECT user_id, user_name, user_type " +
 					"FROM \"" + schema + "\".environment_owners WHERE environment_id = " + envId;
 			Db.Rows rows = db("TDM").fetch(sql);
 			errorCode = "SUCCESS";
 			HashMap<String, Object> owner;
 			for (Db.Row row : rows) {
 				owner = new HashMap<>();
-				owner.put("user_id", row.cell(0));
-				owner.put("user_name", row.cell(1));
+				owner.put("user_id", row.get("user_id"));
+				owner.put("user_name", row.get("user_name"));
+				owner.put("user_type", row.get("user_type"));
 				result.add(owner);
 			}
 			response.put("result", result);
@@ -1117,11 +1098,11 @@ public class Logic extends WebServiceUserCode {
 					if ("tester".equals(permissionGroup)) {
 						return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 					} else if("owner".equals(permissionGroup)){
-						if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+						if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 					}
 				}
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		HashMap<String, Object> response = new HashMap<>();
 		List<HashMap<String, Object>> result = new ArrayList<>();
 		String message = null;
@@ -1172,7 +1153,7 @@ public class Logic extends WebServiceUserCode {
 					allowed_request_of_fresh_data);
 			String activityDesc = "Role " + role_name + " of environment " + envName + " was updated";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1201,11 +1182,11 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
-		fnUpdateEnvironmentDate(envId);
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		HashMap<String, Object> response = new HashMap<>();
 		List<HashMap<String, Object>> result = new ArrayList<>();
 		String message = null;
@@ -1224,7 +1205,7 @@ public class Logic extends WebServiceUserCode {
 
 			String activityDesc = "Role " + roleName + " of environment " + envName + " was deleted";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1306,10 +1287,10 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -1319,15 +1300,15 @@ public class Logic extends WebServiceUserCode {
 			db("TDM").execute(sql);
 		
 			for (Map<String, Object> user : users) {
-				sql = "INSERT INTO \"" + schema + "\".environment_role_users (environment_id, role_id, user_id, username) VALUES (?, ?, ?, ?)";
+				sql = "INSERT INTO \"" + schema + "\".environment_role_users (environment_id, role_id, user_id, username, user_type) VALUES (?, ?, ?, ?, ?)";
 				db("TDM").execute(sql,
 						envId, roleId,
-						user.get("user_id").toString().toLowerCase(), user.get("username").toString().toLowerCase());
+						user.get("user_id"), user.get("username"), user.get("user_type"));
 			}
 		
 			String activityDesc = "Testers of role " + roleName + " of environment " + envName + " were updated";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1356,23 +1337,23 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			Long env_product_id = fnAddProcutToEnvironment(envId, product_id, data_center_name, product_version);
+			Long env_product_id = EnvironmentUtils.fnAddProcutToEnvironment(envId, product_id, data_center_name, product_version);
 			//fnAddProductInterfacesEnvironment(envId, product_id, env_product_id, interfaces);
 		
 			String activityDesc = "Products of environment " + envName + " were updated";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1401,22 +1382,22 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
-		fnUpdateProductToEnvironment(environment_product_id, data_center_name, product_version);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
+		EnvironmentUtils.fnUpdateProductToEnvironment(environment_product_id, data_center_name, product_version);
 		//fnUpdateProductInterfacesEnvironment(envId,product_id,environment_product_id,interfaces);
 		
 		try {
 			String activityDesc = "Products of environment " + envName + " were updated";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1445,15 +1426,15 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
 			{
@@ -1477,7 +1458,7 @@ public class Logic extends WebServiceUserCode {
 		
 			String activityDesc = "Products of environment " + envName + " were updated";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1544,77 +1525,95 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		String user_id = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+		String userId = "" + fabric().fetch("set username").firstValue();
+		
+		//TDM 7.3 - Get TDM environments based on user group also
+		String userRoles = "" + fabric().fetch("set user_roles").firstValue();
+		String[] userRolesArr = userRoles.split(",");
+		String userRolesForQry = "";
+		
+		List<Map<String,Object>> results=new ArrayList<>();
+		Map<String,Object> userRole = new HashMap<>();
+		
+		int minRead = -1;
+		int minWrite = -1;
+			
+		for (int i = 0; i < userRolesArr.length; i++) {
+		    userRolesForQry += "'" + userRolesArr[i].trim() + "',";
+		}
+		// remove last ,
+		userRolesForQry = userRolesForQry.substring(0, userRolesForQry.length() - 1);
 		
 		try {
-			String sql= "SELECT * FROM \"" + schema + "\".environment_role_users INNER JOIN \"" + schema + "\".environment_roles" +
-					" ON (\"" + schema + "\".environment_role_users.role_id = \"" + schema + "\".environment_roles.role_id" +
-					" AND \"" + schema + "\".environment_roles.role_status = \'Active\') " +
-					"WHERE \"" + schema + "\".environment_role_users.environment_id = " + envId +
-					" AND ( \"" + schema + "\".environment_role_users.user_id = \'" + user_id + "\'" +
-					" OR \"" + schema + "\".environment_role_users.user_id = \'-1\' )";
-			Db.Rows rows = db("TDM").fetch(sql);
 		
-			List<Map<String,Object>> results=new ArrayList<>();
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
+			String sqlUser = "SELECT * FROM \"" + schema + "\".environment_role_users u INNER JOIN \"" + schema + "\".environment_roles r " +
+					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
+					"WHERE u.environment_id = ? " + 
+					"AND  u.user_id = ? AND u.user_type = 'ID' ";	
+			
+			//log.info("wsGetRoleForUserInEnv - sqlUser: " + sqlUser);
+			
+			Db.Rows rows = db("TDM").fetch(sqlUser, envId, userId);
+			Db.Row row = rows.firstRow();
+			
+			if (row == null || row.isEmpty()) {
+		
+				String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
+				//log.info("fabricRoles: " + fabricRoles);
+				String sqlUserGRoup = "SELECT * FROM \"" + schema + "\".environment_role_users u INNER JOIN \"" + schema + "\".environment_roles r " +
+					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
+					"WHERE u.environment_id = ? " + 
+					"AND  u.user_id = ANY(string_to_array(?, ',')) AND u.user_type = 'GROUP' ";	
+				//log.info("wsGetRoleForUserInEnv - sqlUserGRoup: " + sqlUserGRoup);
+		
+				
+				Db.Rows rows2 = db("TDM").fetch(sqlUserGRoup, envId, fabricRoles);
+				row = rows2.firstRow();
+				if (row == null || row.isEmpty()) {
+					String sqlAll = "SELECT * FROM \"" + schema + "\".environment_role_users u INNER JOIN \"" + schema + "\".environment_roles r " +
+					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
+					"WHERE u.environment_id = ? " + 
+					"AND  u.user_id = '-1' AND u.user_type = 'ALL' ";
+					
+					//log.info("wsGetRoleForUserInEnv - sqlAll: " + sqlAll);
+					
+					Db.Rows rows3 = db("TDM").fetch(sqlAll, envId);
+					row = rows3.firstRow();
+				}
+			}
+			
+			if (row != null && !row.isEmpty()) {
+				// A user can be part of one role only
+				List<String> columnNames = rows.getColumnNames();
+				
+				//ResultSet resultSet = (rows.firstRow()).resultSet();
+				
 				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
+					//log.info("columnName: " + columnName + ", Value: " + row.get(columnName));
+					
+					//userRole.put(columnName, resultSet.getObject(columnName));
+					userRole.put(columnName, row.get(columnName));
 				}
-				results.add(rowMap);
-			}
+				
+				List<Map<String,Object>> testerRoles=new ArrayList<>();
+				
+				testerRoles.add(userRole);
 		
+				minRead = fnGetMinRoleByType(testerRoles, "allowed_number_of_entities_to_read", "allow_read");
+				minWrite = fnGetMinRoleByType(testerRoles, "allowed_number_of_entities_to_copy", "allow_write");
 		
-			Map<String,Object> userRole = null;
-			List<Map<String,Object>> testerRoles=new ArrayList<>();
-		
-			for(Map<String,Object> role:results){
-				if(user_id.equals(role.get("user_id").toString())) testerRoles.add(role);
-			}
-		
-			if (testerRoles.size() > 0) {
-				userRole = testerRoles.get(0);
-			}
-			int minRead = fnGetMinRoleByType(testerRoles, "allowed_number_of_entities_to_read", "allow_read");
-			int minWrite = fnGetMinRoleByType(testerRoles, "allowed_number_of_entities_to_copy", "allow_write");
-
-			List<Map<String,Object>> allRoles=new ArrayList<>();
-			if (minRead == -1 || minWrite == -1) {
-				if (userRole!=null) {
-					userRole = results.get(0);
-				}
-
-				for(Map<String,Object> role:results){
-					if("-1".equals(role.get("user_id").toString())) allRoles.add(role);
-				}
-		
-				if (minRead == -1) {
-					minRead = fnGetMinRoleByType(allRoles, "allowed_number_of_entities_to_read", "allow_read");
-				}
-				if (minWrite == -1) {
-					minWrite = fnGetMinRoleByType(allRoles, "allowed_number_of_entities_to_copy", "allow_write");
-				}
 			}
 		
 			Map<String,Object> returnedData=new HashMap<>();
 			returnedData.put("minRead",minRead);
 			returnedData.put("minWrite",minWrite);
 			returnedData.put("userRole",userRole);
-
-			if(userRole == null && allRoles.size() > 0 )
-			{
-				returnedData.put("userRole",allRoles);
-			}
-			else {
-				returnedData.put("userRole", userRole);
-			}
 		
 			response.put("result",returnedData);
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
+			log.error("Error Mesage: " + message);
 			errorCode="FAIL";
 		}
 		response.put("errorCode",errorCode);
@@ -1659,7 +1658,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"allowed_request_of_fresh_data\": false,\r\n" +
 			"      \"allowed_entity_versioning\": false,\r\n" +
 			"      \"role_last_updated_date\": \"2021-04-25 08:17:09.010\",\r\n" +
-			"      \"fabric_environment_name\": \"ENV1\",\r\n" +
 			"      \"allowed_number_of_entities_to_copy\": 1,\r\n" +
 			"      \"environment_name\": \"ENV1\",\r\n" +
 			"      \"allow_write\": true,\r\n" +
@@ -1694,7 +1692,7 @@ public class Logic extends WebServiceUserCode {
 		String userId = sessionUser().name();
 		
 		try {
-			response.put("result",fnGetEnvsByuser(userId));
+			response.put("result", EnvironmentUtils.fnGetEnvsByuser(userId));
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
@@ -1783,7 +1781,8 @@ public class Logic extends WebServiceUserCode {
 						!"TDM_VERSION_NAME".equals(keyParts[2]) &&
 						!"ORACLE8_DB_TYPE".equals(keyParts[2]) &&
 						!"COMBO_MAX_COUNT".equals(keyParts[2]) &&
-						!"TDM_SYNTHETIC_DATA".equals(keyParts[2])
+						!"TDM_SYNTHETIC_DATA".equals(keyParts[2]) &&
+						!"TDM_DATAFLUX_TASK".equals(keyParts[2])
 					) 
 					{
 						if ("k2_ws".equals(keyParts[1])) {
@@ -1861,15 +1860,15 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
 			String updateQuery= "UPDATE \"" + schema + "\".tdm_env_globals SET " +
@@ -1888,7 +1887,7 @@ public class Logic extends WebServiceUserCode {
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
 			try {
-				fnInsertActivity("update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1917,15 +1916,15 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
 			String sql= "DELETE FROM \"" + schema + "\".tdm_env_globals" + " WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
@@ -1933,7 +1932,7 @@ public class Logic extends WebServiceUserCode {
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
 			try {
-				fnInsertActivity("global", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("global", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -1990,17 +1989,6 @@ public class Logic extends WebServiceUserCode {
 				result.add(rowMap);
 			}
 		
-			/*
-			result.put("be_env_exclusion_list_id",Integer.parseInt(row.cell(0).toString()));
-			result.put("be_id",Integer.parseInt(row.cell(1).toString()));
-			result.put("environment_id",Integer.parseInt(row.cell(2).toString()));
-			result.put("exclusion_list",row.cell(3));
-			result.put("requested_by",row.cell(4));
-			result.put("update_date",row.cell(5));
-			result.put("created_by",row.cell(5));
-			result.put("updated_by",row.cell(7));
-			result.put("creation_date",row.cell(8));
-			 */
 			response.put("result", result);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
@@ -2128,15 +2116,15 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
 			String sql= "UPDATE tdm_be_env_exclusion_list SET be_id=(?), exclusion_list=(?), requested_by=(?), update_date=(?), updated_by=(?) " +
@@ -2149,7 +2137,7 @@ public class Logic extends WebServiceUserCode {
 					requested_by, now, username);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was updated.";
 			try {
-				fnInsertActivity("Update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("Update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -2178,22 +2166,22 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-		
-		fnUpdateEnvironmentDate(envId);
+
+		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
 			String sql = "DELETE FROM \"" + schema + "\".tdm_be_env_exclusion_list WHERE be_env_exclusion_list_id = " + elId;
 			db("TDM").execute(sql);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was deleted.";
 			try {
-				fnInsertActivity("Update", "Environments", activityDesc);
+				EnvironmentUtils.fnInsertActivity("Update", "Environments", activityDesc);
 			} catch (Exception e) {
 				log.error(e.getMessage());
 			}
@@ -2240,10 +2228,11 @@ public class Logic extends WebServiceUserCode {
 				testers.add(tester);
 			}
 		
-			String sql = "SELECT * FROM \"" + schema + "\".environment_role_users " +
-					"INNER JOIN \"" + schema + "\".environment_roles " +
-					"ON (\"" + schema + "\".environment_role_users.role_id = \"" + schema + "\".environment_roles.role_id) " +
-					"WHERE \"" + schema + "\".environment_roles.role_status = \'Active\'";
+			String sql = "SELECT * FROM \"" + schema + "\".environment_role_users u " +
+					"INNER JOIN \"" + schema + "\".environment_roles r " +
+					"ON (u.role_id = r.role_id) " +
+					"WHERE r.role_status = 'Active' " +
+					"AND u.user_type = 'ID'";
 			Db.Rows rows = db("TDM").fetch(sql);
 			List<Map<String,Object>> testersRows=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -2456,7 +2445,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_point_of_contact_last_name\": null,\r\n" +
 			"      \"environment_point_of_contact_email\": null,\r\n" +
 			"      \"environment_creation_date\": \"2021-04-18 09:32:50.416\",\r\n" +
-			"      \"fabric_environment_name\": \"ENV1\",\r\n" +
 			"      \"environment_expiration_date\": null,\r\n" +
 			"      \"environment_point_of_contact_phone2\": null,\r\n" +
 			"      \"environment_name\": \"ENV1\"\r\n" +
@@ -2485,31 +2473,6 @@ public class Logic extends WebServiceUserCode {
 				}
 				result.add(environment);
 			}
-			/*
-			for (Db.Row row : rows) {
-				environment = new HashMap<String, Object>();
-				environment.put("environment_id", Integer.parseInt(row.cell(0).toString()));
-				environment.put("environment_name", "" + row.cell(1));
-				environment.put("environment_description", "" + row.cell(2));
-				environment.put("environment_point_of_contact_first_name", "" + row.cell(3));
-				environment.put("environment_point_of_contact_last_name", "" + row.cell(4));
-				environment.put("environment_point_of_contact_phone1", "" + row.cell(5));
-				environment.put("environment_point_of_contact_phone2", "" + row.cell(6));
-				environment.put("environment_point_of_contact_email", "" + row.cell(7));
-				environment.put("environment_created_by", "" + row.cell(8));
-				environment.put("environment_creation_date", "" + row.cell(9));
-				environment.put("environment_last_updated_date", "" + row.cell(10));
-				environment.put("environment_last_updated_by", "" + row.cell(11));
-				environment.put("environment_status", "" + row.cell(12));
-				environment.put("allow_write", row.cell(13)!=null?Boolean.parseBoolean(row.cell(13).toString()):null);
-				environment.put("fabric_environment_name", "" + row.cell(14));
-				environment.put("allow_read", row.cell(15)!=null?Boolean.parseBoolean(row.cell(15).toString()):null);
-				environment.put("sync_mode", "" + row.cell(16));
-				environment.put("user_name", "" + row.cell(17));
-				result.add(environment);
-			}
-			 */
-		
 			response.put("result", result);
 		
 		} catch (Exception e) {
@@ -2567,37 +2530,49 @@ public class Logic extends WebServiceUserCode {
 		data.put("Interval", interval);
 		try {
 			{
-				String numberOfTestersQuery = "SELECT count(*) as numberOfTesters FROM  \"" + schema + "\".environment_role_users  " +
-						"INNER JOIN \"" + schema + "\".environment_roles  ON (\"" + schema + "\".environment_role_users.role_id = \"" + schema + "\".environment_roles.role_id)" +
-						" WHERE \"" + schema + "\".environment_roles.role_status = \'Active\' and \"" + schema + "\".environment_roles.environment_id = " + envId;
+				String numberOfTestersQuery = "SELECT count(*) as numberOfTesters FROM  \"" + schema + "\".environment_role_users u " +
+						"INNER JOIN \"" + schema + "\".environment_roles r ON (u.role_id = r.role_id)" +
+						"WHERE r.role_status = 'Active' and r.environment_id = ? " + 
+						"and u.user_type = 'ID'";
 				String index = "numberOfTesters";
-				Db.Row row = db("TDM").fetch(numberOfTestersQuery).firstRow();
+				Db.Row row = db("TDM").fetch(numberOfTestersQuery, envId).firstRow();
 				data.put(index, row);
 			}
+		
 			{
-				String numberOfALLTestersQuery = "SELECT count(*) as value FROM  \"" + schema + "\".environment_role_users  " +
-						"INNER JOIN \"" + schema + "\".environment_roles  ON (\"" + schema + "\".environment_role_users.role_id = \"" + schema + "\".environment_roles.role_id)" +
-						" WHERE \"" + schema + "\".environment_roles.role_status = \'Active\' and " +
-						"\"" + schema + "\".environment_roles.environment_id = " + envId + " AND environment_role_users.user_id = \'-1\'";
+				String numberOfUserGroupQuery = "SELECT count(*) as numberOfGroups FROM  \"" + schema + "\".environment_role_users u " +
+						"INNER JOIN \"" + schema + "\".environment_roles r ON (u.role_id = r.role_id)" +
+						"WHERE r.role_status = 'Active' and r.environment_id = ? " + 
+						"and u.user_type = 'GROUP'";
+				String index = "numberOfGroups";
+				Db.Row row = db("TDM").fetch(numberOfUserGroupQuery, envId).firstRow();
+				data.put(index, row);
+			}
+			
+			{
+				String numberOfALLTestersQuery = "SELECT count(*) as value FROM  \"" + schema + "\".environment_role_users u " +
+						"INNER JOIN \"" + schema + "\".environment_roles r ON (u.role_id = r.role_id)" +
+						" WHERE r.role_status = 'Active' and " +
+						"r.environment_id = ? AND u.user_id = '-1'";
 				String index = "numberOfALLTesters";
-				Db.Row row = db("TDM").fetch(numberOfALLTestersQuery).firstRow();
+				Db.Row row = db("TDM").fetch(numberOfALLTestersQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			{
-				String tasksQuery = "SELECT COUNT(case when \"" + schema + "\".tasks.task_execution_status = \'Active\' then 1 end) as active ," +
-						"COUNT(case when \"" + schema + "\".tasks.task_execution_status = \'onHold\' then 1 end  )  as onHold" +
-						" FROM \"" + schema + "\".tasks " +
-						" where \"" + schema + "\".tasks.environment_id = " + envId + " AND \"" + schema + "\".tasks.task_status = \'Active\'";
+				String tasksQuery = "SELECT COUNT(case when t.task_execution_status = 'Active' then 1 end) as active ," +
+						"COUNT(case when t.task_execution_status = 'onHold' then 1 end  )  as onHold" +
+						" FROM \"" + schema + "\".tasks t " +
+						" where t.environment_id = ? AND t.task_status = 'Active'";
 				String index = "tasks";
-				Db.Row row = db("TDM").fetch(tasksQuery).firstRow();
+				Db.Row row = db("TDM").fetch(tasksQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			{
 		
-				String taskExecutionStatusQuery = "SELECT \"" + schema + "\".task_execution_list.task_execution_id,\"" + schema + "\".task_execution_list.execution_status FROM \"" + schema + "\".task_execution_list " +
-						" WHERE \"" + schema + "\".task_execution_list.environment_id=" + envId + " AND  (  select now() - interval \'" + fnGetInterval(interval) + "\')  <= \"" + schema + "\".task_execution_list.creation_date";
+				String taskExecutionStatusQuery = "SELECT l.task_execution_id, l.execution_status FROM \"" + schema + "\".task_execution_list l " +
+						" WHERE l.environment_id= ? AND  (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\')  <= l.creation_date";
 				String index = "taskExecutionStatus";
-				Db.Rows rows = db("TDM").fetch(taskExecutionStatusQuery);
+				Db.Rows rows = db("TDM").fetch(taskExecutionStatusQuery, envId);
 		
 				List<Map<String, Object>> rowsList = new ArrayList<>();
 				List<String> columnNames = rows.getColumnNames();
@@ -2628,17 +2603,17 @@ public class Logic extends WebServiceUserCode {
 		
 					groups.put(row.get("task_execution_id").toString(), groupById);
 				}
-				data.put(index, fnExtractExecutionStatus(groups));
+				data.put(index, EnvironmentUtils.fnExtractExecutionStatus(groups));
 		
 			}
 			{
 				String processedEntitiesQuery = "Select sum(num_of_processed_entities) from " +
-						"(select distinct COALESCE(\"" + schema + "\".task_execution_list.num_of_processed_entities,0) num_of_processed_entities , \"" +
-						schema + "\".task_execution_list.task_execution_id from \"" + schema + "\".task_execution_list , \"" + schema + "\".product_logical_units p " +
-						"Where p.lu_id = \"" + schema + "\".task_execution_list.lu_id And \"" + schema + "\".task_execution_list.environment_id = " + envId + " " +
-						"And  \"" + schema + "\".task_execution_list.creation_date >= (  select now() - interval \'" + fnGetInterval(interval) + "\') ) t";
+						"(select distinct COALESCE(l.num_of_processed_entities,0) num_of_processed_entities , l.task_execution_id " +
+						"from \"" + schema + "\".task_execution_list l, \"" + schema + "\".product_logical_units p " +
+						"Where p.lu_id = l.lu_id And l.environment_id = ? " +
+						"And  l.creation_date >= (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\') ) t";
 				String index = "processedEntities";
-				Db.Row row = db("TDM").fetch(processedEntitiesQuery).firstRow();
+				Db.Row row = db("TDM").fetch(processedEntitiesQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			errorCode="SUCCESS";
@@ -2761,7 +2736,7 @@ public class Logic extends WebServiceUserCode {
 				}
 		
 			} else {
-				rowsList.addAll(fnGetEnvsByuser(userId));
+				rowsList.addAll(EnvironmentUtils.fnGetEnvsByuser(userId));
 			}
 		
 			List<Map<String, Object>> result = new ArrayList<>();
@@ -2802,410 +2777,6 @@ public class Logic extends WebServiceUserCode {
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
-	}
-
-	static List<Map<String,Object>> fnGetEnvsByuser(String userId) throws Exception{
-		List<Map<String, Object>> rowsList = new ArrayList<>();
-
-		//get the environments where the user is the owner
-		String query1 = "select *, " +
-				"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
-				"from environments env, environment_owners o " +
-				"where env.environment_id = o.environment_id " +
-				"and o.user_id = (?) " +
-				"and env.environment_status = 'Active'";
-		
-		log.info("TEST1 - fnGetEnvsByuser - query 1 for user id " + userId + "is: " +  query1 ); 
-		Db.Rows rows = db("TDM").fetch(query1,userId);
-
-		List<String> columnNames = rows.getColumnNames();
-		for (Db.Row row : rows) {
-			ResultSet resultSet = row.resultSet();
-			Map<String, Object> rowMap = new HashMap<>();
-			for (String columnName : columnNames) {
-				rowMap.put(columnName, resultSet.getObject(columnName));
-			}
-			rowsList.add(rowMap);
-		}
-
-		String envIds="(";
-		if(!rowsList.isEmpty()){
-			for(Map<String,Object> row:rowsList) envIds+=row.get("environment_id")+",";
-			envIds=envIds.substring(0,envIds.length()-1);}
-		envIds+=")";
-
-		//get the environments where the user is assigned to a role by their username
-		String query2 = "select *, " +
-				"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-				"from environments env, environment_roles r, environment_role_users u " +
-				"where env.environment_id = r.environment_id " +
-				"and lower(r.role_status) = 'active' " +
-				"and r.role_id = u.role_id " +
-				"and u.user_id = (?) " +
-				"and env.environment_status = 'Active'";
-		// remove the list of environments returned by query 1;
-		query2+="()".equals(envIds)?"": "and env.environment_id not in " + envIds;
-		rows = db("TDM").fetch(query2,userId);
-		
-		log.info("TEST2 - fnGetEnvsByuser - query 2 for user id " + userId + "is: " +  query2 ); 
-
-		columnNames = rows.getColumnNames();
-		for (Db.Row row : rows) {
-			ResultSet resultSet = row.resultSet();
-			Map<String, Object> rowMap = new HashMap<>();
-			for (String columnName : columnNames) {
-				rowMap.put(columnName, resultSet.getObject(columnName));
-			}
-			rowsList.add(rowMap);
-		}
-
-		envIds="(";
-		if(!rowsList.isEmpty()) {
-			for(Map<String,Object> row:rowsList) envIds+=row.get("environment_id")+",";
-			envIds=envIds.substring(0,envIds.length()-1);
-		}
-		envIds+=")";
-
-		//get the environments where the user is assigned to a role by 'ALL' assignment
-		String query3 = "select *, " +
-				"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
-				", r.role_id, 'all' as assignment_type " +
-				"from environments env, environment_roles r, environment_role_users u " +
-				"where env.environment_id = r.environment_id " +
-				"and lower(r.role_status) = 'active' " +
-				"and r.role_id = u.role_id " +
-				"and lower(u.username) = 'all' " +
-				"and env.environment_status = 'Active'";
-		// remove the list of environments returned by queries 1+2;
-		query3+="()".equals(envIds)?"": "and env.environment_id not in " + envIds; 
-		rows = db("TDM").fetch(query3);
-		
-		log.info("TEST2 - fnGetEnvsByuser - query 3 (get ALL roles) for user id " + userId + "is: " +  query3 ); 
-
-		columnNames = rows.getColumnNames();
-		for (Db.Row row : rows) {
-			ResultSet resultSet = row.resultSet();
-			Map<String, Object> rowMap = new HashMap<>();
-			for (String columnName : columnNames) {
-				rowMap.put(columnName, resultSet.getObject(columnName));
-			}
-			rowsList.add(rowMap);
-		}
-		return rowsList;
-	}
-
-
-	static  String fnGetInterval(String interval){
-		if ("Day".equals(interval)){
-			return "1 day";
-		}
-		else if ("Week".equals(interval)){
-			return "1 week";
-		}
-		else if ("Month".equals(interval)){
-			return "1 month";
-		}
-		else if ("3Month".equals(interval)){
-			return "3 month";
-		}
-		else if ("Year".equals("interval")){
-			return "1 year";
-		}
-		else {
-			return "1 month";
-		}
-	}
-
-	//checks if the registered user is an owner of the given environment
-	static Boolean fnIsOwner(String envId) throws Exception{
-		List<Map<String, Object>> envsList = (List<Map<String, Object>>) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser()).get("result");
-		boolean found=false;
-		for (Map<String, Object> envsGroup : envsList) {
-			Map.Entry<String, Object> entry = envsGroup.entrySet().iterator().next();
-			List<Map<String, Object>> groupByType = (List<Map<String, Object>>) entry.getValue();
-			for (Map<String, Object> env : groupByType) {
-				if ("owner".equals(env.get("role_id").toString())) {
-					if(env.get("environment_id").toString().equals(envId)){
-						found=true; break;
-					}
-				}
-			}
-		}
-		return found;
-	}
-
-	static Object fnExtractExecutionStatus(Map<String,List<Map<String,Object>>> executionsStatusGroup){
-		Map<String,Integer> executionsStatus = new HashMap<>();
-		executionsStatus.put("failed", 0);
-		executionsStatus.put("pending", 0);
-		executionsStatus.put("paused", 0);
-		executionsStatus.put("stopped", 0);
-		executionsStatus.put("running",0);
-		executionsStatus.put("completed", 0);
-
-		out: for (Map.Entry<String, List<Map<String,Object>>> entry : executionsStatusGroup.entrySet()) {
-			List<Map<String,Object>> group = entry.getValue();
-			for (Map<String,Object> execution:group) {
-				if("FAILED".equals(execution.get("execution_status").toString().toUpperCase())) {
-					executionsStatus.put("failed", executionsStatus.get("failed") + 1);
-					continue out;
-				}
-			}
-			for (Map<String,Object> execution:group) {
-				if("PENDING".equals(execution.get("execution_status").toString().toUpperCase())) {
-					executionsStatus.put("pending", executionsStatus.get("pending") + 1);
-					continue out;
-				}
-			}
-			for (Map<String,Object> execution:group) {
-				if("PAUSED".equals(execution.get("execution_status").toString().toUpperCase())) {
-					executionsStatus.put("paused", executionsStatus.get("paused") + 1);
-					continue out;
-				}
-			}
-			for (Map<String,Object> execution:group) {
-				if("stopped".equals(execution.get("execution_status").toString().toUpperCase())) {
-					executionsStatus.put("stopped", executionsStatus.get("stopped") + 1);
-					continue out;
-				}
-			}
-
-			Boolean runningFound = false;
-			for (Map<String,Object> execution:group){
-				if (execution.get("execution_status")==null) continue;
-				if ("RUNNING".equals(execution.get("execution_status").toString().toUpperCase()) || "EXECUTING".equals(execution.get("execution_status").toString().toUpperCase()) ||
-						"STARTED".equals(execution.get("execution_status").toString().toUpperCase()) || "STARTEXECUTIONREQUESTED".equals(execution.get("execution_status").toString())){
-					executionsStatus.put("running", executionsStatus.get("running") + 1);
-					runningFound = true;
-					break;
-				}
-			}
-			if (runningFound==true){
-				continue out;
-			}
-
-			executionsStatus.put("completed",executionsStatus.get("completed") + 1);
-		}
-
-		return executionsStatus;
-	}
-
-	static List<Map<String,Object>> fnGetTesters() throws Exception{
-		List<Map<String,Object>> result=new ArrayList<>();
-		String url = ldapUrlString;
-		Hashtable env = new Hashtable();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, url);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, ldapAdminDN);
-		env.put(Context.SECURITY_CREDENTIALS, ldapAdminPassword);
-
-		DirContext ctx = new InitialDirContext(env);
-		SearchControls constraints = new SearchControls();
-		constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-		String attrList[] = {"uid","displayName"};
-		constraints.setReturningAttributes(attrList);
-
-		NamingEnumeration answer = ctx.search(ldapTestersDN,"(objectClass=*)",constraints);
-		Map<String,Object> entry;
-		while (answer.hasMore()) {
-			entry=new HashMap<>();
-			SearchResult searchResult =(SearchResult)answer.next();
-			Attributes attrs = searchResult.getAttributes();
-			if (attrs == null) continue;
-			NamingEnumeration attrsEnum = attrs.getAll();
-			if(!attrsEnum.hasMoreElements()) continue;
-			while (attrsEnum.hasMoreElements()) {
-				Attribute attr =(Attribute)attrsEnum.next();
-				String id = attr.getID();
-				entry.put(id , attr.get());
-			}
-			result.add(entry);
-		}
-
-		ctx.close();
-
-		return result;
-	}
-
-	static List<Map<String,Object>> fnGetEnvOwners () throws Exception {
-		List<Map<String,Object>> result=new ArrayList<>();
-		String url = ldapUrlString;
-		Hashtable env = new Hashtable();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, url);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, ldapAdminDN);
-		env.put(Context.SECURITY_CREDENTIALS, ldapAdminPassword);
-
-		DirContext ctx = new InitialDirContext(env);
-		SearchControls constraints = new SearchControls();
-		constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-		String attrList[] = {"uid","displayName"};
-		constraints.setReturningAttributes(attrList);
-
-		NamingEnumeration answer = ctx.search(ldapOwnersDN,"(objectClass=*)",constraints);
-		Map<String,Object> entry;
-		while (answer.hasMore()) {
-			entry=new HashMap<>();
-			SearchResult searchResult =(SearchResult)answer.next();
-			Attributes attrs = searchResult.getAttributes();
-			if (attrs == null) continue;
-			NamingEnumeration attrsEnum = attrs.getAll();
-			if(!attrsEnum.hasMoreElements()) continue;
-			while (attrsEnum.hasMoreElements()) {
-				Attribute attr =(Attribute)attrsEnum.next();
-				String id = attr.getID();
-				entry.put(id , attr.get());
-			}
-			result.add(entry);
-		}
-
-		ctx.close();
-
-		return result;
-	}
-
-	static void fnUpdateEnvironmentDate(Long envId) {
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		try {
-			String sql= "UPDATE \"" + schema + "\".environments SET " +
-					"environment_last_updated_date=(?),"+
-					"environment_last_updated_by=(?) "+
-					"WHERE environment_id = " + envId;
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-			db("TDM").execute(sql,now,username);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-	}
-
-	static Long fnAddProcutToEnvironment(long envId, Long product_id, String data_center_name, String product_version) throws Exception {
-		String sql = "INSERT INTO \"" + schema + "\".environment_products " +
-				"(environment_id, product_id, data_center_name, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) " +
-				"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING environment_product_id";
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-		Db.Row row = db("TDM").fetch(sql,
-				envId,
-				product_id,
-				data_center_name,
-				product_version,
-				username,
-				now,
-				now,
-				username,
-				"Active").firstRow();
-		return Long.parseLong(row.cell(0).toString());
-	}
-
-	 static void fnAddProductInterfacesEnvironment(Long envId, Long product_id, Long env_product_id, List<Map<String, Object>> interfaces) throws Exception {
-		if(interfaces==null) return;
-
-		for (Map<String, Object> _interface : interfaces) {
-			//k2viewAPIs.getDataFromAPI("envEncryptDBConnPwd",[{"key" : "password", "value" : interface.db_password"}]
-			String decryptPwd = FabricEncryption.decrypt(_interface.get("db_password").toString());
-			//replace regular text password with encrypted password
-			_interface.put("db_password", decryptPwd);
-
-			String sql = "INSERT INTO \"" + schema + "\".environment_product_interfaces " +
-					"(environment_id, product_id, db_host, db_port, db_user, db_password, db_schema, db_connection_string,env_product_interface_id,interface_name,interface_type,env_product_interface_status) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
-			db("TDM").execute(sql,
-					envId,
-					product_id,
-					_interface.get("db_host"),
-					_interface.get("db_port"),
-					_interface.get("db_user"),
-					_interface.get("db_password"),
-					_interface.get("db_schema"),
-					_interface.get("db_connection_string"),
-					env_product_id,
-					_interface.get("interface_name"),
-					_interface.get("interface_type"),
-					"Active");
-		}
-	}
-
-	 static void fnUpdateProductToEnvironment(Long environment_product_id, String data_center_name, String product_version) throws Exception {
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		String sql = "UPDATE \"" + schema + "\".environment_products SET " +
-				"data_center_name=(?)," +
-				"product_version=(?)," +
-				"last_updated_date=(?)," +
-				"last_updated_by=(?) " +
-				"WHERE environment_product_id = " + environment_product_id;
-		 String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-		db("TDM").execute(sql, data_center_name, product_version, now, username);
-	}
-
-	 static void fnUpdateProductInterfacesEnvironment(Long envId, long product_id, Long env_product_id, List<Map<String, Object>> interfaces) throws Exception {
-		if(interfaces==null) return;
-		for (Map<String, Object> _interface : interfaces) {
-			if (_interface.get("update").toString() == "false" || _interface.get("passwordDecrypt").toString()!="false"){
-				String decryptPwd = FabricEncryption.decrypt(_interface.get("db_password").toString());
-				//replace regular text password with encrypted password
-				_interface.put("db_password", decryptPwd);
-			}
-								//check: env_product_interface_status
-			if (_interface.get("newInterface").toString() == "true" && _interface.get("env_product_interface_status").toString() == "null") {
-				String sql = "INSERT INTO \"" + schema + "\".environment_product_interfaces " +
-						"(environment_id, product_id, db_host, db_port, db_user, db_password, db_schema, db_connection_string,env_product_interface_id,interface_name,interface_type,env_product_interface_status) " +
-						"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
-				db("TDM").execute(sql, envId, product_id, _interface.get("db_host"),
-						_interface.get("db_port"), _interface.get("db_user"),
-						_interface.get("db_password"), _interface.get("db_schema"),
-						_interface.get("db_connection_string"), env_product_id,
-						_interface.get("interface_name"), _interface.get("interface_type"), "Active");
-			} else if (_interface.get("deleted").toString() == "true") {
-				String sql = "DELETE FROM \"" + schema + "\".environment_product_interfaces WHERE ( env_product_interface_id = (?) AND interface_name = (?))";
-				db("TDM").execute(sql, _interface.get("env_product_interface_id"), _interface.get("interface_name"));
-
-			} else {
-				String sql = "UPDATE \"" + schema + "\".environment_product_interfaces SET " +
-						"db_host=(?)," +
-						"db_port=(?)," +
-						"db_user=(?)," +
-						"db_password=(?)," +
-						"db_schema=(?)," +
-						"db_connection_string=(?) " +
-						"WHERE env_product_interface_id = " + _interface.get("env_product_interface_id") + " AND interface_name = " + "\"" + _interface.get("interface_name") + "\"";
-				db("TDM").execute(sql,
-						_interface.get("db_host"), _interface.get("db_port"),
-						_interface.get("db_user"), _interface.get("db_password"),
-						_interface.get("db_schema"), _interface.get("db_connection_string"));
-			}
-		}
-	}
-
-
-	static void fnUpdateEnvironmentRolesPermissions(Long environment_id, String type, boolean value){
-		try {
-			String sql = "UPDATE \"" + schema + "\".environment_roles SET " +
-					"" + type + "=(?)" +
-					"WHERE environment_id = " + environment_id;
-			db("TDM").execute(sql, value);
-		} catch (Exception e) {
-			log.error(e.getMessage());
-		}
-	}
-
-	static void fnInsertActivity(String action,String entity,String description) throws Exception{
-		String userId = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-		String username = userId;
-		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		String sql= "INSERT INTO \"" + schema + "\".activities " +
-				"(date, action, entity, user_id, username, description) " +
-				"VALUES (?, ?, ?, ?, ?, ?)";
-		db("TDM").execute(sql,now,action,entity,userId,username,description);
 	}
 
 }

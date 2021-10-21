@@ -24,6 +24,7 @@
                         },
                         {
                             "name": "sleep-test",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "Sleep",
                                 "inputs": [

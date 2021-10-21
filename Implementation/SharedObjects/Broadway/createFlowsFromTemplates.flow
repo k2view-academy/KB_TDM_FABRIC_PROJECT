@@ -3,6 +3,30 @@
         {
             "stages": [
                 {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create Sequence Flows & Actors",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "createSeqFlowsOnlyFromTemplates"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Stage 1",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -17,7 +41,7 @@
                                         "const": "createLoadTableFlows"
                                     },
                                     {
-                                        "name": "luType",
+                                        "name": "LU_NAME",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -32,6 +56,12 @@
                                         "name": "TARGET_SCHEMA",
                                         "schema": {
                                             "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "OVERRIDE_EXISTING_FLOWS",
+                                        "schema": {
+                                            "type": "boolean"
                                         }
                                     }
                                 ],
@@ -59,7 +89,7 @@
                                         "const": "createLoadAllTablesFlow"
                                     },
                                     {
-                                        "name": "luType",
+                                        "name": "LU_NAME",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -89,7 +119,7 @@
                                         "const": "createDeleteTableFlows"
                                     },
                                     {
-                                        "name": "luType",
+                                        "name": "LU_NAME",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -104,6 +134,12 @@
                                         "name": "TARGET_SCHEMA",
                                         "schema": {
                                             "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "OVERRIDE_EXISTING_FLOWS",
+                                        "schema": {
+                                            "type": "boolean"
                                         }
                                     }
                                 ],
@@ -131,7 +167,7 @@
                                         "const": "createDeleteAllTablesFlow"
                                     },
                                     {
-                                        "name": "luType",
+                                        "name": "LU_NAME",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -149,11 +185,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "Create Load Flow Per Table",
-                "name": "luType"
+                "name": "LU_NAME"
             }
         },
         {
@@ -179,21 +215,31 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Create Load Flow Per Table",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "Create Main Load Flow",
-                "name": "luType"
+                "name": "LU_NAME"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "Create Delete Flow Per Table",
-                "name": "luType"
+                "name": "LU_NAME"
             }
         },
         {
@@ -219,11 +265,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Create Delete Flow Per Table",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "Create Main Delete Flow",
-                "name": "luType"
+                "name": "LU_NAME"
             }
         }
     ]

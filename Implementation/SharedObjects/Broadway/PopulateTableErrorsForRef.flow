@@ -363,7 +363,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader'\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nerror_msg = ${errorMsg},\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader'\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -373,6 +373,12 @@
                                     },
                                     {
                                         "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "errorMsg",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -410,6 +416,23 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Set Record Status to Failed",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "RECORD_STATUS"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "failed"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -424,6 +447,7 @@
                     "actors": [
                         {
                             "name": "Commit",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -563,6 +587,16 @@
             "rightPort": {
                 "actor": "Load Data To Error Table",
                 "name": "actor_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "message"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "errorMsg"
             }
         },
         {

@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="6.5.0.13">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="6.5.3.1">
   <Active>true</Active>
-  <DataSource>10.21.3.4</DataSource>
-  <PortNum>5437</PortNum>
-  <DataBase>postgres</DataBase>
-  <UserId>postgres</UserId>
-  <Password>7ZzuT5PdMQHLA6v4FlDT4sAlqi6wYzNCM681xT/q6mI=:kz6zLL/uW/edVnqxnejJDLLVN6qYSwPxRn2YsjAloC4=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</ConnectionStringServerSide>
+  <DataSource>10.21.2.64</DataSource>
+  <PortNum>5432</PortNum>
+  <DataBase>TDMDB</DataBase>
+  <UserId>tdm</UserId>
+  <Password>TynKlzwO8Bj0lykiDtKwvQIOlsX+R1EKGJQ+XZUpx0w=:xyxjDRE8OW3WhbwOVuHGdirkw7bGulJhTEKn5HVw4rA=</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://10.21.2.64:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

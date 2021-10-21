@@ -253,7 +253,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "LU Folder",
@@ -263,7 +263,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "LuFunction1",
@@ -273,7 +273,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "flow folder",
@@ -283,7 +283,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "ApplyTemplate",

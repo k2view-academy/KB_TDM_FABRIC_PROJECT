@@ -71,5 +71,11 @@ public class SharedGlobals {
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
+	@desc("Indicator to mark the task as dataflux or not")
+	@category("TDM")
+	public static String TDM_DATAFLUX_TASK = "false";
+	@category("TDM")
+	public static String TDM_EXTERNAL_ENTITY_LIST_TTL = "2592000";
+
 
 }

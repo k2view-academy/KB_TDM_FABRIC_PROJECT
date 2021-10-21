@@ -42,7 +42,7 @@ public class Logic extends UserCode {
 		Db.Row taskInfo = ludb().fetch("SELECT task_execution_id FROM TASK_EXECUTION_LIST LIMIT 1").firstRow();
 		
 		if (!taskInfo.isEmpty()) {
-			String taskExecId = "" + taskInfo.cell(0);
+			String taskExecId = "" + taskInfo.get("task_execution_id");
 		
 			// TDM 7.1- performance improvement- remove the to_char from the version_datetime in the WHERE statement
 			String sql = "SELECT rel.source_env, rel.lu_type_1, rel.lu_type_2, rel.lu_type1_eid, rel.lu_type2_eid, rel.creation_date, rel.version_name, " +
@@ -140,11 +140,11 @@ public class Logic extends UserCode {
 		
 		Db.Row taskRow = ludb().fetch(sql).firstRow();
 		if (!taskRow.isEmpty()) {
-			selectionMethod = "" + taskRow.cell(0);
-			loadEntity = (int) taskRow.cell(1);
-			deleteBeforeLoad = (int) taskRow.cell(2);
-			taskType = "" + taskRow.cell(3);
-			replaceSeq = "" + taskRow.cell(4);
+			selectionMethod = "" + taskRow.get("SELECTION_METHOD");
+			loadEntity = (int) taskRow.get("LOAD_ENTITY");
+			deleteBeforeLoad = (int) taskRow.get("DELETE_BEFORE_LOAD");
+			taskType = "" + taskRow.get("TASK_TYPE");
+			replaceSeq = "" + taskRow.get("REPLACE_SEQUENCES");
 		
 			String insertChildSql = "";
 			//log.info("fnEncTaskExecutionLinkEntities - selection method: " + selectionMethod + " loadEntity: " + loadEntity + " deleteBeforeLoad: " + deleteBeforeLoad + " taskType: " + taskType);
@@ -188,7 +188,7 @@ public class Logic extends UserCode {
 				String rootListIn = "";
 				String comma = "";
 				for(Db.Row root : rootList) {
-					rootListIn += comma + "'" + root.cell(0) + "'";
+					rootListIn += comma + "'" + root.get("lu_name") + "'";
 					comma = ", ";
 				}
 				
@@ -245,10 +245,5 @@ public class Logic extends UserCode {
 				
 		} 
 	}
-
-
-
-
-
 
 }

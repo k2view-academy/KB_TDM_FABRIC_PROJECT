@@ -4,14 +4,15 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_DataCenters;
 
-import java.util.*;
-
-import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.fabric.api.endpoint.Endpoint.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.fabric.api.endpoint.Endpoint.MethodType;
+import com.k2view.fabric.api.endpoint.Endpoint.Produce;
+import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
+import com.k2view.fabric.api.endpoint.Endpoint.webService;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends WebServiceUserCode {

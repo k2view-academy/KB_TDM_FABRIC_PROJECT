@@ -12,6 +12,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.cdbms.usercode.lu.TDM.TdmTaskScheduler;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Log;
@@ -219,7 +220,7 @@ public class Logic extends UserCode {
 						//Add reference tables to TASK_EXECUTION_ENTITIES
 						//log.info("Calling fnTdmUpdateTaskExecutionEntities for reference only task");
 						if(luID > 0){
-							fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
+							TdmSharedUtils.fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
 						}else if(processID != null && processID > 0){
 							String finalTaskExecutionID = taskExecutionID;
 							Long finalProcessID = processID;
@@ -247,7 +248,7 @@ public class Logic extends UserCode {
 							
 							Boolean refStillRunning = false;
 							for (Db.Row refRunningLu : refRunningLus) {
-								if (luName.equals(refRunningLu.cell(0))) {
+								if (luName.equals(refRunningLu.get("lu_name"))) {
 									refStillRunning = true;
 									break;
 								}
@@ -346,7 +347,7 @@ public class Logic extends UserCode {
 								//log.info("fnCheckMigrateAndUpdateTDMDB - Calling fnTdmUpdateTaskExecutionEntities for LU_NAME: " + luName);
 								//TDM 7.0, For Load tasks, the task_execution_entities table is populated by the BF, therefore handling only Extract tasks
 								if ("extract".equalsIgnoreCase(taskType)) {
-									fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
+									TdmSharedUtils.fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
 								}
 								
 								//TDM 6.1.1 - 20-may-20 - Insert the migrate errors to the TDM DB Error table
@@ -395,7 +396,6 @@ public class Logic extends UserCode {
 		
 		String taskExecutionId= "";
 		String taskType="";
-		Boolean cleanRedis = false;
 		
 		try
 		{
@@ -403,11 +403,11 @@ public class Logic extends UserCode {
 		
 			for (Db.Row row:rows){
 				// TALi- 25-Sep-19- TDM 5.5- add the clean of redis for completed load tasks
-				if(row.cell(0) != null)
+				if(row.get("task_execution_id") != null)
 				{
-					taskExecutionId = row.cell(0).toString();
-					taskType = row.cell(1).toString();
-					cleanRedis=Boolean.valueOf(row.cell(2).toString());
+					taskExecutionId = "" + row.get("task_execution_id");
+					taskType = "" + row.get("task_type");
+					
 					//log.info("fnCheckMigrateAndUpdateTDMDB - Loading task: " + taskExecutionId + " to TDM");
 					try
 					{
@@ -492,9 +492,9 @@ public class Logic extends UserCode {
 		String schemaName = "";
 		String iface = "";
 		if (!rs.isEmpty()) {
-			tableName = "" + rs.cell(0);
-			schemaName = "" + rs.cell(1);
-			iface = "" + rs.cell(2);
+			tableName = "" + rs.get("ref_table_name");
+			schemaName = "" + rs.get("schema_name");
+			iface = "" + rs.get("interface_name");
 		}
 		
 		//log.info("tdmCopyRefTablesForTDM - tableName: " + tableName);
@@ -890,7 +890,7 @@ public class Logic extends UserCode {
 		// TALI- 5-May-20- add a select of selection_method  + fabric_Execution_uid columns. 
 		//Remove the condition of fabric_execution_id is not null to support reference only task
 
-		String taskExeListSql = "SELECT L.FABRIC_EXECUTION_ID, L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
+		String taskExeListSql = "SELECT L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
 						"L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, L.VERSION_DATETIME, T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
 						"FROM TASK_EXECUTION_LIST L, TASKS T " +
 						"WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
@@ -911,7 +911,6 @@ public class Logic extends UserCode {
 		String verstionDateTime = "";
 		// Add selectionMethod
 		String selectionMethod = "";
-		String fabricExecutionId="";
 		
 		final String UIDLIST = "UIDList";
 		
@@ -925,20 +924,19 @@ public class Logic extends UserCode {
 		
 		//log.info("tdmUpdateTaskExecutionEntities: TASK_EXECUTION_ID: " + TASK_EXECUTION_ID + ", LU_ID: " + LU_ID + ", LU_NAME: " + LU_NAME);
 		if(!taskData.isEmpty()) {
-			fabricExecID = "" + taskData.cell(0);
-			srcEnvName = "" + taskData.cell(1);
-			creationDate = "" + taskData.cell(2);
-			startExecDate = "" + taskData.cell(3);
-			endExecDate = "" + taskData.cell(4);
-			envID = "" + taskData.cell(5);
-			versionInd = "" + taskData.cell(6);
-			versionName = "" + taskData.cell(7);
-			verstionDateTime = "" + taskData.cell(8);
+			fabricExecID = "" + taskData.get("fabric_execution_id");
+			srcEnvName = "" + taskData.get("source_env_name");
+			creationDate = "" + taskData.get("creation_date");
+			startExecDate = "" + taskData.get("start_execution_time");
+			endExecDate = "" + taskData.get("end_execution_time");
+			envID = "" + taskData.get("environment_id");
+			versionInd = "" + taskData.get("version_ind");
+			versionName = "" + taskData.get("task_title");
+			verstionDateTime = "" + taskData.get("version_datetime");
 		
 			// Add selection method and fabric_execution_id
-			selectionMethod = "" + taskData.cell(9);
-			fabricExecutionId = "" + taskData.cell(10);
-			
+			selectionMethod = "" + taskData.get("selection_method");
+						
 			//log.info("creationDate: " + creationDate + ", startExecDate: " + startExecDate + ", endExecDate: " + endExecDate + ", SELECTION METHOD: " + selectionMethod);
 			 
 			if(!"null".equals(creationDate) && !"".equals(creationDate)) {
@@ -969,8 +967,8 @@ public class Logic extends UserCode {
 			// TALI- 5-May-20 - add a check of the sectionMethod. Do not get the list of IIDs for reference only task
 		
 			Map<String, Map> migrationList = new LinkedHashMap<String, Map>();
-			//Map<String, Map> migrationList = (Map<String, Map>) fnGetIIDListForMigration(fabricExecID, null);
-			if(!selectionMethod.equals("REF") && !fabricExecutionId.equals("")) {
+
+			if(!selectionMethod.equals("REF") && !fabricExecID.equals("")) {
 				migrationList = (Map<String, Map>) fnGetIIDListForMigration(fabricExecID, null);
 			}
 			
@@ -1087,9 +1085,9 @@ public class Logic extends UserCode {
 			Db.Rows refList = db(TDM).fetch(refListSql, taskExecutionId, luName);
 			
 			for (Db.Row refTable : refList) {
-				entityID = "" + refTable.cell(0);
+				entityID = "" + refTable.get("ref_table_name");
 				targetEntityID = entityID;
-				execStatus = "" + refTable.cell(1);
+				execStatus = "" + refTable.get("execution_status");
 				IID = entityID;
 							
 				ArrayList<String> paramList = new ArrayList<>();
@@ -1139,7 +1137,7 @@ public class Logic extends UserCode {
 
 		while (response == null && retries < 4) {
 			try {
-				List<Map<String, Object>> stats = (List<Map<String, Object>>) SharedLogic.fnBatchStats(i_migrateID, "S");
+				List<Map<String, Object>> stats = (List<Map<String, Object>>) TdmSharedUtils.fnBatchStats(i_migrateID, "S");
 				for (Map<String, Object> tmp : stats) {
 					if ("Cluster".equals(tmp.get("Level"))) {
 						response = tmp;
@@ -1185,8 +1183,8 @@ public class Logic extends UserCode {
 		Db.Rows errorList = db("DB_CASSANDRA").fetch(getErrorlistSql, i_migrateId);
 		
 		for (Db.Row errorRec : errorList) {
-			String entityId = "" + errorRec.cell(0);
-			String erroMsg = "" + errorRec.cell(1);
+			String entityId = "" + errorRec.get("entityid");
+			String erroMsg = "" + errorRec.get("error");
 			Object[] split_iid = fnSplitUID(entityId);
 			String instanceId = "" + split_iid[0];
 			
@@ -1215,7 +1213,7 @@ public class Logic extends UserCode {
 				
 		while ("".equals(summaryOut)) {
 			try {
-				Object batchSummary = getFabricResponse("batch_summary '" + i_batchID + "'");
+				Object batchSummary = TdmSharedUtils.getFabricResponse("batch_summary '" + i_batchID + "'");
 				ArrayList batchSummaryList = (ArrayList) batchSummary;
 				for (int i = 0; i < batchSummaryList.size(); i++) {
 					outputString.append(batchSummaryList.get(i));
@@ -1248,12 +1246,13 @@ public class Logic extends UserCode {
 
 	private static void createCassandraTable(String iface, String schemaName, String tableName) throws SQLException {
 
-		try  {
-			Connection conn = getConnection(iface);
-			Connection cassandraConn = getConnection(DBCASSANDRA);
+		try  (Connection conn = getConnection(iface);
+				Connection cassandraConn = getConnection(DBCASSANDRA);)
+		{
+
 			Statement select = conn.createStatement();
 
-			ResultSet refTableRS = select.executeQuery("Select * from " + schemaName + "." + tableName);
+			ResultSet refTableRS = select.executeQuery("Select * from " + schemaName + "." + tableName + " where 1 = 0");
 
 			ResultSetMetaData metaData = refTableRS.getMetaData();
 			DatabaseMetaData dbmd = conn.getMetaData();

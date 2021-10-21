@@ -4,33 +4,20 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Products;
 
+import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.user.WebServiceUserCode;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.fabric.api.endpoint.Endpoint.*;
+
+import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
-import java.lang.Long;
-
-import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.user.WebServiceUserCode;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
-import com.k2view.fabric.api.endpoint.Endpoint.*;
-
-
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getFabricResponse;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -69,16 +56,16 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> product;
 			for(Db.Row row:rows) {
 				product=new HashMap<>();
-				product.put("product_name", row.cell(0));
-				product.put("product_description", row.cell(1));
-				product.put("product_vendor", row.cell(2));
-				product.put("product_versions", row.cell(3));
-				product.put("product_id",Integer.parseInt(row.cell(4).toString()));
-				product.put("product_created_by", row.cell(5));
-				product.put("product_creation_date", row.cell(6));
-				product.put("product_last_updated_date", row.cell(7));
-				product.put("product_last_updated_by", row.cell(8));
-				product.put("product_status", row.cell(9));
+				product.put("product_name", row.get("product_name"));
+				product.put("product_description", row.get("product_description"));
+				product.put("product_vendor", row.get("product_vendor"));
+				product.put("product_versions", row.get("product_versions"));
+				product.put("product_id",Integer.parseInt(row.get("product_id").toString()));
+				product.put("product_created_by", row.get("product_created_by"));
+				product.put("product_creation_date", row.get("product_creation_date"));
+				product.put("product_last_updated_date", row.get("product_last_updated_date"));
+				product.put("product_last_updated_by", row.get("product_last_updated_by"));
+				product.put("product_status", row.get("product_status"));
 				result.add(product);
 			}
 			response.put("result", result);
@@ -126,16 +113,16 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> product;
 			if(!row.isEmpty()) {
 				product=new HashMap<>();
-				product.put("product_name", row.cell(0));
-				product.put("product_description", row.cell(1));
-				product.put("product_vendor", row.cell(2));
-				product.put("product_versions", row.cell(3));
-				product.put("product_id",Integer.parseInt(row.cell(4).toString()));
-				product.put("product_created_by", row.cell(5));
-				product.put("product_creation_date", row.cell(6));
-				product.put("product_last_updated_date", row.cell(7));
-				product.put("product_last_updated_by", row.cell(8));
-				product.put("product_status", row.cell(9));
+				product.put("product_name", row.get("product_name"));
+				product.put("product_description", row.get("product_description"));
+				product.put("product_vendor", row.get("product_vendor"));
+				product.put("product_versions", row.get("product_versions"));
+				product.put("product_id",Integer.parseInt(row.get("product_id").toString()));
+				product.put("product_created_by", row.get("product_created_by"));
+				product.put("product_creation_date", row.get("product_creation_date"));
+				product.put("product_last_updated_date", row.get("product_last_updated_date"));
+				product.put("product_last_updated_by", row.get("product_last_updated_by"));
+				product.put("product_status", row.get("product_status"));
 				response.put("result", product);
 			}
 			errorCode= "SUCCESS";
@@ -170,8 +157,8 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsPostProduct(String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
-		if(product_name==null||product_versions==null) return wrapWebServiceResults("FAIL","product_name and product_versions are mandatory fields.",null);
+		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		if(product_name==null||product_versions==null) return TdmSharedUtils.wrapWebServiceResults("FAIL","product_name and product_versions are mandatory fields.",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -184,10 +171,10 @@ public class Logic extends WebServiceUserCode {
 					"(product_name, product_description, product_vendor, product_versions, product_created_by, " +
 					"product_creation_date, product_last_updated_date, product_last_updated_by, product_status) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING product_id";
-			String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
 			Db.Row row = db("TDM").fetch(sql,product_name, product_description, product_vendor, product_versions, username, now, now,
 					username, "Active").firstRow();
-			int prodId = Integer.parseInt(row.cell(0).toString());
+			int prodId = Integer.parseInt(row.get("product_id").toString());
 		
 			String activityDesc = "Product " + product_name + " was created";
 			try {
@@ -227,7 +214,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsUpdateProduct(@param(required=true) Long prodId, String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -243,7 +230,7 @@ public class Logic extends WebServiceUserCode {
 					"product_last_updated_date=(?)," +
 					"product_last_updated_by=(?) " +
 					"WHERE product_id = " + prodId;
-			String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
 			db("TDM").execute(sql, product_name, product_description, product_vendor, product_versions, now, username);
 		
 			String activityDesc = "Product " + product_name + " was updated";
@@ -308,29 +295,26 @@ public class Logic extends WebServiceUserCode {
 		
 			for(Db.Row row:rows) {
 				productLogicalUnit=new HashMap<>();
+
 				//product_logical_units
-				productLogicalUnit.put("lu_name", row.cell(0));
-				productLogicalUnit.put("lu_description", row.cell(1));
-				productLogicalUnit.put("be_id", Long.parseLong(row.cell(2).toString()));
-				productLogicalUnit.put("lu_parent_id",row.cell(3)!=null? Long.parseLong(row.cell(3).toString()):null);
-				productLogicalUnit.put("lu_id", Long.parseLong(row.cell(5).toString()));
-				productLogicalUnit.put("product_name", row.cell(6));
-				productLogicalUnit.put("lu_parent_name", row.cell(7));
-				productLogicalUnit.put("product_id", Long.parseLong(row.cell(8).toString()));
-				// Remove ADI Fields
-				//productLogicalUnit.put("execution_plan_name", row.cell(9));
-				//productLogicalUnit.put("last_executed_lu",row.cell(10)!=null?Boolean.parseBoolean(row.cell(10).toString()):null);
-				//productLogicalUnit.put("lu_is_ref",row.cell(4)!=null?Boolean.parseBoolean(row.cell(4).toString()):null);
-				productLogicalUnit.put("lu_dc_name", row.cell(11));
+				productLogicalUnit.put("lu_name", row.get("lu_name"));
+				productLogicalUnit.put("lu_description", row.get("lu_description"));
+				productLogicalUnit.put("be_id", Long.parseLong(row.get("be_id").toString()));
+				productLogicalUnit.put("lu_parent_id",row.get("lu_parent_id")!=null? Long.parseLong(row.get("lu_parent_id").toString()):null);
+				productLogicalUnit.put("lu_id", Long.parseLong(row.get("lu_id").toString()));
+				productLogicalUnit.put("product_name", row.get("product_name"));
+				productLogicalUnit.put("lu_parent_name", row.get("lu_parent_name"));
+				productLogicalUnit.put("product_id", Long.parseLong(row.get("product_id").toString()));
+				productLogicalUnit.put("lu_dc_name", row.get("lu_dc_name"));
 				//business_entities
-				productLogicalUnit.put("be_name", row.cell(12));
-				productLogicalUnit.put("be_description", row.cell(13));
-				productLogicalUnit.put("be_id", Long.parseLong(row.cell(14).toString()));
-				productLogicalUnit.put("be_created_by", row.cell(15));
-				productLogicalUnit.put("be_creation_date", row.cell(16));
-				productLogicalUnit.put("be_last_updated_date", row.cell(17));
-				productLogicalUnit.put("be_last_updated_by", row.cell(18));
-				productLogicalUnit.put("be_status", row.cell(19));
+				productLogicalUnit.put("be_name", row.get("be_name"));
+				productLogicalUnit.put("be_description", row.get("be_description"));
+				productLogicalUnit.put("be_id", Long.parseLong(row.get("be_id").toString()));
+				productLogicalUnit.put("be_created_by", row.get("be_created_by"));
+				productLogicalUnit.put("be_creation_date", row.get("be_creation_date"));
+				productLogicalUnit.put("be_last_updated_date", row.get("be_last_updated_date"));
+				productLogicalUnit.put("be_last_updated_by", row.get("be_last_updated_by"));
+				productLogicalUnit.put("be_status", row.get("be_status"));
 				productLogicalUnits.add(productLogicalUnit);
 			}
 			errorCode= "SUCCESS";
@@ -389,28 +373,25 @@ public class Logic extends WebServiceUserCode {
 			for(Db.Row row:rows) {
 				//product_logical_units
 				productLogicalUnit=new HashMap<>();
-				productLogicalUnit.put("lu_name", row.cell(0));
-				productLogicalUnit.put("lu_description", row.cell(1));
-				productLogicalUnit.put("be_id", Long.parseLong(row.cell(2).toString()));
-				productLogicalUnit.put("lu_parent_id",row.cell(3)!=null? Long.parseLong(row.cell(3).toString()):null);
-				productLogicalUnit.put("lu_id", Long.parseLong(row.cell(5).toString()));
-				productLogicalUnit.put("product_name", row.cell(6));
-				productLogicalUnit.put("lu_parent_name", row.cell(7));
-				productLogicalUnit.put("product_id", Long.parseLong(row.cell(8).toString()));
-				// Remove ADI fields
-				//productLogicalUnit.put("execution_plan_name", row.cell(9));
-				//productLogicalUnit.put("last_executed_lu",row.cell(10)!=null?Boolean.parseBoolean(row.cell(10).toString()):null);
-				//productLogicalUnit.put("lu_is_ref",row.cell(4)!=null? Boolean.parseBoolean(row.cell(4).toString()):null);
-				productLogicalUnit.put("lu_dc_name", row.cell(11));
+				productLogicalUnit.put("lu_name", row.get("lu_name"));
+				productLogicalUnit.put("lu_description", row.get("lu_description"));
+				productLogicalUnit.put("be_id", Long.parseLong(row.get("be_id").toString()));
+				productLogicalUnit.put("lu_parent_id",row.get("lu_parent_id")!=null? Long.parseLong(row.get("lu_parent_id").toString()):null);
+				productLogicalUnit.put("lu_id", Long.parseLong(row.get("lu_id").toString()));
+				productLogicalUnit.put("product_name", row.get("product_name"));
+				productLogicalUnit.put("lu_parent_name", row.get("lu_parent_name"));
+				productLogicalUnit.put("product_id", Long.parseLong(row.get("product_id").toString()));
+				productLogicalUnit.put("lu_dc_name", row.get("lu_dc_name"));
+
 				//business_entities
-				productLogicalUnit.put("be_name", row.cell(12));
-				productLogicalUnit.put("be_description", row.cell(13));
-				productLogicalUnit.put("be_id", Long.parseLong(row.cell(14).toString()));
-				productLogicalUnit.put("be_created_by", row.cell(15));
-				productLogicalUnit.put("be_creation_date", row.cell(16));
-				productLogicalUnit.put("be_last_updated_date", row.cell(17));
-				productLogicalUnit.put("be_last_updated_by", row.cell(18));
-				productLogicalUnit.put("be_status", row.cell(19));
+				productLogicalUnit.put("be_name", row.get("be_name"));
+				productLogicalUnit.put("be_description", row.get("be_description"));
+				productLogicalUnit.put("be_id", Long.parseLong(row.get("be_id").toString()));
+				productLogicalUnit.put("be_created_by", row.get("be_created_by"));
+				productLogicalUnit.put("be_creation_date", row.get("be_creation_date"));
+				productLogicalUnit.put("be_last_updated_date", row.get("be_last_updated_date"));
+				productLogicalUnit.put("be_last_updated_by", row.get("be_last_updated_by"));
+				productLogicalUnit.put("be_status", row.get("be_status"));
 				productLogicalUnits.add(productLogicalUnit);
 			}
 			errorCode= "SUCCESS";
@@ -435,13 +416,13 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsDeleteProduct(@param(required=true) Long prodId) throws Exception {
 		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
 		
 		try {
-			String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
 			fnUpdateProductDate(prodId,username);
 		} catch(Exception e){
 			log.error(e.getMessage());
@@ -452,7 +433,7 @@ public class Logic extends WebServiceUserCode {
 					"product_status=(?) " +
 					"WHERE product_id = " + prodId + " RETURNING product_name";
 			Db.Row row = db("TDM").fetch(sql,"Inactive").firstRow();
-			String prodName = row.cell(0).toString();
+			String prodName = row.get("product_name").toString();
 		
 			{
 				String updateProductLogicalUnits = "UPDATE \"" + schema + "\".product_logical_units " +
@@ -533,7 +514,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"last_updated_by\": \"k2view\",\r\n" +
 			"      \"product_id\": 1,\r\n" +
 			"      \"last_updated_date\": \"date\",\r\n" +
-			"      \"fabric_environment_name\": \"ENV2\",\r\n" +
 			"      \"environment_name\": \"envName\",\r\n" +
 			"      \"allow_write\": \"t\",\r\n" +
 			"      \"environment_point_of_contact_phone1\": null,\r\n" +
@@ -597,7 +577,6 @@ public class Logic extends WebServiceUserCode {
 				env.put("environment_last_updated_date",resultSet.getString("environment_last_updated_date"));
 				env.put("environment_last_updated_by",resultSet.getString("environment_last_updated_by"));
 				env.put("environment_status",resultSet.getString("environment_status"));
-				env.put("fabric_environment_name",resultSet.getString("fabric_environment_name"));
 				env.put("allow_write",resultSet.getBoolean("allow_write"));
 				env.put("allow_read",resultSet.getBoolean("allow_read"));
 				env.put("sync_mode",resultSet.getString("sync_mode"));
@@ -654,10 +633,10 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> product;
 			for(Db.Row row:rows) {
 				product=new HashMap<>();
-				product.put("product_id", Integer.parseInt(row.cell(0).toString()));
-				product.put("product_versions", row.cell(1));
-				product.put("product_name",row.cell(2));
-				product.put("lus", Integer.parseInt(row.cell(3).toString()));
+				product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
+				product.put("product_versions", row.get("product_versions"));
+				product.put("product_name",row.get("product_name"));
+				product.put("lus", Integer.parseInt(row.get("lus").toString()));
 				result.add(product);
 			}
 			response.put("result", result);
@@ -691,7 +670,7 @@ public class Logic extends WebServiceUserCode {
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
-		String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+		String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
 		String userId = username;
 		String sql= "INSERT INTO \"" + schema + "\".activities " +
 				"(date, action, entity, user_id, username, description) " +

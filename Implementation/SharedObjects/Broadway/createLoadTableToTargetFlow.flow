@@ -62,6 +62,18 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "tableIidFieldName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sequenceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -73,7 +85,52 @@
                                                 "LU_TABLE": {
                                                     "type": "string"
                                                 },
-                                                "LU_TABLE_COLUMNS": {},
+                                                "LU_TABLE_COLUMNS": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "MAIN_TABLE_SEQ_ID": {
+                                                    "type": "string"
+                                                },
+                                                "MAIN_TABLE_SEQ_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "TABLE_SEQ_DATA": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "column": {
+                                                                "type": "string"
+                                                            },
+                                                            "value": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "LU_NAME": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "TARGET_TABLE_NAME": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "TARGET_FIELD_NAME": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "FABRIC_TABLE_NAME": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "FABRIC_FIELD_NAME": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "SEQUENCE_NAME": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
                                                 "TARGET_INTERFACE": {
                                                     "type": "string"
                                                 },
@@ -99,6 +156,25 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "flow folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://../Implementation/LogicalUnits/${LU_NAME}/Broadway"
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -140,25 +216,6 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "flow folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "file://../Implementation/LogicalUnits/${LU_NAME}/Broadway"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "ApplyTemplate",
                             "actorType": {
@@ -247,22 +304,22 @@
         },
         {
             "leftPort": {
-                "actor": "FlowTemplate",
-                "name": "stream"
-            },
-            "rightPort": {
-                "actor": "ApplyTemplate",
-                "name": "templateContent"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "flow folder",
                 "name": "string"
             },
             "rightPort": {
                 "actor": "FileWrite1",
                 "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FlowTemplate",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "ApplyTemplate",
+                "name": "templateContent"
             }
         },
         {
@@ -333,6 +390,26 @@
             "rightPort": {
                 "actor": "LuFunction2",
                 "name": "targetDbTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "IID_FIELD_NAME"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "tableIidFieldName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SEQUENCE_NAME"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "sequenceName"
             }
         },
         {

@@ -15,8 +15,8 @@ SELECT DISTINCT
   , tt.process_id
   , ep.product_version tdm_source_product_version
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
-  , e.fabric_environment_name  as source_environment_name
-  , e2.fabric_environment_name as target_environment_name
+  , e.environment_name  as source_environment_name
+  , e2.environment_name as target_environment_name
 FROM
     TASK_EXECUTION_LIST tt
   , environments         e
@@ -56,8 +56,8 @@ SELECT DISTINCT
   , tt.process_id
   , ep.product_version tdm_source_product_version
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
-  , e.fabric_environment_name as source_environment_name
-  , e2.fabric_environment_name as target_environment_name
+  , e.environment_name as source_environment_name
+  , e2.environment_name as target_environment_name
 FROM
     TASK_EXECUTION_LIST tt
   , TASK_EXECUTION_LIST p
@@ -93,8 +93,8 @@ SELECT DISTINCT
   , tt.process_id
   , ep.product_version tdm_source_product_version
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
-  , e.fabric_environment_name as source_environment_name
-  , e2.fabric_environment_name as target_environment_name
+  , e.environment_name as source_environment_name
+  , e2.environment_name as target_environment_name
 FROM
       TASK_EXECUTION_LIST tt
     , TASK_EXECUTION_LIST p

@@ -4,50 +4,25 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_utils;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.naming.*;
-import javax.naming.directory.*;
-import javax.validation.constraints.Null;
-
 import com.k2view.cdbms.FabricEncryption.FabricEncryption;
-import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
-import com.k2view.fabric.api.endpoint.Endpoint.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.fabric.api.endpoint.Endpoint.MethodType;
+import com.k2view.fabric.api.endpoint.Endpoint.Produce;
+import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
+import com.k2view.fabric.api.endpoint.Endpoint.webService;
 import com.k2view.fabric.common.Json;
 
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.wrapWebServiceResults;
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.directory.*;
+import java.util.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
-
-	static String ldapUrlString = "ldap://62.90.46.136:10389";
-	static String ldapAdminDN = "uid=tdmldap,ou=users,ou=system";
-	static String ldapAdminPassword = "Q1w2e3r4t5";
-	static String ldapOwnersDN = "ou=k2venvownerg,ou=system";
-	static String ldapTestersDN = "ou=k2vtestg,ou=system";
-	static String ldapOwnersGroupName = "k2venvownerg";
-	static String ldapTestersGroupName = "k2vtestg";
-	static String ldapBaseCN = "DC=training,DC=k2view,DC=com";
-
 
 	@desc("Get DB TimeZone")
 	@webService(path = "dbtimezone", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -74,88 +49,6 @@ public class Logic extends WebServiceUserCode {
 		response.put("errorCode",errorCode);
 		response.put("message", message);
 		return response;
-	}
-
-
-	@desc("Get owners")
-	@webService(path = "owners", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"uid\": \"id\",\r\n" +
-			"      \"user_id\": \"userId\",\r\n" +
-			"      \"displayName\": \"displayName\",\r\n" +
-			"      \"username\": \"username\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"uid\": \"id\",\r\n" +
-			"      \"user_id\": \"userId\",\r\n" +
-			"      \"displayName\": \"displayName\",\r\n" +
-			"      \"username\": \"username\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
-			"}")
-	public static Object wsGetOwners() throws Exception {
-		HashMap<String,Object> response=new HashMap<>();
-		String errorCode="";
-		String message=null;
-		try{
-			List<Map<String,Object>> envOwners =  fnGetEnvOwners();
-		
-			for(Map<String,Object> envOwner:envOwners) {
-				envOwner.put("user_id", envOwner.get("uid"));
-				envOwner.put("username", envOwner.get("displayName"));
-			}
-			response.put("result",envOwners);
-			errorCode="SUCCESS";
-		} catch(Exception e){
-			message=e.getMessage();
-			errorCode="FAIL";
-		}
-		response.put("errorCode",errorCode);
-		response.put("message", message);
-		return response;
-	}
-
-
-	static List<Map<String,Object>> fnGetEnvOwners () throws Exception {
-		List<Map<String,Object>> result=new ArrayList<>();
-		String url = ldapUrlString;
-		Hashtable env = new Hashtable();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, url);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, ldapAdminDN);
-		env.put(Context.SECURITY_CREDENTIALS, ldapAdminPassword);
-
-		DirContext ctx = new InitialDirContext(env);
-		SearchControls constraints = new SearchControls();
-		constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-		String attrList[] = {"uid","displayName"};
-		constraints.setReturningAttributes(attrList);
-
-		NamingEnumeration answer = ctx.search(ldapOwnersDN,"(objectClass=*)",constraints);
-		Map<String,Object> entry;
-		while (answer.hasMore()) {
-			entry=new HashMap<>();
-			SearchResult searchResult =(SearchResult)answer.next();
-			Attributes attrs = searchResult.getAttributes();
-			if (attrs == null) continue;
-			NamingEnumeration attrsEnum = attrs.getAll();
-			if(!attrsEnum.hasMoreElements()) continue;
-			while (attrsEnum.hasMoreElements()) {
-				Attribute attr =(Attribute)attrsEnum.next();
-				String id = attr.getID();
-				entry.put(id , attr.get());
-			}
-			result.add(entry);
-		}
-
-		ctx.close();
-
-		return result;
 	}
 
 	//from logic.TDM
@@ -219,10 +112,29 @@ public class Logic extends WebServiceUserCode {
 			String sql = "select * from \"public\".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
 			Object params = db("TDM").fetch(sql).firstRow().get("param_value");
 			Map result = Json.get().fromJson((String) params, Map.class);
-			return wrapWebServiceResults("SUCCESS", "", result);
+			return TdmSharedUtils.wrapWebServiceResults("SUCCESS", "", result);
 		} catch (Throwable t) {
-			return wrapWebServiceResults("FAIL", t.getMessage(), null);
+			return TdmSharedUtils.wrapWebServiceResults("FAIL", t.getMessage(), null);
 		}
+	}
+
+
+	@desc("Get the version of the TDM")
+	@webService(path = "tdmVersion", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\r\n" +
+			"  <result>7.3.0</result>\r\n" +
+			"  <errorCode>SUCCESS</errorCode>\r\n" +
+			"  <message/>\r\n" +
+			"</HashMap>")
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": \"7.3.0\",\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetTDMVersion() throws Exception {
+		Object tdmVersion =  db("TDM").fetch("select param_value from tdm_general_parameters where param_name = 'TDM_VERSION'").firstValue();
+		
+		return wrapWebServiceResults("SUCCESS", null, tdmVersion);
 	}
 
 }

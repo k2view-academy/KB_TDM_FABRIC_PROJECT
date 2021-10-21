@@ -26,6 +26,7 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.Logic.wsGetTasks;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
@@ -364,9 +365,9 @@ public class Logic extends WebServiceUserCode {
 				returnedResult.add(Data);
 			}
 		
-			return SharedLogic.wrapWebServiceResults("SUCCESS",null,returnedResult);
+			return wrapWebServiceResults("SUCCESS",null,returnedResult);
 		}catch(Exception e){
-			return SharedLogic.wrapWebServiceResults("FAIL",e.getMessage(),null);
+			return wrapWebServiceResults("FAIL",e.getMessage(),null);
 		}
 	}
 

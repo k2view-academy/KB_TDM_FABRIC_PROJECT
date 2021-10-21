@@ -24,6 +24,8 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {
@@ -35,8 +37,8 @@ public class Logic extends UserCode {
 		// For TEST mode- you can comment this delete
 		String instID = getInstanceID();
 		if(!inDebugMode()){
-			//DBExecute("TDM", "Delete from task_execution_entities where task_execution_id = ?", new Object[]{getInstanceID()});
-			//DBExecute("TDM", "Delete from tdm_seq_mapping where task_execution_id = ?", new Object[]{getInstanceID()});
+			//db("TDM").execute("Delete from task_execution_entities where task_execution_id = ?", instID);
+			//db("TDM").execute("Delete from tdm_seq_mapping where task_execution_id = ?", instID);
 			//db("TDM").execute("Delete from task_execution_entities where task_execution_id = ?", instID);
 			//db("TDM").execute("Delete from tdm_seq_mapping where task_execution_id = ?", instID);
 			//db("TDM").execute("Delete from TASK_EXE_STATS_DETAILED where task_execution_id = ?", instID);

@@ -4,36 +4,23 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_BusinessEntities;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
-import java.util.stream.StreamSupport;
-
-import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 import com.k2view.fabric.common.Util;
 import org.jetbrains.annotations.NotNull;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
+import java.sql.ResultSet;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
-import javax.jms.Message;
-
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.COMBO_MAX_COUNT;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -97,14 +84,14 @@ public class Logic extends WebServiceUserCode {
 			Map<String,Object> businessEntity;
 			for(Db.Row row:rows) {
 				businessEntity=new HashMap<String,Object>();
-				businessEntity.put("be_id",Integer.parseInt(row.cell(0).toString()));
-				businessEntity.put("be_description", row.cell(1));
-				businessEntity.put("be_name", row.cell(2));
-				businessEntity.put("be_created_by", row.cell(3));
-				businessEntity.put("be_creation_date", row.cell(4));
-				businessEntity.put("be_last_updated_date", row.cell(5));
-				businessEntity.put("be_last_updated_by", row.cell(6));
-				businessEntity.put("be_status", row.cell(7));
+				businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
+				businessEntity.put("be_description", row.get("be_description"));
+				businessEntity.put("be_name", row.get("be_name"));
+				businessEntity.put("be_created_by", row.get("be_created_by"));
+				businessEntity.put("be_creation_date", row.get("be_creation_date"));
+				businessEntity.put("be_last_updated_date", row.get("be_last_updated_date"));
+				businessEntity.put("be_last_updated_by", row.get("be_last_updated_by"));
+				businessEntity.put("be_status", row.get("be_status"));
 				result.add(businessEntity);
 			}
 			return wrapWebServiceResults(errorCode,message,result);
@@ -148,14 +135,14 @@ public class Logic extends WebServiceUserCode {
 				String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
 				Db.Row row = db("TDM").fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active").firstRow();
 				HashMap<String,Object> businessEntity=new HashMap<>();
-				businessEntity.put("be_id",Integer.parseInt(row.cell(0).toString()));
-				businessEntity.put("be_name", row.cell(1));
-				businessEntity.put("be_description", row.cell(2));
-				businessEntity.put("be_created_by", row.cell(3));
-				businessEntity.put("be_creation_date", row.cell(4));
-				businessEntity.put("be_last_updated_date", row.cell(5));
-				businessEntity.put("be_last_updated_by", row.cell(6));
-				businessEntity.put("be_status", row.cell(7));
+				businessEntity.put("be_id",Integer.parseInt(row.get("be_id").toString()));
+				businessEntity.put("be_name", row.get("be_name"));
+				businessEntity.put("be_description", row.get("be_description"));
+				businessEntity.put("be_created_by", row.get("be_created_by"));
+				businessEntity.put("be_creation_date", row.get("be_creation_date"));
+				businessEntity.put("be_last_updated_date", row.get("be_last_updated_date"));
+				businessEntity.put("be_last_updated_by", row.get("be_last_updated_by"));
+				businessEntity.put("be_status", row.get("be_status"));
 
 				String activityDesc = "Business entity " + be_name + " was created";
 				try {
@@ -204,7 +191,7 @@ public class Logic extends WebServiceUserCode {
 				Db.Row row = db("TDM").fetch(sql, be_description,now,username).firstRow();
 				errorCode= "SUCCESS";
 
-				String activityDesc = "Business entity " + row.cell(0) + " was updated";
+				String activityDesc = "Business entity " + row.get("be_name") + " was updated";
 				try {
 					fnInsertActivity("update", "Business entities", activityDesc);
 				}
@@ -248,7 +235,7 @@ public class Logic extends WebServiceUserCode {
 				Db.Rows rows = db("TDM").fetch(sql, "Inactive");
 				Db.Row firstRec = rows.firstRow();
 				String beName="";
-				if (!firstRec.isEmpty()) beName = "" + firstRec.cell(0);
+				if (!firstRec.isEmpty()) beName = "" + firstRec.get("be_name");
 
 				String updateEnvironmentProductsSql = "UPDATE \"public\".environment_products " +
 						"SET status= (?) " +
@@ -688,10 +675,10 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		
 		try {
-			String sql = "SELECT COUNT(be_id) FROM \"" + schema + "\".product_logical_units " +
+			String sql = "SELECT COUNT(be_id) as cnt FROM \"" + schema + "\".product_logical_units " +
 					"WHERE be_id = " + beId + " AND product_id <> -1";
 			Db.Rows rows= db("TDM").fetch(sql);
-			int result =Integer.parseInt(rows.firstRow().cell(0).toString());
+			int result =Integer.parseInt(rows.firstRow().get("cnt").toString());
 			errorCode="SUCCESS";
 			response.put("result", result);
 		} catch(Exception e){
@@ -821,7 +808,7 @@ public class Logic extends WebServiceUserCode {
 					"VALUES (?, ?, ?, ?) RETURNING process_id";
 			Db.Row row= db("TDM").fetch(sql,process_name,beId,execution_order,process_description).firstRow();
 			HashMap<String,Object> result=new HashMap<>();
-			result.put("id", Long.parseLong(row.cell(0).toString()));
+			result.put("id", Long.parseLong(row.get("process_id").toString()));
 			try{
 				String activityDesc = "Post Execution Process " + process_name + " was added to business entity " + beName;
 				fnInsertActivity("update", "Business entities", activityDesc);
@@ -1032,20 +1019,24 @@ public class Logic extends WebServiceUserCode {
 		Db.Row row = db("TDM").fetch(deleteLogicalUnitSql,luId).firstRow();
 
 		if(row.isEmpty()) return;
-		if (row.cell(0)!=null && !"-1".equals(row.cell(0).toString())) {
+		String prodId = "" + row.get("product_id");
+		if (prodId != null && !"-1".equals(prodId)) {
+			
 			String sql = "UPDATE \"public\".environment_products " +
 					"SET status= (?) " +
-					"WHERE \"public\".environment_products.status = \'Active\' AND \"public\".environment_products.product_id = " + row.cell(0).toString() +
+					"WHERE \"public\".environment_products.status = \'Active\' AND \"public\".environment_products.product_id = " + prodId +
 					" AND (select count(\"public\".product_logical_units.product_id) " +
 					"FROM \"public\".product_logical_units " +
-					"WHERE \"public\".product_logical_units.product_id = " + row.cell(0).toString() + ") = 0 RETURNING product_id";
+					"WHERE \"public\".product_logical_units.product_id = " + prodId + ") = 0 RETURNING product_id";
+			
 			row = db("TDM").fetch(sql, "Inactive").firstRow();
 
 			if (!row.isEmpty()) {
+				prodId = "" + row.get("product_id");
 				 sql = "WITH src AS ( " +
 						"UPDATE \"" + schema + "\".tasks_products " +
 						"SET task_product_status = (?) " +
-						"WHERE \"" + schema + "\".tasks_products.product_id = " + row.cell(0) + " " +
+						"WHERE \"" + schema + "\".tasks_products.product_id = " + prodId + " " +
 						"RETURNING \"" + schema + "\".tasks_products.task_id ) " +
 						" " +
 						"UPDATE \"" + schema + "\".tasks SET task_status = (?) " +
@@ -1056,7 +1047,7 @@ public class Logic extends WebServiceUserCode {
 						"INTERSECT " +
 						"SELECT \"" + schema + "\".tasks_products.task_id " +
 						"FROM \"" + schema + "\".tasks_products " +
-						"WHERE \"" + schema + "\".tasks_products.product_id = " + row.cell(0) + " ) AS sq " +
+						"WHERE \"" + schema + "\".tasks_products.product_id = " + prodId + " ) AS sq " +
 						"WHERE \"" + schema + "\".tasks.task_id = sq.task_id AND \"" + schema + "\".tasks.task_status = \'Active\'";
 				db("TDM").fetch(sql, "Inactive", "Inactive");
 			}
@@ -1179,7 +1170,9 @@ public class Logic extends WebServiceUserCode {
 						String columnMinMaxSQL = getColumnMinMaxSQL(env, colName, beTableName);
 
 						Db.Row columnMinMaxRow = Util.rte(() -> tdmDB.fetch(columnMinMaxSQL).firstRow());
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), VALID_VALUES, "\\N", MIN_VALUE, Util.rte(() -> columnMinMaxRow.cell(0)), MAX_VALUE, Util.rte(() -> columnMinMaxRow.cell(1)), LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
+						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
+							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), VALID_VALUES, "\\N", MIN_VALUE, 
+							Util.rte(() -> columnMinMaxRow.cell(0)), MAX_VALUE, Util.rte(() -> columnMinMaxRow.cell(1)), LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
 						));
 					} else {
 						// Mark it as text

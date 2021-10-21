@@ -463,6 +463,35 @@
                     "isTransactional": false,
                     "actors": [
                         {
+                            "name": "Get Source Environment DC",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select p.data_center_name from environment_products p, task_execution_list l, tasks_logical_units u\r\nwhere l.task_execution_id=${taskExeID} and  l.task_id = u.task_id and l.lu_id = u.lu_id and u.lu_name = ${luName}\r\nand l.source_environment_id= p.environment_id and l.product_id = p.product_id\r\n"
+                                    },
+                                    {
+                                        "name": "taskExeID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Set TTL for Clone Instance",
                             "actorType": {
                                 "parentType": "setCloneInstanceTTL_Actor",
@@ -632,10 +661,21 @@
             "stages": [
                 {
                     "name": "Get Instance From Fabric",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Get Values of Globals And Set  Indicators And IDs"
+                    ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Check if Source Env has DC",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "ErrorHandler1",
                             "onError": "result",
@@ -715,6 +755,105 @@
                         },
                         {
                             "name": "Set Masking Indicator",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Get Values of Globals And Set  Indicators And IDs"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler2",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Entity with Source DC",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "get ${luName}.${iid} @ ${dcName} WITH PARALLEL=false STOP_ON_ERROR=true"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "dcName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Time After Get__1",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Indicator__1",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -904,6 +1043,17 @@
         },
         {
             "leftPort": {
+                "actor": "Split IID And Clone Number",
+                "name": "UID"
+            },
+            "rightPort": {
+                "actor": "Get Entity",
+                "name": "iid"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
                 "actor": "get  TDM Replace Sequence Indicator",
                 "name": "variableValue"
             },
@@ -934,6 +1084,36 @@
         },
         {
             "leftPort": {
+                "actor": "get TDM Task Execution ID",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Get Source Environment DC",
+                "name": "taskExeID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Environment DC",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check if Source Env has DC",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Environment DC",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Entity with Source DC",
+                "name": "dcName"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Check if Masking Flag is set",
                 "name": "result"
             },
@@ -944,7 +1124,27 @@
         },
         {
             "leftPort": {
+                "actor": "Check if Masking Flag is set",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Masking Indicator__1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Time After Get",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format Current Time",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Time After Get__1",
                 "name": "date"
             },
             "rightPort": {
@@ -1158,6 +1358,16 @@
                 "name": "luName"
             },
             "rightPort": {
+                "actor": "Get Source Environment DC",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
                 "actor": "Set TTL for Clone Instance",
                 "name": "luName"
             }
@@ -1175,21 +1385,31 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "iid"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Get Entity",
-                "name": "iid"
+                "name": "syncMode"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "syncMode"
+                "name": "luName"
             },
             "rightPort": {
-                "actor": "Get Entity",
-                "name": "syncMode"
+                "actor": "Get Entity with Source DC",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Get Entity with Source DC",
+                "name": "iid"
             }
         },
         {

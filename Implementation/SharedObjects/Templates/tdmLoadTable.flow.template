@@ -106,7 +106,7 @@
                                                 "type": "object",
                                                 "properties": {
                                                     {{#each LU_TABLE_COLUMNS~}}
-                                                    "{{this}}": {}{{#if @last}}{{^}},{{/if}}
+                                                    "{{this}}": {"type": "Any"}{{#if @last}}{{^}},{{/if}}
 													{{/each}}
                                                 }
                                             }
@@ -133,11 +133,70 @@
         {
             "stages": [
                 {
+					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
+                    "actors": [
+						{{#if TABLE_SEQ_DATA}}
+                        {
+                            "name": "Transformation Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": false,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+						{{#each TABLE_SEQ_DATA~}}
+                        {
+                            "name": "Get Sequence for {{getFieldName this}}",
+                            "actorType": {
+                                "parentType": "{{getSequenceActorName this}}",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getTableName this}}"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getFieldName this}}"
+                                    }
+                                ],
+                                "outputs": []
+							}
+                        {{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+
+						{{/if}}
+                    ]
+
                 }
+				
             ]
         },
         {
@@ -183,6 +242,27 @@
                                 "outputs": []
                             }
                         },
+						{{#neq MAIN_TABLE_SEQ_ID "NO_ID"}}
+                        {
+                            "name": "Set Target Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+						{{/neq}}
                         {
                             "name": "Load {{TARGET_TABLE}} Table",
                             "actorType": {
@@ -288,7 +368,7 @@
         },
         {
             "stages": [
-                {											 
+                {
                     "name": "Post Table Loading",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -309,6 +389,44 @@
             },
             "iterate": "Iterate"
         },
+		{{#each TABLE_SEQ_DATA~}}
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Sequence for {{getFieldName this}}",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "{{getSourceFieldName this}}"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Sequence for {{getFieldName this}}",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load {{TARGET_TABLE}} Table",
+                "name": "{{getFieldName this}}"
+            }
+        },
+		{{/each}}
+		{{#neq MAIN_TABLE_SEQ_ID "NO_ID"}}
+        {
+            "leftPort": {
+                "actor": "Get Sequence for {{MAIN_TABLE_SEQ_ID}}",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Set Target Entity ID",
+                "name": "value"
+            }
+        },
+		{{/neq}}
         {
             "leftPort": {
                "actor": "Read Stats",
@@ -320,7 +438,7 @@
             }
         },
         {
-            "leftPort": {									  
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "globals"
             },

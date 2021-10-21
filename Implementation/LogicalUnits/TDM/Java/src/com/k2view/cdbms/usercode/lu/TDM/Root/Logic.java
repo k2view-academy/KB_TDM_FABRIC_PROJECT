@@ -171,65 +171,14 @@ public class Logic extends UserCode {
 				versionDateTime = "";
 			}
 			log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - versionName: " + versionName + ", versionDateTime: " + versionDateTime);
-			/*
 			
-			//log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - versionName: " + versionName + ", versionDateTime: " + versionDateTime);
-			
-			if ("null".equals(versionName)) {
-				versionName = "";
-				versionDateTime = "";
-			}
-			
-			String sql1 = "SELECT LU_NAME, TARGET_ENTITY_ID, ENV_ID FROM TASK_EXECUTION_ENTITIES WHERE ID_TYPE = 'ENTITY' limit 1";
-			Db.Row row1 = fabric().fetch(sql1).firstRow();
-			if (!row1.isEmpty()) {
-				luName = "" + row1.cell(0);
-				tagetEntityID = "" + row1.cell(1);
-				targetEnv = "" + row1.cell(2);
-			}
-		
-			if (!luName.equals(""))
-			{
-				//reportUserMessage("select task execution id from tdm_lu_type_rel_eid by targetEnv: " + targetEnv + ", luName: "+ luName + ", tagetEntityID:" +tagetEntityID );
-				Db.Row row2 = null;
-				// Get the task execution id of the original insert task by the target env + lu_type_1 + lu_type
-				if ("".equals(versionName)) {
-					String sql2 = "SELECT distinct task_execution_id FROM public.tdm_lu_type_rel_tar_eid where target_env = ? and " +
-						"((lu_type_1 = ? and lu_type1_eid= ?) or (lu_type_2 = ? and lu_type2_eid= ?)) and version_name = ''  limit 1";
-					row2 = db("TDM").fetch(sql2, targetEnv, luName, tagetEntityID, luName, tagetEntityID).firstRow();
-				} else {
-					String sql2 = "SELECT distinct task_execution_id FROM public.tdm_lu_type_rel_tar_eid where target_env = ? and " +
-						"((lu_type_1 = ? and lu_type1_eid= ?) or (lu_type_2 = ? and lu_type2_eid= ?)) and version_name = ? and version_datetime = ?  limit 1";
-					row2 = db("TDM").fetch(sql2, targetEnv, luName, tagetEntityID, luName, tagetEntityID, versionName, versionDateTime).firstRow();
-				}
-				
-				if (!row2.isEmpty()) {
-					taskExecutionID = "" + row2.cell(0);
-				}
-			}
-		
-			if (!taskExecutionID.equals(""))
-			{
-				//reportUserMessage("select relation records by task execution id");
-				//TDM 6.0 - Get version_name & version_datetime
-				//String sql3 = "SELECT source_env, target_env, task_execution_id, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid FROM public.tdm_lu_type_rel_tar_eid " +
-				String sql3 = "SELECT source_env, target_env, task_execution_id, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, " + 
-						"creation_date, version_name, version_datetime FROM public.tdm_lu_type_rel_tar_eid " +
-						" where task_execution_id = ?";
-				Db.Rows rows3 = db("TDM").fetch(sql3, taskExecutionID);
-				for (Db.Row row : rows3) {
-					yield(row.cells());
-				}
-				if (rows3 != null) {
-					rows3.close();
-				}*/
 			Db.Rows rows2 = null;
 			
 			if ("".equals(versionName)) {	
 				String sql2 = "SELECT rel.* " +
 						"FROM tdm_lu_type_rel_tar_eid rel, task_Execution_entities parent,  task_Execution_entities child, environments e " +
 						"WHERE parent.task_Execution_id = ? AND parent.task_Execution_id = child.task_Execution_id " +
-						"AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.fabric_environment_name " +
+						"AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.environment_name " +
 						"AND rel.lu_Type_1 = parent.lu_name " +
 						"AND rel.lu_Type1_eid= parent.target_entity_id AND rel.lu_type_2 = child.lu_name " +
 						"AND rel.lu_type2_eid = child.target_entity_id AND parent.version_name = '' ";
@@ -238,11 +187,11 @@ public class Logic extends UserCode {
 				String sql2 = "SELECT rel.* " +
 						"FROM tdm_lu_type_rel_tar_eid rel, task_Execution_entities parent,  task_Execution_entities child, environments e " +
 						"WHERE parent.task_Execution_id = ? AND parent.task_Execution_id = child.task_Execution_id " +
-						"AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.fabric_environment_name " +
+						"AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.environment_name " +
 						"AND rel.lu_Type_1 = parent.lu_name " +
 						"AND rel.lu_Type1_eid= parent.target_entity_id AND rel.lu_type_2 = child.lu_name " +
 						"AND rel.lu_type2_eid = child.target_entity_id AND parent.version_name=? " +
-						"AND parent.version_datetime=?";
+						"AND to_char(parent.version_datetime, 'YYYYMMDDHH24MISS')=?";
 				rows2 = db("TDM").fetch(sql2, taskExecutionID, versionName, versionDateTime);
 			}
 			for (Db.Row row : rows2) {
@@ -330,9 +279,9 @@ public class Logic extends UserCode {
 			}
 			
 			Db.Row taskInfo = ciTDM.fetch("SELECT version_ind, task_title from tasks where task_id = ?", task_id).firstRow();
-			version_ind = "" + taskInfo.cell(0);
+			version_ind = "" + taskInfo.get("version_ind");
 			if ("true".equalsIgnoreCase(version_ind)) {
-				version_name = "" + taskInfo.cell(1);
+				version_name = "" + taskInfo.get("task_title");
 			}
 			
 			version_datetime = "" + tdmTaskExecRec.get("version_datetime");
@@ -438,12 +387,5 @@ public class Logic extends UserCode {
 			errTableData.close();
 		}
 	}
-
-
-
-
-
-
-
 
 }

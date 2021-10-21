@@ -59,12 +59,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>10.21.3.4</dbHost>
-          <dbPort>5437</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>BVnikQh4hMB8pvNUSrF/Tk9Rvwx3iGvDWcXopdZxLkk=:DfYiJDDFZlSzUPJiCBsFtwe/NGFlUx6T2rpXdJMU9s4=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</connString>
+          <dbHost>10.21.2.64</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TDMDB</dbScheme>
+          <dbUser>tdm</dbUser>
+          <dbPasswordEncrypted>YmnnbUnvJ7HScTj4lS38ykxRLF71tRaDtnjP2nEB1LQ=:W2qTnZQuBxfvnhdimCCd/DcyyZjMSBUBDiWVK++jyog=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.2.64:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -142,6 +142,13 @@
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
+        </Global>
+        <Global name="TDM_DATAFLUX_TASK" luName="">
+          <Value>false</Value>
+          <Comment>Indicator to mark the task as dataflux or not</Comment>
+        </Global>
+        <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
+          <Value>2592000</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -289,12 +296,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>10.21.3.4</dbHost>
-          <dbPort>5437</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>LLJYEP8qj5a0lWlZEWd2KCDUZ8QrTNJ5QJAX9gse2kA=:XRTEIH4tnaYFtIVGnm0JgbOKSUUb+rAGQeZFnWWSzrg=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.3.4:5437/postgres?stringtype=unspecified</connString>
+          <dbHost>10.21.2.64</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TDMDB</dbScheme>
+          <dbUser>tdm</dbUser>
+          <dbPasswordEncrypted>4Ut3wUTEXtdKpivxzf4BqEf3n46k3EatQgimkLF9il8=:YoIEFV6U5/cLybx7NSQeXqEzCK5rK2aL2ODeItv5OHo=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://10.21.2.64:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -372,6 +379,13 @@
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
+        </Global>
+        <Global name="TDM_DATAFLUX_TASK" luName="">
+          <Value>false</Value>
+          <Comment>Indicator to mark the task as dataflux or not</Comment>
+        </Global>
+        <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
+          <Value>2592000</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
