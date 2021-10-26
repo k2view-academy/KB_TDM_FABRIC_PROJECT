@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.github.jknack.handlebars.*;
+import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.k2view.cdbms.shared.*;
@@ -50,20 +51,63 @@ public class SharedLogic {
 			}
 		});
 		
-		Template template = handlebars.compileInline(templateContent);
-
-		return template.apply(data);
 		
+		handlebars.registerHelper("getTableName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("TARGET_TABLE_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				log.info(map.get("TARGET_FIELD_NAME"));
+				return map.get("TARGET_FIELD_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getSourceTableName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("FABRIC_TABLE_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getSourceFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("FABRIC_FIELD_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getSequenceName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("SEQUENCE_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getSequenceActorName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("SEQUENCE_NAME") + "_Actor";
+			}
+		});
+		
+		handlebars.registerHelper("eq", ConditionalHelpers.eq);
+		handlebars.registerHelper("neq", ConditionalHelpers.neq);
+		
+		
+		Template template = handlebars.compileInline(templateContent);
+		
+		return template.apply(data);
 	}
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object buildTemplateData(String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable) throws Exception {
-		LUType luType = getLuType();
-		if(luType == null)
+	public static Object buildTemplateData(String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName) throws Exception {
+		String luName = getLuType().luName;
+		if(luName == null)
 			return null;
 		
 		List<String> luTableColumns = getLuTableColumns(luTable);
 		Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
+		String seqIID;
+		String seqName;
 		
 		Map<String, Object> map = new TreeMap<>();
 		map.put("LU_TABLE", luTable);
@@ -74,7 +118,37 @@ public class SharedLogic {
 		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
 		map.put("TARGET_TABLE_PKS", targetTableData[1]);
 		
+		
+		if ("".equals(tableIidFieldName)) {
+			seqIID = "NO_ID";
+			seqName = "";
+		} else {
+			seqIID = tableIidFieldName;
+			seqName = sequenceName;
+		}
+		map.put("MAIN_TABLE_SEQ_ID", seqIID);
+		map.put("MAIN_TABLE_SEQ_NAME", seqName);
+		log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
+		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", TARGET_TABLE_NAME = " + targetDbTable;
+		log.info("buildTemplateData - cmd: " + cmd);
+		
+		LinkedList<Object> tableSeq = (LinkedList<Object>)fabric().fetch(cmd).firstRow().get("value");
+		log.info("buildTemplateData - tableSeq: " + tableSeq);
+			
+		// TALI- FIX
+		if(tableSeq != null)
+		{
+			Object[] tableSeqArr = tableSeq.toArray(new Object[tableSeq.size()]);
+			if (tableSeqArr.length > 0) {
+				map.put("TABLE_SEQ_DATA", tableSeqArr);
+			} 
+		}
+		else {
+				map.put("TABLE_SEQ_DATA", null);
+		}
 		return map;
+		
+		// END FIX
 	}
 
 	@out(name = "res", type = List.class, desc = "")
@@ -85,7 +159,6 @@ public class SharedLogic {
 		if(luType == null || !luType.ludbObjects.containsKey(table)) 
 			return al;
 			
-		//luType.ludbObjects.get(table).getLudbObjectColumns().forEach((s, col) -> al.add(col.getName()));
 		al = new ArrayList<>(luType.ludbObjects.get(table).getLudbObjectColumns().keySet());
 		return al;
 	}
@@ -150,37 +223,47 @@ public class SharedLogic {
 	}
 
 
+private static String[] getDBCollection(DatabaseMetaData md, String catalogSchema) throws Exception {
+	String catalog = null;
+	String schema = null;
+	
+	
+	ResultSet schemas = md.getSchemas();
+	while (schemas.next()) {
+		//log.info("getDbTableColumns - Schema: " + schemas.getString("TABLE_SCHEM"));
+		if (catalogSchema.equalsIgnoreCase(schemas.getString("TABLE_SCHEM"))) {
+			 schema = schemas.getString("TABLE_SCHEM");
+			 break;
+		}
+	}
+	if (schema == null) {
+		ResultSet catalogs = md.getCatalogs();
+		while (catalogs.next()) {
+			//log.info("getDbTableColumns - Catalog: " + catalogs.getString("TABLE_CAT"));
+			if (catalogSchema.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
+				catalog = catalogs.getString("TABLE_CAT");
+				break;
+			}
+		}
+	}
+	
+	return new String[]{catalog, schema};
+	
+}
+
 	@out(name = "columns", type = Object[].class, desc = "")
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String catalogSchema, String table) throws Exception {
 		ResultSet rs = null;
 		String[] types = {"TABLE"};
 		String targetTableName = table;
-		String catalog = null;
-		String schema = null;
 		
 		try {
 			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
 			
-			ResultSet schemas = md.getSchemas();
-			while (schemas.next()) {
-				//log.info("getDbTableColumns - Schema: " + schemas.getString("TABLE_SCHEM"));
-				if (catalogSchema.equalsIgnoreCase(schemas.getString("TABLE_SCHEM"))) {
-					 schema = schemas.getString("TABLE_SCHEM");
-					 break;
-				}
-			}
-			if (schema == null) {
-				ResultSet catalogs = md.getCatalogs();
-				while (catalogs.next()) {
-					//log.info("getDbTableColumns - Catalog: " + catalogs.getString("TABLE_CAT"));
-					if (catalogSchema.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
-						catalog = catalogs.getString("TABLE_CAT");
-						break;
-					}
-				}
-			}
-
+			String[] dbSchemaType = getDBCollection(md, catalogSchema);
+			String catalog = dbSchemaType[0];
+			String schema = dbSchemaType[1];
 			//log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
 			rs = md.getTables(catalog, schema, "%", types);
 			
@@ -192,7 +275,7 @@ public class SharedLogic {
 				}
 			}
 						
-			rs = md.getColumns(null, schema, targetTableName, null);
+			rs = md.getColumns(catalog, schema, targetTableName, null);
 			List<String> al = new ArrayList<>();
 			while (rs.next()) {
 				al.add(rs.getString("COLUMN_NAME"));
@@ -200,7 +283,7 @@ public class SharedLogic {
 			//result[0] = al;
 		
 			// get PKs
-			rs = md.getPrimaryKeys(null, schema, targetTableName);
+			rs = md.getPrimaryKeys(catalog, schema, targetTableName);
 			List<String> al2 = new ArrayList<>();
 			while (rs.next()) {
 				al2.add(rs.getString("COLUMN_NAME"));
@@ -215,12 +298,15 @@ public class SharedLogic {
 
 
 	@out(name = "res", type = List.class, desc = "")
-	public static List<String> getDbTables(String dbInterfaceName, String schema) throws Exception {
+	public static List<String> getDbTables(String dbInterfaceName, String catalogSchema) throws Exception {
 		ResultSet rs = null;
 		List<String> al = new ArrayList<>();
 		try {
 			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
-			rs = md.getTables(null, schema, "%", null);
+			String[] dbSchemaType = getDBCollection(md, catalogSchema);
+			String catalog = dbSchemaType[0];
+			String schema = dbSchemaType[1];
+			rs = md.getTables(catalog, schema, "%", null);
 			while (rs.next()) {
 				al.add(rs.getString(3));
 			}

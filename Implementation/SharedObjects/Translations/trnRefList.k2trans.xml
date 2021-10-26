@@ -85,6 +85,19 @@
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="134" />
     </Column>
+    <Column>
+      <Title>table_pk_list</Title>
+      <ColumnName>table_pk_list</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>100</Length>
+      <Format />
+      <Index>5</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <Comment>It is used to list the PK of the reference Table</Comment>
+      <GridColumnProperties width="100" />
+    </Column>
   </SchemaColumns>
   <IsImportFromSQL>false</IsImportFromSQL>
   <IsDynamicData>false</IsDynamicData>
@@ -140,6 +153,13 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
+                  <xs:element name="table_pk_list" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
                 </xs:sequence>
               </xs:complexType>
             </xs:element>
@@ -147,19 +167,7 @@
         </xs:complexType>
       </xs:element>
     </xs:schema>
-    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
-      <DocumentElement>
-        <trnRefList diffgr:id="trnRefList1" msdata:rowOrder="0">
-          <lu_name>Customer</lu_name>
-          <id>1</id>
-          <reference_table_name>DEVICESTABLE2017</reference_table_name>
-          <schema_name>public</schema_name>
-          <interface_name>CRM_DB</interface_name>
-          <target_schema_name>public</target_schema_name>
-          <target_interface_name>CRM_DB</target_interface_name>
-        </trnRefList>
-      </DocumentElement>
-    </diffgr:diffgram>
+    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" />
   </TranslationData>
   <DataRowsHeight>37</DataRowsHeight>
 </Translation>

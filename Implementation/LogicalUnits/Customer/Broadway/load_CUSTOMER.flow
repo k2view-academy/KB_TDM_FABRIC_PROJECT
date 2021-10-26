@@ -26,25 +26,13 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "sourceEnv",
                                         "schema": {
                                             "type": "string"
                                         }
                                     },
                                     {
-                                        "name": "targetEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "syncMode",
+                                        "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -56,7 +44,19 @@
                                         }
                                     },
                                     {
-                                        "name": "deleteBeforeLoad",
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -144,6 +144,31 @@
                                     {
                                         "name": "columName",
                                         "const": "CUSTOMER_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MaskingSSN1",
+                            "actorType": {
+                                "parentType": "MaskingSSN",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskingSSN"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "verifyUnique",
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
@@ -392,6 +417,20 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskingSSN1",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "SSN"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "CUSTOMER_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
@@ -408,6 +447,16 @@
             "rightPort": {
                 "actor": "setTargetEntityId_Actor1",
                 "name": "target_entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingSSN1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load CUSTOMER Table",
+                "name": "SSN"
             }
         },
         {
@@ -434,6 +483,46 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "globals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -454,36 +543,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "targetEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "targetEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {
@@ -494,21 +553,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "insertToTarget"
+                "name": "targetEnv"
             },
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "deleteBeforeLoad"
+                "name": "targetEnv"
             }
         }
     ]

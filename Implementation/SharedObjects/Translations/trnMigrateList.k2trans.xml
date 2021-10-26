@@ -118,31 +118,12 @@
     <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
       <DocumentElement>
         <trnMigrateList diffgr:id="trnMigrateList1" msdata:rowOrder="0">
-          <lu_name>PATIENT_LU</lu_name>
+          <lu_name>Customer</lu_name>
           <source_env_name></source_env_name>
-          <interface_name>HIS_DB</interface_name>
-          <ig_sql>Select PATIENT.PATIENT_ID
-From PATIENT
-Where RowNum &lt; 10000</ig_sql>
-          <external_table_flow>testExternalEntityList</external_table_flow>
-        </trnMigrateList>
-        <trnMigrateList diffgr:id="trnMigrateList2" msdata:rowOrder="1">
-          <lu_name>PATIENT_VISITS</lu_name>
-          <source_env_name>ENV1</source_env_name>
-          <interface_name>TDM</interface_name>
-          <ig_sql>Select lu_type2_eid
-From tdm_lu_type_relation_eid
-Where lu_type_2 = 'PATIENT_VISITS' And 
-source_env = 'ENV1'</ig_sql>
-          <external_table_flow></external_table_flow>
-        </trnMigrateList>
-        <trnMigrateList diffgr:id="trnMigrateList3" msdata:rowOrder="2">
-          <lu_name>PATIENT_VISITS</lu_name>
-          <source_env_name>ENV2</source_env_name>
-          <interface_name>TDM</interface_name>
-          <ig_sql>Select lu_type2_eid
-From tdm_lu_type_relation_eid 
-Where lu_type_2 = 'PATIENT_VISITS' And source_env = 'ENV2'</ig_sql>
+          <interface_name>CRM_DB</interface_name>
+          <ig_sql>Select customer_id
+From customer
+Limit 1000</ig_sql>
           <external_table_flow></external_table_flow>
         </trnMigrateList>
       </DocumentElement>

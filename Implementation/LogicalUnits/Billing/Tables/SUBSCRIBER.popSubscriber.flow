@@ -21,6 +21,14 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Check If Delete Only Task",
+                            "actorType": {
+                                "parentType": "CheckIfDeleteOnlyTask_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -115,6 +123,14 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Not1",
+                            "actorType": {
+                                "parentType": "Not",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -136,7 +152,7 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "subscriber_id",
+                                        "name": "SUBSCRIBER_ID",
                                         "schema": {}
                                     }
                                 ],
@@ -153,7 +169,14 @@
                                         "const": "flowArgs.instanceFound = false;"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -167,25 +190,11 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "First Sync Is True",
+                            "name": "First Sync Is True and Not A Delete Only Task",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
+                                "parentType": "And",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -298,7 +307,14 @@
                                         "const": "flowArgs.instanceFound = true;"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -347,7 +363,7 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "subscriber_id"
+                                            "SUBSCRIBER_ID"
                                         ]
                                     },
                                     {
@@ -355,7 +371,7 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "subscriber_id",
+                                        "name": "SUBSCRIBER_ID",
                                         "schema": {}
                                     }
                                 ],
@@ -433,12 +449,32 @@
         },
         {
             "leftPort": {
+                "actor": "Check If Delete Only Task",
+                "name": "deleteOnlyInd"
+            },
+            "rightPort": {
+                "actor": "Not1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Check if first Sync",
                 "name": "firstSyncInd"
             },
             "rightPort": {
-                "actor": "First Sync Is True",
+                "actor": "First Sync Is True and Not A Delete Only Task",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Not1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "First Sync Is True and Not A Delete Only Task",
+                "name": "b"
             }
         },
         {
@@ -495,11 +531,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "subscriber_id"
+                "name": "SUBSCRIBER_ID"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "subscriber_id"
+                "name": "SUBSCRIBER_ID"
             }
         },
         {
@@ -510,6 +546,16 @@
             "rightPort": {
                 "actor": "Root Table",
                 "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Root Table",
+                "name": "table"
             }
         }
     ]

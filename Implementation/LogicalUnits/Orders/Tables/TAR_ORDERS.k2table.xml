@@ -11,7 +11,7 @@
   </IndexesList>
   <EnrichmentList />
   <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
-    <DecisionFunction>fnDecisionInsertToTarget</DecisionFunction>
+    <DecisionFunction>fnDecisionDeleteFromTarget</DecisionFunction>
     <TruncateBeforeSync>true</TruncateBeforeSync>
   </LazyDataUpdate>
   <TriggersList />

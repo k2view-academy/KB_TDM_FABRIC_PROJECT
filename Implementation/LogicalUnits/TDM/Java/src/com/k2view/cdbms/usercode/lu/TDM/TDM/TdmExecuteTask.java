@@ -83,7 +83,7 @@ public class TdmExecuteTask {
 
             Long taskExecutionID = (Long) taskProperties.get("task_execution_id");
 			Long luID = (Long) LU_ID.get(taskProperties);
-            String globals = "";
+
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             String parentLUStatus = PARENT_LU_STATUS.get(taskProperties);
             if(isChildLU(taskProperties) && !parentLUStatus.toUpperCase().equals("COMPLETED")) {
@@ -97,18 +97,17 @@ public class TdmExecuteTask {
 
 			String selectionMethod = SELECTION_METHOD.get(taskProperties);
             String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();
-													  
+			// TDM 7.3 - The sync mode should be set at beginning based on task/env
+			setSyncMode(taskProperties);
+
 			if((long)LU_ID.get(taskProperties)  > 0){
             	switch (taskType) {
                 	case "extract":
                     	log.info("----------------- extract task -------------------");
 						String versionExpDate = null;
 						if (!selectionMethod.equalsIgnoreCase("ref")) {
-							String srcSyncData = getSrcSyncDataVal(taskProperties);
-	                    	globals = getGlobals(EXTRACT.query(), taskProperties, Util.map("TDM_SYNC_SOURCE_DATA", srcSyncData), EXTRACT.params(taskProperties));
 
-    	                	//log.info("globals:" + globals);
-	        	            Map<String, String> migrationStatus = migrateEntitiesForTdmExtract(taskExecutionID, taskProperties, globals);
+	        	            Map<String, String> migrationStatus = migrateEntitiesForTdmExtract(taskExecutionID, taskProperties);
     	        	        String fabricExecutionId = migrationStatus != null ? migrationStatus.get("fabric_execution_id") : null;
 						
         	            	if (!Util.isEmpty(fabricExecutionId)) {
@@ -144,11 +143,10 @@ public class TdmExecuteTask {
                     	log.info("----------------- load task -------------------");
 	                    try {
 							if (!selectionMethod.equalsIgnoreCase("ref")) {
-								String srcSyncData = getSrcSyncDataVal(taskProperties);
-	    	                    globals = getGlobals(LOAD.query(), taskProperties, Util.map("TDM_SYNC_SOURCE_DATA", srcSyncData), LOAD.params(taskProperties));
+								
     	    	                // run broadway flow
 												 
-        	        	        String executionId = executeFabricBatch(taskProperties, globals);
+        	        	        String executionId = executeFabricBatch(taskProperties);
             	        	    if (!executionId.isEmpty()) {
                 	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
@@ -178,7 +176,7 @@ public class TdmExecuteTask {
                 if(luCount == 0) {
                     //log.info("************* lu count = 0 starting post executions *************");
                     TASK_TYPES type = TASK_TYPES.valueOf(TASK_TYPE.get(taskProperties).toString().toUpperCase());
-                    globals = getGlobals(type.query(), taskProperties, new HashMap<>(), type.params(taskProperties));
+                    String globals = getGlobals(type.query(), taskProperties, new HashMap<>(), type.params(taskProperties));
                     try {
                         String fabricCommandParams = " globals=" + globals + ", taskExecutionID=" + taskExecutionID; //todo: iid=?
                         db(TDM).fetch(POST_EXECUTIONS, taskExecutionID).forEach(res -> runPostExecution(taskExecutionID, fabricCommandParams, res));
@@ -236,7 +234,7 @@ public class TdmExecuteTask {
     }
 
     @NotNull
-    private static String executeFabricBatch(Map<String, Object> taskProperties, String globals) throws Exception {
+    private static String executeFabricBatch(Map<String, Object> taskProperties) throws Exception {
         //log.info("----------------- preparing for batch execution -------------------");
 		 
         String selectionMethod = SELECTION_METHOD.get(taskProperties);
@@ -253,10 +251,18 @@ public class TdmExecuteTask {
         }else{// the parent id is populated- handle the child luID
             entityInclusionOverride = getEntityInclusionForChildLU(taskProperties, luName);
         }
+	
+		// TDM 7.3 - If the selection method is synthetic data (cloning), then the sync of entities will be executed before calling the broadway to make sure each orignal instance is sync at most once
+		if ("S".equalsIgnoreCase(selectionMethod)) {
+			log.info("executeFabricBatch - Handling Synthitic Data");
+			syncInstanceForCloning(entityInclusionOverride, taskProperties);
+		}
         //log.info(" entity inclusion: " + entityInclusionOverride);
 		// No need to use Cassandra, the entity list will always be taken from TDMDB
         //String entityInclusionInterface = selectionMethod.equals("ALL") ? CASSANDRA : TDMDB;
 		//log.info("TdmExecuteTask - syncMode from Tasks: <" + syncMode +">");
+		String srcSyncData = getSrcSyncDataVal(taskProperties);
+		String globals = getGlobals(LOAD.query(), taskProperties, Util.map("TDM_SYNC_SOURCE_DATA", srcSyncData), LOAD.params(taskProperties));
 
 		String syncMode = getSyncModeForLoad(taskProperties);
         String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
@@ -500,13 +506,18 @@ public class TdmExecuteTask {
 		return syncSrcData;
 	}
 	
-	private static String getSyncModeForLoad(Map<String, Object> taskProperties) {
-		String sourceEnv = SOURCE_ENVIRONMENT_NAME.get(taskProperties);
+	private static void setSyncMode(Map<String, Object> taskProperties) {
 		String syncMode = SYNC_MODE.get(taskProperties);
 		if(Util.isEmpty(syncMode)){
+			String sourceEnv = SOURCE_ENVIRONMENT_NAME.get(taskProperties);
 			syncMode = "" + Util.rte(() -> db(TDM).fetch("SELECT sync_mode FROM environments where environment_status = 'Active' and environment_name=?", sourceEnv).firstValue());
 			//log.info("TdmExecuteTask - syncMode Environments: <" + syncMode + ">, for Env: " + sourceEnv);
+			taskProperties.put("sync_mode", syncMode);
+			//log.info("setSyncMode - SYNC_MODE: " + SYNC_MODE.get(taskProperties));
 		}
+	}
+	private static String getSyncModeForLoad(Map<String, Object> taskProperties) {
+		String syncMode = SYNC_MODE.get(taskProperties);
 		// In case of Load and sync mode is set to OFF and the deleteBeforeLoad is set to TRUE or it is dataflux load task (therefore requires delete before load), 
 		// then the sync mode should be set to ON, to allow population of delete tables.
 	
@@ -522,6 +533,48 @@ public class TdmExecuteTask {
 			syncMode = "ON";
 		}
 		return syncMode;
+	}
+	
+	private static void syncInstanceForCloning(String entityInclusion, Map<String, Object> taskProperties) throws SQLException{
+		String luName = LU_NAME.get(taskProperties);
+		Set<String> entityList = new HashSet<>();
+		Db.Rows rows = db("TDM").fetch(entityInclusion);
+		
+		fabric().execute("set sync " + SYNC_MODE.get(taskProperties));
+		log.info("TEST-synthetic- sync mode: " + SYNC_MODE.get(taskProperties));
+		for (Db.Row row : rows) {
+			String intsanceID = "" + row.get("entity_id");
+			log.info("instance ID1: " + intsanceID);
+			Object[] splitCloneId = intsanceID.split("#params#");
+			intsanceID = "" + splitCloneId[0];
+			log.info("instance ID2: " + intsanceID);
+			entityList.add(intsanceID);
+		}
+		for (String intsanceID : entityList) {
+			log.info("instance ID2: " + intsanceID + " lu nanme: " + luName );
+			
+			// TALI- FIX- 24-Oct-21- check the input DC of the source env
+			String getSrcDCSQL  = "select p.data_center_name from environment_products p, task_execution_list l, tasks_logical_units u " + 
+								"where l.task_execution_id=? and l.task_id = u.task_id and l.lu_id = u.lu_id and u.lu_name = ? " + 
+								"and l.source_environment_id= p.environment_id and l.product_id = p.product_id ";
+			
+			String taskExeId = "" + ludb().fetch("SET " + luName + ".TDM_TASK_EXE_ID").firstValue();
+			
+			String srcDC = "" + db("TDM").fetch(getSrcDCSQL, taskExeId, luName).firstValue();
+			
+			log.info("source DC name: " + srcDC);
+			if(srcDC != null && !Util.isEmpty(srcDC) && !srcDC.equals("null"))
+			{
+				String getCommand = "get " + luName + ".'" + intsanceID + "' @ " + srcDC + " WITH PARALLEL=false STOP_ON_ERROR=true";
+				log.info("getCommand: " + getCommand);
+				fabric().execute(getCommand);
+			}
+			else
+			{
+				fabric().execute("get " + luName + ".'" + intsanceID + "'");
+			}
+		}
+		taskProperties.put("sync_mode", "off");
 	}
 	
     @NotNull
@@ -637,13 +690,13 @@ public class TdmExecuteTask {
         }
     }
 
-    private static Map<String, String> migrateEntitiesForTdmExtract(Long taskExecutionId, Map<String, Object> taskProperties, String globals) {
+    private static Map<String, String> migrateEntitiesForTdmExtract(Long taskExecutionId, Map<String, Object> taskProperties) {
         try {
+			String srcSyncData = getSrcSyncDataVal(taskProperties);
+			String globals = getGlobals(EXTRACT.query(), taskProperties, Util.map("TDM_SYNC_SOURCE_DATA", srcSyncData), EXTRACT.params(taskProperties));
             String syncMode = SYNC_MODE.get(taskProperties);
             String sourceEnv = SOURCE_ENVIRONMENT_NAME.get(taskProperties);
-            if(Util.isEmpty(syncMode)){
-                syncMode = "" + Util.rte(() -> db(TDM).fetch("SELECT sync_mode FROM environments where environment_status = 'Active' and environment_name=?", sourceEnv).firstValue());
-            }
+            
 			//log.info("migrateEntitiesForTdmExtract - luName: " + LU_NAME.get(taskProperties) + ", isChild: " + isChildLU(taskProperties));
 			String entitiesList = SELECTION_PARAM_VALUE.get(taskProperties);
 			if (isChildLU(taskProperties)) {

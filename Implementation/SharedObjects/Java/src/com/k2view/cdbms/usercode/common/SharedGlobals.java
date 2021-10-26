@@ -24,7 +24,7 @@ public class SharedGlobals {
 	public static String TDM_DELETE_BEFORE_LOAD = "false";
 	@desc("Indicator to insert the instance to target DB")
 	@category("TDM")
-	public static String TDM_INSERT_TO_TARGET = "false";
+	public static String TDM_INSERT_TO_TARGET = "true";
 
 	@category("TDM")
 	public static String TDM_SYNC_SOURCE_DATA = "true";
@@ -41,7 +41,7 @@ public class SharedGlobals {
 	public static String TDM_REPLACE_SEQUENCES = "false";
 
 	@category("TDM")
-	public static String TDM_TASK_EXE_ID = "0";
+	public static String TDM_TASK_EXE_ID = "23";
 
 	@category("TDM")
 	public static String MASK_FLAG = "0";
@@ -65,17 +65,20 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String CLONE_CLEANUP_RETENTION_PERIOD_VALUE = "1";
 
+	@desc("Indicator to mark the task as dataflux or not")
+	@category("TDM")
+	public static String TDM_DATAFLUX_TASK = "false";
+
+	@category("TDM")
+	public static String TDM_EXTERNAL_ENTITY_LIST_TTL = "2592000";
+
 	@desc("Prefix of delete tables")
 	@category("TDM")
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
-	@desc("Indicator to mark the task as dataflux or not")
-	@category("TDM")
-	public static String TDM_DATAFLUX_TASK = "false";
-	@category("TDM")
-	public static String TDM_EXTERNAL_ENTITY_LIST_TTL = "2592000";
+	public static String MAIL_ADDRESS = "";
 
 
 }

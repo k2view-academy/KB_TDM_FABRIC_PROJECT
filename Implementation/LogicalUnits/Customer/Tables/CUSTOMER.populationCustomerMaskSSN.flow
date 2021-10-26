@@ -92,10 +92,6 @@
                                         "const": true
                                     },
                                     {
-                                        "name": "useInstanceId",
-                                        "const": false
-                                    },
-                                    {
                                         "name": "interface",
                                         "const": "DB_CASSANDRA"
                                     },

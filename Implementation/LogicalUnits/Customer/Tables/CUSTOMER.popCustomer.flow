@@ -23,16 +23,10 @@
                             }
                         },
                         {
-                            "name": "sleep-test",
-                            "isDisabled": true,
+                            "name": "Check If Delete Only Task",
                             "actorType": {
-                                "parentType": "Sleep",
-                                "inputs": [
-                                    {
-                                        "name": "millis",
-                                        "const": 100
-                                    }
-                                ],
+                                "parentType": "CheckIfDeleteOnlyTask_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -129,6 +123,14 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Not1",
+                            "actorType": {
+                                "parentType": "Not",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -188,25 +190,11 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "First Sync Is True",
+                            "name": "First Sync Is True and Not A Delete Only Task",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
+                                "parentType": "And",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -250,31 +238,7 @@
                                         "const": "select * from CUSTOMER"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "ssn": {
-                                                        "type": "string"
-                                                    },
-                                                    "first_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "last_name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -485,12 +449,32 @@
         },
         {
             "leftPort": {
+                "actor": "Check If Delete Only Task",
+                "name": "deleteOnlyInd"
+            },
+            "rightPort": {
+                "actor": "Not1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Check if first Sync",
                 "name": "firstSyncInd"
             },
             "rightPort": {
-                "actor": "First Sync Is True",
+                "actor": "First Sync Is True and Not A Delete Only Task",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Not1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "First Sync Is True and Not A Delete Only Task",
+                "name": "b"
             }
         },
         {
@@ -562,6 +546,16 @@
             "rightPort": {
                 "actor": "Root Table",
                 "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Root Table",
+                "name": "table"
             }
         }
     ]

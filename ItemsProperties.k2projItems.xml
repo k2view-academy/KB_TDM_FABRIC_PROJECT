@@ -3,6 +3,21 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
+      <NodeName>CheckMainTableAndSequentialIID.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckMainTableAndSequentialIID.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>checkMainTableAndSequentialIID.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\checkMainTableAndSequentialIID.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>checkMainTableAndSequentialIID.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\checkMainTableAndSequentialIID.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>createFlowsFromTemplates.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createFlowsFromTemplates.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -50,6 +65,21 @@
     <ProjectItemProp>
       <NodeName>createLoadTableToTargetFlow.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createLoadTableToTargetFlow.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>filterOutTDMTables.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>filterOutTDMTables_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMSeqList.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -268,16 +298,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>filterOutTDMTables.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>filterOutTDMTables_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>setSyncMode.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
@@ -286,11 +306,6 @@
       <NodeName>setSyncMode_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDMSeqList.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>TDMFilterOutTargetTables.actor</NodeName>
@@ -599,12 +614,12 @@
       <Key>Implementation\SharedObjects\Broadway@ScriptsForTemplates</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
-      <Name>External_Entity_List</Name>
-      <Key>Implementation\SharedObjects\Broadway@TDM@External_Entity_List</Key>
-    </ProjectItemsCategory>
-    <ProjectItemsCategory>
       <Name>TDM</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>External_Entity_List</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@External_Entity_List</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>Reference</Name>

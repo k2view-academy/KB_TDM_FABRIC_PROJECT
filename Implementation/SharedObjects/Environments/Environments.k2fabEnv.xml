@@ -38,11 +38,11 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>10.21.3.4</dbHost>
+          <dbHost>10.21.2.69</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>+suLEUL/JlMp2jFA17J+0n+4QGYNY2zUM//pynb3mwA=:fdZqiDXqips6X607ApOD03aJLl7v476iM5G4RCP3SUc=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://10.21.3.4:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://10.21.2.69:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -80,7 +80,7 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>true</Value>
+          <Value>false</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
@@ -102,7 +102,7 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>0</Value>
+          <Value>23</Value>
         </Global>
         <Global name="MASK_FLAG" luName="">
           <Value>0</Value>
@@ -133,6 +133,13 @@
           <Value>1</Value>
           <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
         </Global>
+        <Global name="TDM_DATAFLUX_TASK" luName="">
+          <Value>false</Value>
+          <Comment>Indicator to mark the task as dataflux or not</Comment>
+        </Global>
+        <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
+          <Value>2592000</Value>
+        </Global>
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
@@ -143,13 +150,7 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="TDM_DATAFLUX_TASK" luName="">
-          <Value>false</Value>
-          <Comment>Indicator to mark the task as dataflux or not</Comment>
-        </Global>
-        <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
-          <Value>2592000</Value>
-        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -237,6 +238,29 @@
             </Property>
           </Properties>
         </GenericInterface>
+        <GenericInterface type="SMTP" displayName="SMTP" enabled="false" version="1.4">
+          <Name>MAIL</Name>
+          <Properties>
+            <Property name="To">
+              <Value>tali.einhorn@k2view.com</Value>
+            </Property>
+            <Property name="From">
+              <Value>tali.einhorn@k2view.com</Value>
+            </Property>
+            <Property name="User">
+              <Value>tali.einhorn@k2view.com</Value>
+            </Property>
+            <Property name="Password">
+              <Value>42jGdjnpptfcCuzOPxwW3YMeU9myFZuCRn2M21A6qLY=:o6pdKLcCh4rdfNKwDBOgg9hGqkgl7psLZqfTNFr2wyw=</Value>
+            </Property>
+            <Property name="Host">
+              <Value>smtp-mail.outlook.com</Value>
+            </Property>
+            <Property name="Port">
+              <Value>587</Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="TAR">
@@ -275,11 +299,11 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>10.21.3.4</dbHost>
+          <dbHost>10.21.2.69</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://10.21.3.4:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://10.21.2.69:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -300,7 +324,7 @@
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>4Ut3wUTEXtdKpivxzf4BqEf3n46k3EatQgimkLF9il8=:YoIEFV6U5/cLybx7NSQeXqEzCK5rK2aL2ODeItv5OHo=</dbPasswordEncrypted>
+          <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://10.21.2.64:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
@@ -317,7 +341,7 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>true</Value>
+          <Value>false</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
@@ -370,6 +394,13 @@
           <Value>1</Value>
           <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
         </Global>
+        <Global name="TDM_DATAFLUX_TASK" luName="">
+          <Value>false</Value>
+          <Comment>Indicator to mark the task as dataflux or not</Comment>
+        </Global>
+        <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
+          <Value>2592000</Value>
+        </Global>
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
@@ -380,13 +411,7 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="TDM_DATAFLUX_TASK" luName="">
-          <Value>false</Value>
-          <Comment>Indicator to mark the task as dataflux or not</Comment>
-        </Global>
-        <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
-          <Value>2592000</Value>
-        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -471,6 +496,29 @@
             </Property>
             <Property name="FilesFilter">
               <Value />
+            </Property>
+          </Properties>
+        </GenericInterface>
+        <GenericInterface type="SMTP" displayName="SMTP" enabled="false" version="1.4">
+          <Name>MAIL</Name>
+          <Properties>
+            <Property name="To">
+              <Value>tali.einhorn@k2view.com</Value>
+            </Property>
+            <Property name="From">
+              <Value>tali.einhorn@k2view.com</Value>
+            </Property>
+            <Property name="User">
+              <Value>tali.einhorn@k2view.com</Value>
+            </Property>
+            <Property name="Password">
+              <Value>q7Tn01yA/Z73ICLs8dfE5RK82NrJsqJmhXZz+1/jY2E=:5SQVbBQmQKgamyuiQmHToeiMPyNkBjaVSABEbjmHSYU=</Value>
+            </Property>
+            <Property name="Host">
+              <Value>smtp-mail.outlook.com</Value>
+            </Property>
+            <Property name="Port">
+              <Value>587</Value>
             </Property>
           </Properties>
         </GenericInterface>

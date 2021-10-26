@@ -367,7 +367,14 @@
                                         }
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "UID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -485,27 +492,6 @@
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set TTL for Clone Instance",
-                            "actorType": {
-                                "parentType": "setCloneInstanceTTL_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "cloneNo",
-                                        "schema": {
-                                            "type": "integer"
                                         }
                                     }
                                 ],
@@ -1024,16 +1010,6 @@
         {
             "leftPort": {
                 "actor": "Split IID And Clone Number",
-                "name": "cloneNo"
-            },
-            "rightPort": {
-                "actor": "Set TTL for Clone Instance",
-                "name": "cloneNo"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split IID And Clone Number",
                 "name": "instanceID"
             },
             "rightPort": {
@@ -1051,6 +1027,16 @@
                 "name": "iid"
             },
             "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Split IID And Clone Number",
+                "name": "UID"
+            },
+            "rightPort": {
+                "actor": "Get Entity with Source DC",
+                "name": "iid"
+            }
         },
         {
             "leftPort": {
@@ -1368,16 +1354,6 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "Set TTL for Clone Instance",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
                 "actor": "Get Entity",
                 "name": "luType"
             }
@@ -1400,16 +1376,6 @@
             "rightPort": {
                 "actor": "Get Entity with Source DC",
                 "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Get Entity with Source DC",
-                "name": "iid"
             }
         },
         {
