@@ -1,64 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="4.0.5.4">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.2.11">
   <Name>vdb</Name>
-  <RootView>Customer</RootView>
+  <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
+  <EventsList />
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+    <OrderValidationTime>00:05:00</OrderValidationTime>
+    <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
+    <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
+    <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
+  </IidFinderProp>
   <Tables>
-    <Table>Customer</Table>
-    <Table>LU_PARAMS</Table>
-    <Table>INSTANCE_TABLE_COUNT</Table>
+    <Table>FABRIC_TDM_ROOT</Table>
   </Tables>
   <TablesProperties>
-    <TableProperties name="Customer">
+    <TableProperties name="FABRIC_TDM_ROOT">
       <Populations>
-        <Population id="query_Customer" name="query_Customer" order="1" disabled="false" enrichment="false" />
-      </Populations>
-    </TableProperties>
-    <TableProperties name="LU_PARAMS">
-      <Populations>
-        <Population id="populate_LU_PARAMS" name="populate_LU_PARAMS" order="3" disabled="false" enrichment="false" />
-      </Populations>
-    </TableProperties>
-    <TableProperties name="INSTANCE_TABLE_COUNT">
-      <Populations>
-        <Population id="query_INSTANCE_TABLE_COUNT" name="query_INSTANCE_TABLE_COUNT" order="4" disabled="false" enrichment="false" />
+        <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
   </TablesProperties>
-  <EnrichmentsOrderList>
-    <Item order="1" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
-    <Item order="2" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
-    <Item order="3" active="true" name="Customer" columnName="fnEnrichmentChildLink" type="Table" />
-  </EnrichmentsOrderList>
+  <EnrichmentsOrderList />
   <ReferencesList />
   <Relations />
-  <DatabaseRelations>
-    <Relation id="84">
-      <From tableType="TableObject" table="Customer" column="customer_id" columnId="tblCol_5559ddfe41284782a9b66ad60a75c083" />
-      <To tableType="TableObject" table="LU_PARAMS" populationObjectName="populate_LU_PARAMS" column="ENTITY_ID" columnId="fi_80.0" />
-    </Relation>
-    <Relation id="842">
-      <From tableType="TableObject" table="Customer" column="customer_id" columnId="tblCol_5559ddfe41284782a9b66ad60a75c083" />
-      <To tableType="TableObject" table="INSTANCE_TABLE_COUNT" populationObjectName="query_INSTANCE_TABLE_COUNT" column="input" columnId="fi_7.0" />
-    </Relation>
-  </DatabaseRelations>
+  <DatabaseRelations />
   <PreVCsSqlScript />
   <PostVCsSqlScript />
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="4.0.5.4" name="vdb.k2vdb.xml" lastPartID="1084">
-      <Node id="0" partID="0" name="Customer" isRootView="true" pos="11 64" size="257 137.546844" listGroupSize="250 100" viewType="Table">
-        <TableProperties>{"TableName":"Customer","TablePopulationPropertiesList":[{"ID":"query_Customer","Name":"query_Customer","Order":1,"Disabled":false,"IsEnrichment":false}]}</TableProperties>
-      </Node>
-      <Node id="1" partID="79" name="LU_PARAMS" isRootView="false" pos="313 14" size="257 136" listGroupSize="250 100" viewType="Table">
-        <TableProperties>{"TableName":"LU_PARAMS","TablePopulationPropertiesList":[{"ID":"populate_LU_PARAMS","Name":"populate_LU_PARAMS","Order":3,"Disabled":false,"IsEnrichment":false}]}</TableProperties>
-      </Node>
-      <Node id="2" partID="831" name="INSTANCE_TABLE_COUNT" isRootView="false" pos="313 214" size="257 136" listGroupSize="250 100" viewType="Table">
-        <TableProperties>{"TableName":"INSTANCE_TABLE_COUNT","TablePopulationPropertiesList":[{"ID":"query_INSTANCE_TABLE_COUNT","Name":"query_INSTANCE_TABLE_COUNT","Order":4,"Disabled":false,"IsEnrichment":false}]}</TableProperties>
-      </Node>
-      <Link from="3" to="4" partID="84" linkType="Database" pointsArr="268 125.636719 278 125.636719 303 59.54557 313 59.54557" fromNodePartID="0" fromNodeColumnName="customer_id" toNodePartID="79" toNodeColumnName="ENTITY_ID" toNodePopulationObjectName="populate_LU_PARAMS" />
-      <Link from="3" to="5" partID="842" linkType="Database" pointsArr="268 125.636719 278 125.636719 303 259.5456 313 259.5456" fromNodePartID="0" fromNodeColumnName="customer_id" toNodePartID="831" toNodeColumnName="input" toNodePopulationObjectName="query_INSTANCE_TABLE_COUNT" />
+    <Graph version="6.5.2.11" name="vdb.k2vdb.xml">
+      <Node name="FABRIC_TDM_ROOT" pos="291 125" size="257 136" listGroupSize="250 100" viewType="Table" />
     </Graph>
   </DiagramGraph>
 </VirtualDB>

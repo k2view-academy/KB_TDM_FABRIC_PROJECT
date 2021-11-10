@@ -2,7 +2,7 @@
 <TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>FABRIC_TDM_ROOT</Name>
   <ID>tbl_FABRIC_TDM_ROOT</ID>
-  <EntityId />
+  <EntityId>tblCol_e8decb7400b7436299d5bcbb45e2c6b8</EntityId>
   <Columns>
     <Column name="k2_tdm_eid" id="tblCol_e8decb7400b7436299d5bcbb45e2c6b8" index="0" datatype="text" />
     <Column name="source_env" id="tblCol_fcc1c717e14e44fba3181b3f4a456354" index="1" datatype="text" />
