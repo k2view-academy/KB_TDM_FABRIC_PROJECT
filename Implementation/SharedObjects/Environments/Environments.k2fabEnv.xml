@@ -10,7 +10,7 @@
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.2.64:5433/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10111.21.2.64333:5444/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -59,12 +59,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>10.21.2.64</dbHost>
-          <dbPort>5433</dbPort>
+          <dbHost>10.212.134.64</dbHost>
+          <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>YmnnbUnvJ7HScTj4lS38ykxRLF71tRaDtnjP2nEB1LQ=:W2qTnZQuBxfvnhdimCCd/DcyyZjMSBUBDiWVK++jyog=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.2.64:5433/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.212.134.64:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -307,12 +307,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>10.21.2.64</dbHost>
-          <dbPort>5433</dbPort>
+          <dbHost>10.212.134.64</dbHost>
+          <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.2.64:5433/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.212.134.64:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
