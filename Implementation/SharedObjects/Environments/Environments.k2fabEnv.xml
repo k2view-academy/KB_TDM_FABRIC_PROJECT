@@ -6,7 +6,7 @@
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>10.21.2.64</dbHost>
-          <dbPort>5433</dbPort>
+          <dbPort>5444</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
