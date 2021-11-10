@@ -1,0 +1,44 @@
+{
+    "type": "checkMainTableAndSequentialIID",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "INPUT_TABLE_NAME",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "luName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "checkMainTableAndSequentialIID",
+            "hidden": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "SEQ_FIELD_NAME",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "SEQUENCE_NAME",
+            "schema": {
+                "type": "string"
+            }
+        }
+    ],
+    "tags": [
+        "tdm"
+    ]
+}

@@ -24,7 +24,7 @@ public class SharedGlobals {
 	public static String TDM_DELETE_BEFORE_LOAD = "false";
 	@desc("Indicator to insert the instance to target DB")
 	@category("TDM")
-	public static String TDM_INSERT_TO_TARGET = "true";
+	public static String TDM_INSERT_TO_TARGET = "false";
 
 	@category("TDM")
 	public static String TDM_SYNC_SOURCE_DATA = "true";
@@ -41,7 +41,7 @@ public class SharedGlobals {
 	public static String TDM_REPLACE_SEQUENCES = "false";
 
 	@category("TDM")
-	public static String TDM_TASK_EXE_ID = "23";
+	public static String TDM_TASK_EXE_ID = "0";
 
 	@category("TDM")
 	public static String MASK_FLAG = "0";
@@ -69,15 +69,19 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_DATAFLUX_TASK = "false";
 
+	@desc("The TTL for external entity list for non jdbc source DB")
 	@category("TDM")
 	public static String TDM_EXTERNAL_ENTITY_LIST_TTL = "2592000";
+
+	@desc("The maximum number of entities to be returned to be displayed in list of entities")
+	@category("TDM")
+	public static String MAX_NUMBER_OF_ENTITIES_IN_LIST = "100";
 
 	@desc("Prefix of delete tables")
 	@category("TDM")
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
-
 	public static String MAIL_ADDRESS = "";
 
 

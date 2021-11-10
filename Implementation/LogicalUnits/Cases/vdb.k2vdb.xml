@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.2.11">
+  <Name>vdb</Name>
+  <RootView>FABRIC_TDM_ROOT</RootView>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
+  <EventsList />
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+    <OrderValidationTime>00:05:00</OrderValidationTime>
+    <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
+    <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
+    <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
+  </IidFinderProp>
+  <Tables>
+    <Table>case_note</Table>
+    <Table>cases</Table>
+    <Table>FABRIC_TDM_ROOT</Table>
+    <Table>INSTANCE_TABLE_COUNT</Table>
+    <Table>LU_PARAMS</Table>
+    <Table>TAR_CASES</Table>
+  </Tables>
+  <TablesProperties>
+    <TableProperties name="cases">
+      <Populations>
+        <Population name="popCases.flow" order="2" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="case_note">
+      <Populations>
+        <Population name="query_public_case_note" order="3" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="FABRIC_TDM_ROOT">
+      <Populations>
+        <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="INSTANCE_TABLE_COUNT">
+      <Populations>
+        <Population name="query_INSTANCE_TABLE_COUNT" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="LU_PARAMS">
+      <Populations>
+        <Population name="populate_LU_PARAMS" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TAR_CASES">
+      <Populations>
+        <Population name="populationTarCases.flow" order="5" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+    <Item order="1" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
+    <Item order="2" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
+  </EnrichmentsOrderList>
+  <ReferencesList />
+  <Relations />
+  <DatabaseRelations>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="INSTANCE_TABLE_COUNT" populationObjectName="query_INSTANCE_TABLE_COUNT" column="input" columnId="fi_7.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="LU_PARAMS" populationObjectName="populate_LU_PARAMS" column="ENTITY_ID" columnId="fi_80.0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="cases" populationObjectName="popCases.flow" column="case_id" columnId="tblCol_426c35c9cf6348ca99bd176f7d74ef1f" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="cases" column="case_id" columnId="tblCol_426c35c9cf6348ca99bd176f7d74ef1f" />
+      <To tableType="TableObject" table="case_note" populationObjectName="query_public_case_note" column="case_id" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="TAR_CASES" populationObjectName="populationTarCases.flow" column="case_id" columnId="tblCol_426c35c9cf6348ca99bd176f7d74ef1f" />
+    </Relation>
+  </DatabaseRelations>
+  <PreVCsSqlScript />
+  <PostVCsSqlScript />
+  <Indexes />
+  <LudbProperties />
+  <DiagramGraph>
+    <Graph version="6.5.2.11" name="vdb.k2vdb.xml">
+      <Node name="FABRIC_TDM_ROOT" pos="48 114" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="INSTANCE_TABLE_COUNT" pos="391 57" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="LU_PARAMS" pos="417 221" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="cases" pos="423 372" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="case_note" pos="702 409" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="TAR_CASES" pos="165 471" size="257 136" listGroupSize="250 100" viewType="Table" />
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

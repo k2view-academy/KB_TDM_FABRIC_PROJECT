@@ -60,11 +60,11 @@
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>10.21.2.64</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>YmnnbUnvJ7HScTj4lS38ykxRLF71tRaDtnjP2nEB1LQ=:W2qTnZQuBxfvnhdimCCd/DcyyZjMSBUBDiWVK++jyog=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.2.64:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.2.64:5433/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -140,6 +140,10 @@
         <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
           <Value>2592000</Value>
         </Global>
+        <Global name="MAX_NUMBER_OF_ENTITIES_IN_LIST" luName="">
+          <Value>100</Value>
+          <Comment>The maximum number of entities to be returned to be displayed in list of entities</Comment>
+        </Global>
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
@@ -159,6 +163,12 @@
         </Global>
         <Global name="TEST_GLOBAL" luName="Billing">
           <Value>1</Value>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Cases">
+          <Value>cases</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Cases">
+          <Value>case_id</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
@@ -238,29 +248,6 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="SMTP" displayName="SMTP" enabled="false" version="1.4">
-          <Name>MAIL</Name>
-          <Properties>
-            <Property name="To">
-              <Value>tali.einhorn@k2view.com</Value>
-            </Property>
-            <Property name="From">
-              <Value>tali.einhorn@k2view.com</Value>
-            </Property>
-            <Property name="User">
-              <Value>tali.einhorn@k2view.com</Value>
-            </Property>
-            <Property name="Password">
-              <Value>42jGdjnpptfcCuzOPxwW3YMeU9myFZuCRn2M21A6qLY=:o6pdKLcCh4rdfNKwDBOgg9hGqkgl7psLZqfTNFr2wyw=</Value>
-            </Property>
-            <Property name="Host">
-              <Value>smtp-mail.outlook.com</Value>
-            </Property>
-            <Property name="Port">
-              <Value>587</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="TAR">
@@ -321,11 +308,11 @@
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>10.21.2.64</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.2.64:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://10.21.2.64:5433/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -401,6 +388,10 @@
         <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
           <Value>2592000</Value>
         </Global>
+        <Global name="MAX_NUMBER_OF_ENTITIES_IN_LIST" luName="">
+          <Value>100</Value>
+          <Comment>The maximum number of entities to be returned to be displayed in list of entities</Comment>
+        </Global>
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
@@ -420,6 +411,12 @@
         </Global>
         <Global name="TEST_GLOBAL" luName="Billing">
           <Value>1</Value>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Cases">
+          <Value>cases</Value>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Cases">
+          <Value>case_id</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
@@ -496,29 +493,6 @@
             </Property>
             <Property name="FilesFilter">
               <Value />
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="SMTP" displayName="SMTP" enabled="false" version="1.4">
-          <Name>MAIL</Name>
-          <Properties>
-            <Property name="To">
-              <Value>tali.einhorn@k2view.com</Value>
-            </Property>
-            <Property name="From">
-              <Value>tali.einhorn@k2view.com</Value>
-            </Property>
-            <Property name="User">
-              <Value>tali.einhorn@k2view.com</Value>
-            </Property>
-            <Property name="Password">
-              <Value>q7Tn01yA/Z73ICLs8dfE5RK82NrJsqJmhXZz+1/jY2E=:5SQVbBQmQKgamyuiQmHToeiMPyNkBjaVSABEbjmHSYU=</Value>
-            </Property>
-            <Property name="Host">
-              <Value>smtp-mail.outlook.com</Value>
-            </Property>
-            <Property name="Port">
-              <Value>587</Value>
             </Property>
           </Properties>
         </GenericInterface>

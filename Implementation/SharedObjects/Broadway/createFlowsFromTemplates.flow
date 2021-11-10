@@ -15,6 +15,12 @@
                                     {
                                         "name": "flowName",
                                         "const": "createSeqFlowsOnlyFromTemplates"
+                                    },
+                                    {
+                                        "name": "OVERRIDE_EXISTING_FLOWS",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -182,6 +188,16 @@
         }
     ],
     "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Create Sequence Flows & Actors",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        },
         {
             "leftPort": {
                 "actor": "flowArgs",

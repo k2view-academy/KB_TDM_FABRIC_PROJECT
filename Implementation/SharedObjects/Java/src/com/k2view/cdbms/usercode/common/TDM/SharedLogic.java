@@ -945,7 +945,6 @@ public class SharedLogic {
 		// if the cluster ID is define, add it to the name of the keyspace.
 		String clusterID = "" + ludb().fetch("clusterid").firstValue();
 		
-		log.info("TALI- fnGetIIDListForMigration- select records from batch_process_entities_info by bid: " + fabricExecutionId);
 		if (clusterID == null || clusterID.isEmpty()) {
 			String getMigDetSql = "select entityid, status from k2batchprocess.batchprocess_entities_info where bid = ? " + limiStr + " ALLOW FILTERING";
 			mig_details = db("DB_CASSANDRA").fetch(getMigDetSql, fabricExecutionId);
@@ -970,7 +969,6 @@ public class SharedLogic {
 			
 			String status = "" + row.get("status");
 			
-			log.info("TALI- IID: " + IID + " status: " + status);
 			if ("COMPLETED".equals(status)) {//Get copied entities ( statuses ADDED/UNCHANGED/UPDATED are considered copied successfully
 				totNumOfCopiedEntities++;
 				if(entitiesArrarySize == -1 || totNumOfCopiedEntities <= entitiesArrarySize)
@@ -998,7 +996,7 @@ public class SharedLogic {
 		
 		//add copied entities results to Map_Outer
 		LinkedHashMap<String,Object> m1 = new LinkedHashMap<String,Object>();
-		log.info("fnGetIIDListForMigration - Num of Copied Entities: " + totNumOfCopiedEntities);
+		//log.info("fnGetIIDListForMigration - Num of Copied Entities: " + totNumOfCopiedEntities);
 		m1.put("numOfEntities",totNumOfCopiedEntities);
 		m1.put("entitiesList",Copied_entities_list);
 		m1.put("UIDList", Copied_UID_list);
@@ -1012,7 +1010,6 @@ public class SharedLogic {
 		m2.put("UIDList",Failed_UID_list);
 		Map_Outer.put("Failed entities per execution",m2);
 		
-		log.info("TALI- map of entities: " + Map_Outer.toString());
 		return Map_Outer;
 	}
 
@@ -1528,10 +1525,6 @@ public class SharedLogic {
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionDeleteFromTarget() throws Exception {
 		String luName = getLuType().luName;
-		
-		// TEST
-		//log.info("TESTTTT- TDM_DELETE_BEFORE_LOAD: " + "" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue());
-		
 		if(("" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
 		{
 			return true;
@@ -1544,8 +1537,6 @@ public class SharedLogic {
 
 	@out(name = "firstSyncInd", type = Boolean.class, desc = "")
 	public static Boolean fnIsFirstSync() throws Exception {
-		//log.info("TEST- check if FirstSync for instance ID: " + getInstanceID());
-		log.info("TEST- if first sync - "+   isFirstSync());
 		return isFirstSync();
 	}
 

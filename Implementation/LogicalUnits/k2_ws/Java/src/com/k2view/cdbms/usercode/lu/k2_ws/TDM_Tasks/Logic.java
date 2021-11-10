@@ -1989,12 +1989,17 @@ public class Logic extends WebServiceUserCode {
 			"3. Logical Unit and Entity ID level -\r\n" +
 			"\r\n" +
 			"{\"result\":{\"data\":{\"Copied entities per execution\":{\"entitiesList\":[{\"sourceId\":\"400\",\"parentLuName\":\"PATIENT_LU\",\"parentTargetId\":\"1\",\"targetId\":\"400\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_VISITS\",\"parentSourceId\":\"1\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"}],\"NoOfEntities\":\"1\"},\"Failed entities per execution\":{\"entitiesList\":[],\"NoOfEntities\":\"0\"},\"Copied Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Failed Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Roots Status\":{\"PATIENT_LU\":\"completed\"}}},\"errorCode\":\"SUCCESS\",\"message\":null}")
-	public static Object wsGetTaskStats(Long targetId, Long parentTargetId, String taskExecutionId, String lu_name, Long entityId, String type) throws Exception {
+	public static Object wsGetTaskStats(String targetId, String parentTargetId, String taskExecutionId, String lu_name, String entityId, String type) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
+		// TDM 7.3 - Get Max number of entries to be returned from Global
+		Integer maxEntitiesSize = Integer.parseInt(MAX_NUMBER_OF_ENTITIES_IN_LIST);
+		
 		if (targetId != null || parentTargetId != null) {
+			
+			
 			try {
 				Map<String, Map> statsData = (Map<String, Map>)((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(),
-								lu_name, targetId != null ? targetId.toString() : null, "ENTITY",parentTargetId != null ? parentTargetId.toString() : null, 100, "true")).get("result");
+								lu_name, targetId != null ? targetId : null, "ENTITY",parentTargetId != null ? parentTargetId : null, maxEntitiesSize, "true")).get("result");
 				response.put("errorCode", "SUCCESS");
 				response.put("message", null);
 				HashMap<String, Object> data = new HashMap<>();
@@ -2023,7 +2028,7 @@ public class Logic extends WebServiceUserCode {
 		
 				for (Map<String, Object> root_lu : tree) {
 					Map<String, Map> statsData = (Map<String, Map>)((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(), root_lu.get("lu_name").toString(),
-									null, "ENTITY", null, 100, "true")).get("result");
+									null, "ENTITY", null, maxEntitiesSize, "true")).get("result");
 					Map<String,Object> dataObj=new HashMap<>();
 					dataObj.put("data",statsData);
 					taskStatsAns.put(root_lu.get("lu_name").toString(), dataObj);
@@ -2072,7 +2077,7 @@ public class Logic extends WebServiceUserCode {
 				return response;
 			} else {
 				Map<String, Map> data = (Map<String, Map>)((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(), lu_name,
-								entityId!=null?entityId.toString():null, "ENTITY", null, 100, "true")).get("result");
+								entityId!=null?entityId:null, "ENTITY", null, maxEntitiesSize, "true")).get("result");
 				Map<String,Object> dataObj = new HashMap<>();
 				dataObj.put("data",data);
 				if (type!=null) {
@@ -2999,14 +3004,18 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"If the validations pass successfully, start the task execution.\r\n" +
 			"\r\n" +
+			"Note that if a Global's value is a JSON, it is required to add backslash to the values. See example.\r\n" +
+			"\r\n" +
 			"Request body example:\r\n" +
+			"\r\n" +
 			"{\r\n" +
 			"  \"entitieslist\": \"1,2,4,9,8,11\",\r\n" +
 			"  \"sourceEnvironmentName\": \"SRC1\",\r\n" +
 			"  \"targetEnvironmentName\": \"TAR1\",\r\n" +
 			"  \"taskGlobals\": {\r\n" +
-			"    \"Global1\": \"value1\",\r\n" +
-			"    \"Global2\": \"value2\"\r\n" +
+			"    \"CUST_TYPE\": \"BUS\",\r\n" +
+			"    \"Customer.SUB_TYPE\": \"XX\"\r\n" +
+			"    \"Customer.CUST_DETAILS\": \"'{\\\"name\\\":\\\"John\\\", \\\"age\\\":30, \\\"car\\\":null}'\"\r\n" +
 			"  },\r\n" +
 			"  \"numberOfEntities\": 14\r\n" +
 			"}")
@@ -3040,6 +3049,9 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode;
+		
+		Boolean sourceEnvValidation = false;
+		Boolean targetEnvValidation = false;
 		
 		LUType luType = LUType.getTypeByName("TDM");
 				
@@ -3172,12 +3184,12 @@ public class Logic extends WebServiceUserCode {
 			throw new Exception("Environment does not exist or user has no read permission on this environment");
 		}
 		
-		Boolean sourceEnvValidation = false;
+		
 		List<Map<String, String>> validationsErrorMesssagesByRole = new ArrayList<>();
 		for (Map<String, Object> role : sourceRolesList) {
 		
 			int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-			Boolean entityTest = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString());
+			Boolean entityTest = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
 		
 			Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
 					selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
@@ -3195,17 +3207,25 @@ public class Logic extends WebServiceUserCode {
 		
 		if("load".equalsIgnoreCase(taskData.get("task_type").toString())) {
 		
-			List<Map<String, Object>> targetRolesList = TaskExecutionUtils.fnGetUserRoleIdsAndEnvTypeByEnvName(targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString())
+			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
+			String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString();
+			
+			//List<Map<String, Object>> targetRolesList = TaskExecutionUtils.fnGetUserRoleIdsAndEnvTypeByEnvName(targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString())
+			
+			List<Map<String, Object>> targetRolesList = TaskExecutionUtils.fnGetUserRoleIdsAndEnvTypeByEnvName(targetExeEnvName)
 					.stream().filter(role->(role.get("environment_type").toString().equalsIgnoreCase("TARGET") || role.get("environment_type").toString().equalsIgnoreCase("BOTH"))).collect(Collectors.toList());
 			if(targetRolesList.isEmpty()) throw new Exception("Environment does not exist or user has no write permission on this environment");
 		
-			Boolean targetEnvValidation = false;
 			for (Map<String, Object> role : targetRolesList) {
 				Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
 				Boolean entityTest = false;
 		
 				int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-				entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString());
+				//entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetEnvironmentName);
+				entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetExeEnvName);
+				
+				// End of fix
+				
 				targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
 						selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
 						(Boolean) taskData.get("version_ind"),
@@ -3214,11 +3234,15 @@ public class Logic extends WebServiceUserCode {
 				if (entityTest && targetValidationsErrorMesssages.isEmpty()) { targetEnvValidation = true;break; }
 				validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
 			}
-			if (!targetEnvValidation || !sourceEnvValidation) {
-				return TdmSharedUtils.wrapWebServiceResults("FAIL", "validation failure", validationsErrorMesssagesByRole);
-			}
+			
+		} else{
+			//In case of Extract task, there are not target Env validations
+			targetEnvValidation = true;
 		}
-		
+		log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
+		if (!targetEnvValidation || !sourceEnvValidation) {
+			return TdmSharedUtils.wrapWebServiceResults("FAIL", "validation failure", validationsErrorMesssagesByRole);
+		}
 		try {
 			String envIdByName_sql= "select environment_id from environments where environment_name=(?) and environment_status = 'Active'";
 			Long overridenSrcEnvId=(Long)db("TDM").fetch(envIdByName_sql,sourceEnvironmentName).firstValue();

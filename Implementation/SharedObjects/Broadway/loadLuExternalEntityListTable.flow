@@ -1,0 +1,95 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "If EntityList Table Does Not Exists Create It",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "create LU External Entity List Table",
+                            "actorType": {
+                                "parentType": "createLuExternalEntityListTable",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Run Flow To Load Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Run the Input flow to load the entity list table",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "create LU External Entity List Table",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "create LU External Entity List Table",
+                "name": "ENTITY_LIST_TABLE"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ENTITY_LIST_TABLE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "EXTERNAL_TABLE_FLOW"
+            },
+            "rightPort": {
+                "actor": "Run the Input flow to load the entity list table",
+                "name": "flowName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Run the Input flow to load the entity list table",
+                "name": "LU_NAME"
+            }
+        }
+    ]
+}

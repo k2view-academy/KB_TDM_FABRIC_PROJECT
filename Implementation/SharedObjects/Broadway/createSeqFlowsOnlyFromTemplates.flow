@@ -15,6 +15,12 @@
                                     {
                                         "name": "flowName",
                                         "const": "createSequenceFlows"
+                                    },
+                                    {
+                                        "name": "OVERRIDE_EXISTING_FLOWS",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -39,6 +45,12 @@
                                     {
                                         "name": "flowName",
                                         "const": "createSequenceActors"
+                                    },
+                                    {
+                                        "name": "OVERRIDE_EXISTING_FLOWS",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -49,5 +61,26 @@
             ]
         }
     ],
-    "connections": []
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Create Flows of Sequences",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Create Actors of Sequences",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        }
+    ]
 }

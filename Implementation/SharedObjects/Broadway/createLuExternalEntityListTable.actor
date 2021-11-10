@@ -1,0 +1,32 @@
+{
+    "type": "createLuExternalEntityListTable",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "LU_NAME",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "createLuExternalEntityListTable",
+            "hidden": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "ENTITY_LIST_TABLE",
+            "schema": {
+                "type": "string"
+            }
+        }
+    ],
+    "tags": [
+        "tdm"
+    ]
+}

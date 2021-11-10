@@ -1,0 +1,42 @@
+{
+    "type": "getTableSequenceMapping",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "LU_NAME",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "TARGET_TABLE_NAME",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "getTableSequenceMapping",
+            "hidden": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "tableSeqList",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": null
+                }
+            }
+        }
+    ],
+    "tags": [
+        "tdm"
+    ]
+}

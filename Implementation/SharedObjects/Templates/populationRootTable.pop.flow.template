@@ -77,7 +77,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "delete from {{TABLE_NAME}}"
+                                        "const": "delete from {{__LU_NAME}}.{{TABLE_NAME}}"
                                     },
                                     {
                                         "name": "table",

@@ -3,6 +3,11 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
+      <NodeName>createLoadTableFlows.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\createLoadTableFlows.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>CheckMainTableAndSequentialIID.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckMainTableAndSequentialIID.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -58,11 +63,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>createLoadTableFlows.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\createLoadTableFlows.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>createLoadTableToTargetFlow.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createLoadTableToTargetFlow.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -75,11 +75,6 @@
     <ProjectItemProp>
       <NodeName>filterOutTDMTables_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDMSeqList.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -120,11 +115,6 @@
     <ProjectItemProp>
       <NodeName>checkIfFieldSequential.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDMSeqSrc2TrgMapping.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqSrc2TrgMapping.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -296,6 +286,16 @@
       <NodeName>setTargetEntityId_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setTargetEntityId_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMSeqList.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMSeqSrc2TrgMapping.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqSrc2TrgMapping.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>setSyncMode.flow</NodeName>

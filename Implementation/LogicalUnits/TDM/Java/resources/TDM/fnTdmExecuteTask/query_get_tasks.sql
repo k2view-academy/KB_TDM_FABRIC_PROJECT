@@ -83,27 +83,22 @@ SELECT DISTINCT
   , tt.creation_date
   , tt.data_center_name
   , tt.environment_id
-  , tt.parent_lu_id
+  , 0 parent_lu_id
   , tt.lu_id
   , tt.task_execution_id
-  , p.execution_status parent_lu_status
+  , '' parent_lu_status
   , tt.product_id
   , tt.product_version tdm_target_product_version
   , tt.num_of_processed_entities
   , tt.process_id
-  , ep.product_version tdm_source_product_version
+  , '' tdm_source_product_version
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
-  , e.environment_name as source_environment_name
-  , e2.environment_name as target_environment_name
+  , tt.source_env_name as source_environment_name
+  , e.environment_name as target_environment_name
 FROM
       TASK_EXECUTION_LIST tt
-    , TASK_EXECUTION_LIST p
     , environments         e
-    , environments         e2
-    , environment_products ep
 WHERE
-    UPPER(ep.status)                 = 'ACTIVE'
-    AND UPPER(tt.execution_status)   = 'PENDING'
-    AND tt.source_environment_id     = e.environment_id
-    AND tt.environment_id            = e2.environment_id
+    UPPER(tt.execution_status)   = 'PENDING'
+    AND tt.environment_id            = e.environment_id
     AND tt.process_id > 0

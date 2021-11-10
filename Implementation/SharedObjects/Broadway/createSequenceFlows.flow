@@ -32,7 +32,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "TDMSeqList1",
+                            "name": "TDMSeqList2",
                             "actorType": {
                                 "parentType": "TDMSeqList",
                                 "inputs": [],
@@ -90,6 +90,98 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "flowName",
+                            "minHeight": 318,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${0}.flow"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [
+                        "Stage 7"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Check If Sequence Flow Exists",
+                            "actorType": {
+                                "parentType": "CheckIfSequenceFlowExists",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [
+                        "Stage 7"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -102,6 +194,29 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
+                        {
+                            "name": "Equals2",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "LuFunction2",
                             "actorType": {
@@ -175,19 +290,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "flowName",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${0}.flow"
-                                    }
-                                ],
-                                "outputs": []
                             }
                         }
                     ]
@@ -299,7 +401,63 @@
         },
         {
             "leftPort": {
-                "actor": "TDMSeqList1",
+                "actor": "TDMSeqList2",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "seqName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "SEQUENCE_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDMSeqList2",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "cacheDBName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CACHE_DB_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDMSeqList2",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "redisOrDBName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "SEQUENCE_REDIS_OR_DB"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDMSeqList2",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "initiationScriptOrValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "INITIATE_VALUE_OR_FLOW"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDMSeqList2",
                 "name": "table"
             },
             "rightPort": {
@@ -314,78 +472,12 @@
         },
         {
             "leftPort": {
-                "actor": "TDMSeqList1",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "seqName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "SEQUENCE_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "TDMSeqList1",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "cacheDBName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "CACHE_DB_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "TDMSeqList1",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "redisOrDBName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "SEQUENCE_REDIS_OR_DB"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "TDMSeqList1",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "initiationScriptOrValue"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "INITIATE_VALUE_OR_FLOW"
-            ]
-        },
-        {
-            "leftPort": {
                 "actor": "FlowTemplate",
                 "name": "stream"
             },
             "rightPort": {
                 "actor": "ApplyTemplate",
                 "name": "templateContent"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction2",
-                "name": "res"
-            },
-            "rightPort": {
-                "actor": "ApplyTemplate",
-                "name": "data"
             }
         },
         {
@@ -400,12 +492,62 @@
         },
         {
             "leftPort": {
+                "actor": "flowName",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Check If Sequence Flow Exists",
+                "name": "FLOW_FILE_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check If Sequence Flow Exists",
+                "name": "SKIP_TABLE"
+            },
+            "rightPort": {
+                "actor": "Equals2",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Equals2",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuFunction2",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "ApplyTemplate",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "ApplyTemplate",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "FileWrite1",
                 "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "OVERRIDE_EXISTING_FLOWS"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
             }
         }
     ]

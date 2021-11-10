@@ -37,7 +37,7 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
 
 
@@ -60,7 +60,7 @@ public class SharedLogic {
 		
 		handlebars.registerHelper("getFieldName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
-				log.info(map.get("TARGET_FIELD_NAME"));
+				//log.info(map.get("TARGET_FIELD_NAME"));
 				return map.get("TARGET_FIELD_NAME");
 			}
 		});
@@ -128,27 +128,25 @@ public class SharedLogic {
 		}
 		map.put("MAIN_TABLE_SEQ_ID", seqIID);
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
-		log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
+		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
 		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", TARGET_TABLE_NAME = " + targetDbTable;
-		log.info("buildTemplateData - cmd: " + cmd);
+		//log.info("buildTemplateData - cmd: " + cmd);
 		
 		LinkedList<Object> tableSeq = (LinkedList<Object>)fabric().fetch(cmd).firstRow().get("value");
-		log.info("buildTemplateData - tableSeq: " + tableSeq);
-			
-		// TALI- FIX
-		if(tableSeq != null)
-		{
+		//log.info("buildTemplateData - tableSeq: " + tableSeq);
+		
+		if (tableSeq != null) {
 			Object[] tableSeqArr = tableSeq.toArray(new Object[tableSeq.size()]);
 			if (tableSeqArr.length > 0) {
 				map.put("TABLE_SEQ_DATA", tableSeqArr);
-			} 
-		}
-		else {
+			} else {
 				map.put("TABLE_SEQ_DATA", null);
+			} 
+		} else {
+			map.put("TABLE_SEQ_DATA", null);
 		}
-		return map;
 		
-		// END FIX
+		return map;
 	}
 
 	@out(name = "res", type = List.class, desc = "")

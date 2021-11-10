@@ -26,25 +26,13 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "sourceEnv",
                                         "schema": {
                                             "type": "string"
                                         }
                                     },
                                     {
-                                        "name": "targetEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "syncMode",
+                                        "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -56,7 +44,19 @@
                                         }
                                     },
                                     {
-                                        "name": "deleteBeforeLoad",
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetEnv",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -170,7 +170,7 @@
                             }
                         },
                         {
-                            "name": "FabricSetRead1",
+                            "name": "Get Target Product Version",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -194,29 +194,23 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Target Product Version",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_TARGET_PRODUCT_VERSION",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Logger1",
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "Load Payment- TDM_TARGET_PRODUCT_VERSION value is: ${0}"
+                                        "const": "Load Payment1- TDM_TARGET_PRODUCT_VERSION value is: ${0}"
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Trim spaces from the product version",
+                            "actorType": {
+                                "parentType": "Trim",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -775,7 +769,7 @@
         },
         {
             "leftPort": {
-                "actor": "FabricSetRead1",
+                "actor": "Get Target Product Version",
                 "name": "result"
             },
             "rightPort": {
@@ -788,6 +782,16 @@
             "leftPort": {
                 "actor": "Get Target Product Version",
                 "name": "result"
+            },
+            "rightPort": {
+                "actor": "Trim spaces from the product version",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Trim spaces from the product version",
+                "name": "string"
             },
             "rightPort": {
                 "actor": "Equals1",
@@ -837,6 +841,46 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "sourceEnv"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "deleteBeforeLoad"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "insertToTarget"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "insertToTarget"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "globals"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "globals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -857,36 +901,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "targetEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "targetEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "syncMode"
             },
             "rightPort": {
@@ -897,21 +911,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "insertToTarget"
+                "name": "targetEnv"
             },
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "deleteBeforeLoad"
+                "name": "targetEnv"
             }
         }
     ]
