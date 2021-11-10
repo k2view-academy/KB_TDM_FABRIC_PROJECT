@@ -109,6 +109,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetPermissionGroupMappings() throws Exception {
+		log.info("DEMO PIPELINE");
 		List result = new ArrayList();
 		db(TDM_INTERFACE_NAME).fetch(SELECT_PERMISSION_GROUP_MAPPINGS).forEach(r -> {
 			HashMap<String, Object> pgMapping = new HashMap<>();
