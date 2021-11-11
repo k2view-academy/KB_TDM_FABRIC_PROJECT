@@ -300,7 +300,7 @@ public class Logic extends WebServiceUserCode {
 		List luList = (List) getFabricResponse("list lut;");
 		for(Object e : luList) {
 			Object luName = ((Map) e).get("LU_NAME");
-			if (!"TDM".equals(luName)) {
+			if (!"TDM".equals(luName) && !"TDM_LIBRARY".equals(luName)) {
 				result.add((String)luName);
 			}
 		}
