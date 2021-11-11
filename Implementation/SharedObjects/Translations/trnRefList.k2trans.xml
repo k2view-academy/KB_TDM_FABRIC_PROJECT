@@ -172,9 +172,9 @@
         <trnRefList diffgr:id="trnRefList1" msdata:rowOrder="0">
           <lu_name>Customer</lu_name>
           <reference_table_name>DEVICESTABLE2017</reference_table_name>
-          <schema_name>CRM_USER</schema_name>
+          <schema_name>public</schema_name>
           <interface_name>CRM_DB</interface_name>
-          <target_schema_name>TAR_CRM_USER</target_schema_name>
+          <target_schema_name>public</target_schema_name>
           <target_interface_name>CRM_DB</target_interface_name>
           <table_pk_list></table_pk_list>
         </trnRefList>
