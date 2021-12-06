@@ -29,6 +29,19 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "delete_activity",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "delete_activity"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }

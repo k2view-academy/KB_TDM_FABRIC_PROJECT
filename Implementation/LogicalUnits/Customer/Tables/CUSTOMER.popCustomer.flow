@@ -77,7 +77,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "delete from CUSTOMER"
+                                        "const": "delete from Customer.CUSTOMER"
                                     },
                                     {
                                         "name": "table",
@@ -106,12 +106,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "Customer"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "fnIsFirstSync"
+                                    },
+                                    {
+                                        "const": "Customer",
+                                        "name": "luType",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -238,7 +239,31 @@
                                         "const": "select * from CUSTOMER"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "ssn": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -247,12 +272,15 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "Customer"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "getLuTableColumns"
+                                    },
+                                    {
+                                        "const": "Customer",
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "const": "CUSTOMER",

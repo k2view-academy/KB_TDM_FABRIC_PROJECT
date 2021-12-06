@@ -126,6 +126,13 @@ From customer
 Limit 1000</ig_sql>
           <external_table_flow></external_table_flow>
         </trnMigrateList>
+        <trnMigrateList diffgr:id="trnMigrateList2" msdata:rowOrder="1">
+          <lu_name>Customer</lu_name>
+          <source_env_name>SRC</source_env_name>
+          <interface_name></interface_name>
+          <ig_sql></ig_sql>
+          <external_table_flow>getCustomerListForExtract</external_table_flow>
+        </trnMigrateList>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

@@ -88,6 +88,19 @@
                             }
                         },
                         {
+                            "name": "load_activity",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "load_activity"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Get Entity Status 2",
                             "actorType": {
                                 "parentType": "FabricSetRead",

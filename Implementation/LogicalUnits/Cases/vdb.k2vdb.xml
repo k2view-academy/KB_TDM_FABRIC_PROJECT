@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.2.11">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.3.10">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -13,6 +13,7 @@
     <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
   </IidFinderProp>
   <Tables>
+    <Table>activity</Table>
     <Table>case_note</Table>
     <Table>cases</Table>
     <Table>FABRIC_TDM_ROOT</Table>
@@ -21,6 +22,11 @@
     <Table>TAR_CASES</Table>
   </Tables>
   <TablesProperties>
+    <TableProperties name="activity">
+      <Populations>
+        <Population name="population.flow" order="3" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
     <TableProperties name="cases">
       <Populations>
         <Population name="popCases.flow" order="2" disabled="false" populationType="Flow" />
@@ -79,19 +85,24 @@
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
       <To tableType="TableObject" table="TAR_CASES" populationObjectName="populationTarCases.flow" column="case_id" columnId="tblCol_426c35c9cf6348ca99bd176f7d74ef1f" />
     </Relation>
+    <Relation>
+      <From tableType="TableObject" table="cases" column="activity_id" columnId="tblCol_a246e51e6b0f439ebd738b7d44c1da0c" />
+      <To tableType="TableObject" table="activity" populationObjectName="population.flow" column="customer_id" columnId="customer_id" />
+    </Relation>
   </DatabaseRelations>
   <PreVCsSqlScript />
   <PostVCsSqlScript />
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.2.11" name="vdb.k2vdb.xml">
+    <Graph version="6.5.3.10" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="48 114" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="INSTANCE_TABLE_COUNT" pos="391 57" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="LU_PARAMS" pos="417 221" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="cases" pos="423 372" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="case_note" pos="702 409" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TAR_CASES" pos="165 471" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="activity" pos="513 564" size="257 136" listGroupSize="250 100" viewType="Table" />
     </Graph>
   </DiagramGraph>
 </VirtualDB>

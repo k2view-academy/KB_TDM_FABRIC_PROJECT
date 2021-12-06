@@ -121,7 +121,21 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "remark": "Activities before doing special fields mapping.\nFor Example,in case of population depended sequence, set the Sequence Name based on the Population ID field from Fabric table",
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "Sleep1",
+                            "actorType": {
+                                "parentType": "Sleep",
+                                "inputs": [
+                                    {
+                                        "name": "millis",
+                                        "const": 2000
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },

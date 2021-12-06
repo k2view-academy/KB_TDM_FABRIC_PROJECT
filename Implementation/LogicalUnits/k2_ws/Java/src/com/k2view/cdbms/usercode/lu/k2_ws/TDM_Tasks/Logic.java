@@ -38,6 +38,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
+import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -3019,7 +3020,7 @@ public class Logic extends WebServiceUserCode {
 			"  },\r\n" +
 			"  \"numberOfEntities\": 14\r\n" +
 			"}")
-	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "1. Succesful Execution:\r\n" +
 			"\r\n" +
 			"{\r\n" +
@@ -3076,7 +3077,7 @@ public class Logic extends WebServiceUserCode {
 				Db.Row jobDetails = fabric().fetch("jobstatus user_job 'TDM." + 
 						functionName + "' WITH UID='" + uid + "'").firstRow();
 				jobStatus = "" + jobDetails.get("Status");
-				log.info("Job Status: " + jobStatus);
+				//log.info("Job Status: " + jobStatus);
 				if (!"IN_PROCESS".equalsIgnoreCase(jobStatus) && !"SCHEDULED".equalsIgnoreCase(jobStatus) && !"WAITING".equalsIgnoreCase(jobStatus)) {
 					if ("tdmExecuteTask".equalsIgnoreCase(functionName) || "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
 						String errMsg = "" + db("DB_CASSANDRA").fetch("select error_msg from k2system.k2_jobs where type = 'USER_JOB' and name ='TDM." +
@@ -3109,19 +3110,20 @@ public class Logic extends WebServiceUserCode {
 		}
 		
 		if(!TaskExecutionUtils.fnIsTaskActive(taskId)) throw new Exception("Task is not active");
-		
+		Boolean entityListInd = false;
 		Integer entityListSize = 0;
 		if (entitieslist != null) {
 			entityListSize = (entitieslist.split(",")).length;
+			entityListInd = true;
 		} else if (taskData.get("selection_param_value") != null && "L".equalsIgnoreCase(taskData.get("selection_method").toString())) {
 			String[] entityList = ((String) taskData.get("selection_param_value")).split(",");
 			entityListSize = entityList.length;
 		}
-		
+		//log.info("Entity list is given?: " + entityListInd);
 		Map<String,Object> overrideParams=new HashMap<>();
-		String selectionMethod = null;
+		String selectionMethod = "" + taskData.get("selection_method");
 		if (entitieslist!=null) {
-			if ("S".equalsIgnoreCase("" + taskData.get("selection_method"))) {
+			if ("S".equalsIgnoreCase(selectionMethod)) {
 				if (entityListSize > 1) {
 					throw new Exception("This is a Synthetic Data Task, only one entity can be in the entity list");
 				} 
@@ -3134,7 +3136,11 @@ public class Logic extends WebServiceUserCode {
 		if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
 		if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
 		if (selectionMethod!=null) overrideParams.put("SELECTION_METHOD",selectionMethod);
-		if (numberOfEntities!=null) overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
+		// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
+		if (numberOfEntities!=null && (!entityListInd  || ("S".equalsIgnoreCase(selectionMethod)))) {
+			//log.info("setting the number of entities to: " + numberOfEntities);
+			overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
+		}
 		if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
 		
 		if(overrideParams.get("ENTITY_LIST")!=null){
@@ -3160,86 +3166,118 @@ public class Logic extends WebServiceUserCode {
 		Map<String,Object> be_lus=new HashMap<>();
 		be_lus.put("be_id",taskData.get("be_id").toString());
 		be_lus.put("LU List",taskLogicalUnitsIds);
-		
+		//log.info("selectionMethod: " + selectionMethod);
 		Integer numberOfRequestedEntites = 0;
 		if (numberOfEntities != null) {
-			if (entityListSize > 0 && numberOfEntities != null && numberOfEntities != entityListSize) {
+			if (entityListInd && !"S".equalsIgnoreCase(selectionMethod) && numberOfEntities != entityListSize) {
 				numberOfRequestedEntites = entityListSize;
-				message = "The number of entities for execution is set based on the overridden entity list";
+				message = "The number of entities for execution is set based on the entity list";
+				overrideParams.put("NO_OF_ENTITIES",numberOfRequestedEntites);
 			} else {
 				numberOfRequestedEntites = numberOfEntities;
+				entityListSize = numberOfEntities;
 			}
 		} else {
-			numberOfRequestedEntites = (Integer) (taskData.get("number_of_entities_to_copy"));
+			if (entityListInd && !"S".equalsIgnoreCase(selectionMethod)) {
+				numberOfRequestedEntites = entityListSize;
+			} else {
+				numberOfRequestedEntites = (Integer) (taskData.get("number_of_entities_to_copy"));
+			}
 		}
-		
+		if ("S".equalsIgnoreCase(selectionMethod) && numberOfRequestedEntites > 0) {
+			entityListSize = numberOfRequestedEntites;
+		}
 		String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.get("source_env_name").toString();
-		List<Map<String,Object>> sourceRolesList =
-				TaskExecutionUtils.fnGetUserRoleIdsAndEnvTypeByEnvName(sourceEnvName).stream().filter(role -> (
-						role.get("environment_type").toString().equalsIgnoreCase("SOURCE") ||
-						role.get("environment_type").toString().equalsIgnoreCase("BOTH"))
-				).collect(Collectors.toList());
+		// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
+		String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString();
 		
-		if (sourceRolesList.isEmpty()) {
+		List<Map<String,Object>> sourceRolesList = new ArrayList<>();
+		List<Map<String,Object>> targetRolesList = new ArrayList<>();
+		List<Map<String,Object>> rolesList = (List<Map<String, Object>>)((Map<String,Object>)wsGetListOfEnvsByUser()).get("result");
+		//log.info("------- Size: " + rolesList.size());
+		for (Map<String, Object> envType : rolesList) {
+			if (envType.get("source environments") != null) {
+				sourceRolesList = (List<Map<String, Object>>) (envType.get("source environments"));
+			}
+			if (envType.get("target environments") != null) {
+				targetRolesList = (List<Map<String, Object>>) (envType.get("target environments"));
+			}
+		}
+		//log.info("------- Size of sourceRolesList: " + sourceRolesList.size());
+		//log.info("------- Size of targetRolesList: " + targetRolesList.size());
+		
+		if (sourceRolesList == null || sourceRolesList.isEmpty()) {
 			throw new Exception("Environment does not exist or user has no read permission on this environment");
 		}
 		
-		
 		List<Map<String, String>> validationsErrorMesssagesByRole = new ArrayList<>();
 		for (Map<String, Object> role : sourceRolesList) {
+			//Check if the current role is related to input environment, and not to other environment
+			if (sourceEnvName.equals(role.get("environment_name"))) {
+				//log.info("Source Env: " + sourceEnvName);
+				int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+				int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
+				
+				Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
+						selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
+						(String) taskData.get("sync_mode"), (Boolean) taskData.get("version_ind"), (String) taskData.get("task_type"), role);
+				//log.info("validateNumber: " + validateNumber);
+				if (validateNumber == -1) {
+					sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
+				} else {
+					if ("extract".equalsIgnoreCase(taskData.get("task_type").toString()) && validateNumber > 0) {
+						overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
+					}
+					if (sourceValidationsErrorMesssages.isEmpty()) {
+						sourceEnvValidation = true;
+						break;
+					}
+				}
 		
-			int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-			Boolean entityTest = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
-		
-			Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
-					selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
-					(String) taskData.get("sync_mode"), (Boolean) taskData.get("version_ind"), (String) taskData.get("task_type"), role);
-		
-			if (!entityTest) {
-				sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
-			} else if (sourceValidationsErrorMesssages.isEmpty()) {
-				sourceEnvValidation = true;
-				break;
+				validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
 			}
-		
-			validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
 		}
 		
 		if("load".equalsIgnoreCase(taskData.get("task_type").toString())) {
-		
-			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
-			String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString();
 			
-			//List<Map<String, Object>> targetRolesList = TaskExecutionUtils.fnGetUserRoleIdsAndEnvTypeByEnvName(targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString())
-			
-			List<Map<String, Object>> targetRolesList = TaskExecutionUtils.fnGetUserRoleIdsAndEnvTypeByEnvName(targetExeEnvName)
-					.stream().filter(role->(role.get("environment_type").toString().equalsIgnoreCase("TARGET") || role.get("environment_type").toString().equalsIgnoreCase("BOTH"))).collect(Collectors.toList());
-			if(targetRolesList.isEmpty()) throw new Exception("Environment does not exist or user has no write permission on this environment");
+			if(targetRolesList == null || targetRolesList.isEmpty()) {
+				throw new Exception("Environment does not exist or user has no write permission on this environment");
+			}
 		
 			for (Map<String, Object> role : targetRolesList) {
-				Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
-				Boolean entityTest = false;
+				if (targetExeEnvName.equals(role.get("environment_name"))) {
+					Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
+					//String  entityTest = false;
 		
-				int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-				//entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetEnvironmentName);
-				entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetExeEnvName);
+					int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+					//entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetEnvironmentName);
+					int validateNumber = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetExeEnvName);
 				
-				// End of fix
+					// End of fix
 				
-				targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
-						selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
-						(Boolean) taskData.get("version_ind"),
-						(Boolean) taskData.get("replace_sequences"), (Boolean) taskData.get("delete_before_load"), (String) taskData.get("task_type"), role);
-				if (!entityTest) targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
-				if (entityTest && targetValidationsErrorMesssages.isEmpty()) { targetEnvValidation = true;break; }
-				validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+					targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
+							selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
+							(Boolean) taskData.get("version_ind"),
+							(Boolean) taskData.get("replace_sequences"), (Boolean) taskData.get("delete_before_load"), (String) taskData.get("task_type"), role);
+					//if (!entityTest) targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
+					if (validateNumber == -1) {
+						targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
+					} else if ( targetValidationsErrorMesssages.isEmpty()) { 
+						if ( validateNumber > 0) {
+							overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
+						}			
+						targetEnvValidation = true;
+						break; 
+					}
+					validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+				}
 			}
 			
 		} else{
 			//In case of Extract task, there are not target Env validations
 			targetEnvValidation = true;
 		}
-		log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
+		//log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
 		if (!targetEnvValidation || !sourceEnvValidation) {
 			return TdmSharedUtils.wrapWebServiceResults("FAIL", "validation failure", validationsErrorMesssagesByRole);
 		}
@@ -4518,7 +4556,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 		
-			HashMap<String, Object> wsOutput = (HashMap<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser();
+			HashMap<String, Object> wsOutput = (HashMap<String, Object>)wsGetListOfEnvsByUser();
 			List<Map<String, Object>> allUserEnvsTypes = (List<Map<String, Object>>) wsOutput.get("result");
 			int i=0;
 			for (Map<String, Object> envType : allUserEnvsTypes) {

@@ -514,9 +514,10 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		
+
 		if (product_id!=null && product_id != -1) {
 			String username = (String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			
 			fnUpdateProductDate(product_id,username);
 		}
 		for(Map<String,Object> logicalUnit:logicalUnits){
@@ -953,13 +954,44 @@ public class Logic extends WebServiceUserCode {
 				"product_name=(?), " +
 				"lu_dc_name=(?) " +
 				"WHERE lu_id = " + logicalUnit.get("lu_id");
+		String luParentId = null;
+		String luParentName = null;
+		String luDescription = null;
+		String productId = "-1";
+		String productName = null;
+		String luDcName = null;
+		
+		if (logicalUnit.get("lu_parent_id") != null && !"".equalsIgnoreCase("" + logicalUnit.get("lu_parent_id"))) {
+			luParentId = "" + logicalUnit.get("lu_parent_id");
+		}
+		
+		if (logicalUnit.get("lu_parent_name") != null && !"".equalsIgnoreCase("" + logicalUnit.get("lu_parent_name"))) {
+			luParentName = "" + logicalUnit.get("lu_parent_name");
+		}
+		
+		if (logicalUnit.get("lu_description") != null && !"".equalsIgnoreCase("" + logicalUnit.get("lu_description"))) {
+			luDescription = "" + logicalUnit.get("lu_description");
+		}
+		
+		if (logicalUnit.get("product_id") != null && !"".equalsIgnoreCase("" + logicalUnit.get("product_id"))) {
+			productId = "" + logicalUnit.get("product_id");
+		}
+		
+		if (logicalUnit.get("product_name") != null && !"".equalsIgnoreCase("" + logicalUnit.get("product_name"))) {
+			productName = "" + logicalUnit.get("product_name");
+		}
+		
+		if (logicalUnit.get("lu_dc_name") != null && !"".equalsIgnoreCase("" + logicalUnit.get("lu_dc_name"))) {
+			luDcName = "" + logicalUnit.get("lu_dc_name");
+		}
+		
 		db("TDM").execute(sql,
-				logicalUnit.get("lu_parent_id"),
-				logicalUnit.get("lu_parent_name"),
-				logicalUnit.get("lu_description"),
-				logicalUnit.get("product_id"),
-				logicalUnit.get("product_name"),
-				logicalUnit.get("lu_dc_name"));
+				luParentId,
+				luParentName,
+				luDescription,
+				productId,
+				productName,
+				luDcName);
 	}
 
 

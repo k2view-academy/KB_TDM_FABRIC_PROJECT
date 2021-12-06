@@ -13,24 +13,33 @@ public class TaskValidationsUtils {
 
     public static final Log log = Log.a(UserCode.class);
 
-    static Boolean fnValidateNumberOfReadEntities(Integer numberOfEntities, String role_id, String sourceEnvName) throws Exception {
+    static int fnValidateNumberOfReadEntities(Integer numberOfEntities, String role_id, String sourceEnvName) throws Exception {
         return fnValidateNumberOfEntities(numberOfEntities, role_id, "allowed_number_of_entities_to_read", sourceEnvName);
     }
 
-    static Boolean fnValidateNumberOfCopyEntities(Integer numberOfEntities, String role_id, String targetEnvName) throws Exception {
+    static int fnValidateNumberOfCopyEntities(Integer numberOfEntities, String role_id, String targetEnvName) throws Exception {
         return fnValidateNumberOfEntities(numberOfEntities, role_id, "allowed_number_of_entities_to_copy", targetEnvName);
     }
 
-    private static Boolean fnValidateNumberOfEntities(Integer numberOfEntities, String role_id, String columnName, String envName) throws Exception {
+    private static int fnValidateNumberOfEntities(Integer numberOfEntities, String role_id, String columnName, String envName) throws Exception {
         if (numberOfEntities == -1 || "admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id)) {
-            return true;
+            return 1;
         }
-		String envId = "" + UserCode.db("TDM").fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", envName).firstValue();
-        String numberOfEntities_sql = "select environment_id from environment_roles where role_id = ?  and environment_id = ? and " + columnName + " >= ?";
+		//log.info("Inputs: numberOfEntities: " + numberOfEntities + ", role_id: " + role_id +", columnName: " + columnName + ", envName: " + envName);
+		String numberOfEntities_sql = "select " + columnName + " as number_of_entities from environments e, environment_roles r where " + 
+										"e.environment_name = ? and lower(e.environment_status) = 'active' and " + 
+										"e.environment_id = r.environment_id and r.role_id = ? ";
+		//log.info("numberOfEntities_sql: " + numberOfEntities_sql);
+        Long num = (Long)UserCode.db("TDM").fetch(numberOfEntities_sql, envName, role_id).firstValue();
+		
+		if (numberOfEntities == null) numberOfEntities = 0;
+		if (num >= numberOfEntities) {
+			//The role always handling the given number of entities
+			return num.intValue();
+		}
 	
-		log.info("Check number of entities: role_id: " + role_id  + ", envId: " + envId + ", numberOfEntities: " + numberOfEntities);
-        Object res = UserCode.db("TDM").fetch(numberOfEntities_sql, role_id, envId, numberOfEntities != null ? numberOfEntities : 0).firstValue();
-        return res != null;
+		//If this point is reached then the task is trying to process more entities than allowed for the user
+        return -1;
     }
 
     static Boolean fnValidateParallelExecutions(Long taskId, Map<String, Object> overrideParameters) throws Exception {

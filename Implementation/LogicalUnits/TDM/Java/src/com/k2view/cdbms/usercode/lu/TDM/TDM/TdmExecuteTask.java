@@ -652,6 +652,7 @@ public class TdmExecuteTask {
 		String overrideValue = "";
 		try {
 			for (String attrName : taskOverrideAttrs.keySet()) {
+				Boolean entityListFlag = false;
 				
 				if (!"task_globals".equals(attrName)) {
 					overrideValue = "" + taskOverrideAttrs.get(attrName);
@@ -660,9 +661,14 @@ public class TdmExecuteTask {
 					switch (attrName) {
 						case "entity_list" :
 							taskProperties.put("selection_param_value", overrideValue);
+							int numberOfEntities = overrideValue.split(",", -1).length;
+							taskProperties.put("number_of_entities_to_copy", numberOfEntities);
+							entityListFlag = true;
 							break;
 						case "no_of_entities" : 
-							taskProperties.put("number_of_entities_to_copy", overrideValue);
+							if (!entityListFlag) {
+								taskProperties.put("number_of_entities_to_copy", overrideValue);
+							}
 							break;
 						case "source_environment_name":
 							taskProperties.put(attrName, overrideValue);
