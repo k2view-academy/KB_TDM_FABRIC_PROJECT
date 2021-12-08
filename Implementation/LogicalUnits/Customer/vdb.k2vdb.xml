@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.3.1">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.3.10">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -92,32 +92,32 @@
     </TableProperties>
     <TableProperties name="TAR_ACTIVITY">
       <Populations>
-        <Population name="pop_tar_activity" order="7" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_activity" order="8" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_CASES">
       <Populations>
-        <Population name="pop_tar_cases" order="8" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_cases" order="9" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="tar_collection">
       <Populations>
-        <Population name="pop_tar_collection" order="7" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_collection" order="8" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_CONTRACT">
       <Populations>
-        <Population name="pop_tar_contract" order="7" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_contract" order="8" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_CUSTOMER">
       <Populations>
-        <Population name="populationTarCustomer.flow" order="6" disabled="false" populationType="Flow" />
+        <Population name="populationTarCustomer.flow" order="7" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_ORDERS">
       <Populations>
-        <Population name="pop_tar_orders" order="8" disabled="false" populationType="Regular" />
+        <Population name="pop_tar_orders" order="9" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="TDM_LU_TYPE_RELATION_EID">
@@ -221,7 +221,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.3.1" name="vdb.k2vdb.xml">
+    <Graph version="6.5.3.10" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="345 33.4544334" size="265 743.0912" wasexpanded="false" expanded="true">
         <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="349 52.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
