@@ -252,11 +252,6 @@ public class TdmExecuteTask {
             entityInclusionOverride = getEntityInclusionForChildLU(taskProperties, luName);
         }
 	
-		// TDM 7.3 - If the selection method is synthetic data (cloning), then the sync of entities will be executed before calling the broadway to make sure each orignal instance is sync at most once
-		if ("S".equalsIgnoreCase(selectionMethod)) {
-			log.info("executeFabricBatch - Handling Synthitic Data");
-			syncInstanceForCloning(entityInclusionOverride, taskProperties);
-		}
         //log.info(" entity inclusion: " + entityInclusionOverride);
 		// No need to use Cassandra, the entity list will always be taken from TDMDB
         //String entityInclusionInterface = selectionMethod.equals("ALL") ? CASSANDRA : TDMDB;
@@ -283,6 +278,12 @@ public class TdmExecuteTask {
 
         //log.info("Starting batch command: " + batchCommand);
         //log.info("Starting broadway command: " + broadwayCommand);
+
+		// TDM 7.3 - If the selection method is synthetic data (cloning), then the sync of entities will be executed before calling the broadway to make sure each orignal instance is sync at most once
+		if ("S".equalsIgnoreCase(selectionMethod)) {
+			log.info("executeFabricBatch - Handling Synthitic Data");
+			syncInstanceForCloning(entityInclusionOverride, taskProperties);
+		}
 
         return (String) fabric().fetch(batchCommand, entityInclusionOverride, broadwayCommand).firstValue();
     }
@@ -550,6 +551,10 @@ public class TdmExecuteTask {
 		//log.info("syncInstanceForCloning - sync:" + SYNC_MODE.get(taskProperties));
 
 		fabric().execute("set sync " + SYNC_MODE.get(taskProperties));
+		
+		//27-01-22 - The env should be set to the source env of the task before syncing the entity from source
+		fabric().execute("set environment " + SOURCE_ENVIRONMENT_NAME.get(taskProperties));
+
 
 		//log.info("syncInstanceForCloning - srcDC: " + srcDC + ", luName: " + luName + ", taskExeId: " + taskExeId);
 
@@ -652,7 +657,6 @@ public class TdmExecuteTask {
 		String overrideValue = "";
 		try {
 			for (String attrName : taskOverrideAttrs.keySet()) {
-				Boolean entityListFlag = false;
 				
 				if (!"task_globals".equals(attrName)) {
 					overrideValue = "" + taskOverrideAttrs.get(attrName);
@@ -661,14 +665,9 @@ public class TdmExecuteTask {
 					switch (attrName) {
 						case "entity_list" :
 							taskProperties.put("selection_param_value", overrideValue);
-							int numberOfEntities = overrideValue.split(",", -1).length;
-							taskProperties.put("number_of_entities_to_copy", numberOfEntities);
-							entityListFlag = true;
 							break;
 						case "no_of_entities" : 
-							if (!entityListFlag) {
-								taskProperties.put("number_of_entities_to_copy", overrideValue);
-							}
+							taskProperties.put("number_of_entities_to_copy", overrideValue);
 							break;
 						case "source_environment_name":
 							taskProperties.put(attrName, overrideValue);

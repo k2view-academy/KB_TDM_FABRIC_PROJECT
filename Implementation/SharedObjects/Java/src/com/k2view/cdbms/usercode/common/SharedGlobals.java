@@ -44,7 +44,7 @@ public class SharedGlobals {
 	public static String TDM_TASK_EXE_ID = "0";
 
 	@category("TDM")
-	public static String MASK_FLAG = "0";
+	public static String MASK_FLAG = "1";
 	@category("TDM")
 	public static String TDM_SOURCE_ENVIRONMENT_NAME = "ENV1";
 	@category("TDM")

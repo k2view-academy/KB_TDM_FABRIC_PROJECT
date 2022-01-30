@@ -108,6 +108,9 @@
                                     {
                                         "name": "luType",
                                         "const": "{{__LU_NAME}}"
+										"schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "functionName",

@@ -105,7 +105,7 @@
           <Value>23</Value>
         </Global>
         <Global name="MASK_FLAG" luName="">
-          <Value>0</Value>
+          <Value>1</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
           <Value>SRC</Value>
