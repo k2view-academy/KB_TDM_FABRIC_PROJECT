@@ -19,13 +19,13 @@
                     "actors": [
 						
                         {
-                            "name": "load_COLLECTION",
+                            "name": "load_collection",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "load_COLLECTION"
+                                        "const": "load_collection"
                                     }
                                 ],
                                 "outputs": []

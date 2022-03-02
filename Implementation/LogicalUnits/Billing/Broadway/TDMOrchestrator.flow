@@ -40,37 +40,7 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "sourceEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "syncMode",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "insertToTarget",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "deleteBeforeLoad",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -86,10 +56,56 @@
         {
             "stages": [
                 {
+                    "name": "Reserve Entity If Required",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Reserve Error Handler ",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "HandleEntityReservationAtStart1",
+                            "actorType": {
+                                "parentType": "HandleEntityReservationAtStart",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get Delete Entity Indicator",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": false,
+                    "isTransactional": true,
                     "actors": [
                         {
                             "name": "Get Delete Before Load",
@@ -112,12 +128,13 @@
         {
             "stages": [
                 {
-                    "name": "Check If Delete Entity",
+                    "name": "Delete Before Load If Required",
                     "dependsOnList": [
                         "Get Delete Entity Indicator"
                     ],
                     "isLast": 0,
-                    "isTransactional": false,
+                    "isTransactional": true,
+                    "remark": "Delete Flow to delete all the Entity data from Target",
                     "actors": [
                         {
                             "name": "Equals2",
@@ -141,32 +158,7 @@
                                 ],
                                 "outputs": []
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "No Data Deletion",
-                    "dependsOnList": [
-                        "Get Delete Entity Indicator"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Delete Before Load",
-                    "dependsOnList": [
-                        "Check If Delete Entity"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": true,
-                    "remark": "Delete Flow to delete all the Entity data from Target",
-                    "actors": [
+                        },
                         {
                             "name": "Delete Error Handler",
                             "onError": "result",
@@ -209,12 +201,13 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing ",
+                    "name": "No Data Deletion",
                     "dependsOnList": [
-                        "No Data Deletion"
+                        "Get Delete Entity Indicator"
                     ],
                     "isLast": 0,
-                    "isTransactional": false,
+                    "isTransactional": true,
+                    "hasElse": true,
                     "actors": []
                 }
             ]
@@ -248,12 +241,13 @@
         {
             "stages": [
                 {
-                    "name": "Should Entity Be Loaded Into Target",
+                    "name": "Load Tables If Required",
                     "dependsOnList": [
                         "Get Insert To Target Indicator"
                     ],
                     "isLast": 0,
                     "isTransactional": true,
+                    "remark": "Load tables into target.\nThis flow will first check if data should be loaded to target tables or not",
                     "actors": [
                         {
                             "name": "Equals1",
@@ -271,32 +265,7 @@
                                 ],
                                 "outputs": []
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "No Data Loading",
-                    "dependsOnList": [
-                        "Get Insert To Target Indicator"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Load Tables",
-                    "dependsOnList": [
-                        "Should Entity Be Loaded Into Target"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": true,
-                    "remark": "Load tables into target.\nThis flow will first check if data should be loaded to target tables or not",
-                    "actors": [
+                        },
                         {
                             "name": "Load Error Handler",
                             "onError": "result",
@@ -339,13 +308,60 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 2",
+                    "name": "No Data Loading",
                     "dependsOnList": [
-                        "No Data Loading"
+                        "Get Insert To Target Indicator"
                     ],
                     "isLast": 0,
-                    "isTransactional": false,
+                    "isTransactional": true,
+                    "hasElse": true,
                     "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Reserve Entity In Case Of Replace Sequences and Required",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Reserve With Replace Sequences Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "HandleEntityReservationAtEnd1",
+                            "actorType": {
+                                "parentType": "HandleEntityReservationAtEnd",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -386,7 +402,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "End",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
@@ -449,11 +465,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "luName"
+                "name": "syncMode"
             }
         },
         {
@@ -469,61 +485,31 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sourceEnv"
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "sourceEnv"
+                "name": "luName"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "targetEnv"
+                "name": "reserveInd"
             },
             "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "targetEnv"
+                "actor": "HandleEntityReservationAtStart1",
+                "name": "reserveInd"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "globals"
+                "name": "reserveInd"
             },
             "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "insertToTarget"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "deleteBeforeLoad"
+                "actor": "HandleEntityReservationAtEnd1",
+                "name": "reserveInd"
             }
         },
         {

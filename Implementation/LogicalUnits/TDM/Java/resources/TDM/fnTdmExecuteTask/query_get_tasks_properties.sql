@@ -20,6 +20,9 @@ SELECT task_title,
        selected_ref_version_task_name,
        selected_ref_version_datetime,
        CAST(selected_ref_version_task_exe_id as varchar(256)) as selected_ref_version_task_exe_id,
-       sync_mode
+       sync_mode,
+       reserve_ind,
+       reserve_retention_period_type,
+       reserve_retention_period_value
 FROM   TASKS
 WHERE  task_id = ?

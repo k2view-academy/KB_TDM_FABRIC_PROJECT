@@ -36,17 +36,25 @@ public class Logic extends UserCode {
 
 
 	@type(RootFunction)
-	@out(name = "TASK_EXECUTION_ID", type = String.class, desc = "")
+	@out(name = "TASK_EXECUTION_ID", type = void.class, desc = "")
 	public static void funRootExecID(String TASK_EXECUTION_ID) throws Exception {
+		// TDM 7.4 0 28-Feb-22 - Set TTL for TDM LU Instance
+		if (!TDM_LU_RETENTION_PERIOD_VALUE.isEmpty() && Long.valueOf(TDM_LU_RETENTION_PERIOD_VALUE) > 0) {
+			Integer ttl = getRetention(TDM_LU_RETENTION_PERIOD_TYPE, Float.valueOf(TDM_LU_RETENTION_PERIOD_VALUE));
+			fabric().execute("set INSTANCE_TTL = " + ttl);
+		} else {
+			fabric().execute("set INSTANCE_TTL = " + 0);
+		}
+		
 		// TALI- TDM 5.5- 25-Sep-19- add a validation to verify that the task is completed
 		
 		String sql = "SELECT count(*) FROM task_execution_list out " + 
 		"where task_execution_id = ? and exists (select 1 from task_execution_list tbl " +
 		"where tbl.task_execution_id = out.task_execution_id " +
 		"and tbl.execution_status not in ('stopped','completed','failed','killed'))";
-
+		
 		String cnt= db("TDM").fetch(sql, TASK_EXECUTION_ID).firstValue().toString();
-
+		
 		if(cnt != null)
 		{
 			if(Integer.parseInt(cnt) > 0 ) // if the task is not completed yet- reject the entity
@@ -160,7 +168,7 @@ public class Logic extends UserCode {
 			//log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - before - versionName: " + versionName + ", versionDateTime: " + versionDateTime);
 			if(!verData.isEmpty()) {
 				if (!"null".equals(verData.get("selected_version_task_name"))) {
-					log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - verData: <" + verData.get("selected_version_task_name") + ">");
+					//log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - verData: <" + verData.get("selected_version_task_name") + ">");
 					versionName = "" + verData.get("selected_version_task_name");
 					versionDateTime = "" + verData.get("selected_version_datetime");
 				}
@@ -170,7 +178,7 @@ public class Logic extends UserCode {
 				versionName = "";
 				versionDateTime = "";
 			}
-			log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - versionName: " + versionName + ", versionDateTime: " + versionDateTime);
+			//log.info("fnRootPopTdmLuTypeRelTarEidForDeleteOnly - versionName: " + versionName + ", versionDateTime: " + versionDateTime);
 			
 			Db.Rows rows2 = null;
 			

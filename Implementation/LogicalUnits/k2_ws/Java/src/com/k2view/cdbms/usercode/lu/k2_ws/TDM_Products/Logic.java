@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
+
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	final static String schema="public";
@@ -73,7 +75,7 @@ public class Logic extends WebServiceUserCode {
 		
 		}
 		catch(Exception e){
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			message= e.getMessage();
 			log.error(message);
 		}
@@ -128,7 +130,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode= "SUCCESS";
 		}
 		catch(Exception e){
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			message= e.getMessage();
 			log.error(message);
 		}
@@ -156,9 +158,9 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsPostProduct(String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
-		if(product_name==null||product_versions==null) return TdmSharedUtils.wrapWebServiceResults("FAIL","product_name and product_versions are mandatory fields.",null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		if(product_name==null||product_versions==null) return TdmSharedUtils.wrapWebServiceResults("FAILED","product_name and product_versions are mandatory fields.",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -171,7 +173,7 @@ public class Logic extends WebServiceUserCode {
 					"(product_name, product_description, product_vendor, product_versions, product_created_by, " +
 					"product_creation_date, product_last_updated_date, product_last_updated_by, product_status) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING product_id";
-			String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+			String username = sessionUser().name();
 			Db.Row row = db("TDM").fetch(sql,product_name, product_description, product_vendor, product_versions, username, now, now,
 					username, "Active").firstRow();
 			int prodId = Integer.parseInt(row.get("product_id").toString());
@@ -190,7 +192,7 @@ public class Logic extends WebServiceUserCode {
 		
 		}catch(Exception e){
 			message=e.getMessage();
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			log.error(message);
 		}
 		response.put("message",message);
@@ -213,8 +215,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateProduct(@param(required=true) Long prodId, String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -230,7 +232,7 @@ public class Logic extends WebServiceUserCode {
 					"product_last_updated_date=(?)," +
 					"product_last_updated_by=(?) " +
 					"WHERE product_id = " + prodId;
-			String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+			String username = sessionUser().name();
 			db("TDM").execute(sql, product_name, product_description, product_vendor, product_versions, now, username);
 		
 			String activityDesc = "Product " + product_name + " was updated";
@@ -244,7 +246,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		
 		}catch(Exception e){
-			errorCode="FAIL";
+			errorCode="FAILED";
 			message=e.getMessage();
 			log.error(message);
 		}
@@ -321,7 +323,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", productLogicalUnits);
 		}
 		catch(Exception e){
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			message= e.getMessage();
 			log.error(message);
 		}
@@ -398,7 +400,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", productLogicalUnits);
 		}
 		catch(Exception e){
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			message= e.getMessage();
 			log.error(message);
 		}
@@ -415,14 +417,14 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteProduct(@param(required=true) Long prodId) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
 		
 		try {
-			String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+			String username = sessionUser().name();
 			fnUpdateProductDate(prodId,username);
 		} catch(Exception e){
 			log.error(e.getMessage());
@@ -490,7 +492,7 @@ public class Logic extends WebServiceUserCode {
 		
 			errorCode="SUCCESS";
 		} catch(Exception e){
-			errorCode="FAIL";
+			errorCode="FAILED";
 			message=e.getMessage();
 			log.error(message);
 		}
@@ -586,7 +588,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", result);
 		}
 		catch(Exception e){
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			message= e.getMessage();
 			log.error(message);
 		}
@@ -644,7 +646,7 @@ public class Logic extends WebServiceUserCode {
 		
 		}
 		catch(Exception e){
-			errorCode= "FAIL";
+			errorCode= "FAILED";
 			message= e.getMessage();
 			log.error(message);
 		}
@@ -670,7 +672,7 @@ public class Logic extends WebServiceUserCode {
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
-		String username = (String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+		String username = sessionUser().name();
 		String userId = username;
 		String sql= "INSERT INTO \"" + schema + "\".activities " +
 				"(date, action, entity, user_id, username, description) " +

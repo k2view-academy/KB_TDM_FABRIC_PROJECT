@@ -3,6 +3,106 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
+      <NodeName>UpdateReserveEntitiesTableForAdminOnwer.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\UpdateReserveEntitiesTableForAdminOnwer.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>UpdateReserveEntitiesTableForTester.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\UpdateReserveEntitiesTableForTester.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CustomLogicFlows.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>GetCustomLogicFlows.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\GetCustomLogicFlows.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>insertToLuExternalEntityList.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\insertToLuExternalEntityList.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>insertToLuExternalEntityList.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\insertToLuExternalEntityList.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>loadLuExternalEntityListTable.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\loadLuExternalEntityListTable.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>createLuExternalEntityListTable.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\createLuExternalEntityListTable.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>createLuExternalEntityListTable.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\createLuExternalEntityListTable.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>loadLuExternalEntityListTableJob.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\loadLuExternalEntityListTableJob.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@External_Entity_List</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ReserveEntity.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\ReserveEntity.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ReleaseReservedEntity.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\ReleaseReservedEntity.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ReleaseReservedEntity.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\ReleaseReservedEntity.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtEnd.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtEnd.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtStart.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtStart.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ReserveEntity.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\ReserveEntity.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>PopulateTdmSeqMapping.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\PopulateTdmSeqMapping.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>InitiateTDMLoad.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMLoad.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>createLoadTableFlows.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createLoadTableFlows.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -25,11 +125,6 @@
     <ProjectItemProp>
       <NodeName>createFlowsFromTemplates.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createFlowsFromTemplates.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>createSeqFlowsOnlyFromTemplates.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\createSeqFlowsOnlyFromTemplates.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -68,13 +163,48 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>filterOutTDMTables.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.flow</RelativePath>
+      <NodeName>getTableSequenceMapping.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>filterOutTDMTables_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables_Actor.actor</RelativePath>
+      <NodeName>getTableSequenceMapping.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>checkIfFieldSequential.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>checkIfFieldSequential.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>createSeqFlowsOnlyFromTemplates.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\createSeqFlowsOnlyFromTemplates.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfFlowExists.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfFlowExists.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfSequenceFlowExists.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfSequenceFlowExists.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfSequenceFlowExists.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfSequenceFlowExists.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -98,26 +228,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>getTableSequenceMapping.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>getTableSequenceMapping.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>checkIfFieldSequential.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>checkIfFieldSequential.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>buildTDMEid.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\buildTDMEid.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
@@ -138,38 +248,8 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>insertToLuExternalEntityList.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\insertToLuExternalEntityList.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>insertToLuExternalEntityList.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\insertToLuExternalEntityList.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>loadLuExternalEntityListTable.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\loadLuExternalEntityListTable.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>createLuExternalEntityListTable.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\createLuExternalEntityListTable.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>createLuExternalEntityListTable.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\createLuExternalEntityListTable.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>InitiateTDMLoad_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMLoad_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>InitiateTDMLoad.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMLoad.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -228,11 +308,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>PopulateTdmSeqMapping.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PopulateTdmSeqMapping.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>PopulateTdmSeqMapping_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\PopulateTdmSeqMapping_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
@@ -288,8 +363,23 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
+      <NodeName>UpdateReserveEntitiesTable.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\UpdateReserveEntitiesTable.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>TDMSeqList.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqList.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>filterOutTDMTables.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>filterOutTDMTables_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -610,8 +700,8 @@
   </ProjectItemPropList>
   <ProjectItemsCategoryList>
     <ProjectItemsCategory>
-      <Name>ScriptsForTemplates</Name>
-      <Key>Implementation\SharedObjects\Broadway@ScriptsForTemplates</Key>
+      <Name>Reserve</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@Reserve</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>TDM</Name>
@@ -622,16 +712,20 @@
       <Key>Implementation\SharedObjects\Broadway@TDM@External_Entity_List</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
-      <Name>Reference</Name>
-      <Key>Implementation\SharedObjects\Broadway@TDM@Reference</Key>
-    </ProjectItemsCategory>
-    <ProjectItemsCategory>
       <Name>TDM_Tables</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>Init</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@Init</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>ScriptsForTemplates</Name>
+      <Key>Implementation\SharedObjects\Broadway@ScriptsForTemplates</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>Reference</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@Reference</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>Delete_Target</Name>

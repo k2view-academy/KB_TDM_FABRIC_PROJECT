@@ -92,12 +92,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "fnGetRefTableData"
+                                    },
+                                    {
+                                        "const": "TDM",
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "luName",
@@ -811,23 +812,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "Logger4",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Record Status 1: ${recordSts}"
-                                    },
-                                    {
-                                        "name": "recordSts",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 },
@@ -867,23 +851,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "Logger5",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Record Status 2: ${recordSts}"
-                                    },
-                                    {
-                                        "name": "recordSts",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
                             }
                         }
                     ]
@@ -1510,26 +1477,6 @@
             "rightPort": {
                 "actor": "Equals2",
                 "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger4",
-                "name": "recordSts"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger5",
-                "name": "recordSts"
             }
         },
         {

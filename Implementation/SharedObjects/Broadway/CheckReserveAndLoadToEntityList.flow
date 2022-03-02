@@ -1,0 +1,495 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Reserve Keys",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Indicator of the task include reservation",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_RESERVE_IND",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get BE_ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "BE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get ENV_ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENVIRONMENT_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Session User",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "USER_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if Reserved by other user",
+                    "dependsOnList": [
+                        "Get Reserve Keys"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Owner Of Entity",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT reserve_owner\r\nFROM public.tdm_reserved_entities\r\nWHERE entity_id = ${entityId}\r\nAND be_id = ${beId}\r\nAND env_id = ${envId}\r\nAND reserve_owner != ${userName}\r\n\r\n"
+                                    },
+                                    {
+                                        "name": "entityId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "beId",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "envId",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Check if Reseved",
+                    "dependsOnList": [
+                        "Get Reserve Keys"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Get Owner Of Entity even if the calling user",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT reserve_owner\r\nFROM public.tdm_reserved_entities\r\nWHERE entity_id = ${entityId}\r\nAND be_id = ${beId}\r\nAND env_id = ${envId}\r\n"
+                                    },
+                                    {
+                                        "name": "entityId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "beId",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "envId",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const3",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "check if Reserved by other",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "If Record Exists",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "insertToLuExternalEntityList1",
+                            "actorType": {
+                                "parentType": "insertToLuExternalEntityList",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Const2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Indicator of the task include reservation",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get BE_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity",
+                "name": "beId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get BE_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity even if the calling user",
+                "name": "beId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get ENV_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity",
+                "name": "envId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get ENV_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity even if the calling user",
+                "name": "envId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Session User",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity",
+                "name": "userName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Owner Of Entity",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Const3",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Owner Of Entity even if the calling user",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Const3",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const3",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "If Record Exists",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_IID"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity",
+                "name": "entityId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_IID"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity even if the calling user",
+                "name": "entityId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "recordLoaded"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "insertToLuExternalEntityList1",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_IID"
+            },
+            "rightPort": {
+                "actor": "insertToLuExternalEntityList1",
+                "name": "SOURCE_IID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "recordLoaded"
+            }
+        }
+    ]
+}

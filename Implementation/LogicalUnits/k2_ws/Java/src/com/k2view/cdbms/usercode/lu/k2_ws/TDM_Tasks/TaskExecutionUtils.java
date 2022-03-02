@@ -5,6 +5,7 @@ import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.ResultSet;
 import java.time.Instant;
@@ -15,7 +16,7 @@ import java.util.*;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.user.WebServiceUserCode.graphit;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TaskExecutionUtils {
@@ -53,9 +54,16 @@ public class TaskExecutionUtils {
             }
 
         } else {
-            //log.info("Creating report for Extract Task");
-            response = graphit("ExtractSummaryReport.graphit");
-        }
+			//log.info("Creating report for Extract Task");
+			if ("ALL".equalsIgnoreCase(i_luName)) {
+				//log.info("Creating report for Load Task");
+				response = graphit("ExtractSummaryReport.graphit");
+			} else {
+				Map<String, Object> temp = new HashMap<>();
+				temp.put("i_luName", i_luName);
+				response = graphit("ExtractSummaryReportPerLu.graphit", temp);
+				}
+		}
 
         return wrapWebServiceResults("SUCCESS", null, response);
     }
@@ -114,7 +122,7 @@ public class TaskExecutionUtils {
             return wrapWebServiceResults("SUCCESS", null, null);
         } catch (Exception e) {
             log.error("wsStopTaskExecution", e);
-            return wrapWebServiceResults("FAIL", null, null);
+            return wrapWebServiceResults("FAILED", null, null);
 
         } finally {
             if (batchIdList != null) {
@@ -244,19 +252,19 @@ public class TaskExecutionUtils {
             }
         }
 
-        return wrapWebServiceResults((success_ind ? "SUCCESS" : "FAIL"), null, success_ind);
+        return wrapWebServiceResults((success_ind ? "SUCCESS" : "FAILED"), null, success_ind);
     }
 
-    static void fnStartTaskExecutions(List<Map<String, Object>> taskExecutions, Long taskExecutionId, String srcEnvName, Long tarEnvId, Long srcEnvId) throws Exception {
+    static void fnStartTaskExecutions(List<Map<String, Object>> taskExecutions, Long taskExecutionId, String srcEnvName, Long tarEnvId, Long srcEnvId, String executionNote) throws Exception {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
         for (Map<String, Object> entry : taskExecutions) {
             String query = "INSERT INTO \"" + schema + "\".task_execution_list " +
                     "(task_id, task_execution_id, creation_date, be_id, environment_id, product_id, product_version, lu_id, " +
-                    "data_center_name ,execution_status,parent_lu_id,source_env_name, task_executed_by, task_type, version_datetime, source_environment_id, process_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            String username = (String) ((Map) ((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+                    "data_center_name ,execution_status,parent_lu_id,source_env_name, task_executed_by, task_type, version_datetime, source_environment_id, process_id, execution_note) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String username = sessionUser().name();
             db("TDM").execute(query,
                     entry.get("task_id"),
                     taskExecutionId,
@@ -274,7 +282,8 @@ public class TaskExecutionUtils {
                     entry.get("task_type"),
                     now,
                     srcEnvId != null ? srcEnvId : entry.get("source_environment_id"),
-                    entry.get("process_id"));
+                    entry.get("process_id"),
+					executionNote != null ? executionNote : null);
         }
     }
 
@@ -635,18 +644,18 @@ public class TaskExecutionUtils {
     static List<Map<String, Object>> fnGetActiveTaskForActivation(Long taskId) throws Exception {
         String clientQuery = "SELECT *, " +
                 "( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount " +
-                "FROM \"" + schema + "\".tasks " +
-                "INNER JOIN \"" + schema + "\".tasks_logical_units " +
-                "ON (\"" + schema + "\".tasks.task_id = \"" + schema + "\".tasks_logical_units.task_id) " +
-                "INNER JOIN \"" + schema + "\".product_logical_units " +
-                "ON (\"" + schema + "\".product_logical_units.lu_id = \"" + schema + "\".tasks_logical_units.lu_id ) " +
-                "INNER JOIN \"" + schema + "\".environment_products " +
-                "ON (\"" + schema + "\".environment_products.status = \'Active\' " +
-                "AND \"" + schema + "\".environment_products.product_id = \"" + schema + "\".product_logical_units.product_id " +
-                "AND (\"" + schema + "\".environment_products.environment_id = \"" + schema + "\".tasks.environment_id " +
-                "OR (\"" + schema + "\".tasks.environment_id IS NULL " +
-                "AND \"" + schema + "\".environment_products.environment_id = \"" + schema + "\".tasks.source_environment_id ))) " +
-                "WHERE \"" + schema + "\".tasks.task_id = " + taskId;
+                "FROM tasks " +
+                "INNER JOIN tasks_logical_units " +
+                "ON (tasks.task_id = tasks_logical_units.task_id) " +
+                "INNER JOIN product_logical_units " +
+                "ON (product_logical_units.lu_id = tasks_logical_units.lu_id ) " +
+                "INNER JOIN environment_products " +
+                "ON (environment_products.status = \'Active\' " +
+                "AND environment_products.product_id = product_logical_units.product_id " +
+                "AND (environment_products.environment_id = tasks.environment_id " +
+                "OR (tasks.environment_id IS NULL " +
+                "AND environment_products.environment_id = tasks.source_environment_id ))) " +
+                "WHERE tasks.task_id = " + taskId;
         //log.info(clientQuery);
         Db.Rows rows = db("TDM").fetch(clientQuery);
 
@@ -688,7 +697,7 @@ public class TaskExecutionUtils {
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
 
-        String username = (String) ((Map) ((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+        String username = sessionUser().name();
 
         String query = "INSERT INTO \"" + schema + "\".task_execution_summary " +
                 "(task_execution_id, task_id , task_type, creation_date, be_id, environment_id, execution_status, start_execution_time, end_execution_time," +
@@ -720,11 +729,11 @@ public class TaskExecutionUtils {
                 entry.get("update_date"));
     }
 
-    static void fnInsertActivity(String action, String entity, String description) throws Exception {
+    public static void fnInsertActivity(String action, String entity, String description) throws Exception {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
-        String username = (String) ((Map) ((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+        String username = sessionUser().name();
         String userId = username;
         String sql = "INSERT INTO \"" + schema + "\".activities " +
                 "(date, action, entity, user_id, username, description) " +
@@ -824,11 +833,16 @@ public class TaskExecutionUtils {
 
     static List<Map<String, Object>> fnGetVersionForLoadRef(List<String> refList, String source_env_name, String fromDate, String toDate) throws Exception {
 
-        String query = "SELECT t.task_title as version_name, t.task_id, t.task_last_updated_by, l.task_execution_id, l.fabric_execution_id,  " +
+		String versionDatesCond = "";
+		if (fromDate != null && !"".equals(fromDate) && toDate != null && "".equals(toDate)) {
+			versionDatesCond = "and l.version_datetime::date >= '" + fromDate + "' and l.version_datetime::date <= '" + toDate + "' ";
+		}
+		
+        String query = "SELECT t.task_title as version_name, t.task_id, l.task_execution_id, t.task_last_updated_by, l.task_execution_id, l.fabric_execution_id,  " +
                 "CASE when t.selection_method= \'ALL\' then  \'ALL\' " +
                 "when t.selection_method= \'REF\' then \'REF\' " +
                 "else \'Selected Entities\' END version_Type, " +
-                "l.version_datetime, lu.lu_name " +
+                "l.version_datetime, lu.lu_name, l.num_of_copied_entities as num_of_succeeded_entities, l.num_of_failed_entities, l.execution_note " +
                 "FROM tasks t, task_execution_list l, tasks_logical_units lu, " +
                 "(select  array_agg(lower(e.ref_table_name)) ref_list, array_agg(distinct lower(t.lu_name))  lu_list, task_execution_id " +
                 "from task_ref_exe_stats e, task_ref_tables t where e.task_ref_table_id = t.task_ref_table_id and e.execution_status = \'completed\' " +
@@ -837,8 +851,7 @@ public class TaskExecutionUtils {
                 "and t.task_id = l.task_id " +
                 "and t.source_env_name = \'" + source_env_name + "\' " +
                 "and lower(l.execution_status) = \'completed\' " +
-                "and l.version_datetime >= \'" + fromDate + "\' " +
-                "and l.version_datetime <= \'" + toDate + "\' " +
+                versionDatesCond +
                 "and l.version_expiration_date > CURRENT_TIMESTAMP AT TIME ZONE \'UTC\' " +
                 "and l.task_execution_id = ref.task_execution_id " +
                 "and l.lu_id = lu.lu_id and l.task_id = lu.task_id ";
@@ -906,8 +919,9 @@ public class TaskExecutionUtils {
         return result;
     }
 
-    static Db.Rows fnGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<Map<String, Object>> lu_list) throws Exception {
-        String clientQuery = "";
+    static Map<String, Object> fnGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<Map<String, Object>> lu_list, String target_env_name) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+		String clientQuery = "";
         String logicalUnitList = "";
         for (Map<String, Object> lu : lu_list) {
             logicalUnitList += ("'" + lu.get("lu_name") + "',");
@@ -918,22 +932,28 @@ public class TaskExecutionUtils {
         for (Map<String, Object> lu : lu_list) {
             logicalUnitListEqual = logicalUnitListEqual + " and lower('" + lu.get("lu_name") + "') = any(lu_list) ";
         }
+	
+		String versionDatesCond = "";
+		if (fromDate != null && !"".equals(fromDate) && toDate != null && !"".equals(toDate)) {
+			versionDatesCond = "and l.version_datetime::date >= '" + fromDate + "' and l.version_datetime::date <= '" + toDate + "' ";
+		}
 
         clientQuery = "with lu_list as (select l.task_execution_id, array_agg(lower(lu.lu_name)) lu_list " +
                 "from task_execution_list l, product_logical_units lu where l.lu_id = lu.lu_id and lower(l.execution_status) = 'completed'  " +
                 "group by task_execution_id) " +
-                "select distinct t1.task_title version_name, t1.task_id, t1.task_last_updated_by, " +
+                "select distinct t1.task_title version_name, t1.task_id, l1.task_execution_id, t1.task_last_updated_by, " +
                 "CASE when t1.selection_method='ALL' then  'ALL' else  'Selected Entities' END version_Type, " +
                 "l1.num_of_copied_entities number_of_extracted_entities, l1.version_datetime , l1.task_execution_id, tlu.lu_name, l1.fabric_execution_id, " +
-                "CASE when plu.lu_parent_id is null then 'Y' else 'N' END root_indicator " +
+                "CASE when plu.lu_parent_id is null then 'Y' else 'N' END root_indicator, " +
+				"l1.num_of_copied_entities as num_of_succeeded_entities, l1.num_of_failed_entities, l1.execution_note, " +
+				"ROW_NUMBER () OVER (PARTITION BY t1.task_title, l1.lu_id ORDER BY l1.task_execution_id) version_no " +
                 "from task_execution_list l1, tasks t1, tasks_logical_units tlu, product_logical_units plu where  " +
                 "(t1.task_title, t1.task_id, l1.version_datetime, l1.task_execution_id, l1.lu_id) in  " +
                 "(SELECT distinct t.task_title as version_name, t.task_id, l.version_datetime , l.task_execution_id, l.lu_id FROM tasks t, task_execution_list l, lu_list  " +
                 " where lower(t.task_Type) = 'extract' and t.task_id = l.task_id " +
                 "and t.source_env_name = '" + source_env_name + "' " +
                 "and lower(l.execution_status) = 'completed' " +
-                "and l.version_datetime::date >= '" + fromDate + "' " +
-                "and l.version_datetime::date <= '" + toDate + "' " +
+                versionDatesCond +
                 "and l.version_expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC' " +
                 "and l.lu_id in (select lu_id from tasks_logical_units u " +
                 "where l.task_id = u.task_id and u.lu_name in " +
@@ -943,9 +963,13 @@ public class TaskExecutionUtils {
                 "and t1.task_id = l1.task_id and lower(l1.execution_status) = 'completed' " +
                 "and l1.task_id = tlu.task_id and l1.lu_id = tlu.lu_id " +
                 "and l1.lu_id = plu.lu_id " +
-                "and (plu.lu_parent_id is not null or l1.num_of_copied_entities > 0) ";
+                "and (plu.lu_parent_id is not null or l1.num_of_copied_entities > 0 ";
 
-        if (entitiesList != null) {
+		// TDM 7.4 - 13-Jan-22 - Check the entity list against the task_execution_entities table, to support 2 things:
+		// 1. Validate that the entities were extracted successfully at least at Root Lu Level
+		// 2. In case of override task, we need to check the entities against the entities that were handled at run time and not the entities at task creation time.
+	
+        /*if (entitiesList != null) {
             if (entitiesList.length() > 0) {
                 String[] numberOfEntitiesArray = entitiesList.split(",");
                 clientQuery = clientQuery +
@@ -958,11 +982,43 @@ public class TaskExecutionUtils {
                 }
                 clientQuery += "))";
             }
-        }
-        clientQuery = clientQuery + "order by task_id, task_execution_id;";
+        }*/
+	
+		if (entitiesList != null && entitiesList.length() > 0) {
+			int  numOfEntities = StringUtils.countMatches(entitiesList, ",") + 1;
+			clientQuery +=
+					" and (" + be_id + " != plu.be_id or (";
+			clientQuery += numOfEntities + " = (select count(1) from task_execution_entities te " +
+					"where te.task_execution_id = cast (l1.task_execution_id as text) and te.lu_name = plu.lu_name and plu.lu_parent_id is null " +
+					"and te.iid = ANY(string_to_array('" + entitiesList + "', ',')) and execution_status = 'completed'))) ) ";
+        } else {
+			clientQuery += ")";
+		}
+		// End of TDM 7.4 change
+		
+        clientQuery += " order by task_id, task_execution_id;";
+		//log.info("fnGetVersionsForLoad - clientQuery: " + clientQuery);
         Db.Rows rows = db("TDM").fetch(clientQuery);
-        return rows;
-    }
+
+		//TDM7.4 - 26/1/2022 - Check for each entity if it is reserved by other user.
+		
+		result.put("ListOfVersions", rows);
+		Map<String, Object> validation = new HashMap<>();
+		if (entitiesList != null && entitiesList.length() > 0) {
+			//log.info("target_env_name: " + target_env_name);
+			String envID = "" + db("TDM").fetch("SELECT environment_id from environments where environment_name = ? and environment_status = 'Active'",
+				target_env_name).firstValue();
+			String[] strings = entitiesList.split(",");
+			ArrayList<String> entities = new ArrayList<>();
+			Collections.addAll(entities, strings); 
+			String userName = ""; //The function will use calling user name
+			
+			validation = fnValidateReservedEntities(Long.toString(be_id), envID, entities);
+		}
+		
+		result.put("EntityReservationValidations", validation);
+        return result;
+	}
 
 
     static List<Map<String, Object>> fnGetRootLUs(String taskExecutionId) throws Exception {
@@ -1141,7 +1197,7 @@ public class TaskExecutionUtils {
     static List<Map<String, Object>> fnGetUserRoleIdsAndEnvTypeByEnvName(String envName) throws Exception {
         List<Map<String, Object>> results = new ArrayList<>();
         String userId = sessionUser().name();
-        String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+        String permissionGroup = fnGetUserPermissionGroup("");
 		
 		String fabricRoles = String.join(",", sessionUser().roles());
 	
@@ -1219,4 +1275,86 @@ public class TaskExecutionUtils {
         db("TDM").execute(sql, taskId, params_str, taskExecutionId);
     }
 
+	public static Map<String, Object> fnValidateReservedEntities(String beID, String envID, ArrayList<String> entitiesList) throws Exception {
+		Map<String, Object> result = new HashMap<>();
+		List<Map<String, Object>> entityList = new ArrayList<>();
+		String userName = sessionUser().name();
+		Set<String> fabricRolesSet = sessionUser().roles();
+		Boolean adminOrOwner = fnIsAdminOrOwner(envID, userName);
+		String message  = "";
+		
+		if (adminOrOwner) {
+			//log.info("The user: " + userName + " is an admin Or owner");
+			result.put("listOfEntities", entityList);
+			result.put("message", message);
+			return result;
+		}
+		
+		//log.info("The user: " + userName + " is tester");
+		String entities_list_for_qry = "";
+		//ArrayList<String> releasedEntitiesList = entitiesList;
+		
+		for (int i = 0; i < entitiesList.size(); i++) {
+            entities_list_for_qry += "'" + entitiesList.get(i).trim() + "',";
+        }
+        // remove last ,
+        entities_list_for_qry = entities_list_for_qry.substring(0, entities_list_for_qry.length() - 1);
+
+		//log.info("fnSaveTaskOverrideParameters - beID: " + beID + ", envID: " + envID);
+		String query = "SELECT * FROM TDM_RESERVED_ENTITIES WHERE " +
+				"be_id =? AND env_id =? AND entity_id in (" + entities_list_for_qry + ") And  reserve_owner != ? " +
+				"AND CURRENT_TIMESTAMP >= start_datetime AND (end_datetime IS NULL OR CURRENT_TIMESTAMP < end_datetime)";
+		
+		//log.info("-------- query: " + query);
+		try {
+			Db.Rows reservedEntities = db("TDM").fetch(query, beID, envID, userName);
+		
+			for (Db.Row row : reservedEntities) {
+				String entityID = "" + row.get("entity_id");
+				String owner = "" + row.get("reserve_owner");
+				//remove entity from released Entities as it is not reserved
+				//releasedEntitiesList.remove(entityID);
+			
+				Map<String, Object> reservedRec = new HashMap<>();
+				reservedRec.put("entity_id", entityID);
+				reservedRec.put("reserve_owner", owner);
+				reservedRec.put("start_datetime", row.get("start_datetime"));
+				reservedRec.put("end_datetime", row.get("end_datetime"));
+				message += ("".equals(message)) ? entityID : "," + entityID;
+				
+				entityList.add(reservedRec);
+			}
+			
+			/*for (String releasedEntity : releasedEntitiesList) {
+				Map<String, Object> releasedRec = new HashMap<>();
+				releasedRec.put("entity_id", releasedEntity);
+				releasedRec.put("reserve_ind", "false");
+				releasedRec.put("reserve_owner", null);
+				releasedRec.put("start_datetime", null);
+				releasedRec.put("end_datetime", null);
+				releasedRec.put("reserve_message", "");
+				
+				entityList.add(releasedRec);
+			}*/
+			
+		} catch(Exception e) {
+			 e.printStackTrace();
+			throw new Exception("Validation of entity list had failed with error: " + e.getMessage());
+		}
+		
+		if (!"".equals(message)) {
+			message = "Entities reserved by other User: " + message;	
+		}
+		result.put("listOfEntities", entityList);
+		result.put("message", message);
+		return result;
+	}
+	
+	public static void createTaskGlobals(Long taskId, String luName, String globalName, String globalValue) throws Exception {
+		if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
+			globalName = luName + "." + globalName;
+		}
+		String sql = "INSERT INTO task_globals (task_id, global_name, global_value) VALUES (?, ?, ?)";
+		db("TDM").execute(sql, taskId, globalName, globalValue);
+	}
 }

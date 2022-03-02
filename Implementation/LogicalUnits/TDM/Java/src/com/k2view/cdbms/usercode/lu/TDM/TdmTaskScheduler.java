@@ -47,9 +47,9 @@ public class TdmTaskScheduler {
             Timestamp schedulingEndDate = Util.rte(() -> resultSet.getTimestamp("scheduling_end_date"));
             Timestamp localTime = (Timestamp) Util.rte(() -> db("TDM").fetch("SELECT localtimestamp").firstValue());
 			String taskCreatedBy = Util.rte(() -> resultSet.getString("task_created_by"));
-            log.info("task with id: " + taskID + " beid: " + beID + " tasktype: " + taskType + " cronexpression: " + cronExpression);
+            //log.info("task with id: " + taskID + " beid: " + beID + " tasktype: " + taskType + " cronexpression: " + cronExpression);
             if(schedulingEndDate != null && localTime.compareTo(schedulingEndDate) > 0){
-                log.info(" updating task to immediate.....");
+                //log.info(" updating task to immediate.....");
                 Util.rte(() ->db(TDM).execute("UPDATE TASKS SET scheduler = ?, scheduling_end_date = ?, task_last_updated_by = ? WHERE  task_id = ?", "immediate", null, "TDM scheduler", taskID));
                 return;
             }
@@ -63,7 +63,7 @@ public class TdmTaskScheduler {
                 log.info(" ----------------- adding task to task_execution_list table ----------------- ");
 
                 Long taskExecutionID = (Long) Util.rte(() -> db(TDM).fetch("SELECT NEXTVAL('tasks_task_execution_id_seq')").firstValue());
-                log.info("running product query with: taskID: " + taskID + " envID: "  + environmentID + "sourseEnvName: " + sourceEnvName);
+                //log.info("running product query with: taskID: " + taskID + " envID: "  + environmentID + "sourseEnvName: " + sourceEnvName);
                 Util.rte(() -> db(TDM).fetch(productQuery, taskID, environmentID).forEach(r ->
                 {
                     ResultSet luRow = r.resultSet();

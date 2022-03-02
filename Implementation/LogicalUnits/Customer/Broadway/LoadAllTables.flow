@@ -10,13 +10,14 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Load Tables Level 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
+						
                         {
                             "name": "load_CUSTOMER",
                             "actorType": {
@@ -48,14 +49,15 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Load Tables Level 2",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "Check if Entity has not failed 1",
                             "condition": "result",
                             "actorType": {
@@ -71,20 +73,7 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "load_CONTRACT",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "load_CONTRACT"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
+						},
                         {
                             "name": "load_ACTIVITY",
                             "actorType": {
@@ -112,6 +101,19 @@
                             }
                         },
                         {
+                            "name": "load_CONTRACT",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "load_CONTRACT"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Get Entity Status 2",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -129,14 +131,15 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Load Tables Level 3",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "Check if Entity has not failed 2",
                             "condition": "result",
                             "actorType": {
@@ -152,7 +155,7 @@
                                 ],
                                 "outputs": []
                             }
-                        },
+						},
                         {
                             "name": "load_CASES",
                             "actorType": {
@@ -184,14 +187,15 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Load Tables Level 4",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "Check if Entity has not failed 3",
                             "condition": "result",
                             "actorType": {
@@ -207,7 +211,7 @@
                                 ],
                                 "outputs": []
                             }
-                        },
+						},
                         {
                             "name": "load_CASE_NOTE",
                             "actorType": {
@@ -251,7 +255,9 @@
         }
     ],
     "connections": [
-        {
+		
+		
+		{
             "leftPort": {
                 "actor": "Get Entity Status 1",
                 "name": "result"
@@ -261,7 +267,8 @@
                 "name": "a"
             }
         },
-        {
+		
+		{
             "leftPort": {
                 "actor": "Get Entity Status 2",
                 "name": "result"
@@ -271,7 +278,8 @@
                 "name": "a"
             }
         },
-        {
+		
+		{
             "leftPort": {
                 "actor": "Get Entity Status 3",
                 "name": "result"
@@ -281,5 +289,5 @@
                 "name": "a"
             }
         }
-    ]
+	]
 }

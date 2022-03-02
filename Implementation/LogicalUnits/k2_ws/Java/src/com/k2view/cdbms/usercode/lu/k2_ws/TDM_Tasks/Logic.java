@@ -19,6 +19,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.k2view.fabric.common.Json;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.checkWsResponse;
@@ -103,7 +104,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",result);
 		
 		} catch(Exception e){
-			errorCode="FAIL";
+			errorCode="FAILED";
 			message=e.getMessage();
 			log.error(message);
 		}
@@ -116,7 +117,7 @@ public class Logic extends WebServiceUserCode {
 	@desc("This is the main API to get the task details. This API gets the list of all TDM tasks or a list of given task IDs if the input task_ids parameter is populated. The input task_ids is an optional parameter that can be populated to return the data of a given list of tasks. The ID(s) of the required task(s), will be supplied in this parameter separated by comma. For example, task_ids=4 or task_ids=3,2,6.\r\n" +
 			"\r\n" +
 			"If task_ids parameter is not populated, the data of all tasks will be returned by the API.")
-	@webService(path = "tasks", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "tasks", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -547,7 +548,10 @@ public class Logic extends WebServiceUserCode {
 				newRow.put("executioncount", resultSet.getInt("executioncount"));
 				newRow.put("refcount", resultSet.getInt("refcount"));
 				newRow.put("processnames", resultSet.getString("processnames"));
-		
+				newRow.put("reserve_ind",resultSet.getBoolean("reserve_ind"));
+				newRow.put("reserve_retention_period_type", resultSet.getString("reserve_retention_period_type"));
+				newRow.put("reserve_retention_period_value", resultSet.getString("reserve_retention_period_value"));
+
 				Map<String, Object> task = null;
 				for (Map<String, Object> e : newResult) {
 					if (Integer.parseInt(e.get("task_id").toString()) == resultSet.getInt("task_id")) {
@@ -657,7 +661,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",newResult);
 		
 		} catch(Exception e){
-			errorCode="FAIL";
+			errorCode="FAILED";
 			e.printStackTrace();
 			message=e.getMessage();
 			log.error(message);
@@ -701,7 +705,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",result);
 		
 		} catch(Exception e){
-			errorCode="FAIL";
+			errorCode="FAILED";
 			message=e.getMessage();
 			log.error(message);
 		}
@@ -712,23 +716,26 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Gets the Logical Units list of the task's Business Entity (BE) and the task's environment products. The user can select part or all of the LUs in the list in the task. For extract task, the source environment ID is sent to the API, and for load task the target environment ID is sent to the API.")
-	@webService(path = "businessentity/{beId}/environment/{envId}/logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity/{beId}/environment/{envId}/logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"lu_parent_name\": \"parentName\",\r\n" +
-			"      \"lu_name\": \"name\",\r\n" +
-			"      \"lu_id\": 23\r\n" +
+			"      \"lu_parent_name\": \"Customer\",\r\n" +
+			"      \"lu_name\": \"Billing\",\r\n" +
+			"      \"lu_id\": 3,\r\n" +
+			"      \"product_name\": \"Customer\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"lu_parent_name\": \"PATIENT_LU\",\r\n" +
-			"      \"lu_name\": \"PATIENT_VISITS\",\r\n" +
-			"      \"lu_id\": 12\r\n" +
+			"      \"lu_parent_name\": null,\r\n" +
+			"      \"lu_name\": \"Customer\",\r\n" +
+			"      \"lu_id\": 1,\r\n" +
+			"      \"product_name\": \"Customer\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"lu_parent_name\": \"PATIENT_VISITS\",\r\n" +
-			"      \"lu_name\": \"VISIT_LAB_RESULTS\",\r\n" +
-			"      \"lu_id\": 16\r\n" +
+			"      \"lu_parent_name\": \"Customer\",\r\n" +
+			"      \"lu_name\": \"Orders\",\r\n" +
+			"      \"lu_id\": 2,\r\n" +
+			"      \"product_name\": \"Customer\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -756,6 +763,7 @@ public class Logic extends WebServiceUserCode {
 				lU.put("lu_id",resultSet.getInt("lu_id"));
 				lU.put("lu_parent_name",resultSet.getString("lu_parent_name"));
 				lU.put("lu_name",resultSet.getString("lu_name"));
+				lU.put("product_name", resultSet.getString("product_name"));
 				result.add(lU);
 			}
 		
@@ -763,7 +771,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",result);
 		
 		} catch(Exception e){
-			errorCode="FAIL";
+			errorCode="FAILED";
 			message=e.getMessage();
 			log.error(message);
 		}
@@ -874,7 +882,7 @@ public class Logic extends WebServiceUserCode {
 			"        }\r\n" +
 			"    ]\r\n" +
 			"}")
-	@webService(path = "task", verb = {MethodType.POST}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task", verb = {MethodType.POST}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 145\r\n" +
@@ -882,77 +890,48 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV2(
-			@param(required=true) Long be_id,
-			@param(required=true) Long environment_id,
-			@param(required=true) Long source_environment_id,
-			String scheduler,
-			Boolean delete_before_load,
-			Integer number_of_entities_to_copy,
-			String selection_method,
-			String selection_param_value,
-			String entity_exclusion_list,
-			@param(required=true) String task_title,
-			String parameters,
-			Boolean refresh_reference_data,
-			Boolean replace_sequences,
-			String source_env_name,
-			Boolean load_entity,
-			@param(required=true) String task_type,
-			String scheduling_end_date,
-			Boolean version_ind,
-			String retention_period_type,
-			Integer retention_period_value,
-			String selected_version_task_name,
-			String selected_version_datetime,
-			Integer selected_version_task_exe_id,
-			Boolean task_globals,
-			Integer selected_ref_version_task_exe_id,
-			String selected_ref_version_datetime,
-			String selected_ref_version_task_name,
-			String sync_mode,
-			Boolean selectAllEntites,
-			List<Map<String,Object>> refList,
-			List<Map<String,Object>> globals,
-			String reference,
-			List<Map<String, Object>> postExecutionProcesses,
-			@param(required=true) List<Map<String, Object>> logicalUnits
-	) throws Exception {
+	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		Long taskId;
-
+		
 		if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !"REF".equals(selection_method) && number_of_entities_to_copy == null) {
 			throw new IllegalArgumentException("In case the task_type is \"LOAD\" and the selection_method is not 'ALL' or 'REF' the parameter 'number_of_entities_to_copy' is mandatory.");
 		}
-
+		
 		db(TDM).beginTransaction();
 		try {
-			Map<String, Object> result = (Map<String, Object>) wsCreateTaskV1(be_id, environment_id, source_environment_id, scheduler, delete_before_load, number_of_entities_to_copy, selection_method, selection_param_value, entity_exclusion_list, task_title, parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference);
+			Map<String, Object> result = (Map<String, Object>) wsCreateTaskV1(be_id, environment_id, source_environment_id, scheduler, 
+				delete_before_load, number_of_entities_to_copy, selection_method, selection_param_value, entity_exclusion_list, 
+				task_title, parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, task_type, 
+				scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name,
+				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
+				selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference,
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
-				return wrapWebServiceResults("FAIL", result.get("message"), null);
+				return wrapWebServiceResults("FAILED", result.get("message"), null);
 			} else {
 				taskId = (Long) ((Map<String, Object>) result.get("result")).get("id");
 			}
-
+		
 			result = (Map<String, Object>) wsCreatePostExecutionProcessesFortask(taskId, task_title, postExecutionProcesses);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
-				return wrapWebServiceResults("FAIL", "Can't create post execution processes for the task: " + result.get("message"), null);
+				return wrapWebServiceResults("FAILED", "Can't create post execution processes for the task: " + result.get("message"), null);
 			}
-
+		
 			result = (Map<String, Object>) wsCreateLogicalUnitsFortask(taskId, task_title, logicalUnits);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
-				return wrapWebServiceResults("FAIL", "Can't create logical units for the task: " + result.get("message"), null);
+				return wrapWebServiceResults("FAILED", "Can't create logical units for the task: " + result.get("message"), null);
 			}
-
+		
 		} catch (Exception e) {
 			db(TDM).rollback();
-			return wrapWebServiceResults("FAIL", e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
-
+		
 		db(TDM).commit();
-
+		
 		Map<String, Object> result = new HashMap();
 		result.put("id", taskId);
 		return wrapWebServiceResults("SUCCESS", null, result);
@@ -1010,16 +989,18 @@ public class Logic extends WebServiceUserCode {
 			"  \"globals\": [\r\n" +
 			"    {\r\n" +
 			"      \"global_name\":\"globalName1\",\r\n" +
+			"      \"lu_name\":\"LulName1\",\r\n" +
 			"      \"global_value\":\"globalValue1\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"global_name\":\"globalName2\",\r\n" +
+			"      \"lu_name\":\"ALL\",\r\n" +
 			"      \"global_value\":\"globalValue2\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"reference\": \"ref\"\r\n" +
 			"}")
-	@webService(path = "task", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 145\r\n" +
@@ -1027,8 +1008,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV1(
-			@param(required=true) Long be_id, @param(required=true) Long environment_id, @param(required=true) Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference) throws Exception {
+	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -1066,24 +1046,28 @@ public class Logic extends WebServiceUserCode {
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, task_title, parameters, refresh_reference_data,replace_sequences, " +
 					"source_environment_id, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
 					"selected_version_datetime, selected_version_task_exe_id,task_globals, " +
-					"selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?," +
+					"selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, reserve_ind, " + 
+					"reserve_retention_period_type, reserve_retention_period_value) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?," +
 					"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
-			String username=(String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+			String username=sessionUser().name();
 			Db.Row row = db("TDM").fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
 					scheduler, delete_before_load,
 					number_of_entities_to_copy, selection_method,
 					selection_param_value, entity_exclusion_list, "Active",
 					username, now, now, username, "Active", task_title,
-					parameters, refresh_reference_data, replace_sequences, source_environment_id,
-					source_env_name, load_entity, task_type, scheduling_end_date,
+					parameters, refresh_reference_data, replace_sequences, 
+					((source_environment_id != null) ? source_environment_id : environment_id),
+					((source_env_name != null) ? source_env_name : ""), 
+					load_entity, task_type, scheduling_end_date,
 					(version_ind!=null? version_ind == true:false), retention_period_type, retention_period_value,
 					selected_version_task_name, selected_version_datetime,
 					selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id,
-					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode).firstRow();
+					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode,
+					reserve_ind, reserve_retention_period_type, reserve_retention_period_value).firstRow();
 			Long taskId=Long.parseLong(row.get("task_id").toString());
 		
 			if (refList!=null ) {
@@ -1094,16 +1078,22 @@ public class Logic extends WebServiceUserCode {
 		
 			if (globals != null ) {
 				if(globals.size() > 0 && task_globals!=null && task_globals){
-					try {String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
+					
+					try {
+						/* TDM 7.4 - LU Name is sent separately in Globals input
+						String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
 						for(Map<String,Object> global:globals){
 							db("TDM").execute(insertGlobalSql,taskId, global.get("global_name").toString(), global.get("global_value").toString());
+						}*/
+						for(Map<String,Object> global:globals){
+							TaskExecutionUtils.createTaskGlobals(taskId, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
 						}
 					} catch(Exception e){
 						log.error(e.getMessage());
 					}
 				}
 			}
-
+		
 			try {
 				String activityDesc = "Task " + task_title + " was created";
 				TaskExecutionUtils.fnInsertActivity("create", "Tasks", activityDesc);
@@ -1118,7 +1108,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1215,7 +1205,7 @@ public class Logic extends WebServiceUserCode {
 			"        }\r\n" +
 			"    ]\r\n" +
 			"}")
-	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 146\r\n" +
@@ -1223,42 +1213,44 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV2(@param(required = true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, @param(required=true) Long environment_id, @param(required=true) Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String, Object>> refList, List<Map<String, Object>> globals, String reference, String task_created_by, String task_creation_date,
-										List<Map<String, Object>> postExecutionProcesses,
-										List<Map<String, Object>> logicalUnits
-
-	) throws Exception {
+	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		Long newTaskId = null;
-
+		
 		db(TDM).beginTransaction();
 		try {
-			Map<String, Object> result = (Map<String, Object>) wsUpdateTaskV1(taskId, copy, task_status, be_id, environment_id, source_environment_id, scheduler, delete_before_load, number_of_entities_to_copy, selection_method, selection_param_value, entity_exclusion_list, task_title, parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference, task_created_by, task_creation_date);
+			Map<String, Object> result = (Map<String, Object>) wsUpdateTaskV1(taskId, copy, task_status, be_id, environment_id, 
+				source_environment_id, scheduler, delete_before_load, number_of_entities_to_copy, selection_method, selection_param_value, 
+				entity_exclusion_list, task_title, parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, 
+				task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, 
+				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, 
+				selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference, task_created_by, task_creation_date,
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
-				return wrapWebServiceResults("FAIL", result.get("message"), null);
+				return wrapWebServiceResults("FAILED", result.get("message"), null);
 			} else {
 				taskId = (Long) ((Map<String, Object>) result.get("result")).get("id");
 			}
-
+		
 			result = (Map<String, Object>) wsCreatePostExecutionProcessesFortask(taskId, task_title, postExecutionProcesses);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
-				return wrapWebServiceResults("FAIL", result.get("message"), null);
+				return wrapWebServiceResults("FAILED", result.get("message"), null);
 			}
-
+		
 			result = (Map<String, Object>) wsCreateLogicalUnitsFortask(taskId, task_title, logicalUnits);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
-				return wrapWebServiceResults("FAIL", result.get("message"), null);
+				return wrapWebServiceResults("FAILED", result.get("message"), null);
 			}
-
+		
 		} catch (Exception e) {
 			db(TDM).rollback();
-			return wrapWebServiceResults("FAIL", e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
-
+		
 		db(TDM).commit();
-
+		
 		Map<String, Object> result = new HashMap();
 		result.put("id", newTaskId);
 		return wrapWebServiceResults("SUCCESS", null, result);
@@ -1317,10 +1309,12 @@ public class Logic extends WebServiceUserCode {
 			"  \"globals\": [\r\n" +
 			"    {\r\n" +
 			"      \"global_name\":\"globalName1\",\r\n" +
+			"      \"lu_name\":\"LuName1\",\r\n" +
 			"      \"global_value\":\"globalValue1\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"global_name\":\"globalName2\",\r\n" +
+			"      \"lu_name\":\"ALL\",\r\n" +
 			"      \"global_value\":\"globalValue2\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
@@ -1328,7 +1322,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"task_created_by\": \"test\",\r\n" +
 			"  \"task_creation_date\": \"2021-02-04 14:20:59.454\"\r\n" +
 			"}")
-	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 146\r\n" +
@@ -1336,12 +1330,12 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV1(@param(required = true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, @param(required=true) Long environment_id, @param(required=true) Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String, Object>> refList, List<Map<String, Object>> globals, String reference, String task_created_by, String task_creation_date) throws Exception {
+	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		Map<String,Object> result=new HashMap<>();
 		String message=null;
 		String errorCode="";
-
+		
 		try {
 			db("TDM").execute("UPDATE \"" + schema + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
@@ -1378,9 +1372,10 @@ public class Logic extends WebServiceUserCode {
 					"task_title, parameters,refresh_reference_data, replace_sequences, source_environment_id, source_env_name, load_entity, task_type, " +
 					"scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
 					"selected_version_datetime, selected_version_task_exe_id, task_globals, " +
-					"selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?) RETURNING task_id";
-			String username=(String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+					"selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, reserve_ind, " + 
+					"reserve_retention_period_type, reserve_retention_period_value) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
+			String username=sessionUser().name();
 			Db.Row row = db("TDM").fetch(sql, be_id, environment_id!=null?environment_id:source_environment_id,
 					scheduler,
 					delete_before_load,
@@ -1399,7 +1394,8 @@ public class Logic extends WebServiceUserCode {
 					scheduling_end_date, version_ind, retention_period_type,
 					retention_period_value, selected_version_task_name, selected_version_datetime,
 					selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id,
-					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode).firstRow();
+					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode,
+					reserve_ind, reserve_retention_period_type, reserve_retention_period_value).firstRow();
 		
 			Long id = Long.parseLong(row.get("task_id").toString());
 		
@@ -1412,9 +1408,13 @@ public class Logic extends WebServiceUserCode {
 		
 			if(globals != null && globals.size() > 0 && task_globals){
 				try {
+					/* TDM 7.4 - LU Name is sent separately in Globals input
 					String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
 					for(Map<String,Object> global:globals){
 						db("TDM").execute(insertGlobalSql,id, global.get("global_name").toString(), global.get("global_value").toString());
+					}*/
+					for(Map<String,Object> global:globals){
+							TaskExecutionUtils.createTaskGlobals(id, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
 					}
 				} catch(Exception e){
 					log.error(e.getMessage());
@@ -1435,7 +1435,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1457,7 +1457,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",((Map<String,Object>)result).get("result"));
 			response.put("errorCode","SUCCESS");
 		} catch (Exception e){
-			response.put("errorCode","FAIL");
+			response.put("errorCode","FAILED");
 			response.put("message", e.getMessage());
 		}
 		return response;
@@ -1500,7 +1500,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1556,7 +1556,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1606,7 +1606,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1665,7 +1665,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1674,7 +1674,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("This API gets the task's Globals if they exist. Note that task_globals attribute of /tasks API indicates if the task has globals. This attribute is populated by true if the task has Globals.")
-	@webService(path = "task/{taskId}/globals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}/globals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -1700,6 +1700,7 @@ public class Logic extends WebServiceUserCode {
 			Db.Rows rows = db("TDM").fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
+			/*
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -1709,12 +1710,29 @@ public class Logic extends WebServiceUserCode {
 				}
 				result.add(rowMap);
 			}
+			*/
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				HashMap<String, Object> global = new HashMap<>();
+				String luName = "ALL";
+				String globalName = "" + resultSet.getString("global_name");
+				if (globalName.contains(".")) {
+					String[] arr = globalName.split("\\.");
+					luName = arr[0];
+					globalName = arr[1];
+				}
+				global.put("task_id", resultSet.getLong("task_id"));
+				global.put("lu_name", luName);
+				global.put("global_name", globalName);
+				global.put("global_value", resultSet.getString("global_value"));
+				result.add(global);
+			}
 			response.put("result",result);
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1795,7 +1813,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1806,27 +1824,86 @@ public class Logic extends WebServiceUserCode {
 	@desc("Gets a list of available versions within a given time interval when creating load Data Flux tasks.\r\n" +
 			"\r\n" +
 			"Example of a request body:\r\n" +
+			"\r\n" +
 			"{\r\n" +
-			"  \"entitiesList\": \"1,7,48\",\r\n" +
-			"  \"be_id\": 3,\r\n" +
-			"  \"source_env_name\": \"ENV1\",\r\n" +
-			"  \"fromDate\": \"01.01.2021\",\r\n" +
-			"  \"toDate\": \"01.03.2021\",\r\n" +
-			"  \"lu_list\": [\r\n" +
-			"    {\r\n" +
-			"      \"lu_name\":\"PATIENT_LU\",\r\n" +
-			"      \"lu_name\":\"PATIENT_VISITS\"\r\n" +
-			"    }\r\n" +
-			"  ]\r\n" +
+			"\"entitiesList\": \"1,2,7\",\r\n" +
+			"\"be_id\": 1,\r\n" +
+			"\"source_env_name\": \"SRC\",\r\n" +
+			"\"fromDate\": \"01.02.2022\",\r\n" +
+			"\"toDate\": \"28.02.2022\",\r\n" +
+			"\"lu_list\": [\r\n" +
+			"{\"lu_name\":\"Customer\"}\r\n" +
+			"],\r\n" +
+			"\"target_env_name\": \"TAR\"\r\n" +
 			"}")
-	@webService(path = "tasks/versionsForLoad", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": [\n    {\n      \"number_of_extracted_entities\": 500,\n      \"version_datetime\": \"2021-05-06 09:58:55.017\",\n      \"version_name\": \"EXref123\",\n      \"version_type\": \"Selected Entities\",\n      \"lu_name\": \"PATIENT_LU\",\n      \"fabric_execution_id\": \"ee39f7f0-3478-4ab3-a93e-80686d99f599\",\n      \"task_execution_id\": 292,\n      \"task_id\": 173,\n      \"task_last_updated_by\": \"K2View\",\n      \"root_indicator\": \"Y\"\n    },\n    {\n      \"number_of_extracted_entities\": 500,\n      \"version_datetime\": \"2021-05-06 10:51:06.451\",\n      \"version_name\": \"EXref123\",\n      \"version_type\": \"Selected Entities\",\n      \"lu_name\": \"PATIENT_LU\",\n      \"fabric_execution_id\": \"a1dac0ee-7a8a-4a32-aa76-9f11a6da8b48\",\n      \"task_execution_id\": 311,\n      \"task_id\": 173,\n      \"task_last_updated_by\": \"K2View\",\n      \"root_indicator\": \"Y\"\n    },\n    {\n      \"number_of_extracted_entities\": 500,\n      \"version_datetime\": \"2021-05-06 11:32:47.599\",\n      \"version_name\": \"EXref123\",\n      \"version_type\": \"Selected Entities\",\n      \"lu_name\": \"PATIENT_LU\",\n      \"fabric_execution_id\": \"72d7a444-b732-4505-9d7a-ada8852764a9\",\n      \"task_execution_id\": 332,\n      \"task_id\": 173,\n      \"task_last_updated_by\": \"K2View\",\n      \"root_indicator\": \"Y\"\n    },\n    {\n      \"number_of_extracted_entities\": 1,\n      \"version_datetime\": \"2021-05-05 11:55:54.937\",\n      \"version_name\": \"ex\",\n      \"version_type\": \"Selected Entities\",\n      \"lu_name\": \"PATIENT_LU\",\n      \"fabric_execution_id\": \"02396fa1-b13f-4312-a762-3a92bfea28f0\",\n      \"task_execution_id\": 279,\n      \"task_id\": 193,\n      \"task_last_updated_by\": \"K2View\",\n      \"root_indicator\": \"Y\"\n    },\n    {\n      \"number_of_extracted_entities\": 2,\n      \"version_datetime\": \"2021-05-06 11:22:51.654\",\n      \"version_name\": \"v1\",\n      \"version_type\": \"Selected Entities\",\n      \"lu_name\": \"PATIENT_LU\",\n      \"fabric_execution_id\": \"567501da-ea55-4fee-ba7c-5359fc733219\",\n      \"task_execution_id\": 331,\n      \"task_id\": 206,\n      \"task_last_updated_by\": \"K2View\",\n      \"root_indicator\": \"Y\"\n    }\n  ],\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
-	public static Object wsGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<Map<String,Object>> lu_list) throws Exception {
+	@webService(path = "tasks/versionsForLoad", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": {\r\n" +
+			"    \"EntityReservationValidations\": {\r\n" +
+			"      \"message\": \"Entities reserved by other User: 1,2\",\r\n" +
+			"      \"listOfEntities\": [\r\n" +
+			"        {\r\n" +
+			"          \"start_datetime\": \"2022-02-13 12:08:33.879\",\r\n" +
+			"          \"end_datetime\": \"2022-02-23 12:12:04.640\",\r\n" +
+			"          \"entity_id\": \"1\",\r\n" +
+			"          \"reserve_owner\": \"admin\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"start_datetime\": \"2022-02-13 12:08:33.866\",\r\n" +
+			"          \"end_datetime\": \"2022-02-23 12:12:04.596\",\r\n" +
+			"          \"entity_id\": \"2\",\r\n" +
+			"          \"reserve_owner\": \"admin\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    },\r\n" +
+			"    \"ListOfVersions\": [\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"extDF\",\r\n" +
+			"        \"task_id\": 21,\r\n" +
+			"        \"task_execution_id\": 138,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 10,\r\n" +
+			"        \"version_datetime\": \"2022-02-15 08:07:36.022\",\r\n" +
+			"        \"lu_name\": \"Customer\",\r\n" +
+			"        \"fabric_execution_id\": \"284f5979-b567-4c40-95a2-98574451f8ff\",\r\n" +
+			"        \"root_indicator\": \"Y\",\r\n" +
+			"        \"num_of_succeeded_entities\": 10,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"execution_order\": 1\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"extDF\",\r\n" +
+			"        \"task_id\": 29,\r\n" +
+			"        \"task_execution_id\": 139,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 10,\r\n" +
+			"        \"version_datetime\": \"2022-02-15 08:36:21.387\",\r\n" +
+			"        \"lu_name\": \"Customer\",\r\n" +
+			"        \"fabric_execution_id\": \"7f9e3f16-a44f-4c34-abea-609652932fde\",\r\n" +
+			"        \"root_indicator\": \"Y\",\r\n" +
+			"        \"num_of_succeeded_entities\": 10,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"execution_order\": 2\r\n" +
+			"      }\r\n" +
+			"    ]\r\n" +
+			"  },\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": \"Entities reserved by other User: 1,2\"\r\n" +
+			"}")
+	public static Object wsGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<Map<String,Object>> lu_list, String target_env_name) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
 		try {
-			Db.Rows rows = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list);
+			//TDM 7.4 - 26/01/2022 - In addition to the returned versions, the inner function and the API will return the resevation info of the requested entities.
+			//Db.Rows rows = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
+			Map<String, Object> versions = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
+			
+			/*
 			List<Map<String,Object>> result=new ArrayList<>();
 		
 			List<String> columnNames = rows.getColumnNames();
@@ -1840,11 +1917,17 @@ public class Logic extends WebServiceUserCode {
 			}
 		
 			response.put("result",result);
+			*/
+			Map<String, Object> validations = (Map<String, Object>)versions.get("EntityReservationValidations");
+			message = (String) validations.get("message");
+			response.put("result",versions);
+			
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
+			e.printStackTrace();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1952,7 +2035,7 @@ public class Logic extends WebServiceUserCode {
 		} catch (Exception e) {
 			message = e.getMessage();
 			log.error(message);
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 		}
 		response.put("errorCode", errorCode);
 		response.put("message", message);
@@ -2008,7 +2091,7 @@ public class Logic extends WebServiceUserCode {
 				response.put("result", data);
 				return response;
 			} catch (Exception e) {
-				response.put("errorCode", "FAIL");
+				response.put("errorCode", "FAILED");
 				response.put("message", e.getMessage());
 				return response;
 			}
@@ -2097,7 +2180,7 @@ public class Logic extends WebServiceUserCode {
 			}
 		
 		} catch (Exception e) {
-			response.put("errorCode", "FAIL");
+			response.put("errorCode", "FAILED");
 			response.put("message", e.getMessage());
 			return response;
 		}
@@ -2162,7 +2245,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2288,19 +2371,19 @@ public class Logic extends WebServiceUserCode {
 					"( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = task_execution_list.task_id " +
 					"and task_ref_tables.lu_name in (select lu_name from tasks_logical_units " +
 					"where  tasks_logical_units.lu_id = task_execution_list.lu_id)) AS refcount " +
-					"FROM \"" + schema + "\".task_execution_list " +
-					"LEFT JOIN \"" + schema + "\".products " +
-					"ON (\"" + schema + "\".task_execution_list.product_id = \"" + schema + "\".products.product_id) " +
-					"INNER JOIN \"" + schema + "\".tasks " +
-					"ON (\"" + schema + "\".task_execution_list.task_id = \"" + schema + "\".tasks.task_id) " +
-					"INNER JOIN \"" + schema + "\".environments " +
-					"ON (\"" + schema + "\".task_execution_list.environment_id = \"" + schema + "\".environments.environment_id) " +
-					"LEFT JOIN \"" + schema + "\".business_entities " +
-					"ON (\"" + schema + "\".task_execution_list.be_id = \"" + schema + "\".business_entities.be_id) " +
-					"LEFT JOIN \"" + schema + "\".product_logical_units " +
-					"ON (\"" + schema + "\".task_execution_list.lu_id = \"" + schema + "\".product_logical_units.lu_id) " +
-					"LEFT JOIN \"" + schema + "\".TASKS_POST_EXE_PROCESS " +
-					"ON (\"" + schema + "\".task_execution_list.process_id = \"" + schema + "\".TASKS_POST_EXE_PROCESS.process_id AND \"" + schema + "\".task_execution_list.task_id = \"" + schema + "\".TASKS_POST_EXE_PROCESS.task_id) " +
+					"FROM task_execution_list " +
+					"LEFT JOIN products " +
+					"ON (task_execution_list.product_id = products.product_id) " +
+					"INNER JOIN tasks " +
+					"ON (task_execution_list.task_id = tasks.task_id) " +
+					"INNER JOIN environments " +
+					"ON (task_execution_list.environment_id = environments.environment_id) " +
+					"LEFT JOIN business_entities " +
+					"ON (task_execution_list.be_id = business_entities.be_id) " +
+					"LEFT JOIN product_logical_units " +
+					"ON (task_execution_list.lu_id = product_logical_units.lu_id) " +
+					"LEFT JOIN TASKS_POST_EXE_PROCESS " +
+					"ON (task_execution_list.process_id = TASKS_POST_EXE_PROCESS.process_id AND task_execution_list.task_id = TASKS_POST_EXE_PROCESS.task_id) " +
 					"WHERE task_execution_list.task_execution_id = " + taskExeId;
 			Db.Rows rows = db("TDM").fetch(query);
 		
@@ -2312,15 +2395,77 @@ public class Logic extends WebServiceUserCode {
 				for (String columnName : columnNames) {
 					rowMap.put(columnName, resultSet.getObject(columnName));
 				}
-				result.add(rowMap);
+				Map <String, Object> taskOverrideAttrs = TdmSharedUtils.fnGetTaskExecOverrideAttrs(
+						(Long) row.get("task_id"), (Long) row.get("task_execution_id"));
+				String overrideValue = "";
+				for (String attrName : taskOverrideAttrs.keySet()) {
+					Boolean entityListFlag = false;
+					
+					if (!"task_globals".equalsIgnoreCase(attrName)) {
+						overrideValue = "" + taskOverrideAttrs.get(attrName);
+						//log.info("getTaskProperties - attrName: " + attrName + ", overrideValue: " + overrideValue);
+						attrName = attrName.toLowerCase();
+						switch (attrName) {
+							case "selection_method":
+								rowMap.put(attrName, overrideValue);
+								break;
+							case "entity_list" :
+								rowMap.put("selection_param_value", overrideValue);
+								int numberOfEntities = overrideValue.split(",", -1).length;
+								rowMap.put("number_of_entities_to_copy", numberOfEntities);
+								entityListFlag = true;
+								break;
+							case "no_of_entities" : 
+								if (!entityListFlag) {
+									rowMap.put("number_of_entities_to_copy", overrideValue);
+								}
+								break;
+							case "source_environment_name":
+								rowMap.put(attrName, overrideValue);
+								String srcEnvId = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+								rowMap.put("source_environment_id", srcEnvId);
+								
+								break;
+							case "target_environment_name":
+								rowMap.put(attrName, overrideValue);
+								String tarEnvId = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+								rowMap.put("environment_id", tarEnvId);
+								break;
+							// TDM 7.4 - 16-Jan-22 - Add support for overriding DataFlux parameters
+							case "selected_version_task_exe_id":
+								rowMap.put(attrName, overrideValue);
+								break;
+							case "dataflux_retention_params":
+								Map rentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
+								rowMap.put("retention_period_type", "" + rentionPeriodInfo.get("unit"));
+								rowMap.put("retention_period_value", "" + rentionPeriodInfo.get("value"));
+								break;
+							case "reserve_ind":
+								rowMap.put("reserve_ind", overrideValue);
+								break;
+							case "reserve_retention_params":
+								Map reserveRentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
+								rowMap.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("unit"));
+								rowMap.put("reserve_retention_period_value", "" + reserveRentionPeriodInfo.get("value"));
+								break;
+							// TDM 7.4 - End of Change
+							default:
+								rowMap.put(attrName, overrideValue);
+								break;
+						}
+					}
+				}
+
+								result.add(rowMap);
 			}
 		
+
 			response.put("result",result);
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2584,7 +2729,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2754,7 +2899,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2837,7 +2982,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2933,7 +3078,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2953,7 +3098,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -2973,7 +3118,6 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- numberOfEntities: populated by a number to change the number of entities processed by the task. This parameter is only relevant for Load tasks when the entitylist override parameter is not set.\r\n" +
 			"\r\n" +
-			"\r\n" +
 			"The task execution is validated whether the execution parameters are overridden or taken from the task itself:\r\n" +
 			"\r\n" +
 			"- Do not enable an execution if the TDM task execution processes are down. \r\n" +
@@ -2984,6 +3128,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- Validate the task's BE and LUs with the TDM products of the task execution's source and target environment.\r\n" +
 			"- Verify that the user is permitted to execute the task on the task execution's source and target environment. For example, the user cannot run a Load task with a sequence replacement on environment X if the user does not have permissions to run such a task on this environment.\r\n" +
+			"- Varify that the for DataFlux Task if the given retention period do not exceed the maximum retention allowed for user.\r\n" +
 			"\r\n" +
 			"If at least one of the validations fail, the API does not start the task. Instead it returns a FAILED status and populates the list of validation errors in the results.\r\n" +
 			"\r\n" +
@@ -3003,6 +3148,8 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- syncMode\r\n" +
 			"\r\n" +
+			"-VersionRetentionPeriod\r\n" +
+			"\r\n" +
 			"If the validations pass successfully, start the task execution.\r\n" +
 			"\r\n" +
 			"Note that if a Global's value is a JSON, it is required to add backslash to the values. See example.\r\n" +
@@ -3018,7 +3165,13 @@ public class Logic extends WebServiceUserCode {
 			"    \"Customer.SUB_TYPE\": \"XX\"\r\n" +
 			"    \"Customer.CUST_DETAILS\": \"'{\\\"name\\\":\\\"John\\\", \\\"age\\\":30, \\\"car\\\":null}'\"\r\n" +
 			"  },\r\n" +
-			"  \"numberOfEntities\": 14\r\n" +
+			"  \"numberOfEntities\": 14,\r\n" +
+			"  \"dataVersionExecId\":2,\r\n" +
+			"\"dataVersionRetentionPeriod\": {\r\n" +
+			"    \"unit\": \"Days\",\r\n" +
+			"    \"value\": \"10\"\r\n" +
+			"  },\r\n" +
+			"\"executionNote\" : \"Example Task\"\r\n" +
 			"}")
 	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "1. Succesful Execution:\r\n" +
@@ -3046,7 +3199,7 @@ public class Logic extends WebServiceUserCode {
 			"    \"errorCode\": \"FAIL\",\r\n" +
 			"    \"message\": \"validation failure\"\r\n" +
 			"}")
-	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, @param(description="Only relevant for Load tasks") Integer numberOfEntities) throws Exception {
+	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, @param(description="Only relevant for Load tasks") Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,Object> reserveRetention, String executionNote) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode;
@@ -3099,7 +3252,7 @@ public class Logic extends WebServiceUserCode {
 			}
 		}
 		if (jobDownError.size() > 0) {
-			return wrapWebServiceResults("FAIL", "Mandatory Job(s): " + downJobsList + " Down!", jobDownError);
+			return wrapWebServiceResults("FAILED", "Mandatory Job(s): " + downJobsList + " Down!", jobDownError);
 		}
 		
 		Map<String, Object> taskData;
@@ -3110,8 +3263,12 @@ public class Logic extends WebServiceUserCode {
 		}
 		
 		if(!TaskExecutionUtils.fnIsTaskActive(taskId)) throw new Exception("Task is not active");
+		String taskType = "" + taskData.get("task_type");
+		Boolean deleteBeforeLoad = (Boolean) taskData.get("delete_before_load");
+		Boolean insertToTarget = (Boolean) taskData.get("load_entity");
 		Boolean entityListInd = false;
 		Integer entityListSize = 0;
+		Boolean versionInd = (Boolean) taskData.get("version_ind");
 		if (entitieslist != null) {
 			entityListSize = (entitieslist.split(",")).length;
 			entityListInd = true;
@@ -3121,9 +3278,10 @@ public class Logic extends WebServiceUserCode {
 		}
 		//log.info("Entity list is given?: " + entityListInd);
 		Map<String,Object> overrideParams=new HashMap<>();
-		String selectionMethod = "" + taskData.get("selection_method");
+		String selectionMethodOrig = "" + taskData.get("selection_method");
+		String selectionMethod = selectionMethodOrig;
 		if (entitieslist!=null) {
-			if ("S".equalsIgnoreCase(selectionMethod)) {
+			if ("S".equalsIgnoreCase(selectionMethodOrig)) {
 				if (entityListSize > 1) {
 					throw new Exception("This is a Synthetic Data Task, only one entity can be in the entity list");
 				} 
@@ -3135,18 +3293,36 @@ public class Logic extends WebServiceUserCode {
 		if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
 		if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
 		if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
-		if (selectionMethod!=null) overrideParams.put("SELECTION_METHOD",selectionMethod);
+		if (!selectionMethod.equals(selectionMethodOrig)) overrideParams.put("SELECTION_METHOD",selectionMethod);
 		// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
 		if (numberOfEntities!=null && (!entityListInd  || ("S".equalsIgnoreCase(selectionMethod)))) {
 			//log.info("setting the number of entities to: " + numberOfEntities);
 			overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
 		}
 		if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
+
+		if (dataVersionRetentionPeriod!=null) {
+			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, "versioning");
+			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
+			}
+			overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
+		}
 		
 		if(overrideParams.get("ENTITY_LIST")!=null){
 			String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
 			Arrays.sort(entityList);
 			overrideParams.put("ENTITY_LIST",String.join(",",entityList));
+		}
+		
+		//TDM 7.4 - Support override for reserved entities
+		if(reserveInd!=null) overrideParams.put("RESERVE_IND", reserveInd);
+		if(reserveRetention!=null) {
+			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, "reverse");
+			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "reverseRetentionPeriod", validateDFMessages.get("retention"));
+			}
+			overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
 		}
 		
 		if (!TaskValidationsUtils.fnValidateParallelExecutions(taskId, overrideParams)) {
@@ -3167,6 +3343,19 @@ public class Logic extends WebServiceUserCode {
 		be_lus.put("be_id",taskData.get("be_id").toString());
 		be_lus.put("LU List",taskLogicalUnitsIds);
 		//log.info("selectionMethod: " + selectionMethod);
+		String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.get("source_env_name").toString();
+		//log.info("Source Env: " + sourceEnvName);
+
+		if (dataVersionExecId!=null) {
+			Map<String, String> validateVersionID = TaskValidationsUtils.fnValidateVersionExecIdAndGetDetails(dataVersionExecId, be_lus, sourceEnvName);
+			if (validateVersionID.get("errorMessage") == null) {
+				overrideParams.put("SELECTED_VERSION_TASK_EXE_ID", dataVersionExecId);
+				overrideParams.put("SELECTED_VERSION_TASK_NAME", validateVersionID.get("versionName"));
+				overrideParams.put("SELECTED_VERSION_DATETIME", validateVersionID.get("versionDatetime"));
+			} else {
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningtask", validateVersionID.get("errorMessage"));
+			}
+		}
 		Integer numberOfRequestedEntites = 0;
 		if (numberOfEntities != null) {
 			if (entityListInd && !"S".equalsIgnoreCase(selectionMethod) && numberOfEntities != entityListSize) {
@@ -3187,7 +3376,7 @@ public class Logic extends WebServiceUserCode {
 		if ("S".equalsIgnoreCase(selectionMethod) && numberOfRequestedEntites > 0) {
 			entityListSize = numberOfRequestedEntites;
 		}
-		String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.get("source_env_name").toString();
+
 		// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
 		String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString();
 		
@@ -3206,39 +3395,48 @@ public class Logic extends WebServiceUserCode {
 		//log.info("------- Size of sourceRolesList: " + sourceRolesList.size());
 		//log.info("------- Size of targetRolesList: " + targetRolesList.size());
 		
-		if (sourceRolesList == null || sourceRolesList.isEmpty()) {
-			throw new Exception("Environment does not exist or user has no read permission on this environment");
-		}
-		
 		List<Map<String, String>> validationsErrorMesssagesByRole = new ArrayList<>();
-		for (Map<String, Object> role : sourceRolesList) {
-			//Check if the current role is related to input environment, and not to other environment
-			if (sourceEnvName.equals(role.get("environment_name"))) {
-				//log.info("Source Env: " + sourceEnvName);
-				int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-				int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
-				
-				Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
-						selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
-						(String) taskData.get("sync_mode"), (Boolean) taskData.get("version_ind"), (String) taskData.get("task_type"), role);
-				//log.info("validateNumber: " + validateNumber);
-				if (validateNumber == -1) {
-					sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
-				} else {
-					if ("extract".equalsIgnoreCase(taskData.get("task_type").toString()) && validateNumber > 0) {
-						overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-					}
-					if (sourceValidationsErrorMesssages.isEmpty()) {
-						sourceEnvValidation = true;
-						break;
-					}
-				}
 		
-				validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
+		if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
+			if (sourceRolesList == null || sourceRolesList.isEmpty()) {
+				throw new Exception("Environment does not exist or user has no read permission on this environment");
 			}
+		
+			for (Map<String, Object> role : sourceRolesList) {
+				//Check if the current role is related to input environment, and not to other environment
+				//log.info("environment_name: " + role.get("environment_name"));
+				if (sourceEnvName.equals(role.get("environment_name"))) {
+					int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+					int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
+				
+					Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
+							selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
+							(String) taskData.get("sync_mode"), (Boolean) taskData.get("version_ind"), taskType, role);
+					//log.info("validateNumber: " + validateNumber);
+		
+					if (validateNumber == -1) {
+						sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
+					} else {
+						if ("extract".equalsIgnoreCase(taskType) && validateNumber > 0 && 
+							(numberOfEntities!=null || entityListInd))
+						{
+							overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
+						}
+						
+						if (sourceValidationsErrorMesssages.isEmpty()) {
+							sourceEnvValidation = true;
+							break;
+						}
+					}
+		
+					validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
+				}
+			}
+		} else {// No Source validation
+			sourceEnvValidation = true;
 		}
 		
-		if("load".equalsIgnoreCase(taskData.get("task_type").toString())) {
+		if("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType)) {
 			
 			if(targetRolesList == null || targetRolesList.isEmpty()) {
 				throw new Exception("Environment does not exist or user has no write permission on this environment");
@@ -3257,9 +3455,10 @@ public class Logic extends WebServiceUserCode {
 				
 					targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
 							selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
-							(Boolean) taskData.get("version_ind"),
-							(Boolean) taskData.get("replace_sequences"), (Boolean) taskData.get("delete_before_load"), (String) taskData.get("task_type"), role);
-					//if (!entityTest) targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
+							(Boolean) taskData.get("version_ind"), 
+							(Boolean) taskData.get("replace_sequences"), (Boolean) taskData.get("delete_before_load"), taskType, 
+							reserveInd != null ? reserveInd : (Boolean) taskData.get("reserve_ind"), allowedEntitySize, role);
+					//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
 					if (validateNumber == -1) {
 						targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
 					} else if ( targetValidationsErrorMesssages.isEmpty()) { 
@@ -3279,7 +3478,7 @@ public class Logic extends WebServiceUserCode {
 		}
 		//log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
 		if (!targetEnvValidation || !sourceEnvValidation) {
-			return TdmSharedUtils.wrapWebServiceResults("FAIL", "validation failure", validationsErrorMesssagesByRole);
+			return TdmSharedUtils.wrapWebServiceResults("FAILED", "validation failure", validationsErrorMesssagesByRole);
 		}
 		try {
 			String envIdByName_sql= "select environment_id from environments where environment_name=(?) and environment_status = 'Active'";
@@ -3301,7 +3500,8 @@ public class Logic extends WebServiceUserCode {
 		
 			TaskExecutionUtils.fnStartTaskExecutions(taskExecutions,taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
 					overridenTarEnvId!=null?overridenTarEnvId:null,
-					overridenSrcEnvId!=null?overridenSrcEnvId:null);
+					overridenSrcEnvId!=null?overridenSrcEnvId:null,
+					executionNote);
 		
 			if(!overrideParams.isEmpty()){
 				try{
@@ -3314,7 +3514,6 @@ public class Logic extends WebServiceUserCode {
 			TaskExecutionUtils.fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
 					overridenTarEnvId!=null?overridenTarEnvId:null,
 					overridenSrcEnvId!=null?overridenSrcEnvId:null);
-		
 		
 			try {
 				String activityDesc = "Execution list of task " + taskData.get("task_title");
@@ -3331,7 +3530,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error(message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -3358,7 +3557,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -3384,7 +3583,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -3416,7 +3615,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -3441,7 +3640,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -3498,7 +3697,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -4176,7 +4375,7 @@ public class Logic extends WebServiceUserCode {
 				break;
 			default:
 				log.error("wsGetUserTasks - Wrong User Type, supported types: admin, owner, tester");
-				return TdmSharedUtils.wrapWebServiceResults("FAIL", "Wrong User Type - " + userType + ", supported types: admin, owner, tester", null);
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "Wrong User Type - " + userType + ", supported types: admin, owner, tester", null);
 		}
 		
 		
@@ -4390,7 +4589,7 @@ public class Logic extends WebServiceUserCode {
 		Object response = db("TDM").
 				fetch("select public.tasks.task_id from public.tasks where public.tasks.task_title= ? and public.tasks.task_status='Active'", taskName).firstValue();
 		if (response == null) {
-			return TdmSharedUtils.wrapWebServiceResults("FAIL", "No active task found for task name '" + taskName + "'.", response);
+			return TdmSharedUtils.wrapWebServiceResults("FAILED", "No active task found for task name '" + taskName + "'.", response);
 		} else {
 			return TdmSharedUtils.wrapWebServiceResults("SUCCESS", null, response);
 		}
@@ -4405,29 +4604,36 @@ public class Logic extends WebServiceUserCode {
 			"  \"globals\": [\r\n" +
 			"    {\r\n" +
 			"      \"global_name\": \"MASK_FLAG\",\r\n" +
+			"      \"lu_name\": \"Customer\",\r\n" +
 			"      \"global_value\": \"0\"\r\n" +
 			"    }\r\n" +
 			"  ]\r\n" +
 			"}")
-	@webService(path = "task/{taskId}/globals", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}/globals", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object UpdateTaskGlobals(@param(required=true) Long taskId, List<Map<String,Object>> globals) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
+		String sql = "UPDATE task_globals SET " +
+				"global_value=(?) " +
+				"WHERE task_id = ? AND global_name = ?";
 		try {
 			if (globals!=null && globals.size() != 0 ){
 				for (Map<String,Object> global:globals){
-					String sql = "UPDATE \"" + schema + "\".task_globals SET " +
-							"global_value=(?) " +
-							"WHERE task_id = " + taskId + " AND global_name = \'" + global.get("global_name") + "\'";
-					db("TDM").execute(sql,global.get("global_value"));
+					String globalName = "" + global.get("global_name");
+					String globalValue = "" + global.get("global_value");
+					String luName = "" +  global.get("lu_name");
+					if (luName != null && !"".equals(luName) && !"ALL".equals(luName) && !"null".equals(luName)) {
+						globalName = luName + "." + globalName;
+					}
+					db("TDM").execute(sql, globalValue, taskId, globalName);
 				}
 			}
 			response.put("result",new HashMap<>());
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -4451,7 +4657,7 @@ public class Logic extends WebServiceUserCode {
 					"task_last_updated_date=(?), " +
 					"task_last_updated_by=(?) " +
 					"WHERE task_id = " + taskId;
-			String username=(String)((Map)((List) TdmSharedUtils.getFabricResponse("set username")).get(0)).get("value");
+			String username=sessionUser().name();
 			db("TDM").execute(sql,"Inactive", "Inactive", now, username);
 			try {
 				String activityDesc = "Task " + taskName + " was deleted";
@@ -4463,7 +4669,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -4473,7 +4679,7 @@ public class Logic extends WebServiceUserCode {
 	@desc("Get the list of environments that are aligned with the input filtering parameters, according to the task type and attributes, as follows: \r\n" +
 			"- If the task type is Extract , then validate and return the list of available source environments.\r\n" +
 			"- If the task type is Load, then validate and return both - source and target environments.")
-	@webService(path = "getEnvironmentsForTaskAttr", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "getEnvironmentsForTaskAttr", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -4533,7 +4739,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the task's be_id (Business Entity ID). For example: 1.", required=true) String be, @param(description="Populated by the task's Logical Units (LU IDs), separated by comma. Example : 1,5,6,7", required=true) String lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (random selection), \"S\" (entity cloning), \"PR\" (parameters with a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\" or \"load\"", required=true) String task_type) throws Exception {
+	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the task's be_id (Business Entity ID). For example: 1.", required=true) String be, @param(description="Populated by the task's Logical Units (LU IDs), separated by comma. Example : 1,5,6,7", required=true) String lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (random selection), \"S\" (entity cloning), \"PR\" (parameters with a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\" or \"load\"", required=true) String task_type, Boolean reserve_ind) throws Exception {
 		// variables declaration
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -4580,11 +4786,8 @@ public class Logic extends WebServiceUserCode {
 							finalSourceEnvs.add(envData);
 		
 						}
-		
-		
 					}
 				}
-		
 		
 				// loop over user target envs only if it is a load task, otherwsie target envs are not relevant
 				if ("load".equalsIgnoreCase(task_type) && allTargetEnvs!=null) {
@@ -4593,9 +4796,9 @@ public class Logic extends WebServiceUserCode {
 						env_id = "" + targetEnvMap.get("environment_id");
 						role_id = "" + targetEnvMap.get("role_id");
 						env_name = "" + targetEnvMap.get("environment_name");
-		
+						int noOfEntities = -1;
 						//check if target env satisfies all relevant cases
-						if (TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, targetEnvMap).isEmpty()) {
+						if (TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap).isEmpty()) {
 							Map<String, Object> envData = new HashMap<>();
 							envData.put("environment_id", env_id);
 							envData.put("environment_name", env_name);
@@ -4603,13 +4806,9 @@ public class Logic extends WebServiceUserCode {
 							finalTargetEnvs.add(envData);
 		
 						}
-		
-		
 					}
 				}
-		
 			}
-		
 		
 			List<Map<String, Object>> result = new ArrayList<>();
 			Map<String, Object> sourceEnvsMap = new HashMap<>();
@@ -4622,11 +4821,134 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", result);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
+			e.printStackTrace();
 			message = e.getMessage();
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 		}
 		
 		
+		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+
+	@desc("Checks if the list of requested entities are copied successfully in the selected data version across all the input LU names in the task'sBusiness Entity hierarchy (the versionsForLoad API only checks the status of root LUI). For example, if the customer's order is not extracted succesfuly to Fabric, the validation on the related customer returns it as a failed entity. \r\n" +
+			" \r\n" +
+			"Example of a request body:\r\n" +
+			"{\r\n" +
+			"  \"entitiesList\": \"1,2\",\r\n" +
+			"  \"taskExecId\": \"2\",\r\n" +
+			"  \"lu_list\": [\r\n" +
+			"  {\r\n" +
+			"   \"lu_name\": \"Billing\"\r\n" +
+			"  },\r\n" +
+			"  {\r\n" +
+			"    \"lu_name\": \"Customer\"\r\n" +
+			"  },\r\n" +
+			"  {\r\n" +
+			"    \"lu_name\": \"Orders\"\r\n" +
+			"  }\r\n" +
+			"]\r\n" +
+			"}")
+	@webService(path = "tasks/validateVersionForLoad", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	public static Object wsDataVersionValidation(@param(required=true) String entitiesList, @param(required=true) String taskExecId, @param(required=true) List<Map<String,Object>> lu_list) throws Exception {
+		HashMap<String,Object> response=new HashMap<>();
+		String message=null;
+		String errorCode="SUCCESS";
+		List<HashMap<String, Object>> result = new ArrayList<>();
+		
+		String logicalUnitList = "";
+		for (Map<String, Object> lu : lu_list) {
+			logicalUnitList += ("'" + lu.get("lu_name") + "',");
+		}
+		
+		if (logicalUnitList != "") logicalUnitList = logicalUnitList.substring(0, logicalUnitList.length() - 1);
+		
+		entitiesList.replaceAll("\\s+","");
+		String[] entitiesArray = entitiesList.split(",");
+		String entitiesListForQuery = "";
+		for (String entityID : entitiesArray) {
+			entitiesListForQuery += "'" + entityID + "',";
+		}
+		
+		if (entitiesListForQuery != "") entitiesListForQuery = entitiesListForQuery.substring(0, entitiesListForQuery.length() - 1);
+		
+		fabric().fetch("get TDM.?", taskExecId);
+		
+		String sqlQuery = "SELECT be_root_entity_id, lu_name, iid FROM task_execution_link_entities " +
+					"WHERE lu_name IN " +  "(" + logicalUnitList + ")" + " AND be_root_entity_id IN " + "(" + entitiesListForQuery + ") " +
+					"AND lower(execution_status) != 'completed'" ;
+		
+		//log.info("sqlQuery: " + sqlQuery);
+		Db.Rows failedEntities = fabric().fetch(sqlQuery);
+		
+		Set<String> setOFFailedEntities = new HashSet<>();
+		String listOfFailed = "";
+		for (Db.Row row : failedEntities) {
+			HashMap<String, Object> failedEntity = new HashMap<>();
+			failedEntity.put("root_entity_id", row.get("be_root_entity_id"));
+			failedEntity.put("lu_name", row.get("lu_name"));
+			failedEntity.put("lu_entity_id", row.get("iid"));
+			result.add(failedEntity);
+			setOFFailedEntities.add("" + row.get("be_root_entity_id"));
+		}
+		
+		for (String failedEntityID : setOFFailedEntities) {
+			if ("".equals(listOfFailed)) {
+				listOfFailed = failedEntityID;
+			} else {
+				listOfFailed += ", " + failedEntityID;
+			}
+		}
+		if(result != null && result.size() > 0) {
+			errorCode="FAILED";
+			message = listOfFailed;
+		}
+		response.put("result", result);
+		response.put("errorCode",errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+
+	@desc("Get the list of custom logic flows to be used to select the list of entities for give root LU.\r\n" +
+			"The input can be one root LU or more separated by comma.")
+	@webService(path = "getcustomlogicflows", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    {\r\n" +
+			"      \"flowName\": \"flow1\"\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"flowName\": \"flow2\"\r\n" +
+			"    }\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetCustomLogicFlows(String luList) throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String message = null;
+		String errorCode = "SUCCESS";
+		 List<HashMap<String,Object>> result = new ArrayList<>();
+		
+		luList.replaceAll("\\s+", "");
+		String[] lus = luList.split(",");
+		
+		for (String luName : lus) {
+			List<String> listCustomFlows = (List<String>)(fabric().fetch("broadway " + luName + ".GetCustomLogicFlows LU_NAME='" + luName + "'").firstRow()).get("value");
+		
+			if (listCustomFlows != null && !listCustomFlows.isEmpty()) {
+				for (String flowName : listCustomFlows) {
+					HashMap<String,Object> map = new HashMap<>();
+					map.put("flowName", flowName);
+					result.add(map);
+				}
+			}
+		}
+		
+		response.put("result",result);
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;

@@ -44,7 +44,7 @@ public class SharedGlobals {
 	public static String TDM_TASK_EXE_ID = "0";
 
 	@category("TDM")
-	public static String MASK_FLAG = "1";
+	public static String MASK_FLAG = "0";
 	@category("TDM")
 	public static String TDM_SOURCE_ENVIRONMENT_NAME = "ENV1";
 	@category("TDM")
@@ -58,12 +58,6 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_VERSION_NAME = "";
 
-	@desc("In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
-	@category("TDM")
-	public static String CLONE_CLEANUP_RETENTION_PERIOD_TYPE = "Days";
-	@desc("The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE")
-	@category("TDM")
-	public static String CLONE_CLEANUP_RETENTION_PERIOD_VALUE = "1";
 
 	@desc("Indicator to mark the task as dataflux or not")
 	@category("TDM")
@@ -77,6 +71,19 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String MAX_NUMBER_OF_ENTITIES_IN_LIST = "100";
 
+	@desc("Each Instance can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
+	@category("TDM")
+	public static String TDM_LU_RETENTION_PERIOD_TYPE = "Days";
+	@desc("The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE")
+	@category("TDM")
+	public static String TDM_LU_RETENTION_PERIOD_VALUE = "10";
+
+	@desc("In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
+	@category("TDM")
+	public static String CLONE_CLEANUP_RETENTION_PERIOD_TYPE = "Days";
+	@desc("The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE")
+	@category("TDM")
+	public static String CLONE_CLEANUP_RETENTION_PERIOD_VALUE = "1";
 	@desc("Prefix of delete tables")
 	@category("TDM")
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";

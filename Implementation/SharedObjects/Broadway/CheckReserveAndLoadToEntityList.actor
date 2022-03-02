@@ -1,0 +1,31 @@
+{
+    "type": "CheckReserveAndLoadToEntityList",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "LU_NAME",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "SOURCE_IID",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "CheckReserveAndLoadToEntityList",
+            "mandatory": true
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "tdm"
+    ]
+}

@@ -28,6 +28,7 @@
     <Column name="env_sync_mode" id="tblCol_a4f5d34f39e4496da456254215b24f2e" index="22" datatype="text" />
     <Column name="scheduling_end_date" id="tblCol_ab0a72d9610d40f492b97b330818618c" index="23" datatype="text" />
     <Column name="operation_mode" id="tblCol_c05d6615236a4796abe8fb5ccd49a80b" index="24" datatype="text" />
+    <Column name="reserve_ind" id="reserve_ind" index="25" datatype="text" />
   </Columns>
   <IndexesList />
   <EnrichmentList />

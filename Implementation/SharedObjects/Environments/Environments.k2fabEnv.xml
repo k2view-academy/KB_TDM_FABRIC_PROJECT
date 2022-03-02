@@ -164,12 +164,6 @@
         <Global name="TEST_GLOBAL" luName="Billing">
           <Value>1</Value>
         </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Cases">
-          <Value>cases</Value>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Cases">
-          <Value>case_id</Value>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
         </Global>
@@ -412,12 +406,6 @@
         <Global name="TEST_GLOBAL" luName="Billing">
           <Value>1</Value>
         </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Cases">
-          <Value>cases</Value>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Cases">
-          <Value>case_id</Value>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>
         </Global>
@@ -659,12 +647,6 @@
         </Global>
         <Global name="TEST_GLOBAL" luName="Billing">
           <Value>1</Value>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Cases">
-          <Value>cases</Value>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Cases">
-          <Value>case_id</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Collection">
           <Value>collection</Value>

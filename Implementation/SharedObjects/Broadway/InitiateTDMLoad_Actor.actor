@@ -4,67 +4,28 @@
   "actorClass": null,
   "inputs": [
     {
-      "name": "sourceEnv",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "deleteBeforeLoad",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "insertToTarget",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "globals",
-      "schema": {
-        "type": "object"
-      },
-      "const": null
-    },
-    {
-      "name": "luName",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
+      "name": "syncMode",
+      "schema": {}
     },
     {
       "name": "iid",
       "schema": {
-        "type": "Any"
-      },
-      "const": null
+        "type": "string"
+      }
     },
     {
-      "name": "syncMode",
+      "name": "luName",
       "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "targetEnv",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
+        "type": "string"
+      }
     },
     {
       "name": "flowName",
       "schema": {
         "type": "string"
       },
-      "const": "InitiateTDMLoad"
+      "const": "InitiateTDMLoad",
+      "mandatory": true
     }
   ],
   "outputs": [],

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.3.10">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.4.12">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -21,7 +21,6 @@
     <Table>CONTRACT</Table>
     <Table>CUSTOMER</Table>
     <Table>FABRIC_TDM_ROOT</Table>
-    <Table>INSTANCE_TABLE_COUNT</Table>
     <Table>LU_PARAMS</Table>
     <Table>orders</Table>
     <Table>TAR_ACTIVITY</Table>
@@ -73,11 +72,6 @@
     <TableProperties name="FABRIC_TDM_ROOT">
       <Populations>
         <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
-      </Populations>
-    </TableProperties>
-    <TableProperties name="INSTANCE_TABLE_COUNT">
-      <Populations>
-        <Population name="query_INSTANCE_TABLE_COUNT" order="3" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
     <TableProperties name="LU_PARAMS">
@@ -133,8 +127,7 @@
   </TablesProperties>
   <EnrichmentsOrderList>
     <Item order="1" active="true" name="LU_PARAMS" columnName="fnEnrichmentLuParams" type="Table" />
-    <Item order="2" active="true" name="INSTANCE_TABLE_COUNT" columnName="fnPopINSTANCE_TABLE_COUNT" type="Table" />
-    <Item order="3" active="true" name="FABRIC_TDM_ROOT" columnName="fnEnrichmentChildLink" type="Table" />
+    <Item order="2" active="true" name="FABRIC_TDM_ROOT" columnName="fnEnrichmentChildLink" type="Table" />
   </EnrichmentsOrderList>
   <ReferencesList />
   <Relations />
@@ -142,10 +135,6 @@
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
       <To tableType="TableObject" table="TDM_LU_TYPE_RELATION_EID" populationObjectName="pop_TDM_LU_TYPE_RELATION_EID" column="dummy_input" columnId="fi_9.0" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="INSTANCE_TABLE_COUNT" populationObjectName="query_INSTANCE_TABLE_COUNT" column="input" columnId="fi_7.0" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
@@ -161,7 +150,7 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
@@ -221,12 +210,11 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.3.10" name="vdb.k2vdb.xml">
+    <Graph version="6.5.4.12" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="345 33.4544334" size="265 743.0912" wasexpanded="false" expanded="true">
         <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="349 52.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TDM_LU_TYPE_RELATION_EID" pos="349 236.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="INSTANCE_TABLE_COUNT" pos="349 436.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="LU_PARAMS" pos="349 636.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Group name="Source Tables" pos="637 17.4544334" size="1171 559.0912" wasexpanded="false" expanded="true">

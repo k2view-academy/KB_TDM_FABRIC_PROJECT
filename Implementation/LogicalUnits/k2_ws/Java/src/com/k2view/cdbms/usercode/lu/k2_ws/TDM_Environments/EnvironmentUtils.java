@@ -14,140 +14,14 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
+import static com.k2view.cdbms.shared.user.UserCode.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class EnvironmentUtils {
     static final Log log = Log.a(UserCode.class);
     static final String schema = "public";
-
-    static List<Map<String, Object>> fnGetEnvsByuser(String userId) throws Exception {
-        List<Map<String, Object>> rowsList = new ArrayList<>();
-		
-		String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result"));
-        //get the environments where the user is the owner
-        String query1 = "select *, " +
-                "CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
-                "from environments env, environment_owners o " +
-                "where env.environment_id = o.environment_id " +
-                "and (o.user_id = (?) or o.user_id = ANY(string_to_array(?, ',')))" +
-                "and env.environment_status = 'Active'";
-
-        log.info("fnGetEnvsByuser - query 1 for user id " + userId + "is: " + query1);
-        Db.Rows rows = db("TDM").fetch(query1, userId, fabricRoles);
-
-        List<String> columnNames = rows.getColumnNames();
-        for (Db.Row row : rows) {
-            ResultSet resultSet = row.resultSet();
-            Map<String, Object> rowMap = new HashMap<>();
-            for (String columnName : columnNames) {
-                rowMap.put(columnName, resultSet.getObject(columnName));
-            }
-            rowsList.add(rowMap);
-        }
-
-        String envIds = "(";
-        if (!rowsList.isEmpty()) {
-            for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-            envIds = envIds.substring(0, envIds.length() - 1);
-        }
-        envIds += ")";
-
-        //get the environments where the user is assigned to a role by their username
-        String query2 = "select *, " +
-                "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-                "from environments env, environment_roles r, environment_role_users u " +
-                "where env.environment_id = r.environment_id " +
-                "and lower(r.role_status) = 'active' " +
-                "and r.role_id = u.role_id " +
-                "and u.user_id = (?) " +
-				"and u.user_type = 'ID' " +
-                "and env.environment_status = 'Active'";
-        // remove the list of environments returned by query 1;
-        query2 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
-        rows = db("TDM").fetch(query2, userId);
-
-        log.info("fnGetEnvsByuser - query 2 for user id " + userId + "is: " + query2);
-
-        columnNames = rows.getColumnNames();
-        for (Db.Row row : rows) {
-            ResultSet resultSet = row.resultSet();
-            Map<String, Object> rowMap = new HashMap<>();
-            for (String columnName : columnNames) {
-                rowMap.put(columnName, resultSet.getObject(columnName));
-            }
-            rowsList.add(rowMap);
-        }
-
-        envIds = "(";
-        if (!rowsList.isEmpty()) {
-            for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-            envIds = envIds.substring(0, envIds.length() - 1);
-        }
-        envIds += ")";
-
-        //get the environments where the user id is one of the Fabric Roles
-        String query3 = "select *, " +
-                "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-                "from environments env, environment_roles r, environment_role_users u " +
-                "where env.environment_id = r.environment_id " +
-                "and lower(r.role_status) = 'active' " +
-                "and r.role_id = u.role_id " +
-                "and u.user_id = ANY(string_to_array(?, ',')) " +
-				"and u.user_type = 'GROUP' " +
-                "and env.environment_status = 'Active'";
-        // remove the list of environments returned by query 1+2;
-        query3 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
-        rows = db("TDM").fetch(query3, fabricRoles);
-
-        log.info("fnGetEnvsByuser - query 3 for Fabric Roles < " + fabricRoles + "> is: " + query3);
-
-        columnNames = rows.getColumnNames();
-        for (Db.Row row : rows) {
-            ResultSet resultSet = row.resultSet();
-            Map<String, Object> rowMap = new HashMap<>();
-            for (String columnName : columnNames) {
-                rowMap.put(columnName, resultSet.getObject(columnName));
-            }
-            rowsList.add(rowMap);
-        }
-
-        envIds = "(";
-        if (!rowsList.isEmpty()) {
-            for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
-            envIds = envIds.substring(0, envIds.length() - 1);
-        }
-        envIds += ")";
-
-        //get the environments where the user is assigned to a role by 'ALL' assignment
-        String query4 = "select *, " +
-                "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
-                ", r.role_id, 'all' as assignment_type " +
-                "from environments env, environment_roles r, environment_role_users u " +
-                "where env.environment_id = r.environment_id " +
-                "and lower(r.role_status) = 'active' " +
-                "and r.role_id = u.role_id " +
-                "and lower(u.username) = 'all' " +
-                "and env.environment_status = 'Active'";
-        // remove the list of environments returned by queries 1+2+3;
-        query4 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
-        rows = db("TDM").fetch(query4);
-
-        log.info(" fnGetEnvsByuser - query 4 (get ALL roles) is: " + query4);
-
-        columnNames = rows.getColumnNames();
-        for (Db.Row row : rows) {
-            ResultSet resultSet = row.resultSet();
-            Map<String, Object> rowMap = new HashMap<>();
-            for (String columnName : columnNames) {
-                rowMap.put(columnName, resultSet.getObject(columnName));
-            }
-            rowsList.add(rowMap);
-        }
-        return rowsList;
-    }
 
     static String fnGetInterval(String interval) {
         if ("Day".equals(interval)) {
@@ -163,25 +37,6 @@ public class EnvironmentUtils {
         } else {
             return "1 month";
         }
-    }
-
-    //checks if the registered user is an owner of the given environment
-    static Boolean fnIsOwner(String envId) throws Exception {
-        List<Map<String, Object>> envsList = (List<Map<String, Object>>) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser()).get("result");
-        boolean found = false;
-        for (Map<String, Object> envsGroup : envsList) {
-            Map.Entry<String, Object> entry = envsGroup.entrySet().iterator().next();
-            List<Map<String, Object>> groupByType = (List<Map<String, Object>>) entry.getValue();
-            for (Map<String, Object> env : groupByType) {
-                if ("owner".equals(env.get("role_id").toString())) {
-                    if (env.get("environment_id").toString().equals(envId)) {
-                        found = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return found;
     }
 
     static Object fnExtractExecutionStatus(Map<String, List<Map<String, Object>>> executionsStatusGroup) {
@@ -250,7 +105,7 @@ public class EnvironmentUtils {
                     "environment_last_updated_date=(?)," +
                     "environment_last_updated_by=(?) " +
                     "WHERE environment_id = " + envId;
-            String username = (String) ((Map) ((List) getFabricResponse("set username")).get(0)).get("value");
+            String username = sessionUser().name();
             db("TDM").execute(sql, now, username);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -264,7 +119,7 @@ public class EnvironmentUtils {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now());
-        String username = (String) ((Map) ((List) getFabricResponse("set username")).get(0)).get("value");
+        String username = sessionUser().name();
         Db.Row row = db("TDM").fetch(sql,
                 envId,
                 product_id,
@@ -316,7 +171,7 @@ public class EnvironmentUtils {
                 "last_updated_date=(?)," +
                 "last_updated_by=(?) " +
                 "WHERE environment_product_id = " + environment_product_id;
-        String username = (String) ((Map) ((List) getFabricResponse("set username")).get(0)).get("value");
+        String username = sessionUser().name();
         db("TDM").execute(sql, data_center_name, product_version, now, username);
     }
 
@@ -372,7 +227,7 @@ public class EnvironmentUtils {
     }
 
     static void fnInsertActivity(String action, String entity, String description) throws Exception {
-        String userId = (String) ((Map) ((List) getFabricResponse("set username")).get(0)).get("value");
+        String userId = sessionUser().name();
         String username = userId;
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
                 .withZone(ZoneOffset.UTC)

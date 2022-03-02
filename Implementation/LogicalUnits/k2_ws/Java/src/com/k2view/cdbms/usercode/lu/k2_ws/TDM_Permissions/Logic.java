@@ -11,6 +11,7 @@ import com.k2view.fabric.api.endpoint.Endpoint.*;
 import java.util.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -45,7 +46,7 @@ public class Logic extends WebServiceUserCode {
 	}};
 
 	@desc("Gets the user permission group according to user Fabric role and its mapping to TDM permission group")
-	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": \"tester\",\r\n" +
 			"  \"errorCode\": \"\",\r\n" +
@@ -53,31 +54,11 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetUserPermissionGroup() throws Exception {
 		try {
-			String fabricRoles = String.join(",", sessionUser().roles());
-
-			Integer[] weight = {0};
-			db(TDM_INTERFACE_NAME).fetch(SELECT_PERMISSION_GROUP, fabricRoles).forEach(row -> {
-				Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
-				if (nextWeight != null && nextWeight > weight[0]) {
-					weight[0] = nextWeight;
-				}
-			});
-
-			if (weight[0] == 0) {
-				return wrapWebServiceResults("FAIL", "Can't find permission group for the user " + sessionUser().name() + ".", null);
-			} else {
-				String permissionGroup = null;
-				for (Map.Entry<String, Integer> e : PERMISSION_GROUPS.entrySet()) {
-					if (e.getValue().equals(weight[0])) {
-						permissionGroup = e.getKey();
-						break;
-					}
-				}
-
-				return wrapWebServiceResults("SUCCESS", null, permissionGroup);
-			}
+			String userName = "";
+			String permissionGroup = fnGetUserPermissionGroup(userName);
+			return wrapWebServiceResults("SUCCESS", null, permissionGroup);
 		} catch (Throwable t) {
-			return wrapWebServiceResults("FAIL", t.getMessage(), null);
+			return wrapWebServiceResults("FAILED", t.getMessage(), null);
 		}
 	}
 
@@ -168,14 +149,14 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsAddPermissionGroupMapping(String description, @param(description="Fabric role") String role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		try {
 			String userName = sessionUser().name();
 			db(TDM_INTERFACE_NAME).execute(INSERT_PERMISSION_GROUP_MAPPINGS, description, role, permission_group, userName, userName);
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAIL", "Can't add new permission group mapping: " + e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", "Can't add new permission group mapping: " + e.getMessage(), null);
 		}
 	}
 
@@ -189,7 +170,7 @@ public class Logic extends WebServiceUserCode {
 	public static Object wsUpdatePermissionGroupMapping(String description, String old_role, String new_role, @param(description="Can be populated by 'admin', 'owner', or 'tester'") String permission_group) throws Exception {
 		String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
 		if (!"admin".equals(sessionUserPermissionGroup)) {
-			return wrapWebServiceResults("FAIL", admin_pg_access_denied_msg, null);
+			return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
 		}
 		
 		try {
@@ -210,7 +191,7 @@ public class Logic extends WebServiceUserCode {
 
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAIL", "Can't add new permission group mapping: " + e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", "Can't add new permission group mapping: " + e.getMessage(), null);
 		}
 	}
 
@@ -224,7 +205,7 @@ public class Logic extends WebServiceUserCode {
 	public static Object wsDeletePermissionGroupMapping(@param(required=true) String role) throws Exception {
 		String sessionUserPermissionGroup = (String) ((Map<String, Object>) wsGetUserPermissionGroup()).get("result");
 		if (!"admin".equals(sessionUserPermissionGroup)) {
-			return wrapWebServiceResults("FAIL", admin_pg_access_denied_msg, null);
+			return wrapWebServiceResults("FAILED", admin_pg_access_denied_msg, null);
 		}
 
 		try {
@@ -242,7 +223,7 @@ public class Logic extends WebServiceUserCode {
 
 			return wrapWebServiceResults("SUCCESS", null, null);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAIL", "Can't delete new permission group mapping: " + e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", "Can't delete new permission group mapping: " + e.getMessage(), null);
 		}
 	}
 
@@ -303,7 +284,7 @@ public class Logic extends WebServiceUserCode {
 		});
 
 		if (weight[0] == 0) {
-			return wrapWebServiceResults("FAIL", "Can't find permission group for the user " + sessionUser().name() + ".", null);
+			return wrapWebServiceResults("FAILED", "Can't find permission group for the user " + sessionUser().name() + ".", null);
 		} else {
 			String permissionGroup = null;
 			for (Map.Entry<String, Integer> e : PERMISSION_GROUPS.entrySet()) {
@@ -382,7 +363,7 @@ public class Logic extends WebServiceUserCode {
 			});
 			return wrapWebServiceResults("SUCCESS", null, users);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAIL", e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
 	}
 

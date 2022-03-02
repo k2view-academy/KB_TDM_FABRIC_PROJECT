@@ -18,13 +18,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "delete_COLLECTION",
+                            "name": "delete_collection",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "delete_COLLECTION"
+                                        "const": "delete_collection"
                                     }
                                 ],
                                 "outputs": []

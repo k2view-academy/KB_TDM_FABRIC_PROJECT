@@ -17,6 +17,7 @@ SELECT DISTINCT
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
+  , tt.task_executed_by
 FROM
     TASK_EXECUTION_LIST tt
   , environments         e
@@ -58,6 +59,7 @@ SELECT DISTINCT
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , e.environment_name as source_environment_name
   , e2.environment_name as target_environment_name
+  , tt.task_executed_by
 FROM
     TASK_EXECUTION_LIST tt
   , TASK_EXECUTION_LIST p
@@ -95,6 +97,7 @@ SELECT DISTINCT
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , tt.source_env_name as source_environment_name
   , e.environment_name as target_environment_name
+  , tt.task_executed_by
 FROM
       TASK_EXECUTION_LIST tt
     , environments         e

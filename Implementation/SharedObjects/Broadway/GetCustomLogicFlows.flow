@@ -1,0 +1,177 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Table of Custom Logic Flows",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CustomLogicFlows1",
+                            "actorType": {
+                                "parentType": "CustomLogicFlows",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FLOW_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Filter Flows of LU",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ArrayBuilder1",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Return List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ConstStrings1",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "CustomLogicFlows1",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "LU_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CustomLogicFlows1",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder1",
+                "name": "input"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "FLOW_NAME"
+            ],
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder1",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "ConstStrings1",
+                "name": "strings"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ConstStrings1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "customLogicFlowsList"
+            }
+        }
+    ]
+}

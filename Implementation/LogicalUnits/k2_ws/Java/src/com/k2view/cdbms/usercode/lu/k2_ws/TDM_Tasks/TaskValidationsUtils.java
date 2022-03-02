@@ -1,12 +1,17 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks;
 
+import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.fabric.common.Log;
 import org.json.JSONObject;
+import com.k2view.fabric.common.Json;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import static com.k2view.cdbms.shared.user.UserCode.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TaskValidationsUtils {
@@ -140,7 +145,7 @@ public class TaskValidationsUtils {
 
     static Map<String, String> fnValidateTargetEnvForTask(Map<String, Object> be_lus, Integer refCount, String selection_method,
                                                           Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load,
-                                                          String task_type, Map<String, Object> envDetails) throws Exception {
+                                                          String task_type, Boolean reserve_ind, int noOfEntities, Map<String, Object> envDetails) throws Exception {
         Map<String, String> errorMessages = new HashMap<>();
         Object res = null;
         Boolean ownerOrAdminRole;
@@ -155,6 +160,10 @@ public class TaskValidationsUtils {
         String versioning_sql = "select environment_id from environment_roles where role_id = ?  and allowed_entity_versioning = true;";
         String replaceSequence_sql = "select environment_id from environment_roles where role_id = ?  and allowed_replace_sequences = true;";
         String deleteBeforeLoad_sql = "select environment_id from environment_roles where role_id = ?  and  allowed_delete_before_load = true;";
+		String reverseEntity_sql = "select environment_id from environment_roles where role_id = ?  and allowed_number_of_reserved_entities > 0;";
+		String reserveLimit_sql = "select allowed_number_of_reserved_entities from environment_roles where role_id = ? and environment_id = ?;";
+		String getUserReserveCnt_sql = "select count(1) from tdm_reserved_entities where env_id = ? and be_id = ? and reserve_owner = ? and " +
+			"end_datetime > CURRENT_TIMESTAMP";
 
         beId = (String) be_lus.get("be_id");
         lusList = (ArrayList<String>) be_lus.get("LU List");
@@ -214,6 +223,100 @@ public class TaskValidationsUtils {
                 errorMessages.put("deleteBeforeLoad", "The user has no permissions to delete entities from the target.");
         }
 
+		//check if target env satisfy reserve entities filtering
+        if (reserve_ind != null && reserve_ind && !ownerOrAdminRole) {
+            res = UserCode.db("TDM").fetch(reverseEntity_sql, role_id).firstValue();
+            if (res == null) {
+                errorMessages.put("reserveEntities", "The user has no permissions to reserve entities on the task's target environment");
+			} else {
+				if (noOfEntities > 0) {
+					Long reserveLimit = (Long)UserCode.db("TDM").fetch(reserveLimit_sql, role_id, env_id).firstValue();
+					if (reserveLimit.intValue() < noOfEntities) {
+						errorMessages.put("Number of reserved entities", "The number of entities to be reserved will exceed the number of entities allowed");
+					} else {
+						String userId = sessionUser().name();
+						Long entCount = (Long)UserCode.db("TDM").fetch(getUserReserveCnt_sql, env_id, beId, userId).firstValue();
+						if (entCount + noOfEntities > reserveLimit) {
+							errorMessages.put("Number of reserved entities for user", "The number of entities to be reserved for the user will exceed the number of entities allowed");
+						}
+					}
+					
+				}
+				
+			}
+        }
         return errorMessages;
     }
+
+	static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation) {
+		Map<String, String> errorMessages = new HashMap<>();
+		
+		Map<String, Object> retentionDefinitions = TdmSharedUtils.fnGetRetentionPeriod();
+		Long maxRetentionPeriod = -1L;
+		if ("versioning".equals(validation)) {	
+			maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxRetentionPeriod"));
+		} else {
+			maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxReserveDays"));
+		}
+			ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("retentionPeriodTypes");
+			//log.info("retentionPeriodTypes: " + retentionPeriodTypes);
+		
+		String unit = retentionPeriodParams.get("unit");
+		String value = retentionPeriodParams.get("value");
+		
+		String unitToDay = "1";
+		for (Map<String, String>rec : retentionPeriodTypes) {
+			if(unit.equalsIgnoreCase(rec.get("name"))) {
+				unitToDay = String.valueOf(rec.get("units"));
+				break;
+			}
+		}
+		
+		Double retentionValue = Double.parseDouble(value);
+		if (retentionValue <= 0) {
+			errorMessages.put("retention", "The retention period is negative");
+		} else {
+			Double retention = Double.parseDouble(unitToDay) * retentionValue;
+			if (retention > maxRetentionPeriod) {
+				errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
+			}
+		}
+
+		return errorMessages;
+	}
+	
+	static Map<String, String> fnValidateVersionExecIdAndGetDetails(Long dataVersionExecId, Map<String,Object> beLUs, String sourceEnvName) throws Exception {
+        Map<String, String> result = new HashMap<>();
+        Long beId = Long.parseLong("" + beLUs.get("be_id"));
+        List<String> luList =(List<String>)beLUs.get("LU List");
+		Db.Rows taskList = db("TDM").fetch("SELECT t.task_title, l.version_datetime, l.execution_status, lu.lu_name " +
+                            "FROM tasks t, task_execution_list l, tasks_logical_units lu, environments e " +
+							"WHERE l.task_execution_id = ? AND l.task_id = t.task_id AND l.be_id = ? " +
+                            "AND l.task_id = lu.task_id AND l.lu_id = lu.lu_id AND e.environment_name = ? and e.environment_status = 'Active' " +
+                            "AND e.environment_id = l.source_environment_id",
+							dataVersionExecId, beId, sourceEnvName);
+		if (!taskList.resultSet().isBeforeFirst()) {
+            result.put("errorMessage", "Task Execution ID was not found or it was executed with different BE or Source Environment");
+            return result;
+        }
+
+		for (Db.Row row : taskList) {
+		    String luName = "" + row.get("lu_name");
+		    if (luList.indexOf(luName) != -1) {
+                if ("completed".equalsIgnoreCase("" + row.get("execution_status"))) {
+                    luList.remove("" + row.get("lu_name"));
+                    result.put("versionName", "" + row.get("task_title"));
+                    result.put("versionDatetime", "" + row.get("version_datetime"));
+                } else {
+                    result.put("errorMessage", "Not ALL the requested LUs had passed successfully in given extract task");
+                    return result;
+                }
+            }
+        }
+		if(luList.size() > 0) {
+            result.put("errorMessage", "Not ALL the requested LUs were part of the given extract task");
+            return result;
+        }
+		return result;
+	}
 }

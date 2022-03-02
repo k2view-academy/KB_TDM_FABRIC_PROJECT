@@ -23,10 +23,16 @@
 							}
                         },
                         {
-                            "name": "Check If Delete Only Task",
+                            "name": "Get Delete Only Task Indicator",
                             "actorType": {
-                                "parentType": "CheckIfDeleteOnlyTask_Actor",
-                                "inputs": [],
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_ONLY_TASK",
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -108,9 +114,6 @@
                                     {
                                         "name": "luType",
                                         "const": "{{__LU_NAME}}"
-										"schema": {
-                                            "type": "string"
-                                        }
                                     },
                                     {
                                         "name": "functionName",
@@ -131,7 +134,14 @@
                             "name": "Not1",
                             "actorType": {
                                 "parentType": "Not",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -452,8 +462,8 @@
         },
         {
             "leftPort": {
-                "actor": "Check If Delete Only Task",
-                "name": "deleteOnlyInd"
+                "actor": "Get Delete Only Task Indicator",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Not1",

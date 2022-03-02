@@ -27,7 +27,9 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.Logic.wsGetTasks;
+import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -50,7 +52,7 @@ public class Logic extends WebServiceUserCode {
 			"- Get all active extract tasks that require special permissions if the user has at least one Read TDM Environment role with these permissions.\r\n" +
 			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
 			"- Get all active load tasks that require special permissions if the user has at least one Read TDM environment role, and one Write TDM Environment role with these permissions.")
-	@webService(path = "regularTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "regularTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -70,13 +72,25 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsRegularTasksByUser() throws Exception {
+		Boolean versionInd = false;
+		try {
+			List<Map<String, Object>> returnedResult = fnGetTasksByUser(versionInd);
+		
+			return wrapWebServiceResults("SUCCESS",null,returnedResult);
+		}catch(Exception e){
+			e.printStackTrace();
+			return wrapWebServiceResults("FAILED",e.getMessage(),null);
+		}
+	}
+
+	static List<Map<String, Object>> fnGetTasksByUser(Boolean versionInd) {
 		List<Map<String, Object>> result = new ArrayList<>();
 		//log.info("wsRegularTasksByUser - Starting");
 		try {
-			String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
+			String permissionGroup = fnGetUserPermissionGroup("");
 			
-			String sql = "select * from tasks where lower(task_status) = 'active' and lower(task_execution_status) = 'active' and version_ind = false";
-			Db.Rows rows = db("TDM").fetch(sql);
+			String sql = "select * from tasks where lower(task_status) = 'active' and lower(task_execution_status) = 'active' and version_ind = ?";
+			Db.Rows rows = db("TDM").fetch(sql, versionInd);
 			List<String> columnNames = rows.getColumnNames();
 			
 			for (Db.Row row : rows) {
@@ -105,6 +119,7 @@ public class Logic extends WebServiceUserCode {
 					Boolean replaceSequences = (Boolean)row.get("replace_sequences");
 					Boolean deleteBeforeLoad = (Boolean)row.get("delete_before_load");
 					String taskType = "" + row.get("task_type");
+					Boolean reserveInd = (Boolean) row.get("reserve_ind");
 					//log.info("wsRegularTasksByUser - taskID: " + taskID + ", taskTitle: " + taskTitle + ", taskType: " + taskType);
 					
 					Integer refCount = Integer.parseInt(refCnt);
@@ -119,7 +134,8 @@ public class Logic extends WebServiceUserCode {
 						false,
 						replaceSequences,
 						deleteBeforeLoad, //row.get("delete_before_load"),
-						taskType)).get("result");
+						taskType,
+						reserveInd)).get("result");
 					
 					//log.info("wsRegularTasksByUser - envsList: " + envsList);
 					
@@ -190,14 +206,14 @@ public class Logic extends WebServiceUserCode {
 				returnedResult.add(Data);
 			}
 		
-			return wrapWebServiceResults("SUCCESS",null,returnedResult);
+			return returnedResult;
 		}catch(Exception e){
 			e.printStackTrace();
-			return wrapWebServiceResults("FAIL",e.getMessage(),null);
+			throw new RuntimeException("Failed to get task list");
 		}
 	}
 
-	@desc("Filters the tasks, returned by /regularTasksByUser API according the the input filtering parameters. The input is a dynamic JSON string. Currently it supports the following filtering parameters:\r\n" +
+	@desc("Filters the tasks, returned for the user according the the input filtering parameters. The input is a dynamic JSON string. Currently it supports the following filtering parameters:\r\n" +
 			"\r\n" +
 			"- task_type : LOAD/EXTRACT\r\n" +
 			"- version_ind : true/false\r\n" +
@@ -218,7 +234,7 @@ public class Logic extends WebServiceUserCode {
 			"{\"task_type\":\"EXTRACT\", \"version_ind\":true, \"selection_method\":\"L\", \"sync_mode\":\"OFF\"}\r\n" +
 			"\r\n" +
 			"{\"task_type\":\"EXTRACT\", \"version_ind\": false, \"load_entity\": true, \"delete_before_load\": true, \"selection_method\":\"L\", \"sync_mode\":\"FORCE\"}")
-	@webService(path = "getTasksByParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "getTasksByParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    \r\n" +
@@ -241,26 +257,31 @@ public class Logic extends WebServiceUserCode {
 		Boolean version_ind = null, load_entity = null, delete_before_load = null;
 		HashMap<String, Object> response = new HashMap<>();
 		List<Map<String, Object>> finalTasksList = new ArrayList<>();
-
+		
 		try {
-
+		
 			if (filteringParams != null) {
 				JSONObject jsonInput = new JSONObject(filteringParams);
 				task_type = jsonInput.has("task_type") ? jsonInput.get("task_type").toString() : null;
 				selection_method = jsonInput.has("selection_method") ? jsonInput.get("selection_method").toString() : null;
 				sync_mode = jsonInput.has("sync_mode") ? jsonInput.get("sync_mode").toString() : null;
-				version_ind = jsonInput.has("version_ind") ? (Boolean) jsonInput.get("version_ind") : null;
+				version_ind = jsonInput.has("version_ind") ? (Boolean) jsonInput.get("version_ind") : false;
 				load_entity = jsonInput.has("load_entity") ? (Boolean) jsonInput.get("load_entity") : null;
 				delete_before_load = jsonInput.has("delete_before_load") ? (Boolean) jsonInput.get("delete_before_load") : null;
 			}
-			HashMap<String, Object> wsUserTasks = (HashMap<String, Object>) wsRegularTasksByUser();
+		
+			HashMap<String, Object> wsUserTasks = new HashMap<>();
+			if (!version_ind) {// Version Ind is set to false, get regular tasks
+				wsUserTasks = (HashMap<String, Object>) wsRegularTasksByUser();
+			} else {// Version Ind is set to true, get Data Flux tasks
+				wsUserTasks = (HashMap<String, Object>) wsDataVersionTaskByUser();
+			}
+			
 			List<Map<String, Object>> allUserTasks = (List<Map<String, Object>>) wsUserTasks.get("result");
 			for (Map<String, Object> task : allUserTasks) {
 				HashMap<String, Object> wsTaskDetails = (HashMap<String, Object>) wsGetTasks(task.get("task_id").toString());
 				List<Map<String, Object>> allTaskDetails = (List<Map<String, Object>>) wsTaskDetails.get("result");
 				if (task_type != null && !task_type.equalsIgnoreCase(allTaskDetails.get(0).get("task_type").toString()))
-					continue;
-				if (version_ind != null && version_ind != allTaskDetails.get(0).get("version_ind"))
 					continue;
 				if (load_entity != null && load_entity != allTaskDetails.get(0).get("load_entity"))
 					continue;
@@ -271,7 +292,7 @@ public class Logic extends WebServiceUserCode {
 				String syncModeFromTaskDetails = (allTaskDetails.get(0).get("sync_mode") != null) ? allTaskDetails.get(0).get("sync_mode").toString() : "ON";
 				if (sync_mode != null && !sync_mode.equalsIgnoreCase(syncModeFromTaskDetails))
 					continue;
-
+		
 				HashMap<String, Object> finalTaskMap = new HashMap<>();
 				finalTaskMap.put("task_id", task.get("task_id").toString());
 				finalTaskMap.put("task_title", task.get("task_title").toString());
@@ -281,13 +302,57 @@ public class Logic extends WebServiceUserCode {
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
 			message = e.getMessage();
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 		}
-
+		
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
 	}
 
 
+	@desc("Gets data versioning (Data Flux) tasks with version_ind set to true. Only active tasks (task_status and task_execution_status columns are 'Active') are taken, The task list is returned for the user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment permissions: \r\n" +
+			"\r\n" +
+			"Admin Users:\r\n" +
+			"- Get all active tasks.\r\n" +
+			"\r\n" +
+			"Owner Users:\r\n" +
+			"- Get all active extract tasks if the user is the owner of at least one source environment.\r\n" +
+			"- Get all active load tasks if the user is the owner of at least one source environment and one target environment.\r\n" +
+			"- Get all active extract tasks if the user has at least one Read TDM Environment permission set that enables a data versioning.\r\n" +
+			"- Get all active load tasks if the user has at least one Read TDM Environment permission set and one Write TDM Environment permission set that enable a data versioning.\r\n" +
+			"\r\n" +
+			"Tester Users:\r\n" +
+			"- Get all active extract tasks if the user has at least one Read TDM Environment permission set that enables a data versioning.\r\n" +
+			"- Get all active load tasks if the user has at least one Read TDM Environment permission set and one Write TDM Environment permission set that enable a data versioning.")
+	@webService(path = "VersionTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    {\r\n" +
+			"      \"task_title\": \"testTask\",\r\n" +
+			"      \"task_id\": 10\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"task_title\": \"testTask2\",\r\n" +
+			"      \"task_id\": 13\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"task_title\": \"testTask3\",\r\n" +
+			"      \"task_id\": 15\r\n" +
+			"    }\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsDataVersionTaskByUser() throws Exception {
+		Boolean versionInd = true;
+		try {
+			List<Map<String, Object>> returnedResult = fnGetTasksByUser(versionInd);
+		
+			return wrapWebServiceResults("SUCCESS",null,returnedResult);
+		}catch(Exception e){
+			e.printStackTrace();
+			return wrapWebServiceResults("FAILED",e.getMessage(),null);
+		}
+	}
 }

@@ -315,6 +315,14 @@
           <CLEANUP_LOGIC></CLEANUP_LOGIC>
           <SEQ>28</SEQ>
         </trnTDMCleanUp>
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp25" msdata:rowOrder="24">
+          <TABLE_NAME>TDM_RESERVED_ENTITIES</TABLE_NAME>
+          <CLEANUP_ORDER>1</CLEANUP_ORDER>
+          <CLEANUP_IND>true</CLEANUP_IND>
+          <CLEANUP_STATEMENT>DELETE FROM TDM_RESERVED_ENTITIES WHERE END_DATETIME &lt; now()</CLEANUP_STATEMENT>
+          <CLEANUP_LOGIC></CLEANUP_LOGIC>
+          <SEQ>29</SEQ>
+        </trnTDMCleanUp>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

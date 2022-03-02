@@ -174,9 +174,9 @@
                             }
                         },
                         {
-                            "name": "CheckIfFlowExists_Actor1",
+                            "name": "CheckIfFlowExists",
                             "actorType": {
-                                "parentType": "CheckIfFlowExists_Actor",
+                                "parentType": "CheckIfFlowExists",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -467,13 +467,13 @@
                 "name": "string"
             },
             "rightPort": {
-                "actor": "CheckIfFlowExists_Actor1",
+                "actor": "CheckIfFlowExists",
                 "name": "FLOW_FILE_NAME"
             }
         },
         {
             "leftPort": {
-                "actor": "CheckIfFlowExists_Actor1",
+                "actor": "CheckIfFlowExists",
                 "name": "SKIP_TABLE"
             },
             "rightPort": {
@@ -527,7 +527,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "CheckIfFlowExists_Actor1",
+                "actor": "CheckIfFlowExists",
                 "name": "LU_NAME"
             }
         },

@@ -41,6 +41,7 @@ import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
@@ -518,12 +519,11 @@ public class SharedLogic {
 			ciTDM.beginTransaction();
 		}
 		//TALI- Fix ticket #9523- delete the parent IID records, if exist, before the insert
-		//log.info("before delete");
 		//Add the LU Name to the table name
 		// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
 		//String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
-		String verAddition = verName.equals("") ? "" : "and version_name = ? and version_datetime = ?";
-		String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? " + 
+		String verAddition = verName.equals("") ? "and version_name = ''" : "and version_name = ? and version_datetime = ?";
+		String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?" + 
 					verAddition;
 		
 		//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
@@ -533,23 +533,36 @@ public class SharedLogic {
 		
 		String currDate = sdf.format(new java.util.Date());
 		
-		//TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
+		//log.info("after the delete");
+		String taskExecID = "" + fabric().fetch("set TDM_TASK_EXE_ID").firstValue();
+		for (String key : keyset) {
+			// TDM 7.3 - 17/01/22 - Check if the child LU is part of the task, if it is not part of the task no need to populate its data
+			
+			String validateLuSql = "SELECT count(1) " +
+						"FROM task_execution_list t, product_logical_units parent, product_logical_units child " + 
+		                "WHERE t.task_Execution_id = ? and t.be_id  = parent.be_id and parent.lu_id = t.parent_lu_id " +
+		                "and parent.lu_name = ? and t.be_id = child.be_id and child.lu_id = t.lu_id and child.lu_name = ?";
+		
+			Long cntLu = (Long)ciTDM.fetch(validateLuSql, taskExecID, parentLU, key).firstValue();
+			
+			if (cntLu == 0) {
+				// The child LU (key) is not part of the task, therefore continue to the next child LU
+				continue;
+			}
+		
+				//TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
 		// or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
 		// be done only once.
 		// For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
 		
 		if ("".equals(cloneId) || "1".equals(cloneId)) {
-			//log.info("DELETE_SQL: " + DELETE_SQL + " for instance: " + uid);
 			if (verName.equals("")) {
-				ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId);
-			} else {
-				ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, verName, verDateTime);
+					ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, key);
+				} else {
+					ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, key, verName, verDateTime);
 			}
 		}
 		
-		//log.info("after the delete");
-			
-		for (String key : keyset) {
 			//log.info ("fnEnrichmentChildLink - key: " + key + " for instance: " + uid);
 			Map<String, String> mapVal = trnChildLinkVals.get(key);
 			String sql = mapVal.get("child_lu_eid_sql");
@@ -1214,16 +1227,16 @@ public class SharedLogic {
 	}
 
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> fnMigrateEntitiesForTdmExtract(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String globals, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode) throws Exception {
+	public static Map<String,String> fnMigrateEntitiesForTdmExtract(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode, String selectionMethod) throws Exception {
 		if (syncMode != "ON") {
 			fabric().execute("SET SYNC " + syncMode);
 		}
 		
-		String entities_list_for_migrate = "";
+		/*String entities_list_for_migrate = "";
 		String[] entities_list_array = {};
 		if (entitiesList != null) {
 			entities_list_array = entitiesList.split(",");
-		}
+		}*/
 		
 		String migrateCommand = "";
 		String entityList = "";
@@ -1232,7 +1245,7 @@ public class SharedLogic {
 		Long unixTime_plus_retention;
 		String versionName = "";
 		
-		setGlobals(globals);
+		//setGlobals(globals);
 		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
 		String separator = "";
 		if (!Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator)) {
@@ -1257,7 +1270,7 @@ public class SharedLogic {
 		if (retentionPeriodType != null && !retentionPeriodType.isEmpty() && retentionPeriodValue != null && retentionPeriodValue > 0) {
 			// Tali- set the datetime only when versionInd is true (backup tasks)
 			// TDM 6.0, in case of versionInd = true, the version_datetime will be received as input
-			Integer retention_in_seconds = TdmSharedUtils.getRetention(retentionPeriodType, retentionPeriodValue);
+			Integer retention_in_seconds = getRetention(retentionPeriodType, retentionPeriodValue);
 			if (versionDateTime != null && !versionDateTime.isEmpty()) {
 				timeStamp = versionDateTime;
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -1294,7 +1307,7 @@ public class SharedLogic {
 		String closeSeparator = iidSeparators[1].toString();
 		
 		if (entitiesList != null && !entitiesList.isEmpty() && !entitiesList.equals("")) { //Extract task is for listed entities
-			for (int i = 0; i < entities_list_array.length; i++) {
+			/*for (int i = 0; i < entities_list_array.length; i++) {
 				String entityId = entities_list_array[i].toString();
 				if (!openSeparator.equals(""))
 					entityId = openSeparator + entityId;
@@ -1319,7 +1332,21 @@ public class SharedLogic {
 			} else // input DC is empty or null
 			{
 				migrateCommand = "batch " + luName + ".(?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
-				entityList = entities_list_for_migrate;
+				entityList = entities_list_for_migrate;	
+			}*/
+			entityList = entitiesList;
+			if ("L".equals(selectionMethod)) {
+				if (dcName != null && !dcName.isEmpty()) {
+					migrateCommand = "batch " + luName + ".(?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
+				} else { // input DC is empty or null
+					migrateCommand = "batch " + luName + ".(?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
+				}
+			} else { // in case of Custom Logic
+				if (dcName != null && !dcName.isEmpty()) {
+					migrateCommand = "batch " + luName + " from DB_CASSANDRA using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
+				} else { // input DC is empty or null
+					migrateCommand = "batch " + luName + " from DB_CASSANDRA using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
+				}
 			}
 		} else { //Extract task is for all the LU ( according to provided query in translation )
 			// TDM 5.1 - add an additional input to the translation- source env
@@ -1329,8 +1356,9 @@ public class SharedLogic {
 			if (parentLuName != null && !parentLuName.equals("")) {
 				//Get the timestamp from the parent record in task_execution_list
 				String sqlGetVersionDateTime = "select to_char(version_datetime, 'yyyyMMddHH24miss') from task_execution_list tel, tasks_logical_units tlu " +
-						"where tel.task_execution_id = ? and tel.lu_id = tlu.lu_id and tlu.lu_name = ?";
-		
+						"where tel.task_execution_id = ? and tel.lu_id = tlu.lu_id and tlu.lu_name = ? limit 1";
+				
+				//log.info("fnMigrateEntitiesForTdmExtract - taskExecutionId: " + taskExecutionId + ", parentLuName: " + parentLuName);
 				timeStamp = "" + db("TDM").fetch(sqlGetVersionDateTime, taskExecutionId, parentLuName).firstValue();
 		
 				String entityIdSelectChildID = "rel.source_env||''" + separator + "''||rel.lu_type2_eid";
@@ -1342,8 +1370,10 @@ public class SharedLogic {
 				if (!closeSeparator.equals("")) {
 					entityIdSelectChildID += "||''" + closeSeparator + "''";
 				}
-		
+				//log.info("fnMigrateEntitiesForTdmExtract - versionInd: " + versionInd);
 				if (versionInd.equals("true")) {
+					
+					//log.info("fnMigrateEntitiesForTdmExtract - taskName: " + taskName + ", timeStamp: " + timeStamp);
 					entityIdSelectChildID += "||''" + separator + taskName + separator + "''||''" + timeStamp + "''";
 				}
 		
@@ -1741,7 +1771,7 @@ public class SharedLogic {
 		} else { //External Flow was supplied to create the entity list table.
 			
 			String broadwayCommand = "broadway " + luName + ".loadLuExternalEntityListTable"  +  " luName=" + luName + ", EXTERNAL_TABLE_FLOW=" + externalTableFlow;
-			log.info("getCommandForExtractAll - broadwayCommand: " + broadwayCommand);
+			//log.info("getCommandForExtractAll - broadwayCommand: " + broadwayCommand);
 			Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
 			String entityListTable = "" + entityListTableRec.get("value");
 			interface_name = "DB_CASSANDRA";
@@ -1761,6 +1791,109 @@ public class SharedLogic {
 		batchStrings.put("migrateCommand", migrateCommand);
 		batchStrings.put("usingClause", modified_sql);
 		return batchStrings;
+	}
+	
+	@out(name = "result", type = Integer.class, desc = "")
+	public static Integer getRetention(String retentionPeriodType, Float retentionPeriodValue) throws Exception {
+		Integer retention_in_seconds = 0;
+		
+		switch (retentionPeriodType) {
+		    case "Minutes":
+		        retention_in_seconds = Math.round(retentionPeriodValue * 60);
+		        break;
+		    case "Hours":
+		        retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60);
+		        break;
+		    case "Days":
+		        retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24);
+		        break;
+		    case "Weeks":
+		        retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24 * 7);
+		        break;
+		    case "Years":
+		        retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24 * 365);
+		        break;
+		}
+		return retention_in_seconds;
+	}
+
+
+
+
+	@out(name = "result", type = HashMap.class, desc = "")
+	public static HashMap<String,Object> fnReleaseReservedEntity(String entityID, String envID, String beID, String userName) throws Exception {
+		HashMap<String, Object> result = new HashMap<>();
+		String ErrorCode = "SUCCESS";
+		String ErrorMessage = "";
+		
+		log.info("Start fnReleaseReservedEntity for user: " + userName);
+		if (userName == null || "".equals(userName)) {
+			userName = sessionUser().name();
+		}
+		String permissionGroup = fnGetUserPermissionGroup(userName);
+		
+		String deleteSql = "DELETE FROM TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
+		
+		//Sort input list based on Environment
+		//log.info("listOfEntities: " + listOfEntities);
+		
+		Boolean isOwner = false;
+		Boolean isTester = false;
+		
+		String returnClause = " returning entity_id";
+		//log.info("permissionGroup: " + permissionGroup);
+		
+		//New Environment ID, check if the user is allowed to update it
+		if ("owner".equalsIgnoreCase(permissionGroup)) {
+			//log.info("The user is an owner");
+			//Check if the user is an owner of the environment, if not treat the user as tester
+			if(TdmSharedUtils.fnIsOwner(envID)) {
+				isOwner = true;
+			} else {
+				isOwner = false;
+			}
+		}
+		//If the user is not an admin or owner, then add a condition 
+		//to check if the user is the owner of the reservation
+		if (!isOwner && !"admin".equalsIgnoreCase(permissionGroup)) {
+			//log.info("The user is a tester");
+			deleteSql += " AND reserve_owner =? ";
+			 isTester = true;
+		} else {
+			isTester = false;
+		}
+			
+		//log.info("fnReleaseReservedEntity - deleteSql: " + deleteSql + returnClause);
+		//Delete record
+		String deleteEntityID = "";
+		if (isTester) {
+			deleteEntityID = "" + db("TDM").fetch(deleteSql + returnClause, entityID, beID, envID, userName).firstValue();
+		} else {
+			deleteEntityID = "" + db("TDM").fetch(deleteSql + returnClause, entityID, beID, envID).firstValue();
+		}
+		
+		//if record was not deleted
+		if(!entityID.equals(deleteEntityID)) {
+			//log.info("fnReleaseReservedEntity - entity is not deleted");
+			//In case of a tester, check if the entity is reserved for a different user
+			String reserveOwner = "" + db("TDM").fetch(
+				"SELECT reserve_owner FROM TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =?",
+				entityID, beID, envID).firstValue();
+			if (reserveOwner == null || "".equals(reserveOwner) ||"null".equals(reserveOwner) ) {
+				ErrorMessage = "Entity already Released";
+				//log.info("fnReleaseReservedEntity - Entity already Released");
+				ErrorCode = "Warning";
+			} else if (!reserveOwner.equals(userName)) {
+				ErrorMessage = "Entity is reserved to user: " + reserveOwner;
+				//log.info("fnReleaseReservedEntity - Entity is reserved to user: " + reserveOwner);
+				ErrorCode = "ERROR";
+			}
+		}
+		result.put("id", entityID);
+		result.put("ErrorCode", ErrorCode);
+		result.put("ErrorMessage", ErrorMessage);
+		
+		return result;
 	}
 
 }

@@ -40,6 +40,13 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "NUM_OF_ENTITIES",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -54,7 +61,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "create LU External Entity List Table",
@@ -84,11 +91,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "Run the Input flow to load the entity list table",
                 "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "Run the Input flow to load the entity list table",
+                "name": "NUM_OF_ENTITIES"
             }
         }
     ]

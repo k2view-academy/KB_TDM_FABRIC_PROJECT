@@ -17,8 +17,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
+
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -34,6 +34,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserEnvs;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -152,7 +153,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode = "SUCCESS";
 			response.put("result", result);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -179,32 +180,19 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"Example of the owners:\r\n" +
 			"\"owners\":[{\"uid\":\"king123\",\"user_id\":\"king123\",\"displayName\":\"king123\",\"username\":\"king123\"},{\"uid\":\"owner1\",\"user_id\":\"owner1\",\"displayName\":\"owner1\",\"username\":\"owner1\"}]")
-	@webService(path = "environment/{envId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsModifyEnvironment(
-			@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) Long envId,
-			@param(description="Optional parameter", required=true) String environment_name,
-			@param(description="Optional parameter") String environment_description,
-			@param(description="Optional parameter") String environment_point_of_contact_first_name,
-			@param(description="Optional parameter") String environment_point_of_contact_last_name,
-			@param(description="Optional parameter") String environment_point_of_contact_phone1,
-			@param(description="Optional parameter") String environment_point_of_contact_phone2,
-			@param(description="Optional parameter") String environment_point_of_contact_email,
-			@param(description="Will be populated by true if the environment can be used as a target environment. Else- will be false.", required=true) Boolean allow_write,
-			@param(description="Will be populated by true when the environment can be used as a source environment. Else- will be false.", required=true) Boolean allow_read,
-			@param(description="Can be populated by eaither of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
-			@param(description="List of owners attached to the environment") List<Map<String,String>> owners
-	) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+	public static Object wsModifyEnvironment(@param(description="Environment name. The environment name must also be defined in Fabric's environments.", required=true) Long envId, @param(description="Optional parameter", required=true) String environment_name, @param(description="Optional parameter") String environment_description, @param(description="Optional parameter") String environment_point_of_contact_first_name, @param(description="Optional parameter") String environment_point_of_contact_last_name, @param(description="Optional parameter") String environment_point_of_contact_phone1, @param(description="Optional parameter") String environment_point_of_contact_phone2, @param(description="Optional parameter") String environment_point_of_contact_email, @param(description="Will be populated by true if the environment can be used as a target environment. Else- will be false.", required=true) Boolean allow_write, @param(description="Will be populated by true when the environment can be used as a source environment. Else- will be false.", required=true) Boolean allow_read, @param(description="Can be populated by eaither of the following values: \"OFF\" or \"FORCE\"") String sync_mode, @param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -233,7 +221,7 @@ public class Logic extends WebServiceUserCode {
 					environment_name, environment_description, environment_point_of_contact_first_name,
 					environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2,
 					environment_point_of_contact_email, now,
-					(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value"),
+					sessionUser().name(),
 					allow_write, (allow_read != null ? allow_read : false), (sync_mode != null ? sync_mode : "ON"));
 		
 			String activityDesc = "Environment " + environment_name + " was updated";
@@ -286,7 +274,7 @@ public class Logic extends WebServiceUserCode {
 		
 		
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -303,8 +291,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironment(@param(required=true) Long envId, @param(required=true) String envName) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -342,7 +330,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode = "SUCCESS";
 		
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -509,7 +497,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", products);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -522,7 +510,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"Example of a request body:\r\n" +
 			"{exclusion_list: \"1,4,65,89\", be_id: 9, requested_by: \"k2vtester02\"}")
-	@webService(path = "environment/{envId}/exclusionLists", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/exclusionLists", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 9\r\n" +
@@ -531,13 +519,13 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironmentExclusionList(@param(required=true) Long envId, Long be_id, @param(description="Populated by the list of entities separtated by a comma") String exclusion_list, String requested_by) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -549,7 +537,7 @@ public class Logic extends WebServiceUserCode {
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username=sessionUser().name();
 			String sql = "INSERT INTO \"" + schema + "\".tdm_be_env_exclusion_list " +
 					"(be_id, environment_id, exclusion_list, requested_by, update_date, created_by, updated_by, creation_date) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING be_env_exclusion_list_id";
@@ -565,7 +553,7 @@ public class Logic extends WebServiceUserCode {
 				log.error(e.getMessage());
 			}
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -622,7 +610,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode = "SUCCESS";
 			response.put("result", result);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -633,22 +621,22 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Adds a Global to the Environment")
-	@webService(path = "environment/{envId}/envname/{envName}/global", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/global", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, String global_name, String global_value) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+	public static Object wsCreateEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, String luName, String global_name, String global_value) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
@@ -656,8 +644,12 @@ public class Logic extends WebServiceUserCode {
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 		try {
+			
+			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
+				global_name = luName + "." + global_name;
+			}
 			String sql = "INSERT INTO \"" + schema + "\".tdm_env_globals (environment_id, global_name, global_value, update_date, updated_by) VALUES (?, ?, ?, ?, ?)";
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username=sessionUser().name();
 			db("TDM").execute(sql, envId, global_name, global_value, now, username);
 		
 			String activityDesc = "'Global " + global_name + " was added to environment " + envName;
@@ -671,7 +663,7 @@ public class Logic extends WebServiceUserCode {
 		} catch (Exception e) {
 			message = e.getMessage();
 			log.error(message);
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 		}
 		response.put("errorCode", errorCode);
 		response.put("message", message);
@@ -680,7 +672,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Creates an Environment Role")
-	@webService(path = "environment/{envId}/envname/{envName}/role", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/role", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 10\r\n" +
@@ -688,17 +680,17 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_request_of_fresh_data, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_refresh_reference_data, Boolean allowed_replace_sequences, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+	public static Object wsCreateEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_request_of_fresh_data, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_refresh_reference_data, Boolean allowed_replace_sequences, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure, Integer allowed_number_of_reserved_entities) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		HashMap<String, Object> result = new HashMap<>();
 		String message = null;
@@ -713,9 +705,9 @@ public class Logic extends WebServiceUserCode {
 					"allowed_number_of_entities_to_copy, allowed_refresh_reference_data, role_created_by," +
 					" role_creation_date, role_last_updated_date," +
 					"role_expiration_date,role_last_updated_by,role_status,allowed_replace_sequences," +
-					" allowed_number_of_entities_to_read, allow_read, allow_write, allowed_entity_versioning, allowed_test_conn_failure) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING role_id";
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+					" allowed_number_of_entities_to_read, allow_read, allow_write, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING role_id";
+			String username=sessionUser().name();
 			Db.Row row = db("TDM").fetch(sql,
 					envId,
 					role_name,
@@ -738,7 +730,8 @@ public class Logic extends WebServiceUserCode {
 					allow_read != null ? allow_read : false,
 					allow_write,
 					allowed_entity_versioning,
-					allowed_test_conn_failure).firstRow();
+					allowed_test_conn_failure,
+					allowed_number_of_reserved_entities).firstRow();
 		
 			Long roleId = Long.parseLong(row.get("role_id").toString());
 			result.put("id", roleId);
@@ -755,7 +748,7 @@ public class Logic extends WebServiceUserCode {
 		} catch (Exception e) {
 			message = e.getMessage();
 			log.error(message);
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 		}
 		response.put("errorCode", errorCode);
 		response.put("message", message);
@@ -798,8 +791,8 @@ public class Logic extends WebServiceUserCode {
 											@param(description="Will be populated by true when the environment can be used as a source environment", required=true) Boolean allow_read,
 											@param(description="Can be populated by one of the following values: \"OFF\" or \"FORCE\"") String sync_mode,
 											@param(description="List of owners attached to the environment") List<Map<String,String>> owners) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAIL",admin_pg_access_denied_msg,null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		HashMap<String, Object> response = new HashMap<>();
 		HashMap<String, Object> result = new HashMap<>();
 		String message = null;
@@ -813,7 +806,7 @@ public class Logic extends WebServiceUserCode {
 				String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
-				String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+				String username=sessionUser().name();
 				Db.Row row = db("TDM").fetch(sql, environment_name,
 						environment_description,
 						environment_point_of_contact_fist_name,
@@ -853,7 +846,7 @@ public class Logic extends WebServiceUserCode {
 				errorCode = "SUCCESS";
 				response.put("result", result);
 			} catch (Exception e) {
-				errorCode = "FAIL";
+				errorCode = "FAILED";
 				message = e.getMessage();
 				log.error(message);
 			}
@@ -885,7 +878,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -931,7 +924,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			response.put("result", result);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -941,8 +934,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets all TDM roles of a given environment ")
-	@webService(path = "environment/{envId}/roles", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets all TDM roles of a given environment")
+	@webService(path = "environment/{envId}/roles", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -1012,12 +1005,13 @@ public class Logic extends WebServiceUserCode {
 				role.put("allowed_number_of_entities_to_read", resultSet.getInt("allowed_number_of_entities_to_read"));
 				role.put("allowed_entity_versioning", resultSet.getBoolean("allowed_entity_versioning"));
 				role.put("allowed_test_conn_failure", resultSet.getBoolean("allowed_test_conn_failure"));
+				role.put("allowed_number_of_reserved_entities", resultSet.getInt("allowed_number_of_reserved_entities"));
 				result.add(role);
 			}
 			errorCode = "SUCCESS";
 			response.put("result", result);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1028,7 +1022,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Gets Environment Globals")
-	@webService(path = "environment/{envId}/globals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/globals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -1058,13 +1052,20 @@ public class Logic extends WebServiceUserCode {
 			String sql = "SELECT * FROM \"" + schema + "\".tdm_env_globals " +
 					"WHERE environment_id = " + envId;
 			Db.Rows rows = db("TDM").fetch(sql);
-			HashMap<String, Object> global;
 		
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
-				global = new HashMap<>();
+				HashMap<String, Object> global = new HashMap<>();
+				String luName = "ALL";
+				String globalName = "" + resultSet.getString("global_name");
+				if (globalName.contains(".")) {
+					String[] arr = globalName.split(".");
+					luName = arr[0];
+					globalName = arr[1];
+				}
 				global.put("environment_id", resultSet.getLong("environment_id"));
-				global.put("global_name", resultSet.getString("global_name"));
+				global.put("lu_name", luName);
+				global.put("global_name", globalName);
 				global.put("global_value", resultSet.getString("global_value"));
 				global.put("update_date", resultSet.getString("update_date"));
 				global.put("updated_by", resultSet.getString("updated_by"));
@@ -1073,7 +1074,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", result);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1084,85 +1085,85 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Modifies the environment's role setting except  the Testers setting. Adding or removing testers to the environment's role is handled by a separate API: /environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}/users")
-	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsModifyEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data,
-												 Boolean allowed_random_entity_selection, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_replace_sequences, Boolean allowed_refresh_reference_data, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning,
-												 Boolean allowed_test_conn_failure,Boolean allowed_request_of_fresh_data) throws Exception {
-				String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-				if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
-				if (!"admin".equals(permissionGroup)) {
-					if ("tester".equals(permissionGroup)) {
-						return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
-					} else if("owner".equals(permissionGroup)){
-						if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
-					}
-				}
-
+	public static Object wsModifyEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, String role_name, String role_description, Boolean allowed_delete_before_load, Boolean allowed_creation_of_synthetic_data, Boolean allowed_random_entity_selection, Boolean allowed_task_scheduling, Integer allowed_number_of_entities_to_copy, Boolean allowed_replace_sequences, Boolean allowed_refresh_reference_data, Integer allowed_number_of_entities_to_read, Boolean allow_read, Boolean allow_write, Boolean allowed_entity_versioning, Boolean allowed_test_conn_failure, Boolean allowed_request_of_fresh_data, Integer allowed_number_of_reserved_entities) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
+		if (!"admin".equals(permissionGroup)) {
+			if ("tester".equals(permissionGroup)) {
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
+			} else if("owner".equals(permissionGroup)){
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+			}
+		}
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		HashMap<String, Object> response = new HashMap<>();
 		List<HashMap<String, Object>> result = new ArrayList<>();
 		String message = null;
 		String errorCode = "";
-		
+				
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-				.withZone(ZoneOffset.UTC)
-				.format(Instant.now());
-		
+		.withZone(ZoneOffset.UTC)
+		.format(Instant.now());
+			
 		try {
-			String sql = "UPDATE \"" + schema + "\".environment_roles SET " +
-					"role_name=(?)," +
-					"role_description=(?)," +
-					"allowed_delete_before_load=(?)," +
-					"allowed_creation_of_synthetic_data=(?)," +
-					"allowed_random_entity_selection=(?)," +
-					"allowed_task_scheduling=(?)," +
-					"allowed_number_of_entities_to_copy=(?)," +
-					"allowed_replace_sequences=(?)," +
-					"allowed_refresh_reference_data=(?)," +
-					"role_last_updated_date=(?)," +
-					"role_last_updated_by=(?)," +
-					"allowed_number_of_entities_to_read=(?)," +
-					"allow_read=(?)," +
-					"allow_write=(?)," +
-					"allowed_entity_versioning=(?)," +
-					"allowed_test_conn_failure=(?)," +
-					"allowed_request_of_fresh_data=(?) " +
-					"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
-			db("TDM").execute(sql,
-					role_name,
-					role_description,
-					allowed_delete_before_load,
-					allowed_creation_of_synthetic_data,
-					allowed_random_entity_selection,
-					allowed_task_scheduling,
-					allowed_number_of_entities_to_copy,
-					allowed_replace_sequences,
-					allowed_refresh_reference_data,
-					now,
-					username,
-					allowed_number_of_entities_to_read,
-					allow_read != null ? allow_read : false,
-					allow_write,
-					allowed_entity_versioning,
-					allowed_test_conn_failure,
-					allowed_request_of_fresh_data);
-			String activityDesc = "Role " + role_name + " of environment " + envName + " was updated";
-			try {
-				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
-			} catch (Exception e) {
-				log.error(e.getMessage());
-			}
-			errorCode = "SUCCESS";
+		String sql = "UPDATE \"" + schema + "\".environment_roles SET " +
+			"role_name=(?)," +
+			"role_description=(?)," +
+			"allowed_delete_before_load=(?)," +
+			"allowed_creation_of_synthetic_data=(?)," +
+			"allowed_random_entity_selection=(?)," +
+			"allowed_task_scheduling=(?)," +
+			"allowed_number_of_entities_to_copy=(?)," +
+			"allowed_replace_sequences=(?)," +
+			"allowed_refresh_reference_data=(?)," +
+			"role_last_updated_date=(?)," +
+			"role_last_updated_by=(?)," +
+			"allowed_number_of_entities_to_read=(?)," +
+			"allow_read=(?)," +
+			"allow_write=(?)," +
+			"allowed_entity_versioning=(?)," +
+			"allowed_test_conn_failure=(?)," +
+			"allowed_request_of_fresh_data=(?)," +
+			"allowed_number_of_reserved_entities=(?) " +
+			"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
+		String username=sessionUser().name();
+		db("TDM").execute(sql,
+			role_name,
+			role_description,
+			allowed_delete_before_load,
+			allowed_creation_of_synthetic_data,
+			allowed_random_entity_selection,
+			allowed_task_scheduling,
+			allowed_number_of_entities_to_copy,
+			allowed_replace_sequences,
+			allowed_refresh_reference_data,
+			now,
+			username,
+			allowed_number_of_entities_to_read,
+			allow_read != null ? allow_read : false,
+			allow_write,
+			allowed_entity_versioning,
+			allowed_test_conn_failure,
+			allowed_request_of_fresh_data,
+			allowed_number_of_reserved_entities);
+		String activityDesc = "Role " + role_name + " of environment " + envName + " was updated";
+		try {
+		EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
 		} catch (Exception e) {
-			errorCode = "FAIL";
-			message = e.getMessage();
-			log.error(message);
+		log.error(e.getMessage());
 		}
+		errorCode = "SUCCESS";
+		} catch (Exception e) {
+		errorCode = "FAILED";
+		message = e.getMessage();
+		log.error(message);
+				}
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
@@ -1170,22 +1171,22 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes Environment Role")
-	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironmentRole(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, @param(required=true) String roleName) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		HashMap<String, Object> response = new HashMap<>();
 		List<HashMap<String, Object>> result = new ArrayList<>();
@@ -1199,10 +1200,10 @@ public class Logic extends WebServiceUserCode {
 					"Inactive",DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 							.withZone(ZoneOffset.UTC)
 							.format(Instant.now()));
-
+		
 			// cleanup environment_role_users table
 			db("TDM").execute("DELETE from \"" + schema + "\".environment_role_users WHERE environment_id=" + envId + " AND role_id=" + roleId);
-
+		
 			String activityDesc = "Role " + roleName + " of environment " + envName + " was deleted";
 			try {
 				EnvironmentUtils.fnInsertActivity("update", "Environments", activityDesc);
@@ -1211,7 +1212,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1261,7 +1262,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",result);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1275,19 +1276,19 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"Example of a request body:\r\n" +
 			"{\n  \"users\": [\n    {\n      \"user_id \": \"-1\",\n      \"username\": \"ALL\"\n    },\n    {\n      \"user_id\": \"tester1\",\n      \"username\": \"tester1\"\n    }\n  ]\n}")
-	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}/users", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}/users", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateEnvironmentRoleTesters(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long roleId, @param(required=true) String roleName, List<Map<String,Object>> users) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1314,7 +1315,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1325,26 +1326,26 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Adds a Product to the TDM Environment.")
-	@webService(path = "environment/{envId}/envname/{envName}/product", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/product", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsCreateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="A unique identifier of the product in Products TDM DB table") long product_id, @param(description="Optional parameter") String data_center_name, @param(description="Populated by one of the product's versions as populated in Products TDM DB table") String product_version) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
@@ -1359,7 +1360,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1370,26 +1371,26 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Updates a Product in the environment. Update the Product's version or the Product's data center name.")
-	@webService(path = "environment/{envId}/envname/{envName}/product", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/product", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateProductForEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(description="The unique identifier of the product in environment_products TDM DB table") Long environment_product_id, String data_center_name, @param(description="Populated by one of the product's versions") String product_version, @param(description="A unique identifier of the product in products TDM DB table") long product_id) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		EnvironmentUtils.fnUpdateProductToEnvironment(environment_product_id, data_center_name, product_version);
 		//fnUpdateProductInterfacesEnvironment(envId,product_id,environment_product_id,interfaces);
@@ -1403,7 +1404,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1414,26 +1415,26 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes Product from environment. This API also deletes that tasks that use the deleted Product.")
-	@webService(path = "environment/{envId}/envname/{envName}/product/{prodId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/product/{prodId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteProductFromEnvironment(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) Long prodId) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
@@ -1464,7 +1465,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1525,7 +1526,7 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		String userId = "" + fabric().fetch("set username").firstValue();
+		String userId = sessionUser().name();
 		
 		//TDM 7.3 - Get TDM environments based on user group also
 		String userRoles = "" + fabric().fetch("set user_roles").firstValue();
@@ -1614,7 +1615,7 @@ public class Logic extends WebServiceUserCode {
 		} catch(Exception e){
 			message=e.getMessage();
 			log.error("Error Mesage: " + message);
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1637,7 +1638,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Get details for environments in which the user is associated with a role or the user is the owner.")
-	@webService(path = "environmentsbyuser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environmentsbyuser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -1692,11 +1693,11 @@ public class Logic extends WebServiceUserCode {
 		String userId = sessionUser().name();
 		
 		try {
-			response.put("result", EnvironmentUtils.fnGetEnvsByuser(userId));
+			response.put("result", fnGetEnvsByUser(userId));
 			errorCode="SUCCESS";
 		} catch(Exception e){
 			message=e.getMessage();
-			errorCode="FAIL";
+			errorCode="FAILED";
 		}
 		response.put("errorCode",errorCode);
 		response.put("message", message);
@@ -1705,7 +1706,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Gets the list of all Global variables defined in the Fabric project except the TDM product Globals. If the optional input \"lus\" parameter is populated, return only shared Globals or Globals defined in the input LUs.")
-	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -1798,7 +1799,7 @@ public class Logic extends WebServiceUserCode {
 			});
 			//end WsGetAllGlobals
 		
-		    List<Map<String,Object>> globals = new ArrayList<>();
+		    List<HashMap<String,Object>> globals = new ArrayList<>();
 		
 			// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
 			for (Map.Entry<String, Map<String, Object>> entry : globalsShared.entrySet()) {
@@ -1806,7 +1807,13 @@ public class Logic extends WebServiceUserCode {
 				for (String varName : value.keySet()) {
 					HashMap<String,Object> global=new HashMap<>();
 					global.put("globalName",  varName);
-					global.put("globalValue", value.get(varName));
+					Map<String, Object> allLU = new HashMap<>();
+					allLU.put("luName", "ALL");
+					allLU.put("defaultValue", value.get(varName));
+					List<Map<String, Object>> listAllLUs = new ArrayList<>();
+					listAllLUs.add(allLU);
+					global.put("luList", listAllLUs);
+					global.put("Description", "");
 					globals.add(global);
 				}
 			}
@@ -1819,6 +1826,7 @@ public class Logic extends WebServiceUserCode {
 					finalLuNames.add(lu.trim());
 				});
 			}
+			
 			for (Map.Entry<String, Map<String, Object>> entry : globalsPerLu.entrySet()) {
 				String luName = entry.getKey();
 				if (luNames != null && !luNames.contains(luName)) {
@@ -1827,9 +1835,33 @@ public class Logic extends WebServiceUserCode {
 				Map<String,Object> value = entry.getValue();
 				for (String varName : value.keySet()) {
 					HashMap<String,Object> global=new HashMap<>();
-					global.put("globalName", luName + "." + varName);
-					global.put("globalValue", value.get(varName));
-					globals.add(global);
+					
+					for (HashMap<String,Object> map : globals) {
+						if (varName.equals("" + map.get("globalName")) ) {
+							global = map;
+							List<Map<String, Object>>  luList = (List<Map<String, Object>>)map.get("luList");
+							
+							if ((luList.get(0).get("luName")).equals("ALL") && 
+								!(luList.get(0).get("defaultValue")).equals("" + value.get(varName))) {
+								Map<String, Object> luRec = new HashMap<>();
+								luRec.put("luName", luName);
+								luRec.put("defaultValue", value.get(varName));
+								luList.add(luRec);
+							}
+							break;
+						}
+					}
+		
+					if (global == null || global.isEmpty()) {
+						Map<String, Object> luRec = new HashMap<>();
+						luRec.put("luName", luName);
+						luRec.put("defaultValue", value.get(varName));
+						List<Map<String, Object>> listLUs = new ArrayList<>();
+						listLUs.add(luRec);
+						global.put("luList", listLUs);
+						global.put("Description", "");
+						globals.add(global);
+					}
 				}
 			}
 			errorCode = "SUCCESS";
@@ -1837,7 +1869,7 @@ public class Logic extends WebServiceUserCode {
 			//return globalsPerLu;
 		
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1848,29 +1880,33 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Updates Environment Global")
-	@webService(path = "environment/{envId}/envname/{envName}/global", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/global", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateEnvironmentGlobal(@param(required=true) String envName, @param(required=true) Long envId, String environment_id, String global_name, String global_value) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+	public static Object wsUpdateEnvironmentGlobal(@param(required=true) String envName, @param(required=true) Long envId, String luName, String environment_id, String global_name, String global_value) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
+			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
+				global_name = luName + "." + global_name;
+			}
+			
 			String updateQuery= "UPDATE \"" + schema + "\".tdm_env_globals SET " +
 					"environment_id=(?)," +
 					"global_name=CAST(? AS VARCHAR)," +
@@ -1882,7 +1918,7 @@ public class Logic extends WebServiceUserCode {
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username=sessionUser().name();
 			db("TDM").execute(updateQuery, environment_id, global_name, global_value, now, username, environment_id,global_name);
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
@@ -1893,7 +1929,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1904,30 +1940,33 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes Environment Global")
-	@webService(path = "environment/{envId}/envname/{envName}/global/{globalName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/envname/{envName}/global/{globalName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) String globalName) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, String luName, @param(required=true) String globalName) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			String sql= "DELETE FROM \"" + schema + "\".tdm_env_globals" + " WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
+			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
+				globalName = luName + "." + globalName;
+			}
+			String sql= "DELETE FROM tdm_env_globals WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
 			db("TDM").execute(sql);
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
@@ -1938,7 +1977,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -1992,7 +2031,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", result);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2045,7 +2084,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode = "SUCCESS";
 			response.put("result",result);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2093,7 +2132,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode = "SUCCESS";
 			response.put("result",result);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2104,26 +2143,26 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Updates the Environment Exclusion List")
-	@webService(path = "environment/{envId}/exclusionLists/{elId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/exclusionLists/{elId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsUpdateEnvironmentExclusionList(@param(required=true) Long envId, @param(description="The unique identifier of the exclusion list in tdm_be_env_exclusion_list TDM DB table", required=true) Long elId, Long be_id, @param(description="A list of entities separated by a comma") String exclusion_list, @param(description="The user identifier of the user who requsted for the exclusion list") String requested_by) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
@@ -2132,7 +2171,7 @@ public class Logic extends WebServiceUserCode {
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
-			String username=(String)((Map)((List) getFabricResponse("set username")).get(0)).get("value");
+			String username=sessionUser().name();
 			db("TDM").execute(sql,be_id, exclusion_list,
 					requested_by, now, username);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was updated.";
@@ -2143,7 +2182,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2154,26 +2193,26 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes an Environment Exclusion List.")
-	@webService(path = "environment/{envId}/exclusionLists/{elId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "environment/{envId}/exclusionLists/{elId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsDeleteEnvironmentExclusionList(@param(required=true) Long envId, @param(required=true) Long elId) throws Exception {
-		String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-		if(permissionGroup==null) return wrapWebServiceResults("FAIL", "Can't find a permission group for the user", null);
+		String permissionGroup = fnGetUserPermissionGroup("");
+		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
-				return wrapWebServiceResults("FAIL", "You have a Tester permission group and therefore cannot update the environment", null);
+				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!EnvironmentUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAIL", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
-
+		
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode = "";
-
+		
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
@@ -2187,7 +2226,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2268,7 +2307,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",freeTesters);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2416,7 +2455,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result",freeTesters);
 			errorCode = "SUCCESS";
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2476,7 +2515,7 @@ public class Logic extends WebServiceUserCode {
 			response.put("result", result);
 		
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2619,7 +2658,7 @@ public class Logic extends WebServiceUserCode {
 			errorCode="SUCCESS";
 			response.put("result",data);
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
@@ -2647,7 +2686,7 @@ public class Logic extends WebServiceUserCode {
 			envList.remove("_dev");
 			return wrapWebServiceResults("SUCCESS", null, envList);
 		} catch (Exception e) {
-			return wrapWebServiceResults("FAIL", e.getMessage(), null);
+			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
 		
 	}
@@ -2671,7 +2710,7 @@ public class Logic extends WebServiceUserCode {
 			"Notes:\r\n" +
 			"-  A TDM Environment's role can be attached to selected users or to all TDM users. A user can be attached to a TDM Environment role by their user id.\r\n" +
 			"- A user cannot be attached to multiple TDM environment role on a given environment. Therefore, if a  user is attached to a TDM Environment role by their user id, the 'ALL' role is not applicable for this user.")
-	@webService(path = "listOfEnvsByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "listOfEnvsByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -2709,72 +2748,114 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		String message = null;
 		try{
-			List<Map<String, Object>> rowsList = new ArrayList<>();
-			String userId = "" + fabric().fetch("set username").firstValue();
-		
-			//Check the permission group of the user.
-			//If the permission group is Admin => select all the active environments
-			String permissionGroup = (String) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetUserPermissionGroup()).get("result");
-			if (admin.equalsIgnoreCase(permissionGroup)){
-				String allEnvs = "Select env.environment_id,env.environment_name,\n" +
-						"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'\n" +
-						"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'\n" +
-						"  End As environment_type,\n" +
-						"  'admin' As role_id,\n" +
-						"  'admin' As assignment_type\n" +
-						"From environments env\n" +
-						"Where env.environment_status = 'Active'";
-				Db.Rows rows= db("TDM").fetch(allEnvs);
-				List<String> columnNames = rows.getColumnNames();
-				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
-					Map<String, Object> rowMap = new HashMap<>();
-					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
-					}
-					rowsList.add(rowMap);
-				}
-		
-			} else {
-				rowsList.addAll(EnvironmentUtils.fnGetEnvsByuser(userId));
-			}
-		
-			List<Map<String, Object>> result = new ArrayList<>();
-			List<Map<String, Object>> sourceEnvs = new ArrayList<>();
-			List<Map<String, Object>> targetEnvs = new ArrayList<>();
-		
-			for(Map<String, Object> row:rowsList){
-				Map<String, Object> envData=new HashMap<>();
-				envData.put("environment_id",row.get("environment_id"));
-				envData.put("environment_name",row.get("environment_name"));
-				envData.put("role_id",row.get("role_id"));
-				envData.put("assignment_type",row.get("assignment_type"));
-		
-				if("SOURCE".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
-					sourceEnvs.add(envData);
-				}
-				if("TARGET".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
-					targetEnvs.add(envData);
-				}
-			}
-		
-			Map<String, Object> sourceEnvsMap=new HashMap<>();
-			sourceEnvsMap.put("source environments",sourceEnvs);
-			result.add(sourceEnvsMap);
-			Map<String, Object> targetEnvsMap=new HashMap<>();
-			targetEnvsMap.put("target environments",targetEnvs);
-			result.add(targetEnvsMap);
-		
+			List<Map<String, Object>> result = fnGetUserEnvs();
+			
 			errorCode="SUCCESS";
 			response.put("result",result);
 		
 		} catch (Exception e) {
-			errorCode = "FAIL";
+			errorCode = "FAILED";
 			message = e.getMessage();
 			log.error(message);
 		}
 		
 		response.put("errorCode", errorCode);
+		response.put("message", message);
+		return response;
+	}
+
+
+	@desc("Get details for environments in which the user is associated with a role or the user is the owner.")
+	@webService(path = "environmentsbyuserandbe", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    {\r\n" +
+			"      \"environment_id\": 1,\r\n" +
+			"      \"role_id\": \"admin\",\r\n" +
+			"      \"assignment_type\": \"admin\",\r\n" +
+			"      \"environment_type\": \"SOURCE\",\r\n" +
+			"      \"environment_name\": \"SRC\"\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"environment_id\": 2,\r\n" +
+			"      \"role_id\": \"admin\",\r\n" +
+			"      \"assignment_type\": \"admin\",\r\n" +
+			"      \"environment_type\": \"BOTH\",\r\n" +
+			"      \"environment_name\": \"TAR\"\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"environment_id\": 3,\r\n" +
+			"      \"role_id\": \"admin\",\r\n" +
+			"      \"assignment_type\": \"admin\",\r\n" +
+			"      \"environment_type\": \"TARGET\",\r\n" +
+			"      \"environment_name\": \"TAR_CRM\"\r\n" +
+			"    }\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetEnvironmentsByUserAndBE(String be_name) throws Exception {
+		Map<String,Object> response=new HashMap<>();
+		List<Map<String, Object>> result = new ArrayList<>();
+		String message=null;
+		String errorCode="SUCCESS";
+		String userId = sessionUser().name();
+		String permissionGroup = fnGetUserPermissionGroup("");
+		List<Map<String, Object>> userEnvs = new ArrayList<>();
+		try {
+		
+			if (admin.equalsIgnoreCase(permissionGroup)){
+				String allEnvs = "Select env.environment_id,env.environment_name,\n" +
+								"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'\n" +
+								"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'\n" +
+								"  End As environment_type,\n" +
+								"  'admin' As role_id,\n" +
+								"  'admin' As assignment_type\n" +
+								"From environments env\n" +
+								"Where env.environment_status = 'Active'";
+						Db.Rows rows= db("TDM").fetch(allEnvs);
+						List<String> columnNames = rows.getColumnNames();
+						for (Db.Row row : rows) {
+							ResultSet resultSet = row.resultSet();
+							Map<String, Object> rowMap = new HashMap<>();
+							for (String columnName : columnNames) {
+								rowMap.put(columnName, resultSet.getObject(columnName));
+							}
+							userEnvs.add(rowMap);
+						}
+			} else {
+				
+				userEnvs = fnGetEnvsByUser(userId);
+			}
+				
+			for (Map<String, Object> env : userEnvs) {
+				String envID = "" + env.get("environment_id");
+				//log.info("Checking env: "  + envID);
+				String sql = "SELECT environment_id FROM environment_products ep, product_logical_units plu, business_entities be " +
+						"WHERE ep.environment_id = ? AND be.be_name = ? AND be.be_id = plu.be_id AND plu.lu_parent_id is null " +
+						"AND ep.product_id = plu.product_id AND be.be_status = 'Active'";
+				
+				Object res = db("TDM").fetch(sql, envID, be_name).firstValue();
+				//log.info("res: " + res);
+				if (res != null) {
+					//log.info("Found env: "  + envID);
+					Map<String, Object> map = new HashMap<>();
+					map.put("environment_id", env.get("environment_id"));
+					map.put("environment_name", env.get("environment_name"));
+					map.put("environment_type", env.get("environment_type"));
+					map.put("role_id", env.get("role_id"));
+					map.put("assignment_type", env.get("assignment_type"));
+					result.add(map);
+				}
+			}
+				
+		} catch(Exception e){
+			message=e.getMessage();
+			errorCode="FAILED";
+		}
+		
+		response.put("result", result);
+		response.put("errorCode",errorCode);
 		response.put("message", message);
 		return response;
 	}

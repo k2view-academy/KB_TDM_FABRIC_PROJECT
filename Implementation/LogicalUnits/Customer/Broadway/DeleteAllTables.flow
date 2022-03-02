@@ -10,7 +10,7 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Delete Tables Level 1",
@@ -34,7 +34,7 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Delete Tables Level 2",
@@ -58,26 +58,13 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Delete Tables Level 3",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "delete_CONTRACT",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "delete_CONTRACT"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "delete_ACTIVITY",
                             "actorType": {
@@ -103,12 +90,25 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "delete_CONTRACT",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "delete_CONTRACT"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Delete Tables Level 4",

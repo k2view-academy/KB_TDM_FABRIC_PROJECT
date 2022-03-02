@@ -8,6 +8,7 @@ import com.k2view.cdbms.shared.logging.LogEntry;
 import com.k2view.cdbms.shared.logging.MsgId;
 import com.k2view.fabric.common.Util;
 import org.apache.commons.lang3.StringUtils;
+import com.k2view.fabric.common.Json;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,8 +16,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TdmSharedUtils {
@@ -60,29 +64,6 @@ public class TdmSharedUtils {
         }
     }
 
-    public static Integer getRetention(String retentionPeriodType, Float retentionPeriodValue) {
-        Integer retention_in_seconds = 0;
-
-        switch (retentionPeriodType) {
-            case "Minutes":
-                retention_in_seconds = Math.round(retentionPeriodValue * 60);
-                break;
-            case "Hours":
-                retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60);
-                break;
-            case "Days":
-                retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24);
-                break;
-            case "Weeks":
-                retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24 * 7);
-                break;
-            case "Years":
-                retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24 * 7 * 365);
-                break;
-        }
-        return retention_in_seconds;
-    }
-
     public static Object fnBatchStats(String i_batchId, String i_runMode) throws Exception {
         Object response;
         switch (i_runMode) {
@@ -111,7 +92,7 @@ public class TdmSharedUtils {
                 return migHeader;
             default:
                 response = new HashMap() {{
-                    put("errorCode", "FAIL");
+                    put("errorCode", "FAILED");
                     put("message", "Unknown run mode '" + i_runMode + "'. Available modes are 'S' for batch summary, 'D' for the details and 'H'.");
                 }};
                 break;
@@ -772,4 +753,409 @@ public class TdmSharedUtils {
             lusWithoutRef.close();
         }
     }
+	
+	public static Map<String, Object> fnGetRetentionPeriod() {
+		try {
+			String sql = "select * from \"public\".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+			Object params = db("TDM").fetch(sql).firstRow().get("param_value");
+			Map result = Json.get().fromJson((String) params, Map.class);
+			
+			Map<String, Object> retentionMap = new HashMap<>();
+			
+			Object maxRetentionPeriod = result.get("maxRetentionPeriod");
+			if (maxRetentionPeriod != null) {
+				retentionMap.put("maxRetentionPeriod", maxRetentionPeriod);
+			}
+			
+			Object retentionPeriodTypes = result.get("availableOptions");
+			if(retentionPeriodTypes != null) {
+				retentionMap.put("retentionPeriodTypes", retentionPeriodTypes);
+			}
+			
+			sql = "SELECT param_value from tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
+			String maxReserveDays = "" + db("TDM").fetch(sql).firstValue();
+			if (maxReserveDays != null) {
+				retentionMap.put("maxReserveDays", maxReserveDays);
+			}
+			return retentionMap;
+		} catch (Throwable t) {
+			throw new RuntimeException("Failed to get retention Period Definitions from tdm_general_parameters TDMDB");
+		}
+	}
+	
+	public static String fnGetUserPermissionGroup(String userName) {
+		try {
+			
+			String fabricRoles = "";
+			if (userName == null || "".equals(userName)) {
+				fabricRoles = String.join(",", sessionUser().roles());
+				userName = sessionUser().name();				
+			} else {
+				final String user = userName;
+				List<String> roles=new ArrayList<>();
+				fabric().fetch("list users;").
+				forEach(r -> {
+					if(user.equals(r.get("user"))) {
+						roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
+					}
+				});
+				fabricRoles = String.join(",", roles);
+			}
+			Map<String, Integer> PERMISSION_GROUPS = new HashMap() {{
+				put("admin", 3);
+				put("owner", 2);
+				put("tester", 1);
+			}};
+
+			Integer[] weight = {0};
+			String SELECT_PERMISSION_GROUP = "select permission_group from public.permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
+			db("TDM").fetch(SELECT_PERMISSION_GROUP, fabricRoles).forEach(row -> {
+				Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
+				if (nextWeight != null && nextWeight > weight[0]) {
+					weight[0] = nextWeight;
+				}
+			});
+
+			if (weight[0] == 0) {
+				throw new RuntimeException("Can't find permission group for the user: " + userName);
+			} else {
+				String permissionGroup = null;
+				for (Map.Entry<String, Integer> e : PERMISSION_GROUPS.entrySet()) {
+					if (e.getValue().equals(weight[0])) {
+						permissionGroup = e.getKey();
+						break;
+					}
+				}
+
+				return permissionGroup;
+			}
+		} catch (Throwable t) {
+			throw new RuntimeException( t.getMessage());
+		}
+	}
+	
+	//checks if the registered user is an owner of the given environment
+    public static Boolean fnIsOwner(String envId) throws Exception {
+        List<Map<String, Object>> envsList = (List<Map<String, Object>>) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser()).get("result");
+        boolean found = false;
+        for (Map<String, Object> envsGroup : envsList) {
+            Map.Entry<String, Object> entry = envsGroup.entrySet().iterator().next();
+            List<Map<String, Object>> groupByType = (List<Map<String, Object>>) entry.getValue();
+            for (Map<String, Object> env : groupByType) {
+                if ("owner".equals(env.get("role_id").toString())) {
+                    if (env.get("environment_id").toString().equals(envId)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return found;
+    }
+
+	//checks if the registered user is an owner of the given environment or admin
+    public static Boolean fnIsAdminOrOwner(String envId, String userName) throws Exception {
+		String permissionGroup = fnGetUserPermissionGroup(userName);
+		if("admin".equalsIgnoreCase(permissionGroup)) {
+			return true;
+		}
+        List<Map<String, Object>> envsList = fnGetListOfEnvsByUser(userName);
+        boolean found = false;
+        for (Map<String, Object> envsGroup : envsList) {
+            Map.Entry<String, Object> entry = envsGroup.entrySet().iterator().next();
+            List<Map<String, Object>> groupByType = (List<Map<String, Object>>) entry.getValue();
+            for (Map<String, Object> env : groupByType) {
+                if ("owner".equals(env.get("role_id").toString())) {
+                    if (env.get("environment_id").toString().equals(envId)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return found;
+    }
+
+
+	public static List<Map<String, Object>> fnGetListOfEnvsByUser(String userName) {
+		List<Map<String, Object>> rowsList = new ArrayList<>();
+
+		//Check the permission group of the user.
+		//If the permission group is Admin => select all the active environments
+		String permissionGroup = fnGetUserPermissionGroup(userName);
+		if ("admin".equalsIgnoreCase(permissionGroup)){
+			String allEnvs = "Select env.environment_id,env.environment_name,\n" +
+				"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'\n" +
+				"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'\n" +
+				"  End As environment_type,\n" +
+				"  'admin' As role_id,\n" +
+				"  'admin' As assignment_type\n" +
+				"From environments env\n" +
+				"Where env.environment_status = 'Active'";
+			Db.Rows rows = Util.rte(() -> db("TDM").fetch(allEnvs));
+			List<String> columnNames = rows.getColumnNames();
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				Map<String, Object> rowMap = new HashMap<>();
+				for (String columnName : columnNames) {
+					Util.rte(() -> rowMap.put(columnName, resultSet.getObject(columnName)));
+				}
+			rowsList.add(rowMap);
+			}
+
+		} else {
+			Util.rte(() -> rowsList.addAll(fnGetEnvsByUser(userName)));
+		}
+
+		List<Map<String, Object>> result = new ArrayList<>();
+		List<Map<String, Object>> sourceEnvs = new ArrayList<>();
+		List<Map<String, Object>> targetEnvs = new ArrayList<>();
+
+		for(Map<String, Object> row:rowsList){
+			Map<String, Object> envData=new HashMap<>();
+			envData.put("environment_id",row.get("environment_id"));
+			envData.put("environment_name",row.get("environment_name"));
+			envData.put("role_id",row.get("role_id"));
+			envData.put("assignment_type",row.get("assignment_type"));
+
+			if("SOURCE".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
+				sourceEnvs.add(envData);
+			}
+			if("TARGET".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
+				targetEnvs.add(envData);
+			}
+		}
+
+		Map<String, Object> sourceEnvsMap=new HashMap<>();
+		sourceEnvsMap.put("source environments",sourceEnvs);
+		result.add(sourceEnvsMap);
+		Map<String, Object> targetEnvsMap=new HashMap<>();
+		targetEnvsMap.put("target environments",targetEnvs);
+		result.add(targetEnvsMap);
+
+		return result;
+	}
+
+    public static List<Map<String, Object>> fnGetEnvsByUser(String userName) throws Exception {
+        List<Map<String, Object>> rowsList = new ArrayList<>();
+		
+		
+		List<String> roles=new ArrayList<>();
+		fabric().fetch("list users;").
+		forEach(r -> {
+			if(userName.equals(r.get("user"))) {
+				roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
+			}
+		});
+		String fabricRoles =  String.join(",", roles);
+        //get the environments where the user is the owner
+        String query1 = "select *, " +
+                "CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
+                "from environments env, environment_owners o " +
+                "where env.environment_id = o.environment_id " +
+                "and (o.user_id = (?) or o.user_id = ANY(string_to_array(?, ',')))" +
+                "and env.environment_status = 'Active'";
+
+        //log.info("fnGetEnvsByuser - query 1 for user Name " + userName + "is: " + query1);
+        Db.Rows rows = db("TDM").fetch(query1, userName, fabricRoles);
+
+        List<String> columnNames = rows.getColumnNames();
+        for (Db.Row row : rows) {
+            ResultSet resultSet = row.resultSet();
+            Map<String, Object> rowMap = new HashMap<>();
+            for (String columnName : columnNames) {
+                rowMap.put(columnName, resultSet.getObject(columnName));
+            }
+            rowsList.add(rowMap);
+        }
+
+        String envIds = "(";
+        if (!rowsList.isEmpty()) {
+            for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+            envIds = envIds.substring(0, envIds.length() - 1);
+        }
+        envIds += ")";
+
+        //get the environments where the user is assigned to a role by their username
+        String query2 = "select *, " +
+                "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+                "from environments env, environment_roles r, environment_role_users u " +
+                "where env.environment_id = r.environment_id " +
+                "and lower(r.role_status) = 'active' " +
+                "and r.role_id = u.role_id " +
+                "and u.user_id = (?) " +
+				"and u.user_type = 'ID' " +
+                "and env.environment_status = 'Active'";
+        // remove the list of environments returned by query 1;
+        query2 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
+        rows = db("TDM").fetch(query2, userName);
+
+        //log.info("fnGetEnvsByuser - query 2 for user Name " + userName + "is: " + query2);
+
+        columnNames = rows.getColumnNames();
+        for (Db.Row row : rows) {
+            ResultSet resultSet = row.resultSet();
+            Map<String, Object> rowMap = new HashMap<>();
+            for (String columnName : columnNames) {
+                rowMap.put(columnName, resultSet.getObject(columnName));
+            }
+            rowsList.add(rowMap);
+        }
+
+        envIds = "(";
+        if (!rowsList.isEmpty()) {
+            for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+            envIds = envIds.substring(0, envIds.length() - 1);
+        }
+        envIds += ")";
+
+        //get the environments where the user id is one of the Fabric Roles
+        String query3 = "select *, " +
+                "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
+                "from environments env, environment_roles r, environment_role_users u " +
+                "where env.environment_id = r.environment_id " +
+                "and lower(r.role_status) = 'active' " +
+                "and r.role_id = u.role_id " +
+                "and u.user_id = ANY(string_to_array(?, ',')) " +
+				"and u.user_type = 'GROUP' " +
+                "and env.environment_status = 'Active'";
+        // remove the list of environments returned by query 1+2;
+        query3 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
+        rows = db("TDM").fetch(query3, fabricRoles);
+
+        //log.info("fnGetEnvsByuser - query 3 for Fabric Roles < " + fabricRoles + "> is: " + query3);
+
+        columnNames = rows.getColumnNames();
+        for (Db.Row row : rows) {
+            ResultSet resultSet = row.resultSet();
+            Map<String, Object> rowMap = new HashMap<>();
+            for (String columnName : columnNames) {
+                rowMap.put(columnName, resultSet.getObject(columnName));
+            }
+            rowsList.add(rowMap);
+        }
+
+        envIds = "(";
+        if (!rowsList.isEmpty()) {
+            for (Map<String, Object> row : rowsList) envIds += row.get("environment_id") + ",";
+            envIds = envIds.substring(0, envIds.length() - 1);
+        }
+        envIds += ")";
+
+        //get the environments where the user is assigned to a role by 'ALL' assignment
+        String query4 = "select *, " +
+                "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
+                ", r.role_id, 'all' as assignment_type " +
+                "from environments env, environment_roles r, environment_role_users u " +
+                "where env.environment_id = r.environment_id " +
+                "and lower(r.role_status) = 'active' " +
+                "and r.role_id = u.role_id " +
+                "and lower(u.username) = 'all' " +
+                "and env.environment_status = 'Active'";
+        // remove the list of environments returned by queries 1+2+3;
+        query4 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
+        rows = db("TDM").fetch(query4);
+
+        //log.info(" fnGetEnvsByuser - query 4 (get ALL roles) is: " + query4);
+
+        columnNames = rows.getColumnNames();
+        for (Db.Row row : rows) {
+            ResultSet resultSet = row.resultSet();
+            Map<String, Object> rowMap = new HashMap<>();
+            for (String columnName : columnNames) {
+                rowMap.put(columnName, resultSet.getObject(columnName));
+            }
+            rowsList.add(rowMap);
+        }
+        return rowsList;
+    }
+
+	//TDM 7.2 - This function gets the Override Attributes supplied when the task was executed.
+	public static Map<String, Object> fnGetTaskExecOverrideAttrs(Long taskId, Long taskExecutionId) {
+		
+		Map<String, Object> overrideAttrubtes = new HashMap<>();
+		String sql = "SELECT override_parameters FROM task_execution_override_attrs WHERE task_id = ? and task_execution_id = ?";
+		//log.info("getTaskExecOverrideAttrs - Starting");
+		try {
+			Object overrideAttrVal = db(TDM).fetch(sql, taskId, taskExecutionId).firstValue();
+			String overrideAttrStr = overrideAttrVal != null ?  overrideAttrVal.toString() : "";
+			//log.info("getTaskExecOverrideAttrs - overrideAttrStr: " + overrideAttrStr);
+			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+			if (!"".equals(overrideAttrStr)) {
+				Gson gson = new Gson();
+				overrideAttrubtes = gson.fromJson(overrideAttrStr, mapType);
+			}
+		} catch (SQLException e) {
+			log.error("Failed to get override attributes for task_execution_id: " + taskExecutionId);
+			return null;
+		}
+		//log.info("getTaskExecOverrideAttrs - overrideAttrubtes: " + overrideAttrubtes);
+		return overrideAttrubtes;
+	}
+	
+	static public List<Map<String, Object>> fnGetUserEnvs() throws Exception {
+		HashMap<String, Object> response = new HashMap<>();
+		String errorCode = "";
+		String message = null;
+
+		List<Map<String, Object>> rowsList = new ArrayList<>();
+		String userId = sessionUser().name();
+		//log.info("wsGetListOfEnvsByUser after defining userId");
+		//Check the permission group of the user.
+		//If the permission group is Admin => select all the active environments
+		String permissionGroup = fnGetUserPermissionGroup("");
+		//log.info("wsGetListOfEnvsByUser after calling wsGetUserPermissionGroup");
+		if ("admin".equalsIgnoreCase(permissionGroup)){
+			String allEnvs = "Select env.environment_id,env.environment_name,\n" +
+					"  Case When env.allow_read = True And env.allow_write = True Then 'BOTH'\n" +
+					"    When env.allow_write = True Then 'TARGET' Else 'SOURCE'\n" +
+					"  End As environment_type,\n" +
+					"  'admin' As role_id,\n" +
+					"  'admin' As assignment_type\n" +
+					"From environments env\n" +
+					"Where env.environment_status = 'Active'";
+			Db.Rows rows= db("TDM").fetch(allEnvs);
+			List<String> columnNames = rows.getColumnNames();
+			for (Db.Row row : rows) {
+				ResultSet resultSet = row.resultSet();
+				Map<String, Object> rowMap = new HashMap<>();
+				for (String columnName : columnNames) {
+					rowMap.put(columnName, resultSet.getObject(columnName));
+				}
+				rowsList.add(rowMap);
+			}
+	
+		} else {
+			rowsList.addAll(fnGetEnvsByUser(userId));
+		}
+	
+		List<Map<String, Object>> result = new ArrayList<>();
+		List<Map<String, Object>> sourceEnvs = new ArrayList<>();
+		List<Map<String, Object>> targetEnvs = new ArrayList<>();
+		//log.info("wsGetListOfEnvsByUser - rowsList: " + rowsList);
+		for(Map<String, Object> row:rowsList){
+			Map<String, Object> envData=new HashMap<>();
+			envData.put("environment_id",row.get("environment_id"));
+			envData.put("environment_name",row.get("environment_name"));
+			envData.put("role_id",row.get("role_id"));
+			envData.put("assignment_type",row.get("assignment_type"));
+	
+			if("SOURCE".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
+				sourceEnvs.add(envData);
+			}
+			if("TARGET".equals(row.get("environment_type"))||"BOTH".equals(row.get("environment_type"))){
+				targetEnvs.add(envData);
+			}
+		}
+	
+		Map<String, Object> sourceEnvsMap=new HashMap<>();
+		sourceEnvsMap.put("source environments",sourceEnvs);
+		result.add(sourceEnvsMap);
+		Map<String, Object> targetEnvsMap=new HashMap<>();
+		targetEnvsMap.put("target environments",targetEnvs);
+		result.add(targetEnvsMap);
+		
+		return result;
+	}
+
 }
