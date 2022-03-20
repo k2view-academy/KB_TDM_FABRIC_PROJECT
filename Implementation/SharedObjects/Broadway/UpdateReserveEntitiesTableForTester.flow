@@ -649,6 +649,21 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "GetNewEndDate2",
+                            "actorType": {
+                                "parentType": "GetNewEndDate",
+                                "inputs": [
+                                    {
+                                        "name": "retentionPeriodValue",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -1010,6 +1025,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Reserve Retention Type__1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GetNewEndDate2",
+                "name": "retentionPeriodType"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Target Entity ID",
                 "name": "result"
             },
@@ -1200,32 +1225,22 @@
         },
         {
             "leftPort": {
+                "actor": "ToNumber1",
+                "name": "number"
+            },
+            "rightPort": {
+                "actor": "GetNewEndDate2",
+                "name": "retentionPeriodValue"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "GetNewEndDate1",
                 "name": "newEndDate"
             },
             "rightPort": {
                 "actor": "Date Format",
                 "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "GetNewEndDate1",
-                "name": "newEndDate"
-            },
-            "rightPort": {
-                "actor": "JavaScript1",
-                "name": "newEndDate"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Date Format",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Update the End date",
-                "name": "end_datetime"
             }
         },
         {
@@ -1312,6 +1327,19 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GetNewEndDate2",
+                "name": "nowDate"
+            },
+            "path": [
+                "start_datetime"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Calculate Max End Date",
                 "name": "date"
             },
@@ -1328,6 +1356,26 @@
             "rightPort": {
                 "actor": "Check if the user is the owner",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GetNewEndDate2",
+                "name": "newEndDate"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "newEndDate"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GetNewEndDate2",
+                "name": "newEndDate"
+            },
+            "rightPort": {
+                "actor": "Update the End date",
+                "name": "end_datetime"
             }
         }
     ]

@@ -78,6 +78,11 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_LU_RETENTION_PERIOD_VALUE = "10";
 
+
+	@desc("The max number of retrieved entities from TDM_RESERVED_ENTITIES, if set to zero then no limit")
+	@category("TDM")
+	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
+
 	@desc("In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
 	@category("TDM")
 	public static String CLONE_CLEANUP_RETENTION_PERIOD_TYPE = "Days";

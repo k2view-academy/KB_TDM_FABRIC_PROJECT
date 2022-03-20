@@ -24,6 +24,7 @@ import com.k2view.fabric.common.Json;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.checkWsResponse;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserEnvs;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -114,77 +115,64 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("This is the main API to get the task details. This API gets the list of all TDM tasks or a list of given task IDs if the input task_ids parameter is populated. The input task_ids is an optional parameter that can be populated to return the data of a given list of tasks. The ID(s) of the required task(s), will be supplied in this parameter separated by comma. For example, task_ids=4 or task_ids=3,2,6.\r\n" +
+	@desc("This is the main API to get the task details. This API gets the list of all TDM tasks or a list of given task IDs if the input task_ids parameter is populated. The input task_ids is an optional parameter that can be populated to return the data of a given list of tasks. The ID(s) of the required task(s), will be supplied in this parameter separated by comma. For example, task_ids=4 or task_ids=3,2,6. \r\n" +
 			"\r\n" +
 			"If task_ids parameter is not populated, the data of all tasks will be returned by the API.")
 	@webService(path = "tasks", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"task_last_updated_date\": \"2021-09-09 10:08:45.529\",\r\n" +
+			"      \"task_last_updated_date\": \"2022-03-15 12:02:15.84\",\r\n" +
 			"      \"be_id\": 1,\r\n" +
 			"      \"selected_version_task_name\": null,\r\n" +
-			"      \"environment_id\": 6,\r\n" +
-			"      \"selection_method\": \"L\",\r\n" +
+			"      \"reserve_retention_period_type\": \"Days\",\r\n" +
+			"      \"environment_id\": 2,\r\n" +
+			"      \"selection_method\": \"C\",\r\n" +
 			"      \"selected_ref_version_task_name\": null,\r\n" +
 			"      \"refresh_reference_data\": false,\r\n" +
-			"      \"tester\": \"michal\",\r\n" +
-			"      \"be_last_updated_date\": \"2021-09-30 06:33:58.083\",\r\n" +
+			"      \"tester\": \"tdmTesters2\",\r\n" +
+			"      \"be_last_updated_date\": \"2021-11-07 11:24:45.078\",\r\n" +
 			"      \"owners\": [\r\n" +
 			"        {\r\n" +
-			"          \"owner\": \"OwnerEnv1\",\r\n" +
-			"          \"owner_type\": \"GROUP\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"owner\": \"TestRole1\",\r\n" +
-			"          \"owner_type\": \"ID\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"owner\": \"OwnerMega\",\r\n" +
+			"          \"owner\": \"tali\",\r\n" +
 			"          \"owner_type\": \"ID\"\r\n" +
 			"        }\r\n" +
 			"      ],\r\n" +
 			"      \"refcount\": 0,\r\n" +
-			"      \"tester_type\": \"ID\",\r\n" +
-			"      \"load_entity\": false,\r\n" +
+			"      \"num_of_entities\": 120,\r\n" +
+			"      \"tester_type\": \"GROUP\",\r\n" +
+			"      \"load_entity\": true,\r\n" +
 			"      \"selected_version_task_exe_id\": 0,\r\n" +
-			"      \"task_created_by\": \"admin\",\r\n" +
+			"      \"task_created_by\": \"tali\",\r\n" +
 			"      \"be_last_updated_by\": \"admin\",\r\n" +
 			"      \"scheduling_end_date\": null,\r\n" +
-			"      \"retention_period_type\": \"Days\",\r\n" +
+			"      \"retention_period_type\": null,\r\n" +
 			"      \"environment_point_of_contact_phone1\": null,\r\n" +
 			"      \"processnames\": null,\r\n" +
 			"      \"testers\": [\r\n" +
 			"        {\r\n" +
-			"          \"tester_type\": \"ID\",\r\n" +
+			"          \"tester_type\": \"GROUP\",\r\n" +
 			"          \"role_id\": [\r\n" +
-			"            \"9\"\r\n" +
+			"            \"6\"\r\n" +
 			"          ],\r\n" +
-			"          \"tester\": \"michal\"\r\n" +
+			"          \"tester\": \"tdmTesters2\"\r\n" +
 			"        },\r\n" +
 			"        {\r\n" +
 			"          \"tester_type\": \"ID\",\r\n" +
 			"          \"role_id\": [\r\n" +
-			"            \"9\"\r\n" +
+			"            \"2\"\r\n" +
 			"          ],\r\n" +
-			"          \"tester\": \"owner2\"\r\n" +
+			"          \"tester\": \"taha\"\r\n" +
 			"        },\r\n" +
 			"        {\r\n" +
 			"          \"tester_type\": \"GROUP\",\r\n" +
 			"          \"role_id\": [\r\n" +
-			"            \"9\"\r\n" +
+			"            \"2\"\r\n" +
 			"          ],\r\n" +
-			"          \"tester\": \"wsRole\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"tester_type\": \"ID\",\r\n" +
-			"          \"role_id\": [\r\n" +
-			"            \"10\"\r\n" +
-			"          ],\r\n" +
-			"          \"tester\": \"testershai\"\r\n" +
+			"          \"tester\": \"tdmTesters1\"\r\n" +
 			"        }\r\n" +
 			"      ],\r\n" +
-			"      \"selection_param_value\": \"1,2,3\",\r\n" +
+			"      \"selection_param_value\": \"get5GCustomers\",\r\n" +
 			"      \"environment_status\": \"Active\",\r\n" +
 			"      \"be_status\": \"Active\",\r\n" +
 			"      \"selected_version_datetime\": null,\r\n" +
@@ -197,125 +185,108 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_point_of_contact_last_name\": null,\r\n" +
 			"      \"environment_point_of_contact_email\": null,\r\n" +
 			"      \"be_description\": \"\",\r\n" +
-			"      \"parameters\": null,\r\n" +
+			"      \"reserve_retention_period_value\": null,\r\n" +
+			"      \"parameters\": \"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.NO_OF_OPEN_INVOICES\\\",\\\"data\\\":\\\"2\\\",\\\"operator\\\":\\\"AND\\\",\\\"$$hashKey\\\":\\\"object:389\\\",\\\"type\\\":\\\"combo\\\",\\\"validValues\\\":[\\\"0\\\",\\\"1\\\",\\\"2\\\",\\\"3\\\",\\\"4\\\",\\\"5\\\",\\\"6\\\",\\\"7\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
 			"      \"environment_expiration_date\": null,\r\n" +
 			"      \"environment_point_of_contact_phone2\": null,\r\n" +
 			"      \"environment_created_by\": \"admin\",\r\n" +
 			"      \"roles\": [\r\n" +
 			"        [\r\n" +
 			"          {\r\n" +
-			"            \"role_id\": 8,\r\n" +
+			"            \"role_id\": 6,\r\n" +
 			"            \"allowed_test_conn_failure\": true\r\n" +
 			"          },\r\n" +
 			"          {\r\n" +
-			"            \"role_id\": 9,\r\n" +
+			"            \"role_id\": 2,\r\n" +
 			"            \"allowed_test_conn_failure\": true\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"role_id\": 11,\r\n" +
-			"            \"allowed_test_conn_failure\": false\r\n" +
-			"          },\r\n" +
-			"          {\r\n" +
-			"            \"role_id\": 10,\r\n" +
-			"            \"allowed_test_conn_failure\": false\r\n" +
 			"          }\r\n" +
 			"        ]\r\n" +
 			"      ],\r\n" +
 			"      \"environment_last_updated_by\": \"admin\",\r\n" +
-			"      \"be_creation_date\": \"2021-08-08 13:31:04.17\",\r\n" +
-			"      \"task_id\": 131,\r\n" +
+			"      \"be_creation_date\": \"2021-11-07 11:24:17.668\",\r\n" +
+			"      \"task_id\": 48,\r\n" +
 			"      \"be_created_by\": \"admin\",\r\n" +
-			"      \"source_environment_id\": 6,\r\n" +
-			"      \"role_id_orig\": 9,\r\n" +
+			"      \"source_environment_id\": 1,\r\n" +
+			"      \"role_id_orig\": 6,\r\n" +
 			"      \"scheduler\": \"immediate\",\r\n" +
-			"      \"environment_description\": \"ENV1\",\r\n" +
+			"      \"environment_description\": null,\r\n" +
 			"      \"selected_ref_version_datetime\": null,\r\n" +
-			"      \"source_env_name\": null,\r\n" +
-			"      \"task_title\": \"r6\",\r\n" +
+			"      \"source_env_name\": \"SRC\",\r\n" +
+			"      \"reserve_ind\": true,\r\n" +
+			"      \"task_title\": \"testLoadAndReserve\",\r\n" +
 			"      \"fabric_environment_name\": null,\r\n" +
-			"      \"environment_name\": \"ENV1\",\r\n" +
+			"      \"environment_name\": \"TAR\",\r\n" +
 			"      \"delete_before_load\": false,\r\n" +
 			"      \"allow_write\": true,\r\n" +
-			"      \"owner\": \"OwnerEnv1\",\r\n" +
+			"      \"owner\": \"tali\",\r\n" +
 			"      \"task_status\": \"Active\",\r\n" +
-			"      \"retention_period_value\": \"5\",\r\n" +
+			"      \"retention_period_value\": null,\r\n" +
 			"      \"executioncount\": 0,\r\n" +
-			"      \"environment_last_updated_date\": \"2021-10-13 09:09:48.743\",\r\n" +
-			"      \"be_name\": \"BE1\",\r\n" +
-			"      \"version_ind\": true,\r\n" +
-			"      \"number_of_entities_to_copy\": 3,\r\n" +
-			"      \"task_creation_date\": \"2021-09-09 10:08:45.529\",\r\n" +
+			"      \"environment_last_updated_date\": \"2022-03-09 15:00:45.845\",\r\n" +
+			"      \"be_name\": \"Customer\",\r\n" +
+			"      \"version_ind\": false,\r\n" +
+			"      \"task_creation_date\": \"2022-03-15 09:35:02.208\",\r\n" +
 			"      \"task_globals\": false,\r\n" +
-			"      \"environment_point_of_contact_first_name\": \"\",\r\n" +
-			"      \"task_type\": \"EXTRACT\",\r\n" +
-			"      \"environment_creation_date\": \"2021-09-09 08:12:28.523\",\r\n" +
-			"      \"owner_type\": \"GROUP\"\r\n" +
+			"      \"environment_point_of_contact_first_name\": null,\r\n" +
+			"      \"task_type\": \"LOAD\",\r\n" +
+			"      \"environment_creation_date\": \"2021-11-07 15:10:17.569\",\r\n" +
+			"      \"owner_type\": \"ID\",\r\n" +
+			"      \"creatorRoles\": [\r\n" +
+			"        \"tdmOwner\"\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"task_last_updated_date\": \"2021-09-09 12:45:49.442\",\r\n" +
+			"      \"task_last_updated_date\": \"2022-03-16 10:35:19.317\",\r\n" +
 			"      \"be_id\": 1,\r\n" +
 			"      \"selected_version_task_name\": null,\r\n" +
-			"      \"environment_id\": 6,\r\n" +
-			"      \"selection_method\": \"R\",\r\n" +
+			"      \"reserve_retention_period_type\": \"Days\",\r\n" +
+			"      \"environment_id\": 2,\r\n" +
+			"      \"selection_method\": \"C\",\r\n" +
 			"      \"selected_ref_version_task_name\": null,\r\n" +
 			"      \"refresh_reference_data\": false,\r\n" +
-			"      \"tester\": \"michal\",\r\n" +
-			"      \"be_last_updated_date\": \"2021-09-30 06:33:58.083\",\r\n" +
+			"      \"tester\": \"tdmTesters2\",\r\n" +
+			"      \"be_last_updated_date\": \"2021-11-07 11:24:45.078\",\r\n" +
 			"      \"owners\": [\r\n" +
 			"        {\r\n" +
-			"          \"owner\": \"OwnerEnv1\",\r\n" +
-			"          \"owner_type\": \"GROUP\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"owner\": \"TestRole1\",\r\n" +
-			"          \"owner_type\": \"ID\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"owner\": \"OwnerMega\",\r\n" +
+			"          \"owner\": \"tali\",\r\n" +
 			"          \"owner_type\": \"ID\"\r\n" +
 			"        }\r\n" +
 			"      ],\r\n" +
 			"      \"refcount\": 0,\r\n" +
-			"      \"tester_type\": \"ID\",\r\n" +
-			"      \"load_entity\": true,\r\n" +
+			"      \"num_of_entities\": 10,\r\n" +
+			"      \"tester_type\": \"GROUP\",\r\n" +
+			"      \"load_entity\": false,\r\n" +
 			"      \"selected_version_task_exe_id\": 0,\r\n" +
 			"      \"task_created_by\": \"admin\",\r\n" +
 			"      \"be_last_updated_by\": \"admin\",\r\n" +
 			"      \"scheduling_end_date\": null,\r\n" +
-			"      \"retention_period_type\": \"Days\",\r\n" +
+			"      \"retention_period_type\": null,\r\n" +
 			"      \"environment_point_of_contact_phone1\": null,\r\n" +
 			"      \"processnames\": null,\r\n" +
 			"      \"testers\": [\r\n" +
 			"        {\r\n" +
-			"          \"tester_type\": \"ID\",\r\n" +
+			"          \"tester_type\": \"GROUP\",\r\n" +
 			"          \"role_id\": [\r\n" +
-			"            \"9\"\r\n" +
+			"            \"6\"\r\n" +
 			"          ],\r\n" +
-			"          \"tester\": \"michal\"\r\n" +
+			"          \"tester\": \"tdmTesters2\"\r\n" +
 			"        },\r\n" +
 			"        {\r\n" +
 			"          \"tester_type\": \"ID\",\r\n" +
 			"          \"role_id\": [\r\n" +
-			"            \"9\"\r\n" +
+			"            \"2\"\r\n" +
 			"          ],\r\n" +
-			"          \"tester\": \"owner2\"\r\n" +
+			"          \"tester\": \"taha\"\r\n" +
 			"        },\r\n" +
 			"        {\r\n" +
 			"          \"tester_type\": \"GROUP\",\r\n" +
 			"          \"role_id\": [\r\n" +
-			"            \"9\"\r\n" +
+			"            \"2\"\r\n" +
 			"          ],\r\n" +
-			"          \"tester\": \"wsRole\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"tester_type\": \"ID\",\r\n" +
-			"          \"role_id\": [\r\n" +
-			"            \"10\"\r\n" +
-			"          ],\r\n" +
-			"          \"tester\": \"testershai\"\r\n" +
+			"          \"tester\": \"tdmTesters1\"\r\n" +
 			"        }\r\n" +
 			"      ],\r\n" +
-			"      \"selection_param_value\": null,\r\n" +
+			"      \"selection_param_value\": \"get5GCustomers\",\r\n" +
 			"      \"environment_status\": \"Active\",\r\n" +
 			"      \"be_status\": \"Active\",\r\n" +
 			"      \"selected_version_datetime\": null,\r\n" +
@@ -328,115 +299,44 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_point_of_contact_last_name\": null,\r\n" +
 			"      \"environment_point_of_contact_email\": null,\r\n" +
 			"      \"be_description\": \"\",\r\n" +
+			"      \"reserve_retention_period_value\": \"5\",\r\n" +
 			"      \"parameters\": null,\r\n" +
 			"      \"environment_expiration_date\": null,\r\n" +
 			"      \"environment_point_of_contact_phone2\": null,\r\n" +
 			"      \"environment_created_by\": \"admin\",\r\n" +
 			"      \"roles\": [],\r\n" +
 			"      \"environment_last_updated_by\": \"admin\",\r\n" +
-			"      \"be_creation_date\": \"2021-08-08 13:31:04.17\",\r\n" +
-			"      \"task_id\": 135,\r\n" +
+			"      \"be_creation_date\": \"2021-11-07 11:24:17.668\",\r\n" +
+			"      \"task_id\": 50,\r\n" +
 			"      \"be_created_by\": \"admin\",\r\n" +
-			"      \"source_environment_id\": 9,\r\n" +
-			"      \"role_id_orig\": 9,\r\n" +
-			"      \"scheduler\": \"immediate\",\r\n" +
-			"      \"environment_description\": \"ENV1\",\r\n" +
+			"      \"source_environment_id\": 2,\r\n" +
+			"      \"role_id_orig\": 6,\r\n" +
+			"      \"scheduler\": null,\r\n" +
+			"      \"environment_description\": null,\r\n" +
 			"      \"selected_ref_version_datetime\": null,\r\n" +
-			"      \"source_env_name\": null,\r\n" +
-			"      \"task_title\": \"load2\",\r\n" +
+			"      \"source_env_name\": \"\",\r\n" +
+			"      \"reserve_ind\": true,\r\n" +
+			"      \"task_title\": \"ReserveEntities\",\r\n" +
 			"      \"fabric_environment_name\": null,\r\n" +
-			"      \"environment_name\": \"ENV1\",\r\n" +
+			"      \"environment_name\": \"TAR\",\r\n" +
 			"      \"delete_before_load\": false,\r\n" +
 			"      \"allow_write\": true,\r\n" +
-			"      \"owner\": \"OwnerEnv1\",\r\n" +
+			"      \"owner\": \"tali\",\r\n" +
 			"      \"task_status\": \"Active\",\r\n" +
-			"      \"retention_period_value\": \"5\",\r\n" +
+			"      \"retention_period_value\": null,\r\n" +
 			"      \"executioncount\": 0,\r\n" +
-			"      \"environment_last_updated_date\": \"2021-10-13 09:09:48.743\",\r\n" +
-			"      \"be_name\": \"BE1\",\r\n" +
+			"      \"environment_last_updated_date\": \"2022-03-09 15:00:45.845\",\r\n" +
+			"      \"be_name\": \"Customer\",\r\n" +
 			"      \"version_ind\": false,\r\n" +
-			"      \"number_of_entities_to_copy\": 3,\r\n" +
-			"      \"task_creation_date\": \"2021-09-09 12:45:49.442\",\r\n" +
-			"      \"task_globals\": false,\r\n" +
-			"      \"environment_point_of_contact_first_name\": \"\",\r\n" +
-			"      \"task_type\": \"LOAD\",\r\n" +
-			"      \"environment_creation_date\": \"2021-09-09 08:12:28.523\",\r\n" +
-			"      \"owner_type\": \"GROUP\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"task_last_updated_date\": \"2021-08-08 14:29:46.16\",\r\n" +
-			"      \"be_id\": 1,\r\n" +
-			"      \"selected_version_task_name\": \"yughfhgf\",\r\n" +
-			"      \"environment_id\": 2,\r\n" +
-			"      \"selection_method\": \"L\",\r\n" +
-			"      \"selected_ref_version_task_name\": null,\r\n" +
-			"      \"refresh_reference_data\": false,\r\n" +
-			"      \"tester\": null,\r\n" +
-			"      \"be_last_updated_date\": \"2021-09-30 06:33:58.083\",\r\n" +
-			"      \"owners\": [\r\n" +
-			"        {\r\n" +
-			"          \"owner\": \"owner1\",\r\n" +
-			"          \"owner_type\": \"ID\"\r\n" +
-			"        }\r\n" +
-			"      ],\r\n" +
-			"      \"refcount\": 0,\r\n" +
-			"      \"tester_type\": null,\r\n" +
-			"      \"load_entity\": true,\r\n" +
-			"      \"selected_version_task_exe_id\": 2,\r\n" +
-			"      \"task_created_by\": \"owner1\",\r\n" +
-			"      \"be_last_updated_by\": \"admin\",\r\n" +
-			"      \"scheduling_end_date\": null,\r\n" +
-			"      \"retention_period_type\": \"Days\",\r\n" +
-			"      \"environment_point_of_contact_phone1\": null,\r\n" +
-			"      \"processnames\": null,\r\n" +
-			"      \"testers\": [],\r\n" +
-			"      \"selection_param_value\": \"3\",\r\n" +
-			"      \"environment_status\": \"Active\",\r\n" +
-			"      \"be_status\": \"Active\",\r\n" +
-			"      \"selected_version_datetime\": \"20210808140941\",\r\n" +
-			"      \"task_last_updated_by\": \"owner1\",\r\n" +
-			"      \"selected_ref_version_task_exe_id\": 0,\r\n" +
-			"      \"task_execution_status\": \"Active\",\r\n" +
-			"      \"sync_mode\": null,\r\n" +
-			"      \"replace_sequences\": false,\r\n" +
-			"      \"entity_exclusion_list\": null,\r\n" +
-			"      \"environment_point_of_contact_last_name\": null,\r\n" +
-			"      \"environment_point_of_contact_email\": null,\r\n" +
-			"      \"be_description\": \"\",\r\n" +
-			"      \"parameters\": null,\r\n" +
-			"      \"environment_expiration_date\": null,\r\n" +
-			"      \"environment_point_of_contact_phone2\": null,\r\n" +
-			"      \"environment_created_by\": \"admin\",\r\n" +
-			"      \"roles\": [],\r\n" +
-			"      \"environment_last_updated_by\": \"owner1\",\r\n" +
-			"      \"be_creation_date\": \"2021-08-08 13:31:04.17\",\r\n" +
-			"      \"task_id\": 3,\r\n" +
-			"      \"be_created_by\": \"admin\",\r\n" +
-			"      \"source_environment_id\": 1,\r\n" +
-			"      \"role_id_orig\": 0,\r\n" +
-			"      \"scheduler\": \"immediate\",\r\n" +
-			"      \"environment_description\": \"ENV2\",\r\n" +
-			"      \"selected_ref_version_datetime\": null,\r\n" +
-			"      \"source_env_name\": \"ENV1\",\r\n" +
-			"      \"task_title\": \"cdcdvs\",\r\n" +
-			"      \"fabric_environment_name\": null,\r\n" +
-			"      \"environment_name\": \"ENV2\",\r\n" +
-			"      \"delete_before_load\": true,\r\n" +
-			"      \"allow_write\": true,\r\n" +
-			"      \"owner\": \"owner1\",\r\n" +
-			"      \"task_status\": \"Active\",\r\n" +
-			"      \"retention_period_value\": \"5\",\r\n" +
-			"      \"executioncount\": 0,\r\n" +
-			"      \"environment_last_updated_date\": \"2021-08-17 10:05:34.328\",\r\n" +
-			"      \"be_name\": \"BE1\",\r\n" +
-			"      \"version_ind\": true,\r\n" +
-			"      \"number_of_entities_to_copy\": 1,\r\n" +
-			"      \"task_creation_date\": \"2021-08-08 14:29:46.16\",\r\n" +
+			"      \"task_creation_date\": \"2022-03-16 10:35:19.317\",\r\n" +
 			"      \"task_globals\": false,\r\n" +
 			"      \"environment_point_of_contact_first_name\": null,\r\n" +
-			"      \"task_type\": \"LOAD\",\r\n" +
-			"      \"environment_creation_date\": \"2021-08-08 14:28:05.461\",\r\n" +
-			"      \"owner_type\": \"ID\"\r\n" +
+			"      \"task_type\": \"RESERVE\",\r\n" +
+			"      \"environment_creation_date\": \"2021-11-07 15:10:17.569\",\r\n" +
+			"      \"owner_type\": \"ID\",\r\n" +
+			"      \"creatorRoles\": [\r\n" +
+			"        \"admin\"\r\n" +
+			"      ]\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -487,7 +387,7 @@ public class Logic extends WebServiceUserCode {
 				newRow.put("task_title", resultSet.getString("task_title"));
 				newRow.put("task_status", resultSet.getString("task_status"));
 				newRow.put("task_execution_status", resultSet.getString("task_execution_status"));
-				newRow.put("number_of_entities_to_copy", resultSet.getInt("number_of_entities_to_copy"));
+				newRow.put("num_of_entities", resultSet.getInt("num_of_entities"));
 				newRow.put("environment_id", resultSet.getInt("environment_id"));
 				newRow.put("be_id", resultSet.getInt("be_id"));
 				newRow.put("selection_method", resultSet.getString("selection_method"));
@@ -551,7 +451,7 @@ public class Logic extends WebServiceUserCode {
 				newRow.put("reserve_ind",resultSet.getBoolean("reserve_ind"));
 				newRow.put("reserve_retention_period_type", resultSet.getString("reserve_retention_period_type"));
 				newRow.put("reserve_retention_period_value", resultSet.getString("reserve_retention_period_value"));
-
+		
 				Map<String, Object> task = null;
 				for (Map<String, Object> e : newResult) {
 					if (Integer.parseInt(e.get("task_id").toString()) == resultSet.getInt("task_id")) {
@@ -810,7 +710,7 @@ public class Logic extends WebServiceUserCode {
 			"    \"scheduler\": \"immediate\",\r\n" +
 			"    \"delete_before_load\": true,\r\n" +
 			"    \"request_of_fresh_data\": true,\r\n" +
-			"    \"number_of_entities_to_copy\": 0,\r\n" +
+			"    \"num_of_entities\": 0,\r\n" +
 			"    \"selection_method\": \"R\",\r\n" +
 			"    \"selection_param_value\": null,\r\n" +
 			"    \"entity_exclusion_list\": \"5,9,28\",\r\n" +
@@ -890,17 +790,17 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		Long taskId;
 		
-		if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !"REF".equals(selection_method) && number_of_entities_to_copy == null) {
-			throw new IllegalArgumentException("In case the task_type is \"LOAD\" and the selection_method is not 'ALL' or 'REF' the parameter 'number_of_entities_to_copy' is mandatory.");
+		if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !"REF".equals(selection_method) && num_of_entities == null) {
+			throw new IllegalArgumentException("In case the task_type is \"LOAD\" and the selection_method is not 'ALL' or 'REF' the parameter 'num_of_entities' is mandatory.");
 		}
 		
 		db(TDM).beginTransaction();
 		try {
 			Map<String, Object> result = (Map<String, Object>) wsCreateTaskV1(be_id, environment_id, source_environment_id, scheduler, 
-				delete_before_load, number_of_entities_to_copy, selection_method, selection_param_value, entity_exclusion_list, 
+				delete_before_load, num_of_entities, selection_method, selection_param_value, entity_exclusion_list, 
 				task_title, parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, task_type, 
 				scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name,
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
@@ -948,7 +848,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"scheduler\": \"immediate\",\r\n" +
 			"  \"delete_before_load\": true,\r\n" +
 			"  \"request_of_fresh_data\": true,\r\n" +
-			"  \"number_of_entities_to_copy\": 0,\r\n" +
+			"  \"num_of_entities\": 0,\r\n" +
 			"  \"selection_method\": \"R\",\r\n" +
 			"  \"selection_param_value\": null,\r\n" +
 			"  \"entity_exclusion_list\": \"5,9,28\",\r\n" +
@@ -1008,7 +908,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -1024,6 +924,10 @@ public class Logic extends WebServiceUserCode {
 			}
 		}
 		
+		if (selection_param_value != null && !"".equals(selection_param_value)) {
+			selection_param_value = selection_param_value.replaceAll("\\s+","");
+		}
+		
 		if (reference!=null&&reference.equals("refernceOnly")) {
 			if (refList!=null ) {
 				if(refList.size() > 0){
@@ -1032,8 +936,14 @@ public class Logic extends WebServiceUserCode {
 					load_entity = false;
 				}
 			}
-			number_of_entities_to_copy = 0;
+			num_of_entities = 0;
 			selectAllEntites = false;
+		} else {
+			if (num_of_entities == null || num_of_entities == 0) {
+				if (selection_param_value != null && !"".equals(selection_param_value)) {
+					num_of_entities = (selection_param_value.split(",")).length;
+				}
+			}
 		}
 		
 		if (selectAllEntites!=null&&selectAllEntites==true) {
@@ -1042,7 +952,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try{
 			String sql= "INSERT INTO \"" + schema + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
-					"number_of_entities_to_copy,selection_method,selection_param_value,entity_exclusion_list, task_execution_status, " +
+					"num_of_entities,selection_method,selection_param_value,entity_exclusion_list, task_execution_status, " +
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, task_title, parameters, refresh_reference_data,replace_sequences, " +
 					"source_environment_id, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
 					"selected_version_datetime, selected_version_task_exe_id,task_globals, " +
@@ -1056,7 +966,7 @@ public class Logic extends WebServiceUserCode {
 			String username=sessionUser().name();
 			Db.Row row = db("TDM").fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
 					scheduler, delete_before_load,
-					number_of_entities_to_copy, selection_method,
+					num_of_entities, selection_method,
 					selection_param_value, entity_exclusion_list, "Active",
 					username, now, now, username, "Active", task_title,
 					parameters, refresh_reference_data, replace_sequences, 
@@ -1127,7 +1037,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"scheduler\": \"immediate\",\r\n" +
 			"  \"delete_before_load\": true,\r\n" +
 			"  \"request_of_fresh_data\": true,\r\n" +
-			"  \"number_of_entities_to_copy\": 0,\r\n" +
+			"  \"num_of_entities\": 0,\r\n" +
 			"  \"selection_method\": \"R\",\r\n" +
 			"  \"selection_param_value\": null,\r\n" +
 			"  \"entity_exclusion_list\": \"9,8,123\",\r\n" +
@@ -1213,13 +1123,13 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		Long newTaskId = null;
 		
 		db(TDM).beginTransaction();
 		try {
 			Map<String, Object> result = (Map<String, Object>) wsUpdateTaskV1(taskId, copy, task_status, be_id, environment_id, 
-				source_environment_id, scheduler, delete_before_load, number_of_entities_to_copy, selection_method, selection_param_value, 
+				source_environment_id, scheduler, delete_before_load, num_of_entities, selection_method, selection_param_value, 
 				entity_exclusion_list, task_title, parameters, refresh_reference_data, replace_sequences, source_env_name, load_entity, 
 				task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, 
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, 
@@ -1268,7 +1178,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"scheduler\": \"immediate\",\r\n" +
 			"  \"delete_before_load\": true,\r\n" +
 			"  \"request_of_fresh_data\": true,\r\n" +
-			"  \"number_of_entities_to_copy\": 0,\r\n" +
+			"  \"num_of_entities\": 0,\r\n" +
 			"  \"selection_method\": \"R\",\r\n" +
 			"  \"selection_param_value\": null,\r\n" +
 			"  \"entity_exclusion_list\": \"9,8,123\",\r\n" +
@@ -1330,7 +1240,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer number_of_entities_to_copy, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		Map<String,Object> result=new HashMap<>();
 		String message=null;
@@ -1340,6 +1250,9 @@ public class Logic extends WebServiceUserCode {
 			db("TDM").execute("UPDATE \"" + schema + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
 		
+		if (selection_param_value != null && !"".equals(selection_param_value)) {
+			selection_param_value = selection_param_value.replaceAll("\\s+","");
+		}
 		
 			if(refList!=null) {
 				Iterator<Map<String, Object>> iter = refList.iterator();
@@ -1357,17 +1270,22 @@ public class Logic extends WebServiceUserCode {
 					delete_before_load = false;
 					load_entity = false;
 				}
-				number_of_entities_to_copy = 0;
+				num_of_entities = 0;
 				selectAllEntites = false;
+			} else {
+				if ("L".equals(selection_method) && selection_param_value != null && !"".equals(selection_param_value)) {
+					int entitiesCnt = (selection_param_value.split(",")).length;
+					if (num_of_entities == null || num_of_entities == 0 || num_of_entities != entitiesCnt) {
+						num_of_entities = (selection_param_value.split(",")).length;
+					}
+				}
 			}
-		
-		
 		
 			if (selectAllEntites != null && selectAllEntites) {
 				selection_method = "ALL";
 			}
 			String sql = "INSERT INTO \"" + schema + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
-					"number_of_entities_to_copy, selection_method,selection_param_value,entity_exclusion_list, task_execution_status," +
+					"num_of_entities, selection_method,selection_param_value,entity_exclusion_list, task_execution_status," +
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, " +
 					"task_title, parameters,refresh_reference_data, replace_sequences, source_environment_id, source_env_name, load_entity, task_type, " +
 					"scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
@@ -1379,7 +1297,7 @@ public class Logic extends WebServiceUserCode {
 			Db.Row row = db("TDM").fetch(sql, be_id, environment_id!=null?environment_id:source_environment_id,
 					scheduler,
 					delete_before_load,
-					number_of_entities_to_copy,
+					num_of_entities,
 					selection_method,
 					selection_param_value,
 					entity_exclusion_list,
@@ -1678,14 +1596,16 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"global_name\": \"globalName1\",\r\n" +
-			"      \"task_id\": 145,\r\n" +
-			"      \"global_value\": \"globalValue1\"\r\n" +
+			"      \"global_name\": \"MASK_FLAG\",\r\n" +
+			"      \"lu_name\": \"ALL\",\r\n" +
+			"      \"task_id\": 57,\r\n" +
+			"      \"global_value\": \"0\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"global_name\": \"globalName2\",\r\n" +
-			"      \"task_id\": 145,\r\n" +
-			"      \"global_value\": \"globalValue2\"\r\n" +
+			"      \"global_name\": \"MAIL_ADDRESS\",\r\n" +
+			"      \"lu_name\": \"Customer\",\r\n" +
+			"      \"task_id\": 57,\r\n" +
+			"      \"global_value\": \"tali@gmail.com\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -1901,6 +1821,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			//TDM 7.4 - 26/01/2022 - In addition to the returned versions, the inner function and the API will return the resevation info of the requested entities.
 			//Db.Rows rows = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
+			entitiesList.replaceAll("\\s+","");
 			Map<String, Object> versions = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
 			
 			/*
@@ -1936,7 +1857,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Returns the list of executions of the input task based on the input filtering parameters. Returns one summary record for each execution.")
-	@webService(path = "task/{taskId}/summary", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}/summary", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -1966,7 +1887,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"tot_num_of_processed_ref_tables\": 0,\r\n" +
 			"      \"task_type\": \"EXTRACT\",\r\n" +
 			"      \"tot_num_of_failed_root_entities\": 0,\r\n" +
-			"      \"task_executed_by\": null\r\n" +
+			"      \"task_executed_by\": \"admin\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"be_id\": 1,\r\n" +
@@ -1995,7 +1916,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"tot_num_of_processed_ref_tables\": 0,\r\n" +
 			"      \"task_type\": \"EXTRACT\",\r\n" +
 			"      \"tot_num_of_failed_root_entities\": 0,\r\n" +
-			"      \"task_executed_by\": null\r\n" +
+			"      \"task_executed_by\": \"admin\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -2061,7 +1982,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"> Gets the execution details of a selected Logical Unit and entity ID:\r\n" +
 			"{taskExecutionId: \"69\", targetId: \"400\", lu_name: \"PATIENT_VISITS\"}")
-	@webService(path = "taskStats", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "taskStats", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "1. Task Execution Level (Root Logical Unit)- \r\n" +
 			"\r\n" +
 			"{\"result\":{\"luTree\":[{\"isRoot\":true,\"test\":true,\"hasChildren\":true,\"collapsed\":true,\"lu_name\":\"PATIENT_LU\",\"task_execution_id\":69,\"count\":1,\"lu_id\":1,\"test1\":true,\"lu_status\":\"completed\",\"selected\":true,\"status\":\"completed\"}],\"data\":{\"Copied entities per execution\":{\"entitiesList\":[{\"sourceId\":\"1\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"1\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"1\",\"rootTargetId\":\"1\"},{\"sourceId\":\"2\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"2\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"2\",\"rootTargetId\":\"2\"},{\"sourceId\":\"3\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"3\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"3\",\"rootTargetId\":\"3\"},{\"sourceId\":\"4\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"4\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"4\",\"rootTargetId\":\"4\"},{\"sourceId\":\"5\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"5\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"5\",\"rootTargetId\":\"5\"},{\"sourceId\":\"6\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"6\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"6\",\"rootTargetId\":\"6\"},{\"sourceId\":\"7\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"7\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"7\",\"rootTargetId\":\"7\"},{\"sourceId\":\"8\",\"parentLuName\":\"\",\"parentTargetId\":\"\",\"targetId\":\"8\",\"copyEntityStatus\":\"Copied\",\"luName\":\"PATIENT_LU\",\"parentSourceId\":\"\",\"copyHierarchyStatus\":\"Copied\",\"rootSourceId\":\"8\",\"rootTargetId\":\"8\"}],\"NoOfEntities\":\"8\"},\"Failed entities per execution\":{\"entitiesList\":[],\"NoOfEntities\":\"0\"},\"Copied Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Failed Reference per execution\":{\"entitiesList\":[],\"NoOfEntities\":0},\"Roots Status\":{\"PATIENT_LU\":\"completed\"}}},\"errorCode\":\"SUCCESS\",\"message\":null}\r\n" +
@@ -2079,8 +2000,7 @@ public class Logic extends WebServiceUserCode {
 		Integer maxEntitiesSize = Integer.parseInt(MAX_NUMBER_OF_ENTITIES_IN_LIST);
 		
 		if (targetId != null || parentTargetId != null) {
-			
-			
+
 			try {
 				Map<String, Map> statsData = (Map<String, Map>)((Map<String, Object>) fnGetTDMTaskExecutionStats(taskExecutionId.toString(),
 								lu_name, targetId != null ? targetId : null, "ENTITY",parentTargetId != null ? parentTargetId : null, maxEntitiesSize, "true")).get("result");
@@ -2299,7 +2219,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"allow_write\": true,\r\n" +
 			"      \"task_status\": \"Inactive\",\r\n" +
 			"      \"environment_last_updated_date\": \"2021-05-09 06:11:51.263\",\r\n" +
-			"      \"number_of_entities_to_copy\": 1,\r\n" +
+			"      \"num_of_entities\": 1,\r\n" +
 			"      \"environment_point_of_contact_first_name\": null,\r\n" +
 			"      \"product_creation_date\": \"2021-04-18 09:32:14.981\",\r\n" +
 			"      \"task_type\": \"LOAD\",\r\n" +
@@ -2412,12 +2332,12 @@ public class Logic extends WebServiceUserCode {
 							case "entity_list" :
 								rowMap.put("selection_param_value", overrideValue);
 								int numberOfEntities = overrideValue.split(",", -1).length;
-								rowMap.put("number_of_entities_to_copy", numberOfEntities);
+								rowMap.put("num_of_entities", numberOfEntities);
 								entityListFlag = true;
 								break;
 							case "no_of_entities" : 
 								if (!entityListFlag) {
-									rowMap.put("number_of_entities_to_copy", overrideValue);
+									rowMap.put("num_of_entities", overrideValue);
 								}
 								break;
 							case "source_environment_name":
@@ -2473,8 +2393,11 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	@desc("Gets the task execution summary report.")
-	@webService(path = "taskSummaryReport/{executionId}/luName/{luName}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+	@webService(path = "taskSummaryReport/{executionId}/luName/{luName}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = "Populate the LU Name with ALL:\r\n" +
+			"==========================\r\n" +
+			"\r\n" +
+			"{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"General Info\": [\r\n" +
 			"      {\r\n" +
@@ -2502,7 +2425,10 @@ public class Logic extends WebServiceUserCode {
 			"        \"selected_ref_version_datetime\": null,\r\n" +
 			"        \"scheduling_parameters\": \"immediate\",\r\n" +
 			"        \"schedule_expiration_date\": null,\r\n" +
-			"\t\t\"override_parameters\": \"{\\\"TASK_GLOBALS\\\":{\\\"MASKING_FLAG\\\":\\\"0\\\", \\\"GLOBAL2\\\":\\\"aaaaaa\\\"},\\\"ENTITY_LIST\\\":\\\"1\\\"}\"\r\n" +
+			"        \"override_parameters\": \"{\\\"TASK_GLOBALS\\\":{\\\"MASKING_FLAG\\\":\\\"0\\\", \\\"GLOBAL2\\\":\\\"aaaaaa\\\"},\\\"ENTITY_LIST\\\":\\\"1\\\"}\",\r\n" +
+			"        \"reserve_ind\": \"true\",\r\n" +
+			"        \"reserve_retention_period_type\": \"Days\",\r\n" +
+			"        \"reserve_retention_period_value\": null\r\n" +
 			"      }\r\n" +
 			"    ],\r\n" +
 			"    \"Task Execution Summary\": [\r\n" +
@@ -2716,6 +2642,198 @@ public class Logic extends WebServiceUserCode {
 			"  },\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": \"\"\r\n" +
+			"}\r\n" +
+			"\r\n" +
+			"Populate the LU Name with a Logical Unit:\r\n" +
+			"==================================\r\n" +
+			"\r\n" +
+			"{\r\n" +
+			"  \"result\": {\r\n" +
+			"    \"General Info\": [\r\n" +
+			"      {\r\n" +
+			"        \"task_name\": \"createTaskByTester\",\r\n" +
+			"        \"task_id\": 294,\r\n" +
+			"        \"task_execution_id\": \"490\",\r\n" +
+			"        \"created_by\": \"tali\",\r\n" +
+			"        \"executed_by\": \"admin\",\r\n" +
+			"        \"start_execution\": \"2021-06-16 16:24:21.0\",\r\n" +
+			"        \"end_execution\": \"2021-06-16 16:24:32.0\",\r\n" +
+			"        \"execution_status\": \"completed\",\r\n" +
+			"        \"source_env\": \"SRC\",\r\n" +
+			"        \"target_env\": \"TAR\",\r\n" +
+			"        \"be_name\": \"CUSTOMER\",\r\n" +
+			"        \"task_type\": \"LOAD\",\r\n" +
+			"        \"selection_method\": \"Randon Selection\",\r\n" +
+			"       \t\"task_sync_mode\": null,\r\n" +
+			"        \"env_sync_mode\": \"ON\",\r\n" +
+			"        \"operation_mode\": \"Delete and load entity\",\r\n" +
+			"        \"replace_sequences\": \"false\",\r\n" +
+			"        \"version_ind\": \"false\",\r\n" +
+			"        \"selected_version_task_name\": null,\r\n" +
+			"        \"selected_version_datetime\": null,\r\n" +
+			"        \"selected_ref_version_task_name\": null,\r\n" +
+			"        \"selected_ref_version_datetime\": null,\r\n" +
+			"        \"scheduling_parameters\": \"immediate\",\r\n" +
+			"        \"schedule_expiration_date\": null,\r\n" +
+			"        \"override_parameters\": null,\r\n" +
+			"        \"reserve_ind\": \"false\",\r\n" +
+			"        \"reserve_retention_period_type\": null,\r\n" +
+			"        \"reserve_retention_period_value\": null,\r\n" +
+			"        \"fabric_execution_id\": \"c30a97f2-fc3e-4b66-9986-aa0c6108456a\"\r\n" +
+			"      }\r\n" +
+			"    ],\r\n" +
+			"    \"Task Execution Summary\": [\r\n" +
+			"      {\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"fabric_execution_id\": \"8868047e-0aa4-4793-a2f2-d41f8a24a94b\",\r\n" +
+			"        \"parent_lu_name\": \"Customer\",\r\n" +
+			"        \"data_center_name\": \"null\",\r\n" +
+			"        \"start_execution_time\": \"2021-06-16 16:24:31.0\",\r\n" +
+			"        \"end_execution_time\": \"2021-06-16 16:24:32.0\",\r\n" +
+			"        \"num_of_processed_entities\": 17,\r\n" +
+			"        \"num_of_copied_entities\": 17,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"num_of_processed_ref_tables\": 0,\r\n" +
+			"        \"num_of_copied_ref_tables\": 0,\r\n" +
+			"        \"num_of_failed_ref_tables\": 0\r\n" +
+			"      }\r\n" +
+			"    ],\r\n" +
+			"    \"List of Root Entities\": {\r\n" +
+			"      \"Number of Copied Entities\": [\r\n" +
+			"        {\r\n" +
+			"          \"number_of_copied_root_entities\": 17\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"List of Copied Entities\": [\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_102\",\r\n" +
+			"          \"target_id\": \"102\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_103\",\r\n" +
+			"          \"target_id\": \"103\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_104\",\r\n" +
+			"          \"target_id\": \"104\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_105\",\r\n" +
+			"          \"target_id\": \"105\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_106\",\r\n" +
+			"          \"target_id\": \"106\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1324\",\r\n" +
+			"          \"target_id\": \"1324\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1325\",\r\n" +
+			"          \"target_id\": \"1325\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1326\",\r\n" +
+			"          \"target_id\": \"1326\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1429\",\r\n" +
+			"          \"target_id\": \"1429\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1430\",\r\n" +
+			"          \"target_id\": \"1430\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1431\",\r\n" +
+			"          \"target_id\": \"1431\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1432\",\r\n" +
+			"          \"target_id\": \"1432\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1537\",\r\n" +
+			"          \"target_id\": \"1537\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1538\",\r\n" +
+			"          \"target_id\": \"1538\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1965\",\r\n" +
+			"          \"target_id\": \"1965\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1966\",\r\n" +
+			"          \"target_id\": \"1966\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"source_id\": \"SRC_1967\",\r\n" +
+			"          \"target_id\": \"1967\"\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"Number of Failed Entities\": [\r\n" +
+			"        {\r\n" +
+			"          \"number_of_failed_root_entities\": 0\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"List of Failed Entities\": []\r\n" +
+			"    },\r\n" +
+			"    \"List of Reference Tables\": {\r\n" +
+			"      \"Number of Copied Reference Tables\": [\r\n" +
+			"        {\r\n" +
+			"          \"count\": 0\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"List of Copied Reference Tables\": [],\r\n" +
+			"      \"Number of Failed Reference Tables\": [\r\n" +
+			"        {\r\n" +
+			"          \"count\": 0\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"List of Failed Reference Tables\": []\r\n" +
+			"    },\r\n" +
+			"    \"Error Summary\": [],\r\n" +
+			"    \"Error Details\": [],\r\n" +
+			"    \"Statistics Report\": [\r\n" +
+			"      {\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"table_name\": \"BALANCE\",\r\n" +
+			"        \"target_count\": \"172\",\r\n" +
+			"        \"source_count\": \"172\",\r\n" +
+			"        \"diff\": \"0\",\r\n" +
+			"        \"results\": \"OK\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"table_name\": \"INVOICE\",\r\n" +
+			"        \"target_count\": \"107\",\r\n" +
+			"        \"source_count\": \"107\",\r\n" +
+			"        \"diff\": \"0\",\r\n" +
+			"        \"results\": \"OK\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"table_name\": \"OFFER\",\r\n" +
+			"        \"target_count\": \"9\",\r\n" +
+			"        \"source_count\": \"9\",\r\n" +
+			"        \"diff\": \"0\",\r\n" +
+			"        \"results\": \"OK\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"table_name\": \"SUBSCRIBER\",\r\n" +
+			"        \"target_count\": \"17\",\r\n" +
+			"        \"source_count\": \"17\",\r\n" +
+			"        \"diff\": \"0\",\r\n" +
+			"        \"results\": \"OK\"\r\n" +
+			"      }\r\n" +
+			"    ],\r\n" +
+			"    \"Replace Sequence Summary Report\": []\r\n" +
+			"  },\r\n" +
+			"  \"message\": \"\"\r\n" +
 			"}")
 	public static Object wsTaskSummaryReport(@param(description="Task execution ID", required=true) String executionId, @param(description="Will be populated by 'ALL' to get one unified summary report to all Logical Units of the task execution. Populate this parameter by the Logical Unit name to get a report of a given Logical Unit.", required=true) String luName) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
@@ -2747,7 +2865,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"Example of a request body:\r\n" +
 			"{\"migrateIds\" : [\"387a3b82-18e2-4d45-9482-16dc6ad15385\",\"387a3b82-18e2-4d45-9482-16dc6ad15386\"], \"runModes\" : [\"D\", \"H\", \"S\"]}")
-	@webService(path = "migrateStatusWs", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "migrateStatusWs", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -2886,7 +3004,11 @@ public class Logic extends WebServiceUserCode {
 			Object returnedResults=null;
 			List<HashMap<String,Object>> results=new ArrayList<>();
 			for (int i = 0; i < ((List<String>)migrateIds).size(); i++) {
-				results.add(TaskExecutionUtils.fnMigrateStatusWs(((List<String>)migrateIds).get(i), runModes));
+				String batchID = ((List<String>)migrateIds).get(i);
+				//log.info("wsMigrateStatusWs - batchID: " + batchID);
+				if (batchID != null && !"".equals(batchID)) {
+					results.add(TaskExecutionUtils.fnMigrateStatusWs(batchID, runModes));
+				}
 			}
 		
 			if (single && results!=null && results.size() == 1) {
@@ -3105,10 +3227,10 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Starts an execution of a TDM task.\r\n" +
+	@desc("Starts an execution of a TDM task. \r\n" +
 			"A task execution can override the following parameters:\r\n" +
 			"\r\n" +
-			"- entitieslist: populated by a list of entities separated by a comma. Note that the entity list can only contain one entity ID when executing a task with a Synthetic selection method.\r\n" +
+			"- entitieslist: populated by a list of entities separated by a comma. Note that the entity list can only contain one entity ID when executing a task with an Entity Clone selection method.\r\n" +
 			"\r\n" +
 			"- sourceEnvironmentName: source environment name.\r\n" +
 			"\r\n" +
@@ -3117,6 +3239,17 @@ public class Logic extends WebServiceUserCode {
 			"- taskGlobals: list of Global variables and their values.\r\n" +
 			"\r\n" +
 			"- numberOfEntities: populated by a number to change the number of entities processed by the task. This parameter is only relevant for Load tasks when the entitylist override parameter is not set.\r\n" +
+			"\r\n" +
+			"- dataVersionExecId: populated with the task execution id of the selected data version. The parameter can be set on Data Versioning load tasks.\r\n" +
+			"\r\n" +
+			"- dataVersionRetentionPeriod:  populated with the retention period of the extracted data version. This parameter contains the unit (Hours, Days, Weeks…) and the value.\r\n" +
+			"\r\n" +
+			"- reserveInd: populated with true or false. Set to true if the task execution needs to reserve the entities on the target environment.\r\n" +
+			"\r\n" +
+			"- reserveRetention: populated with the reservation period of the task's entities. This parameter contains the unit (Hours, Days, Weeks.) and the value.\r\n" +
+			"\r\n" +
+			"- executionNote: Free text. Add a note to the execution.\r\n" +
+			"\r\n" +
 			"\r\n" +
 			"The task execution is validated whether the execution parameters are overridden or taken from the task itself:\r\n" +
 			"\r\n" +
@@ -3128,7 +3261,12 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- Validate the task's BE and LUs with the TDM products of the task execution's source and target environment.\r\n" +
 			"- Verify that the user is permitted to execute the task on the task execution's source and target environment. For example, the user cannot run a Load task with a sequence replacement on environment X if the user does not have permissions to run such a task on this environment.\r\n" +
-			"- Varify that the for DataFlux Task if the given retention period do not exceed the maximum retention allowed for user.\r\n" +
+			"- Validate a Data Versioning extract task: verify that the given retention period do not exceed the maximum retention allowed for the user.\r\n" +
+			"\r\n" +
+			"Entity Reservation Validations:\r\n" +
+			"===========================\r\n" +
+			"- Validate the number of reserved entities: if the task reserves the entities whether the reserve_ind is set to true in the task itself or in the overridden parameters, accumulate the number of entities in the task to the total number of reserved entities for the user on the target environment. If the total number of reserved entities exceeds the user's permissions on the environment, return an error. For example, if the user is allowed to reserved up to 70 entities in ST1 and there are 50 entities that are already reserved for the user in ST1, the user can reserve up to 20 additional entities in ST1.\r\n" +
+			"- Validate the retention period to verify that the number of days does not exceed the maximum number of days allowed for the tester.\r\n" +
 			"\r\n" +
 			"If at least one of the validations fail, the API does not start the task. Instead it returns a FAILED status and populates the list of validation errors in the results.\r\n" +
 			"\r\n" +
@@ -3148,7 +3286,12 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- syncMode\r\n" +
 			"\r\n" +
-			"-VersionRetentionPeriod\r\n" +
+			"- totalNumberOfReservedEntities\r\n" +
+			"\r\n" +
+			"- versioningRetentionPeriod\r\n" +
+			"\r\n" +
+			"- reverseRetentionPeriod\r\n" +
+			"\r\n" +
 			"\r\n" +
 			"If the validations pass successfully, start the task execution.\r\n" +
 			"\r\n" +
@@ -3157,21 +3300,25 @@ public class Logic extends WebServiceUserCode {
 			"Request body example:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"  \"entitieslist\": \"1,2,4,9,8,11\",\r\n" +
-			"  \"sourceEnvironmentName\": \"SRC1\",\r\n" +
-			"  \"targetEnvironmentName\": \"TAR1\",\r\n" +
-			"  \"taskGlobals\": {\r\n" +
-			"    \"CUST_TYPE\": \"BUS\",\r\n" +
-			"    \"Customer.SUB_TYPE\": \"XX\"\r\n" +
-			"    \"Customer.CUST_DETAILS\": \"'{\\\"name\\\":\\\"John\\\", \\\"age\\\":30, \\\"car\\\":null}'\"\r\n" +
-			"  },\r\n" +
-			"  \"numberOfEntities\": 14,\r\n" +
-			"  \"dataVersionExecId\":2,\r\n" +
-			"\"dataVersionRetentionPeriod\": {\r\n" +
-			"    \"unit\": \"Days\",\r\n" +
-			"    \"value\": \"10\"\r\n" +
-			"  },\r\n" +
-			"\"executionNote\" : \"Example Task\"\r\n" +
+			"\t\"entitieslist\": \"1,2,4,9,8,11\",\r\n" +
+			"\t\"sourceEnvironmentName\": \"SRC\",\r\n" +
+			"\t\"targetEnvironmentName\": \"TAR\",\r\n" +
+			"\t\"taskGlobals\": {\r\n" +
+			"\t\t\"CUST_TYPE\": \"BUS\",\r\n" +
+			"\t\t\"Customer.SUB_TYPE\": \"XX\"\r\n" +
+			"\t},\r\n" +
+			"\t\"numberOfEntities\": 14,\r\n" +
+			"\t\"dataVersionExecId\": 2,\r\n" +
+			"\t\"dataVersionRetentionPeriod\": {\r\n" +
+			"\t\t\"unit\": \"Days\",\r\n" +
+			"\t\t\"value\": \"10\"\r\n" +
+			"\t},\r\n" +
+			"\t\"reserveInd\": true,\r\n" +
+			"\t\"reserveRetention\": {\r\n" +
+			"\t\t\"unit\": \"Days\",\r\n" +
+			"\t\t\"value\": \"5\"\r\n" +
+			"\t},\r\n" +
+			"\t\"executionNote\": \"Example Task\"\r\n" +
 			"}")
 	@webService(path = "task/{taskId}/forced/{forced}/startTask", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "1. Succesful Execution:\r\n" +
@@ -3199,13 +3346,15 @@ public class Logic extends WebServiceUserCode {
 			"    \"errorCode\": \"FAIL\",\r\n" +
 			"    \"message\": \"validation failure\"\r\n" +
 			"}")
-	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, @param(description="Only relevant for Load tasks") Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,Object> reserveRetention, String executionNote) throws Exception {
+	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, @param(description="Only relevant for Load tasks") Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,String> reserveRetention, String executionNote) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode;
 		
-		Boolean sourceEnvValidation = false;
-		Boolean targetEnvValidation = false;
+		boolean sourceEnvValidation = false;
+		boolean targetEnvValidation = false;
+		boolean srcEnvFound = false;
+		boolean trgEnvFound = false;
 		
 		LUType luType = LUType.getTypeByName("TDM");
 				
@@ -3300,14 +3449,6 @@ public class Logic extends WebServiceUserCode {
 			overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
 		}
 		if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
-
-		if (dataVersionRetentionPeriod!=null) {
-			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, "versioning");
-			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-				return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
-			}
-			overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
-		}
 		
 		if(overrideParams.get("ENTITY_LIST")!=null){
 			String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
@@ -3317,13 +3458,6 @@ public class Logic extends WebServiceUserCode {
 		
 		//TDM 7.4 - Support override for reserved entities
 		if(reserveInd!=null) overrideParams.put("RESERVE_IND", reserveInd);
-		if(reserveRetention!=null) {
-			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, "reverse");
-			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-				return TdmSharedUtils.wrapWebServiceResults("FAILED", "reverseRetentionPeriod", validateDFMessages.get("retention"));
-			}
-			overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
-		}
 		
 		if (!TaskValidationsUtils.fnValidateParallelExecutions(taskId, overrideParams)) {
 			throw new Exception("Task already running");
@@ -3345,7 +3479,7 @@ public class Logic extends WebServiceUserCode {
 		//log.info("selectionMethod: " + selectionMethod);
 		String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.get("source_env_name").toString();
 		//log.info("Source Env: " + sourceEnvName);
-
+		
 		if (dataVersionExecId!=null) {
 			Map<String, String> validateVersionID = TaskValidationsUtils.fnValidateVersionExecIdAndGetDetails(dataVersionExecId, be_lus, sourceEnvName);
 			if (validateVersionID.get("errorMessage") == null) {
@@ -3370,15 +3504,33 @@ public class Logic extends WebServiceUserCode {
 			if (entityListInd && !"S".equalsIgnoreCase(selectionMethod)) {
 				numberOfRequestedEntites = entityListSize;
 			} else {
-				numberOfRequestedEntites = (Integer) (taskData.get("number_of_entities_to_copy"));
+				numberOfRequestedEntites = (Integer) (taskData.get("num_of_entities"));
 			}
 		}
 		if ("S".equalsIgnoreCase(selectionMethod) && numberOfRequestedEntites > 0) {
 			entityListSize = numberOfRequestedEntites;
 		}
-
+		
 		// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
 		String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString();
+		
+		if (dataVersionRetentionPeriod!=null) {
+			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, 
+					"versioning", targetExeEnvName);
+			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
+			}
+			overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
+		}
+		
+		if(reserveRetention!=null) {
+			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(reserveRetention, 
+				"reverse", targetExeEnvName);
+			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "reverseRetentionPeriod", validateDFMessages.get("retention"));
+			}
+			overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
+		}
 		
 		List<Map<String,Object>> sourceRolesList = new ArrayList<>();
 		List<Map<String,Object>> targetRolesList = new ArrayList<>();
@@ -3406,6 +3558,7 @@ public class Logic extends WebServiceUserCode {
 				//Check if the current role is related to input environment, and not to other environment
 				//log.info("environment_name: " + role.get("environment_name"));
 				if (sourceEnvName.equals(role.get("environment_name"))) {
+					srcEnvFound = true;
 					int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
 					int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
 				
@@ -3444,6 +3597,7 @@ public class Logic extends WebServiceUserCode {
 		
 			for (Map<String, Object> role : targetRolesList) {
 				if (targetExeEnvName.equals(role.get("environment_name"))) {
+					trgEnvFound = true;
 					Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
 					//String  entityTest = false;
 		
@@ -3462,7 +3616,7 @@ public class Logic extends WebServiceUserCode {
 					if (validateNumber == -1) {
 						targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
 					} else if ( targetValidationsErrorMesssages.isEmpty()) { 
-						if ( validateNumber > 0) {
+						if ( validateNumber > 0  && (numberOfEntities!=null || entityListInd)) {
 							overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
 						}			
 						targetEnvValidation = true;
@@ -3477,6 +3631,18 @@ public class Logic extends WebServiceUserCode {
 			targetEnvValidation = true;
 		}
 		//log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
+		if (!sourceEnvValidation && !srcEnvFound) {
+			Map<String, String> sourceValidationsErrorMesssages=new HashMap<>();
+			sourceValidationsErrorMesssages.put("SourceEnvironment", "No Source Environment was found For User");
+			validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
+		}
+		
+		if (!targetEnvValidation && !trgEnvFound) {
+			Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
+			targetValidationsErrorMesssages.put("TargetEnvironment", "No Target Environment was found For User");
+			validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+		}
+		
 		if (!targetEnvValidation || !sourceEnvValidation) {
 			return TdmSharedUtils.wrapWebServiceResults("FAILED", "validation failure", validationsErrorMesssagesByRole);
 		}
@@ -3727,8 +3893,9 @@ public class Logic extends WebServiceUserCode {
 		Map <String, String> mapRootsStatus = new HashMap <>();
 
 		String sqlSelect = "select ENTITY_ID as sourceId, TARGET_ENTITY_ID as targetId, BE_ROOT_ENTITY_ID as rootSourceId, " +
-				"TARGET_ROOT_ENTITY_ID as rootTargetId, PARENT_LU_NAME as parentLuName, PARENT_ENTITY_ID as parentSourceId, " +
-				"TARGET_PARENT_ID as parentTargetId, " +
+				"TARGET_ROOT_ENTITY_ID as rootTargetId, Case when PARENT_LU_NAME = '' then LU_NAME else PARENT_LU_NAME end as parentLuName, " + 
+				"Case when PARENT_ENTITY_ID = '' then BE_ROOT_ENTITY_ID else PARENT_ENTITY_ID end as parentSourceId, " +
+				"Case when TARGET_PARENT_ID = '' then TARGET_ROOT_ENTITY_ID else TARGET_PARENT_ID end as parentTargetId, " +
 				"Case when EXECUTION_STATUS ='completed' then 'Copied' else 'Failed' end as copyEntityStatus, " +
 				"Case when ROOT_ENTITY_STATUS <> 'completed' then 'Failed' else 'Copied' end as copyHierarchyStatus, " +
 				"LU_NAME as luName " +
@@ -4213,8 +4380,8 @@ public class Logic extends WebServiceUserCode {
 	//from TDMTasks.Logic
 	@desc("Gets a user name and permission group and returns the list of active tasks that the user can run.")
 	@webService(path = "wsGetUserTasks/{userName}/{userType}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\n  <result>\n    <task_last_updated_date>1615278319339</task_last_updated_date>\n    <be_id>1</be_id>\n    <selected_version_task_name/>\n    <environment_id>1</environment_id>\n    <selection_method>L</selection_method>\n    <selected_ref_version_task_name/>\n    <refresh_reference_data/>\n    <task_id>21</task_id>\n    <source_environment_id>1</source_environment_id>\n    <scheduler>immediate</scheduler>\n    <selected_ref_version_datetime/>\n    <source_env_name>ENV1</source_env_name>\n    <load_entity>false</load_entity>\n    <task_title>tester</task_title>\n    <selected_version_task_exe_id/>\n    <task_created_by>k2vtester01</task_created_by>\n    <fabric_environment_name/>\n    <scheduling_end_date/>\n    <delete_before_load>false</delete_before_load>\n    <retention_period_type/>\n    <task_status>Active</task_status>\n    <selection_param_value>1,2,3,4,5,6,7,8,9,10</selection_param_value>\n    <retention_period_value/>\n    <selected_version_datetime/>\n    <task_last_updated_by>k2vtester01</task_last_updated_by>\n    <selected_ref_version_task_exe_id/>\n    <task_execution_status>Active</task_execution_status>\n    <version_ind>false</version_ind>\n    <sync_mode/>\n    <number_of_entities_to_copy>10</number_of_entities_to_copy>\n    <task_creation_date>1615278319339</task_creation_date>\n    <task_globals>false</task_globals>\n    <replace_sequences/>\n    <entity_exclusion_list/>\n    <task_type>EXTRACT</task_type>\n    <parameters/>\n  </result>\n  <errorCode>SUCCESS</errorCode>\n  <message/>\n</HashMap>")
-	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": [\n    {\n      \"task_last_updated_date\": \"2021-03-09 08:25:19.339\",\n      \"be_id\": 1,\n      \"selected_version_task_name\": null,\n      \"environment_id\": 1,\n      \"selection_method\": \"L\",\n      \"selected_ref_version_task_name\": null,\n      \"refresh_reference_data\": null,\n      \"task_id\": 21,\n      \"source_environment_id\": 1,\n      \"scheduler\": \"immediate\",\n      \"selected_ref_version_datetime\": null,\n      \"source_env_name\": \"ENV1\",\n      \"load_entity\": false,\n      \"task_title\": \"tester\",\n      \"selected_version_task_exe_id\": null,\n      \"task_created_by\": \"k2vtester01\",\n      \"fabric_environment_name\": null,\n      \"scheduling_end_date\": null,\n      \"delete_before_load\": false,\n      \"retention_period_type\": null,\n      \"task_status\": \"Active\",\n      \"selection_param_value\": \"1,2,3,4,5,6,7,8,9,10\",\n      \"retention_period_value\": null,\n      \"selected_version_datetime\": null,\n      \"task_last_updated_by\": \"k2vtester01\",\n      \"selected_ref_version_task_exe_id\": null,\n      \"task_execution_status\": \"Active\",\n      \"version_ind\": false,\n      \"sync_mode\": null,\n      \"number_of_entities_to_copy\": 10,\n      \"task_creation_date\": \"2021-03-09 08:25:19.339\",\n      \"task_globals\": false,\n      \"replace_sequences\": null,\n      \"entity_exclusion_list\": null,\n      \"task_type\": \"EXTRACT\",\n      \"parameters\": null\n    }\n  ],\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
+	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\n  <result>\n    <task_last_updated_date>1615278319339</task_last_updated_date>\n    <be_id>1</be_id>\n    <selected_version_task_name/>\n    <environment_id>1</environment_id>\n    <selection_method>L</selection_method>\n    <selected_ref_version_task_name/>\n    <refresh_reference_data/>\n    <task_id>21</task_id>\n    <source_environment_id>1</source_environment_id>\n    <scheduler>immediate</scheduler>\n    <selected_ref_version_datetime/>\n    <source_env_name>ENV1</source_env_name>\n    <load_entity>false</load_entity>\n    <task_title>tester</task_title>\n    <selected_version_task_exe_id/>\n    <task_created_by>k2vtester01</task_created_by>\n    <fabric_environment_name/>\n    <scheduling_end_date/>\n    <delete_before_load>false</delete_before_load>\n    <retention_period_type/>\n    <task_status>Active</task_status>\n    <selection_param_value>1,2,3,4,5,6,7,8,9,10</selection_param_value>\n    <retention_period_value/>\n    <selected_version_datetime/>\n    <task_last_updated_by>k2vtester01</task_last_updated_by>\n    <selected_ref_version_task_exe_id/>\n    <task_execution_status>Active</task_execution_status>\n    <version_ind>false</version_ind>\n    <sync_mode/>\n    <num_of_entities>10</num_of_entities>\n    <task_creation_date>1615278319339</task_creation_date>\n    <task_globals>false</task_globals>\n    <replace_sequences/>\n    <entity_exclusion_list/>\n    <task_type>EXTRACT</task_type>\n    <parameters/>\n  </result>\n  <errorCode>SUCCESS</errorCode>\n  <message/>\n</HashMap>")
+	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": [\n    {\n      \"task_last_updated_date\": \"2021-03-09 08:25:19.339\",\n      \"be_id\": 1,\n      \"selected_version_task_name\": null,\n      \"environment_id\": 1,\n      \"selection_method\": \"L\",\n      \"selected_ref_version_task_name\": null,\n      \"refresh_reference_data\": null,\n      \"task_id\": 21,\n      \"source_environment_id\": 1,\n      \"scheduler\": \"immediate\",\n      \"selected_ref_version_datetime\": null,\n      \"source_env_name\": \"ENV1\",\n      \"load_entity\": false,\n      \"task_title\": \"tester\",\n      \"selected_version_task_exe_id\": null,\n      \"task_created_by\": \"k2vtester01\",\n      \"fabric_environment_name\": null,\n      \"scheduling_end_date\": null,\n      \"delete_before_load\": false,\n      \"retention_period_type\": null,\n      \"task_status\": \"Active\",\n      \"selection_param_value\": \"1,2,3,4,5,6,7,8,9,10\",\n      \"retention_period_value\": null,\n      \"selected_version_datetime\": null,\n      \"task_last_updated_by\": \"k2vtester01\",\n      \"selected_ref_version_task_exe_id\": null,\n      \"task_execution_status\": \"Active\",\n      \"version_ind\": false,\n      \"sync_mode\": null,\n      \"num_of_entities\": 10,\n      \"task_creation_date\": \"2021-03-09 08:25:19.339\",\n      \"task_globals\": false,\n      \"replace_sequences\": null,\n      \"entity_exclusion_list\": null,\n      \"task_type\": \"EXTRACT\",\n      \"parameters\": null\n    }\n  ],\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	public static Object wsGetUserTasks(@param(required=true) String userName, @param(description="admin, owner or tester", required=true) String userType) throws Exception {
 		String adminQuery = "select * from tasks where task_status = 'Active' and task_execution_status = 'Active'";
 		String envOwnerQuery =
@@ -4396,7 +4563,7 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Returns the details of the input task execution ID if populated. \r\n" +
 			"When the task execution id is empty, the API returns current/last execution of the given task id. If the latest task execution is pending, it will only return its status, else it will return the statistics of the entities handled by the task execution.")
-	@webService(path = "wsTaskMonitor/{taskID}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "wsTaskMonitor/{taskID}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.XML, example = "{\n  \"result\": {\n    \"Task ID\": \"10\",\n    \"Task Details\": [\n      {\n        \"Fabric Batch ID\": \"cc02e34d-2367-4a15-aae7-79dcb4c3e48e\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"b6b8f7b8-5eb8-4b27-9b26-c0a387f17ba8\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"Node\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"DC1\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"--\",\n            \"Level\": \"DC\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          },\n          {\n            \"Status\": \"DONE\",\n            \"Ent./sec (avg.)\": \"2.9\",\n            \"Added\": 0,\n            \"Ent./sec (pace)\": \"2.9\",\n            \"Updated\": 3,\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"2021-06-17 12:23:42.464\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"3\",\n            \"Total\": \"3\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:00\",\n            \"Remaining\": \"0\",\n            \"Start time\": \"2021-06-17 12:23:41.429\",\n            \"Unchanged\": 0,\n            \"% Completed\": \"100\"\n          }\n        ],\n        \"Task Status\": \"completed\",\n        \"LU Name\": \"PATIENT_LU\"\n      },\n      {\n        \"Fabric Batch ID\": \"cef3e9fb-2f11-437f-8859-da535300930a\",\n        \"Task Statistics\": [\n          {\n            \"Status\": \"IN_PROGRESS\",\n            \"Ent./sec (avg.)\": \"0\",\n            \"Ent./sec (pace)\": \"0\",\n            \"Failed\": \"0\",\n            \"Duration\": \"00:00:01\",\n            \"End time\": \"-\",\n            \"Name\": \"--\",\n            \"Succeeded\": \"0\",\n            \"Total\": \"19\",\n            \"Level\": \"Cluster\",\n            \"Remaining dur.\": \"00:00:01\",\n            \"Remaining\": \"19\",\n            \"Start time\": \"2021-06-17 12:24:02.523\",\n            \"% Completed\": \"0\"\n          }\n        ],\n        \"Task Status\": \"running\",\n        \"LU Name\": \"PATIENT_VISITS\"\n      }\n    ],\n    \"Task Name\": \"Extract2\",\n    \"Task Execution ID\": 50,\n    \"Task Reference Statistics\": {\n      \"PATIENT_LU\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:42 UTC 2021\",\n        \"totNumOfTablesToProcess\": 2,\n        \"numOfProcessedRefTables\": 2,\n        \"numOfCopiedRefTables\": 2,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      },\n      \"PATIENT_VISITS\": {\n        \"minStartExecutionDate\": \"Thu Jun 17 12:23:41 UTC 2021\",\n        \"maxEndExecutionDate\": \"Thu Jun 17 12:23:52 UTC 2021\",\n        \"totNumOfTablesToProcess\": 1,\n        \"numOfProcessedRefTables\": 1,\n        \"numOfCopiedRefTables\": 1,\n        \"numOfFailedRefTables\": 0,\n        \"numOfProcessingRefTables\": 0,\n        \"numberOfNotStartedRefTables\": 0\n      }\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
@@ -4535,10 +4702,11 @@ public class Logic extends WebServiceUserCode {
 				taskLUInfo.put("Process Name", execRec.get("name"));
 			}
 			taskLUInfo.put("Task Status", execStatus);
-		
-			if (!"pending".equalsIgnoreCase(execStatus)) {
+			String fabricExecutionId = "" + execRec.get("fabric_execution_id");
+			if (!"pending".equalsIgnoreCase(execStatus) && 
+				"LU".equals(execRec.get("type")) &&  !"".equals(fabricExecutionId) &&  !"null".equals(fabricExecutionId)) {
 				taskLUInfo.put("Fabric Batch ID", execRec.get("fabric_execution_id"));
-				taskLUInfo.put("Task Statistics", TdmSharedUtils.fnBatchStats("" + execRec.get("fabric_execution_id"), "S"));
+				taskLUInfo.put("Task Statistics", TdmSharedUtils.fnBatchStats(fabricExecutionId, "S"));
 			}
 		
 			taskList.add(taskLUInfo);
@@ -4678,7 +4846,9 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Get the list of environments that are aligned with the input filtering parameters, according to the task type and attributes, as follows: \r\n" +
 			"- If the task type is Extract , then validate and return the list of available source environments.\r\n" +
-			"- If the task type is Load, then validate and return both - source and target environments.")
+			"- If the task type is Load, then validate and return both - source and target environments.\r\n" +
+			"- If the task type is Reserve (reserve only task), then validate and return the list of available target environments.\r\n" +
+			"- If the task is a delete only task, then validate and return the list of available target environments.")
 	@webService(path = "getEnvironmentsForTaskAttr", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -4739,7 +4909,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the task's be_id (Business Entity ID). For example: 1.", required=true) String be, @param(description="Populated by the task's Logical Units (LU IDs), separated by comma. Example : 1,5,6,7", required=true) String lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (random selection), \"S\" (entity cloning), \"PR\" (parameters with a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\" or \"load\"", required=true) String task_type, Boolean reserve_ind) throws Exception {
+	public static Object wsGetEnvironmentsByTaskFilteringParams(@param(description="Populated by the task's be_id (Business Entity ID). For example: 1.", required=true) String be, @param(description="Populated by the task's Logical Units (LU IDs), separated by comma. Example : 1,5,6,7", required=true) String lus, Integer refcount, @param(description="Can be populated by the following values: \"L\" (entity list), \"R\" (random selection), \"S\" (entity cloning),  \"C\" (custom logic), \"PR\" (parameters with a random selection), \"P\" (parameters), \"ALL\" (all entities), or \"REF\" (reference only task)") String selection_method, @param(description="Can be populated by 'OFF', 'FORCE', or can be empty") String sync_mode, Boolean version_ind, Boolean replace_sequences, Boolean delete_before_load, @param(description="Populated by \"extract\", \"load\", or \"reserve\"", required=true) String task_type, Boolean reserve_ind) throws Exception {
 		// variables declaration
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
@@ -4762,14 +4932,13 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 		
-			HashMap<String, Object> wsOutput = (HashMap<String, Object>)wsGetListOfEnvsByUser();
-			List<Map<String, Object>> allUserEnvsTypes = (List<Map<String, Object>>) wsOutput.get("result");
+			List<Map<String, Object>> allUserEnvsTypes = fnGetUserEnvs();
 			int i=0;
 			for (Map<String, Object> envType : allUserEnvsTypes) {
 				List<Map<String, Object>> allSourceEnvs = (List<Map<String, Object>>) (envType.get("source environments"));
 				List<Map<String, Object>> allTargetEnvs = (List<Map<String, Object>>) (envType.get("target environments"));
 		
-				if(allSourceEnvs!=null) {
+				if(allSourceEnvs!=null && !"reserve".equalsIgnoreCase(task_type)) {
 					// loop over user source envs
 					for (Map<String, Object> sourceEnvMap : allSourceEnvs) {
 		
@@ -4790,7 +4959,7 @@ public class Logic extends WebServiceUserCode {
 				}
 		
 				// loop over user target envs only if it is a load task, otherwsie target envs are not relevant
-				if ("load".equalsIgnoreCase(task_type) && allTargetEnvs!=null) {
+				if (("load".equalsIgnoreCase(task_type) || "reserve".equalsIgnoreCase(task_type)) && allTargetEnvs!=null) {
 					for (Map<String, Object> targetEnvMap : allTargetEnvs) {
 		
 						env_id = "" + targetEnvMap.get("environment_id");
@@ -4852,6 +5021,11 @@ public class Logic extends WebServiceUserCode {
 			"]\r\n" +
 			"}")
 	@webService(path = "tasks/validateVersionForLoad", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
 	public static Object wsDataVersionValidation(@param(required=true) String entitiesList, @param(required=true) String taskExecId, @param(required=true) List<Map<String,Object>> lu_list) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;

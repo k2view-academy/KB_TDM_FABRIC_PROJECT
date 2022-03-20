@@ -20,7 +20,7 @@
                                     }
                                 ],
                                 "outputs": []
-							}
+                            }
                         },
                         {
                             "name": "Get Delete Only Task Indicator",
@@ -30,6 +30,34 @@
                                     {
                                         "name": "key",
                                         "const": "TDM_DELETE_ONLY_TASK",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Delete Before Load indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_BEFORE_LOAD",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Is Child LU Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "CHILD_LU_IND",
                                         "isDefault": false
                                     }
                                 ],
@@ -128,7 +156,7 @@
                                         }
                                     }
                                 ]
-							}
+                            }
                         },
                         {
                             "name": "Not1",
@@ -421,8 +449,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "if (flowArgs.instanceFound == false) {\r\n    throw \"Instance \" + iid + \" is not found in the Source\"\r\n}",
-                                            "script": "if (flowArgs.instanceFound == false) {\n  throw \"Instance \" + iid + \" is not found in the Source\";\n}"
+                                            "userCode": "if ((deleteBeforeLoad == false || isChildLu == false ) \r\n  && flowArgs.instanceFound == false) {\r\n    throw \"Instance \" + iid + \" is not found in the Source\"\r\n}",
+                                            "script": "if ((deleteBeforeLoad == false || isChildLu == false) && flowArgs.instanceFound == false) {\n  throw \"Instance \" + iid + \" is not found in the Source\";\n}"
                                         }
                                     },
                                     {
@@ -430,6 +458,20 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "deleteBeforeLoad",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "isChildLu",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -468,6 +510,26 @@
             "rightPort": {
                 "actor": "Not1",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Delete Before Load indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Is Child LU Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "isChildLu"
             }
         },
         {
@@ -521,7 +583,7 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "Get Tables Fields",
                 "name": "res"

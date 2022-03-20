@@ -165,7 +165,7 @@ public class Logic extends UserCode {
 						"from task_execution_entities t, tdm_lu_type_rel_tar_eid r, task_execution_entities t2, task_execution_list l " +
 						"where t.lu_name = r.lu_type_2 and t.target_entity_id = r.lu_type2_eid and " +
 						"t2.lu_name = r.lu_type_1 and t2.target_entity_id = r.lu_type1_eid and " +
-						"t.lu_name = l.lu_name and l.lu_name = r.lu_type_2 and l.parent_lu_name = r.lu_type_1";
+						"t.lu_name = l.lu_name and l.lu_name = r.lu_type_2 and l.parent_lu_name = r.lu_type_1 and l.lu_id > 0";
 					
 				} else {// in case of extract task or load task not including the above cases
 					insertChildSql = "insert into TASK_EXECUTION_LINK_ENTITIES (LU_NAME,PARENT_LU_NAME,TARGET_ENTITY_ID,ENTITY_ID, " +
@@ -176,7 +176,7 @@ public class Logic extends UserCode {
 						"from task_execution_entities t, tdm_lu_type_relation_eid r, task_execution_list l " +
 						"where t.lu_name = r.lu_type_2 and t.iid = r.lu_type2_eid and t.source_env = r.source_env and " +
 						"t.version_name = r.version_name and substr(t.version_datetime, 1, 19) = substr(r.version_datetime, 1, 19) and " +
-						"t.lu_name = l.lu_name and l.lu_name = r.lu_type_2 and l.parent_lu_name = r.lu_type_1";
+						"t.lu_name = l.lu_name and l.lu_name = r.lu_type_2 and l.parent_lu_name = r.lu_type_1 and l.lu_id > 0";
 				}
 				//Step 1 - Get all child entities (non-root) and load them into target table
 				//log.info("fnEncTaskExecutionLinkEntities - Running Step 1 query: " + insertChildSql);
@@ -184,7 +184,7 @@ public class Logic extends UserCode {
 				fabric().execute(insertChildSql);
 				//log.info("fnEncTaskExecutionLinkEntities - after execute insertChildSql");
 				String getRootLus = "select lu_name from task_execution_list l, product_logical_units p where l.lu_id = p.lu_id and l.task_execution_id = ? " + 
-					"and parent_lu_id is null";
+					"and parent_lu_id is null and l.lu_id > 0";
 				
 				rootList = db("TDM").fetch(getRootLus, ludb().fetch("SELECT IID('TDM')").firstValue());
 				String rootListIn = "";

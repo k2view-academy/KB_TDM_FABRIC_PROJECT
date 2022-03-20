@@ -185,7 +185,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetReservedEntities() throws Exception {
+	public static Object wsGetReservedEntities(String entityId) throws Exception {
 		boolean adminInd = false;
 		boolean envOwnerFound = false;
 		boolean envTesterFound = false;
@@ -200,8 +200,11 @@ public class Logic extends WebServiceUserCode {
 		 
 		String sqlFromWhere = "FROM TDM_RESERVED_ENTITIES re, TASKS t, ENVIRONMENTS e, BUSINESS_ENTITIES be " +
 					"WHERE re.task_id = t.task_id AND t.environment_id = e.environment_id AND e.environment_status = 'Active' " +
-					"AND t.be_id = be.be_id and re.end_datetime >= timezone('UTC', now()) ";
+					"AND t.be_id = be.be_id and (re.end_datetime is null or re.end_datetime >= timezone('UTC', now())) ";
 		
+		if(entityId != null && !"".equals(entityId)) {
+			sqlFromWhere += " and entity_id = '" + entityId + "' ";
+		}
 		List<String> testerEnvs = new ArrayList<>();
 		List<String> ownerEnvs = new ArrayList<>();
 		
@@ -273,17 +276,22 @@ public class Logic extends WebServiceUserCode {
 			sqlAllowEdit = "CASE WHEN re.reserve_owner = '" + userName + "' THEN true ELSE FALSE END AS allow_edit ";
 		} 
 		
+		String limit = " order by task_execution_id desc ";
+		if (!"0".equals(GET_RESERVED_ENTITIES_LIMIT)) {
+			limit += " LIMIT " + GET_RESERVED_ENTITIES_LIMIT;
+		}
+		
 		Db.Rows reservedList = null;
 		if (adminInd) {
-			sql += sqlAllowEdit + sqlFromWhere + " LIMIT " + MAX_NUMBER_OF_ENTITIES_IN_LIST;
+			sql += sqlAllowEdit + sqlFromWhere + limit;
 			reservedList =  db("TDM").fetch(sql);
 		} else {
 			if (envOwnerFound) { 
-				sql += sqlAllowEdit + sqlFromWhere + sqlOwnerEnvList + " LIMIT " + MAX_NUMBER_OF_ENTITIES_IN_LIST;
+				sql += sqlAllowEdit + sqlFromWhere + sqlOwnerEnvList + limit;
 				reservedList =  db("TDM").fetch(sql);
 			} else{
 				if(envTesterFound) {
-					sql +=  sqlAllowEdit + sqlFromWhere + sqlTesterEnvList + " LIMIT " + MAX_NUMBER_OF_ENTITIES_IN_LIST;
+					sql +=  sqlAllowEdit + sqlFromWhere + sqlTesterEnvList + limit;
 					reservedList =  db("TDM").fetch(sql);
 				}
 			}
@@ -497,14 +505,16 @@ public class Logic extends WebServiceUserCode {
 			}
 		});
 		
+		String origNewEndDate = newEndDate;
 		String currentEnvID = "-1";
-		Boolean isOwner = false;
-		Boolean isTester = false;
 		String updateSql = origUpdateSql;
 		String returnClause = " returning entity_id";
 		
 		for (Map<String, String> entityInfo : listOfEntities) {
+			Boolean isOwner = false;
+			Boolean isTester = false;
 			updateSql = origUpdateSql;
+			newEndDate = origNewEndDate;
 			
 			String envID = "" + db("TDM").fetch("SELECT environment_id FROM environments " +
 						"WHERE environment_name =? AND environment_status = 'Active'", entityInfo.get("environment_name")).firstValue();
@@ -529,6 +539,15 @@ public class Logic extends WebServiceUserCode {
 				// Also check if the new end date do not exceed the reservation period allowed for tester
 				
 				if (!isOwner && !"admin".equalsIgnoreCase(permissionGroup)) {
+					if (newEndDate == null || "".equals(newEndDate)) {
+						errorCode = "FAILED";
+						message = "The Expiration Date cannot be empty for entities reserved by a tester";
+						response.put("result", result);
+						response.put("errorCode", errorCode);
+						response.put("message", message);
+		
+						return response;
+					}
 					String maxEndDate = "" + db("TDM").fetch(getMaxEndDateSql, entityID, beID, envID).firstValue();
 					
 					//log.info("newEndDate: " + newEndDate + ", maxEndDate: " + maxEndDate + ", compare: " + newEndDate.compareTo(maxEndDate));
@@ -551,7 +570,7 @@ public class Logic extends WebServiceUserCode {
 		
 			}
 			
-			//log.info("updateSql: " + updateSql + returnClause);
+			//log.info("updateSql: " + updateSql + returnClause + ", newEndDate: " + newEndDate);
 			//Update record
 			String updatedEntityID = "";
 			if (isTester) {

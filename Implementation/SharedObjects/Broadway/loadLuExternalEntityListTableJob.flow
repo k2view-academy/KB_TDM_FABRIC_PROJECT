@@ -126,6 +126,7 @@
                     "actors": [
                         {
                             "name": "Logger1",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [

@@ -1783,7 +1783,11 @@ public class Logic extends WebServiceUserCode {
 						!"ORACLE8_DB_TYPE".equals(keyParts[2]) &&
 						!"COMBO_MAX_COUNT".equals(keyParts[2]) &&
 						!"TDM_SYNTHETIC_DATA".equals(keyParts[2]) &&
-						!"TDM_DATAFLUX_TASK".equals(keyParts[2])
+						!"TDM_DATAFLUX_TASK".equals(keyParts[2]) &&
+						!"TDM_EXTERNAL_ENTITY_LIST_TTL".equals(keyParts[2]) &&
+						!"MAX_NUMBER_OF_ENTITIES_IN_LIST".equals(keyParts[2]) &&
+						!"TDM_LU_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
+						!"TDM_LU_RETENTION_PERIOD_VALUE".equals(keyParts[2])
 					) 
 					{
 						if ("k2_ws".equals(keyParts[1])) {
@@ -1858,6 +1862,7 @@ public class Logic extends WebServiceUserCode {
 						luRec.put("defaultValue", value.get(varName));
 						List<Map<String, Object>> listLUs = new ArrayList<>();
 						listLUs.add(luRec);
+						global.put("globalName", varName);
 						global.put("luList", listLUs);
 						global.put("Description", "");
 						globals.add(global);

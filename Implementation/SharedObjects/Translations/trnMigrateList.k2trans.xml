@@ -133,6 +133,18 @@ Limit 1000</ig_sql>
           <ig_sql></ig_sql>
           <external_table_flow>getCustomerListForExtract</external_table_flow>
         </trnMigrateList>
+        <trnMigrateList diffgr:id="trnMigrateList3" msdata:rowOrder="2">
+          <lu_name>Customer</lu_name>
+          <source_env_name>TEST</source_env_name>
+          <interface_name>CRM_DB</interface_name>
+          <ig_sql>Select distinct public.activity.customer_id
+From public.cases
+  Inner Join public.activity On public.activity.activity_id =
+    public.cases.activity_id
+Where public.cases.status = 'Open' And public.cases.case_type = 'Network Issue'
+Limit 1000</ig_sql>
+          <external_table_flow></external_table_flow>
+        </trnMigrateList>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

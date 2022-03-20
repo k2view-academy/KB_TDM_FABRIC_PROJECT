@@ -29,6 +29,8 @@
     <Column name="scheduling_end_date" id="tblCol_ab0a72d9610d40f492b97b330818618c" index="23" datatype="text" />
     <Column name="operation_mode" id="tblCol_c05d6615236a4796abe8fb5ccd49a80b" index="24" datatype="text" />
     <Column name="reserve_ind" id="reserve_ind" index="25" datatype="text" />
+    <Column name="reserve_retention_period_type" id="reserve_retention_period_type" index="26" datatype="text" />
+    <Column name="reserve_retention_period_value" id="reserve_retention_period_value" index="27" datatype="integer" />
   </Columns>
   <IndexesList />
   <EnrichmentList />

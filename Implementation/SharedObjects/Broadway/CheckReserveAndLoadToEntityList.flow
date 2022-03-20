@@ -8,13 +8,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Indicator of the task include reservation",
+                            "name": "Get Task Type",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_RESERVE_IND",
+                                        "const": "TASK_TYPE",
                                         "isDefault": false
                                     }
                                 ],
@@ -77,10 +77,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "Not An Extract Task",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "Equals",
+                                "parentType": "NotEquals",
                                 "inputs": [
                                     {
                                         "name": "a",
@@ -93,7 +93,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "false"
+                                        "const": "EXTRACT"
                                     }
                                 ],
                                 "outputs": []
@@ -161,53 +161,7 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Get Owner Of Entity even if the calling user",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "SELECT reserve_owner\r\nFROM public.tdm_reserved_entities\r\nWHERE entity_id = ${entityId}\r\nAND be_id = ${beId}\r\nAND env_id = ${envId}\r\n"
-                                    },
-                                    {
-                                        "name": "entityId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "beId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "envId",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -343,11 +297,11 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get Indicator of the task include reservation",
+                "actor": "Get Task Type",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Equals1",
+                "actor": "Not An Extract Task",
                 "name": "a"
             }
         },
@@ -363,31 +317,11 @@
         },
         {
             "leftPort": {
-                "actor": "Get BE_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Owner Of Entity even if the calling user",
-                "name": "beId"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get ENV_ID",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "Get Owner Of Entity",
-                "name": "envId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get ENV_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Owner Of Entity even if the calling user",
                 "name": "envId"
             }
         },
@@ -413,16 +347,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Owner Of Entity even if the calling user",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Const3",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Const3",
                 "name": "value"
             },
@@ -438,16 +362,6 @@
             },
             "rightPort": {
                 "actor": "Get Owner Of Entity",
-                "name": "entityId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_IID"
-            },
-            "rightPort": {
-                "actor": "Get Owner Of Entity even if the calling user",
                 "name": "entityId"
             }
         },

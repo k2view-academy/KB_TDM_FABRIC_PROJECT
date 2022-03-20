@@ -34,24 +34,56 @@ import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.*;
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
-	@desc("Gets regular (version_ind is false) active tasks (task_status and task_execution_status columns are 'Active') for a user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment roles:\r\n" +
+	@desc("Gets the list of regular active tasks (version_ind is 'false', task_status and task_execution_status columns are 'Active') for a user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment permissions:\r\n" +
 			"\r\n" +
 			"Admin Users:\r\n" +
-			"- Get all active tasks.\r\n" +
+			"===========\r\n" +
+			"- Get all active regular tasks.\r\n" +
 			"\r\n" +
-			"Owner Users:\r\n" +
-			"- Get all active extract tasks if the user is the owner of at least one source environment.\r\n" +
-			"- Get all active load tasks if the user is the owner of at least one source environment and one target environment.\r\n" +
-			"- Get all active extract tasks that do not require special permissions if the user has at least one Read TDM Environment role.\r\n" +
-			"- Get all active extract tasks that require special permissions if the user has at least one Read TDM Environment role with these permissions.\r\n" +
-			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
-			"- Get all active load tasks that require special permissions if the user has at least one Read TDM Environment role, and one Write TDM Environment role with these permissions.\r\n" +
 			"\r\n" +
 			"Tester Users:\r\n" +
-			"- Get all active extract tasks that do not require special permissions if the user has at least one Read TDM Environment role.\r\n" +
-			"- Get all active extract tasks that require special permissions if the user has at least one Read TDM Environment role with these permissions.\r\n" +
-			"- Get all active load tasks that do not require special permissions if the user has at least one Read TDM Environment role and one Write TDM Environment role.\r\n" +
-			"- Get all active load tasks that require special permissions if the user has at least one Read TDM environment role, and one Write TDM Environment role with these permissions.")
+			"===========\r\n" +
+			"\r\n" +
+			"Extract Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active tasks that do not require special permissions (that is, tasks that do not include reference tables, do not require up-to-date data, or that do not run on all entities) if the user or their group has a Read TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get all active tasks that include reference tables or that require up-to-date data if the user or their group has a Read TDM Environment permission set with these permissions on at least one TDM environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"\r\n" +
+			"Load Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active tasks that do not require special permissions (that is, tasks that do not include reference tables, do not include Synthetic or Random selection methods, tasks that do not have Sequence replacement, or tasks that do not include a delete of entities from the target system) if the user or their group has a Read TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs, and a Write TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get all active tasks that require special permissions if the user or their group has at least one Read TDM Environment permission set, and one Write TDM Environment permission set with these permissions and the source and target environments have the task's Business Entity (BE) and LUs.\r\n" +
+			"\r\n" +
+			"Delete Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active delete tasks if the user has at least one Write TDM Environment permission set with a permission to delete entities and the environment has the task's Business Entity (BE) and LUs.\r\n" +
+			"\r\n" +
+			"Reserve Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active reserve tasks if the the user has at least one Write TDM Environment permission set and the Max Number of Reserved Entities on Env setting is bigger than zero and the environment has the task's Business Entity (BE) and LUs.\r\n" +
+			"\r\n" +
+			"Owner Users:\r\n" +
+			"===========\r\n" +
+			"\r\n" +
+			"Extract Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active tasks if the user or their group is the owner of at least one source environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get active tasks based on the tester's selection logic, since an owner can also be attached to the TDM environment as a tester.\r\n" +
+			"\r\n" +
+			"Load Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active tasks if the user or their group is the owner of at least one source environment and one target environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get active tasks based on the tester's selection logic, since an owner can also be attached to the TDM environment as a tester.\r\n" +
+			"\r\n" +
+			"Delete Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active tasks if the user or their group is the owner of at least one target environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get all active delete tasks if the user has at least one Write TDM Environment permission set with a permission to delete entities and the environment has the task's Business Entity (BE) and LUs.\r\n" +
+			"\r\n" +
+			"Reserve Tasks:\r\n" +
+			"\r\n" +
+			"- Get all active tasks if the user or their group is the owner of at least one target environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get all active reserve tasks if the the user has at least one Write TDM Environment permission set and the Max Number of Reserved Entities on Env setting is bigger than zero.")
 	@webService(path = "regularTasksByUser", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -175,7 +207,7 @@ public class Logic extends WebServiceUserCode {
 						}
 					}
 					Boolean targetEnvFound = false;
-					if ("load".equalsIgnoreCase(taskType) && allTargetEnvs != null) {
+					if ( ("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType) ) && allTargetEnvs != null) {
 						// loop over user source envs
 						for (Map<String, Object> targetEnvMap : allTargetEnvs) {
 							String envId = "" + targetEnvMap.get("environment_id");
@@ -186,10 +218,14 @@ public class Logic extends WebServiceUserCode {
 							}
 						}
 					} 
-					 if ("extract".equalsIgnoreCase(taskType)){//Extract Task therfore there is no targetEnv to check
+					
+					if ("extract".equalsIgnoreCase(taskType)){//Extract Task therfore there is no targetEnv to check
 						targetEnvFound = true;
 					}
 					
+					if ("reserve".equalsIgnoreCase(taskType)) {//Reserve Only Task therfore there is no Source Env to check
+						sourceEnvFound = true;
+					}
 					if(sourceEnvFound && targetEnvFound) {
 						rowMap.put("task_title",taskTitle);
 						rowMap.put("task_id",Integer.parseInt(taskID));
@@ -213,27 +249,69 @@ public class Logic extends WebServiceUserCode {
 		}
 	}
 
-	@desc("Filters the tasks, returned for the user according the the input filtering parameters. The input is a dynamic JSON string. Currently it supports the following filtering parameters:\r\n" +
+	@desc("The API filters the returned tasks based on the input filtering parameters.\r\n" +
+			"It invokes either regularTasksByUser API to bring regular tasks or VersionTasksByUser API to bring data versioning (Data Flux) tasks. \r\n" +
+			"The selection of the API that is used to get the tasks for the user is based on the value of the version_ind input value: \r\n" +
 			"\r\n" +
-			"- task_type : LOAD/EXTRACT\r\n" +
-			"- version_ind : true/false\r\n" +
-			"- load_entity : true/false\r\n" +
-			"- delete_before_load : true/false\r\n" +
-			"- selection_method : below is the list of the valid values:\r\n" +
-			"    - 'L' (Entity list)\r\n" +
-			"    - 'P' or 'PR' (Parameters),\r\n" +
-			"    - 'S' (Synthetic),\r\n" +
-			"    - 'R' (Random)\r\n" +
+			"\t- If the version_ind is true (get data versioning tasks): call the /VersionTasksByUser API.\r\n" +
+			"\t- If the version_ind is false or empty: call the /regularTasksByUser API.\r\n" +
 			"\r\n" +
-			"- sync_mode : OFF/FORCE/ON\r\n" +
+			"The filteringParam input is a dynamic JSON string. It is an optional parameter. If is it not populated, the API returns all of the user's regular tasks.\r\n" +
 			"\r\n" +
-			"The JSON filtering parameter is optional. If is it not populated, the API returns all user's tasks.\r\n" +
+			"The following filtering parameters are supported: \r\n" +
 			"\r\n" +
-			"Input examples:\r\n" +
+			"- task_type:\r\n" +
+			"\t- Populate the task type to filter the returned tasks based on their type.\r\n" +
+			"\t- Valid values: \r\n" +
+			"\t\t- LOAD\r\n" +
+			"\t\t- EXTRACT\r\n" +
+			"\t\t- RESERVE\r\n" +
+			"\t\r\n" +
+			"\t- Notes:\r\n" +
 			"\r\n" +
-			"{\"task_type\":\"EXTRACT\", \"version_ind\":true, \"selection_method\":\"L\", \"sync_mode\":\"OFF\"}\r\n" +
+			"\t\t- To get a reserve-only task, populate the task type with RESERVE.\r\n" +
+			"\t\t- To get a delete-only task, populate the task type with LOAD, load_entity with false, and delete_before_load with true.\r\n" +
 			"\r\n" +
-			"{\"task_type\":\"EXTRACT\", \"version_ind\": false, \"load_entity\": true, \"delete_before_load\": true, \"selection_method\":\"L\", \"sync_mode\":\"FORCE\"}")
+			"\r\n" +
+			"- version_ind:\r\n" +
+			"\t- Populate with false to get regular tasks.\r\n" +
+			"\t- Populate with true to get data versioning tasks.\r\n" +
+			"\r\n" +
+			"\r\n" +
+			"- load_entity:\r\n" +
+			"\t- Populate with true to get tasks that load (provision) data to the target environment.\r\n" +
+			"\t- For other tasks (extract, reserve only, and delete only), populate this field with false.\r\n" +
+			"\t\r\n" +
+			"\r\n" +
+			"- delete_before_load: \r\n" +
+			"\t- Populate with true to get delete only or load&delete tasks.\r\n" +
+			"\t- Else, populate this parameter with false.\r\n" +
+			"\r\n" +
+			"\r\n" +
+			"- selection_method:\r\n" +
+			"The entity’s selection method:\r\n" +
+			"\t- 'L' (Entity list)\r\n" +
+			"\t- 'P' or 'PR' (Parameters)\r\n" +
+			"\t- 'S' (Entity Clone)\r\n" +
+			"\t- 'R' (Random)\r\n" +
+			"\t- 'C' (Custom Logic)\r\n" +
+			"\t- 'ALL' (Extract tasks: select a predefined entity list. Load Data Versioning tasks: select all entities of the selected version)\r\n" +
+			"\t- 'REF' (Reference Only)\r\n" +
+			"\r\n" +
+			"- sync_mode: \r\n" +
+			"\t- Populate this parameter to get tasks that override the default sync mode (sync ON which syncs new data based on the LU’s implementation sync policy):\r\n" +
+			"\t\t- OFF\r\n" +
+			"\t\t- FORCE\r\n" +
+			"\t\t\r\n" +
+			"API Input Examples:\r\n" +
+			"==================\r\n" +
+			"\r\n" +
+			"{\"task_type\":\"EXTRACT\", \"version_ind\":false, \"selection_method\":\"L\", \"sync_mode\":\"FORCE\"}\r\n" +
+			"\r\n" +
+			"{\"task_type\":\"LOAD\", \"version_ind\":false, \"load_entity\":false, \"delete_before_load\":true, \"selection_method\":\"L\"}\r\n" +
+			"\r\n" +
+			"Get all data versioning (Data Flux) load tasks for the user:\r\n" +
+			"{\"task_type\":\"LOAD\", \"version_ind\":true}")
 	@webService(path = "getTasksByParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +

@@ -230,7 +230,10 @@ public class Logic extends UserCode {
 					else // the task contains entities (but can still have reference tables in addition to the entities)
 					{
 					
-						Map<String, Object> batchStats = fnBatchStats(batchID);
+						Map<String, Object> batchStats = null;
+						if (batchID != null && !"".equals(batchID)) {
+							batchStats = fnBatchStats(batchID);
+						}
 						//log.info("fnCheckMigrateAndUpdateTDMDB - Returned output from fnRunBatchSummary: " + batchStats);
 						
 						if (batchStats != null) // response from migrate_summary command (which is run in wsMigrateStats ) should be returned with all levels (Node,DC,Cluster). if its returned without level DC - skip the update command and wait to next time the user job will be executed

@@ -194,6 +194,28 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Logger2",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "NOW: ${now}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "now",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -301,6 +323,28 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Logger3",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "After retention: ${now} "
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "now",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -401,6 +445,28 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "After date format: ${date}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "date",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -446,6 +512,21 @@
                                         "name": "b",
                                         "schema": {
                                             "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "GetNewEndDate2",
+                            "actorType": {
+                                "parentType": "GetNewEndDate",
+                                "inputs": [
+                                    {
+                                        "name": "retentionPeriodValue",
+                                        "schema": {
+                                            "type": "number"
                                         }
                                     }
                                 ],
@@ -500,7 +581,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "INSERT INTO TDM_RESERVED_ENTITIES (entity_id, be_id, env_id, task_id, task_execution_id, start_datetime, end_datetime, reserve_owner) \r\n(SELECT ${entityId}, ${beId}, ${envId}, ${taskId}, ${taskExecutionId}, timezone('UTC', now()), \r\n(CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'yyyy-MM-dd HH:mm:ss.SSS') END), ${userName})\r\nON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime = timezone('UTC', now()), end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'yyyy-MM-dd HH:mm:ss.SSS') END), reserve_owner = ${userName}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId}"
+                                        "const": "INSERT INTO TDM_RESERVED_ENTITIES (entity_id, be_id, env_id, task_id, task_execution_id, start_datetime, end_datetime, reserve_owner) \r\n(SELECT ${entityId}, ${beId}, ${envId}, ${taskId}, ${taskExecutionId}, timezone('UTC', now()), \r\n(CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END), ${userName})\r\nON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime = timezone('UTC', now()), end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END), reserve_owner = ${userName}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId}"
                                     },
                                     {
                                         "name": "entityId",
@@ -612,7 +693,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TDM_RESERVED_ENTITIES set task_id = ${taskID}, task_execution_id = ${taskExecID}, end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'yyyy-MM-dd HH:mm:ss.SSS') END)\r\nWHERE entity_id = ${entityID} AND be_id = ${beID} AND env_id = ${envID}"
+                                        "const": "UPDATE TDM_RESERVED_ENTITIES set task_id = ${taskID}, task_execution_id = ${taskExecID}, end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END)\r\nWHERE entity_id = ${entityID} AND be_id = ${beID} AND env_id = ${envID}"
                                     },
                                     {
                                         "name": "taskID",
@@ -770,11 +851,31 @@
         },
         {
             "leftPort": {
+                "actor": "Now",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Logger2",
+                "name": "now"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Reserve Retention Type__1",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "GetNewEndDate1",
+                "name": "retentionPeriodType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Reserve Retention Type__1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GetNewEndDate2",
                 "name": "retentionPeriodType"
             }
         },
@@ -960,12 +1061,32 @@
         },
         {
             "leftPort": {
+                "actor": "ToNumber1",
+                "name": "number"
+            },
+            "rightPort": {
+                "actor": "GetNewEndDate2",
+                "name": "retentionPeriodValue"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "GetNewEndDate1",
                 "name": "newEndDate"
             },
             "rightPort": {
                 "actor": "Date Format",
                 "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GetNewEndDate1",
+                "name": "newEndDate"
+            },
+            "rightPort": {
+                "actor": "Logger3",
+                "name": "now"
             }
         },
         {
@@ -990,12 +1111,12 @@
         },
         {
             "leftPort": {
-                "actor": "Const1",
-                "name": "value"
+                "actor": "Date Format",
+                "name": "string"
             },
             "rightPort": {
-                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
-                "name": "newEndDate"
+                "actor": "Logger1",
+                "name": "date"
             }
         },
         {
@@ -1004,7 +1125,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Update the End date",
+                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
                 "name": "newEndDate"
             }
         },
@@ -1049,12 +1170,35 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GetNewEndDate2",
+                "name": "nowDate"
+            },
+            "path": [
+                "start_datetime"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Compare Owner with User",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "Check if the user is the owner",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GetNewEndDate2",
+                "name": "newEndDate"
+            },
+            "rightPort": {
+                "actor": "Update the End date",
+                "name": "newEndDate"
             }
         }
     ]

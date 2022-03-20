@@ -364,7 +364,9 @@ public class SharedLogic {
 					for (Db.Row row : rs1) {
 						//Skip null values
 						if (row.cell(0) != null) {
-							values.append("\""+row.cell(0) +"\",");
+							String val = "" + row.cell(0);
+							val.replace("\"", "\\\"");
+							values.append("\""+ val +"\",");
 			            }
 			        }
 			
@@ -1227,7 +1229,7 @@ public class SharedLogic {
 	}
 
 	@out(name = "result", type = Map.class, desc = "")
-	public static Map<String,String> fnMigrateEntitiesForTdmExtract(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode, String selectionMethod) throws Exception {
+	public static Map<String,String> fnMigrateEntitiesForTdmExtract(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode, String selectionMethod, Long luId) throws Exception {
 		if (syncMode != "ON") {
 			fabric().execute("SET SYNC " + syncMode);
 		}
@@ -1307,33 +1309,6 @@ public class SharedLogic {
 		String closeSeparator = iidSeparators[1].toString();
 		
 		if (entitiesList != null && !entitiesList.isEmpty() && !entitiesList.equals("")) { //Extract task is for listed entities
-			/*for (int i = 0; i < entities_list_array.length; i++) {
-				String entityId = entities_list_array[i].toString();
-				if (!openSeparator.equals(""))
-					entityId = openSeparator + entityId;
-		
-				if (!closeSeparator.equals(""))
-					entityId += closeSeparator;
-		
-				if (versionInd.equals("true")) { //Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp>
-					entities_list_for_migrate += "'" + sourceEnvName + separator + entityId + separator + taskName + separator + timeStamp + "',";
-				} else { // no Versioning needed, entities format :<source_env>_<entity_id>
-					entities_list_for_migrate += "'" + sourceEnvName + separator + entityId + "',";
-				}
-			} // end of loop on entity array
-		
-			//remove last ,
-			entities_list_for_migrate = entities_list_for_migrate.substring(0, entities_list_for_migrate.length() - 1);
-		
-			// TDM 5.1- add the check of the input DC. Run the migrate with affinity only if the input DC is populated to support a migrate without affinity
-			if (dcName != null && !dcName.isEmpty()) {
-				migrateCommand = "batch " + luName + ".(?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
-				entityList = entities_list_for_migrate;
-			} else // input DC is empty or null
-			{
-				migrateCommand = "batch " + luName + ".(?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
-				entityList = entities_list_for_migrate;	
-			}*/
 			entityList = entitiesList;
 			if ("L".equals(selectionMethod)) {
 				if (dcName != null && !dcName.isEmpty()) {
@@ -1408,7 +1383,7 @@ public class SharedLogic {
 			} else {
 		
 				Map <String, String> batchStrings = getCommandForExtractAll(luName, taskExecutionId, sourceEnvName, versionInd, 
-														separator, openSeparator, closeSeparator, taskName, timeStamp, dcName);
+														separator, openSeparator, closeSeparator, taskName, timeStamp, dcName, luId);
 				migrateCommand = batchStrings.get("migrateCommand");
 				entityList = batchStrings.get("usingClause");
 			}
@@ -1673,7 +1648,8 @@ public class SharedLogic {
 	}
 
 	private static Map<String, String> getCommandForExtractAll(
-		String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, String closeSeparator, String taskName, String timeStamp, String dcName) throws Exception {
+		String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, 
+		String closeSeparator, String taskName, String timeStamp, String dcName, Long luId) throws Exception {
 
 		String modified_sql = "";		
 		String migrateCommand = "";
@@ -1686,13 +1662,13 @@ public class SharedLogic {
 			Object[] trnMigrateList_input2 = {luName, ""};
 			trnMigrateList_values = getTranslationValues("trnMigrateList", trnMigrateList_input2);
 		}
-		if (trnMigrateList_values.get("interface_name") == null) {
+		if ((trnMigrateList_values.get("interface_name") == null || trnMigrateList_values.get("ig_sql") == null) && trnMigrateList_values.get("external_table_flow") == null) {
 			throw new RuntimeException("No entry found for LU_NAME: " + luName + " in translation trnMigrateList");
 		}
 
-		String interface_name = "" + trnMigrateList_values.get("interface_name");
-		String sql = "" + trnMigrateList_values.get("ig_sql").replaceAll("\n", " ");
-		String externalTableFlow = "" + trnMigrateList_values.get("external_table_flow");
+		String interface_name = (trnMigrateList_values.get("interface_name") == null) ? "" : "" + trnMigrateList_values.get("interface_name");
+		String sql = (trnMigrateList_values.get("ig_sql") == null) ? "" : "" + trnMigrateList_values.get("ig_sql").replaceAll("\n", " ");
+		String externalTableFlow = (trnMigrateList_values.get("external_table_flow") == null) ? "" : "" + trnMigrateList_values.get("external_table_flow");
 		
 		if (externalTableFlow == null || externalTableFlow.isEmpty() || "null".equalsIgnoreCase(externalTableFlow)) {
 			String splitSQL[] = StringUtils.split(sql.toLowerCase());
@@ -1770,7 +1746,8 @@ public class SharedLogic {
 			
 		} else { //External Flow was supplied to create the entity list table.
 			
-			String broadwayCommand = "broadway " + luName + ".loadLuExternalEntityListTable"  +  " luName=" + luName + ", EXTERNAL_TABLE_FLOW=" + externalTableFlow;
+			String broadwayCommand = "broadway " + luName + ".loadLuExternalEntityListTableJob"  +  " LU_NAME=" + luName + ", EXTERNAL_TABLE_FLOW=" + externalTableFlow +
+				", TASK_EXEC_ID=" + taskExecutionId + ", LU_ID=" + luId;
 			//log.info("getCommandForExtractAll - broadwayCommand: " + broadwayCommand);
 			Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
 			String entityListTable = "" + entityListTableRec.get("value");

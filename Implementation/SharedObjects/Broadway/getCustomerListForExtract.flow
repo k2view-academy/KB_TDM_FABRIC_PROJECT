@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select public.activity.customer_id\r\nFrom public.cases\r\n  Inner Join public.activity On public.activity.activity_id =\r\n    public.cases.activity_id\r\nWhere public.cases.status = 'Open' And public.cases.case_type = 'Network Issue'\r\nLimit 1000"
+                                        "const": "Select distinct public.activity.customer_id\r\nFrom public.cases\r\n  Inner Join public.activity On public.activity.activity_id =\r\n    public.cases.activity_id\r\nWhere public.cases.status = 'Open' And public.cases.case_type = 'Network Issue'\r\nLimit 1000"
                                     }
                                 ],
                                 "outputs": [
@@ -61,7 +61,7 @@
                 {
                     "name": "Stage 2",
                     "dependsOnList": [],
-                    "isLast": 0,
+                    "isLast": 1,
                     "isTransactional": true,
                     "actors": [
                         {

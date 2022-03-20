@@ -3,19 +3,103 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Get Delete Only indicator",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "Get Delete Only Task Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_ONLY_TASK",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "Get Delete Only indicator",
+                    "name": "If Not A Delete Only Task",
                     "dependsOnList": [
-                        "Stage 1"
+                        "Get Delete Only indicator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Replace Sequence Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "If A Delete Only Task",
+                    "dependsOnList": [
+                        "Get Delete Only indicator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "ReleaseReservedEntity1",
+                            "actorType": {
+                                "parentType": "ReleaseReservedEntity",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if Reserve Task",
+                    "dependsOnList": [
+                        "If Not A Delete Only Task"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -41,27 +125,13 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Get Delete Only Task Indicator",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_DELETE_ONLY_TASK",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 },
                 {
-                    "name": "Stage 3",
+                    "name": "Not A Reserve Task",
                     "dependsOnList": [
-                        "Stage 1"
+                        "If Not A Delete Only Task"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -152,80 +222,32 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [
+                        "If A Delete Only Task"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "Release Entity For Delete Only Task",
+                    "name": "Do nothing",
                     "dependsOnList": [
-                        "Get Delete Only indicator"
+                        "Check if Reserve Task"
                     ],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Equals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "true"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "ReleaseReservedEntity1",
-                            "actorType": {
-                                "parentType": "ReleaseReservedEntity",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 },
                 {
-                    "name": "Get Replace Sequence",
+                    "name": "Check if Reserved by Other",
                     "dependsOnList": [
-                        "Get Delete Only indicator"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Get Replace Sequence Indicator",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "enable_sequences",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "Stage 3"
+                        "Not A Reserve Task"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -298,6 +320,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [
+                        "Stage 8"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -306,7 +337,7 @@
                 {
                     "name": "Stage 2",
                     "dependsOnList": [
-                        "Release Entity For Delete Only Task"
+                        "Do nothing"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -315,7 +346,7 @@
                 {
                     "name": "Reserve",
                     "dependsOnList": [
-                        "Get Replace Sequence"
+                        "Do nothing"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -382,7 +413,7 @@
                 {
                     "name": "Stage 5",
                     "dependsOnList": [
-                        "Stage 4"
+                        "Check if Reserved by Other"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -443,6 +474,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 10",
+                    "dependsOnList": [
+                        "Stage 9"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         }
@@ -455,6 +495,16 @@
             },
             "rightPort": {
                 "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Replace Sequence Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals2",
                 "name": "a"
             }
         },
@@ -506,16 +556,6 @@
             "rightPort": {
                 "actor": "Get Owner Of Entity",
                 "name": "userFabricRoles"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Replace Sequence Indicator",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Equals2",
-                "name": "a"
             }
         },
         {

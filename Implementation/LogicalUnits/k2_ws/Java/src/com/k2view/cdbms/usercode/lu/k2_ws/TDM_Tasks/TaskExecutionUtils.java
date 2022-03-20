@@ -43,7 +43,7 @@ public class TaskExecutionUtils {
 
         Object response;
 
-        if ("LOAD".equalsIgnoreCase(taskType)) {
+        if ("LOAD".equalsIgnoreCase(taskType) || "RESERVE".equalsIgnoreCase(taskType)) {
             if ("ALL".equalsIgnoreCase(i_luName)) {
                 //log.info("Creating report for Load Task");
                 response = graphit("LoadSummaryReport.graphit");
@@ -1109,7 +1109,7 @@ public class TaskExecutionUtils {
         for (int i = 0; i < list.size(); i += 1) {
             node = ((Map<String, Object>) list.get(i));
 
-            if (node.get("parentLuName") != null && !node.get("parentLuName").toString().equals("")) {
+            if (node.get("parentLuName") != null && !node.get("parentLuName").toString().equals("") && !node.get("parentLuName").toString().equals(node.get("luName").toString())) {
                 // if you have dangling branches check that map[node.parentId] exists
                 List<Map<String, Object>> children = (List<Map<String, Object>>) ((Map<String, Object>) list.get(map.get(node.get("parentLuName")))).get("children");
 
@@ -1280,15 +1280,15 @@ public class TaskExecutionUtils {
 		List<Map<String, Object>> entityList = new ArrayList<>();
 		String userName = sessionUser().name();
 		Set<String> fabricRolesSet = sessionUser().roles();
-		Boolean adminOrOwner = fnIsAdminOrOwner(envID, userName);
+		//Boolean adminOrOwner = fnIsAdminOrOwner(envID, userName);
 		String message  = "";
 		
-		if (adminOrOwner) {
+		/*if (adminOrOwner) {
 			//log.info("The user: " + userName + " is an admin Or owner");
 			result.put("listOfEntities", entityList);
 			result.put("message", message);
 			return result;
-		}
+		}*/
 		
 		//log.info("The user: " + userName + " is tester");
 		String entities_list_for_qry = "";

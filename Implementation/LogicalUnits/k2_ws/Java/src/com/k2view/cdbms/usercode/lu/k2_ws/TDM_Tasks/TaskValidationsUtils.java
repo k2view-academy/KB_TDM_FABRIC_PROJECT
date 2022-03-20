@@ -4,6 +4,7 @@ import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.fabric.common.Log;
+import com.k2view.fabric.common.Util;
 import org.json.JSONObject;
 import com.k2view.fabric.common.Json;
 
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static com.k2view.cdbms.shared.user.UserCode.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnIsAdminOrOwner;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TaskValidationsUtils {
@@ -248,15 +250,19 @@ public class TaskValidationsUtils {
         return errorMessages;
     }
 
-	static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation) {
+	static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) {
 		Map<String, String> errorMessages = new HashMap<>();
-		
+		Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
 		Map<String, Object> retentionDefinitions = TdmSharedUtils.fnGetRetentionPeriod();
 		Long maxRetentionPeriod = -1L;
 		if ("versioning".equals(validation)) {	
 			maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxRetentionPeriod"));
 		} else {
-			maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxReserveDays"));
+			if (adminOrOwner) {
+				maxRetentionPeriod = 0L;
+			} else {
+				maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxReserveDays"));
+			}
 		}
 			ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("retentionPeriodTypes");
 			//log.info("retentionPeriodTypes: " + retentionPeriodTypes);
@@ -273,11 +279,14 @@ public class TaskValidationsUtils {
 		}
 		
 		Double retentionValue = Double.parseDouble(value);
-		if (retentionValue <= 0) {
+		if (!adminOrOwner && retentionValue == 0) {
+			errorMessages.put("retention", "The retention period of a tester user cannot be zero");
+		}
+		if (retentionValue < 0) {
 			errorMessages.put("retention", "The retention period is negative");
 		} else {
 			Double retention = Double.parseDouble(unitToDay) * retentionValue;
-			if (retention > maxRetentionPeriod) {
+			if (maxRetentionPeriod > 0 && retention > maxRetentionPeriod) {
 				errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
 			}
 		}
@@ -288,8 +297,9 @@ public class TaskValidationsUtils {
 	static Map<String, String> fnValidateVersionExecIdAndGetDetails(Long dataVersionExecId, Map<String,Object> beLUs, String sourceEnvName) throws Exception {
         Map<String, String> result = new HashMap<>();
         Long beId = Long.parseLong("" + beLUs.get("be_id"));
-        List<String> luList =(List<String>)beLUs.get("LU List");
-		Db.Rows taskList = db("TDM").fetch("SELECT t.task_title, l.version_datetime, l.execution_status, lu.lu_name " +
+        List<String> luList =(ArrayList<String>)beLUs.get("LU List");
+		
+		Db.Rows taskList = db("TDM").fetch("SELECT t.task_title, to_char(l.version_datetime, 'YYYYMMDDHH24MISS') as version_datetime, l.execution_status, lu.lu_id " +
                             "FROM tasks t, task_execution_list l, tasks_logical_units lu, environments e " +
 							"WHERE l.task_execution_id = ? AND l.task_id = t.task_id AND l.be_id = ? " +
                             "AND l.task_id = lu.task_id AND l.lu_id = lu.lu_id AND e.environment_name = ? and e.environment_status = 'Active' " +
@@ -301,10 +311,11 @@ public class TaskValidationsUtils {
         }
 
 		for (Db.Row row : taskList) {
-		    String luName = "" + row.get("lu_name");
-		    if (luList.indexOf(luName) != -1) {
+		    String luId = "" + row.get("lu_id");
+			
+		    if (luList.indexOf(luId) != -1) {
                 if ("completed".equalsIgnoreCase("" + row.get("execution_status"))) {
-                    luList.remove("" + row.get("lu_name"));
+                    luList.remove(luId);
                     result.put("versionName", "" + row.get("task_title"));
                     result.put("versionDatetime", "" + row.get("version_datetime"));
                 } else {

@@ -24,7 +24,7 @@
                                                 },
                                                 "actions": {
                                                     "suppress": false,
-                                                    "log": true,
+                                                    "log": false,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
                                             }
@@ -42,7 +42,7 @@
                                     {
                                         "name": "syncMode",
                                         "schema": {
-                                            "type": "string"
+                                        "type": "string"
                                         }
                                     }
                                 ],
@@ -77,7 +77,7 @@
                                                 },
                                                 "actions": {
                                                     "suppress": false,
-                                                    "log": true,
+                                                    "log": false,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
                                             }
@@ -91,7 +91,14 @@
                             "name": "HandleEntityReservationAtStart1",
                             "actorType": {
                                 "parentType": "HandleEntityReservationAtStart",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "reserveInd",
+                                        "schema": {
+                                        "type": "string"
+                                        }
+                                    }
+								],
                                 "outputs": []
                             }
                         }
@@ -175,7 +182,7 @@
                                                 },
                                                 "actions": {
                                                     "suppress": false,
-                                                    "log": true,
+                                                    "log": false,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
                                             }
@@ -282,7 +289,7 @@
                                                 },
                                                 "actions": {
                                                     "suppress": false,
-                                                    "log": true,
+                                                    "log": false,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
                                             }
@@ -343,7 +350,7 @@
                                                 },
                                                 "actions": {
                                                     "suppress": false,
-                                                    "log": true,
+                                                    "log": false,
                                                     "flowName": "PopulateTableErrorsWithFailed"
                                                 }
                                             }

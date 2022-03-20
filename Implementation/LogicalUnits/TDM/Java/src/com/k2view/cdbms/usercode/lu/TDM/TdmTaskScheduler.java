@@ -43,7 +43,7 @@ public class TdmTaskScheduler {
             String sourceEnvName = Util.rte(() -> resultSet.getString("source_env_name"));
             String sourceEnvID = Util.rte(() -> resultSet.getString("source_environment_id"));
             String versionInd = Util.rte(() -> resultSet.getString("version_ind"));
-            //Long numOfProcessedEntities = Util.rte(() -> resultSet.getLong("number_of_entities_to_copy"));
+            //Long numOfProcessedEntities = Util.rte(() -> resultSet.getLong("num_of_entities"));
             Timestamp schedulingEndDate = Util.rte(() -> resultSet.getTimestamp("scheduling_end_date"));
             Timestamp localTime = (Timestamp) Util.rte(() -> db("TDM").fetch("SELECT localtimestamp").firstValue());
 			String taskCreatedBy = Util.rte(() -> resultSet.getString("task_created_by"));

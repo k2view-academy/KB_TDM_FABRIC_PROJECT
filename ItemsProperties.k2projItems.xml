@@ -13,11 +13,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>CustomLogicFlows.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>GetCustomLogicFlows.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\GetCustomLogicFlows.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
@@ -360,6 +355,11 @@
     <ProjectItemProp>
       <NodeName>setTargetEntityId_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setTargetEntityId_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CustomLogicFlows.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
