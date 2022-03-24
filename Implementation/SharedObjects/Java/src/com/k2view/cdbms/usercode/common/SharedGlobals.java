@@ -71,10 +71,10 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String MAX_NUMBER_OF_ENTITIES_IN_LIST = "100";
 
-	@desc("Each Instance can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
+	@desc("Each Instance can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Hours, Days, Weeks, or Years")
 	@category("TDM")
 	public static String TDM_LU_RETENTION_PERIOD_TYPE = "Days";
-	@desc("The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE")
+	@desc("The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE. Populate this global with zero or empty value to avoid setting a TTL on the TDM LUIs.")
 	@category("TDM")
 	public static String TDM_LU_RETENTION_PERIOD_VALUE = "10";
 

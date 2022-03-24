@@ -22,6 +22,20 @@
                             }
                         },
                         {
+                            "name": "Get Replace Sequence Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Get BE_ID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -70,30 +84,78 @@
         {
             "stages": [
                 {
+                    "name": "Need to Check Reservation?",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JavaScript1",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var result = true;\r\nif (taskType == 'EXTRACT' || sequenceInd == 'true') {\r\n    result = false;\r\n}\r\nresult;",
+                                            "script": "var result = true;\n\nif (taskType == 'EXTRACT' || sequenceInd == 'true') {\n  result = false;\n}\n\nresult;"
+                                        }
+                                    },
+                                    {
+                                        "name": "taskType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceInd",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Check if Reserved by other user",
                     "dependsOnList": [
-                        "Get Reserve Keys"
+                        "Need to Check Reservation?"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Not An Extract Task",
+                            "name": "Equals1",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "NotEquals",
+                                "parentType": "Equals",
                                 "inputs": [
                                     {
                                         "name": "a",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "boolean"
                                         }
                                     },
                                     {
                                         "name": "b",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "boolean"
                                         },
-                                        "const": "EXTRACT"
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
@@ -156,7 +218,7 @@
                 {
                     "name": "Check if Reseved",
                     "dependsOnList": [
-                        "Get Reserve Keys"
+                        "Need to Check Reservation?"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -168,7 +230,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Entity Reserved by Other?",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -204,7 +266,7 @@
                 {
                     "name": "check if Reserved by other",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Entity Reserved by Other?"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -225,7 +287,7 @@
                             }
                         },
                         {
-                            "name": "Const1",
+                            "name": "Output Zero",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -250,16 +312,16 @@
                     ]
                 },
                 {
-                    "name": "Stage 3",
+                    "name": "Insert Entity to Entity List table",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Entity Reserved by Other?"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
                         {
-                            "name": "insertToLuExternalEntityList1",
+                            "name": "insert To Lu External Entity List",
                             "actorType": {
                                 "parentType": "insertToLuExternalEntityList",
                                 "inputs": [],
@@ -267,7 +329,7 @@
                             }
                         },
                         {
-                            "name": "Const2",
+                            "name": "Output 1",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -301,8 +363,18 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Not An Extract Task",
-                "name": "a"
+                "actor": "JavaScript1",
+                "name": "taskType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Replace Sequence Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "sequenceInd"
             }
         },
         {
@@ -337,6 +409,16 @@
         },
         {
             "leftPort": {
+                "actor": "JavaScript1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Owner Of Entity",
                 "name": "result"
             },
@@ -367,7 +449,7 @@
         },
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "Output Zero",
                 "name": "value"
             },
             "rightPort": {
@@ -381,7 +463,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "insertToLuExternalEntityList1",
+                "actor": "insert To Lu External Entity List",
                 "name": "LU_NAME"
             }
         },
@@ -391,13 +473,13 @@
                 "name": "SOURCE_IID"
             },
             "rightPort": {
-                "actor": "insertToLuExternalEntityList1",
+                "actor": "insert To Lu External Entity List",
                 "name": "SOURCE_IID"
             }
         },
         {
             "leftPort": {
-                "actor": "Const2",
+                "actor": "Output 1",
                 "name": "value"
             },
             "rightPort": {

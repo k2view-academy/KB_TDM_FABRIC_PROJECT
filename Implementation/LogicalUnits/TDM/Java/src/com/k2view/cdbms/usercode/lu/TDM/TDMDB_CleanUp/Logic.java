@@ -39,36 +39,15 @@ public class Logic extends UserCode {
 		String paramName = "";
 		String paramValue = "";
 		String retentionDate = "";
-		String retentionPeriod = "";
-		String activeInd = "";
 		
 		//Set the SQL parameter
-		String queryString = "SELECT * FROM tdm_general_parameters where UPPER(param_name) in ('CLEANUP_ACTIVE_IND', 'CLEANUP_RETENTION_PERIOD')";
+		String queryString = "SELECT param_value FROM tdm_general_parameters where UPPER(param_name) = 'CLEANUP_RETENTION_PERIOD'";
 		
 		//Execute the query
-		Db.Rows rows = db("TDM").fetch(queryString);
+		String retentionPeriod = "" + db("TDM").fetch(queryString).firstValue();
 		
-		for (Db.Row row : rows) {
-			paramName = "" + row.get("param_name");
-			paramValue = "" + row.get("param_value");
-			//log.info("param_name: " + paramName + ", param_value: " + paramValue);
-			if (paramName.equalsIgnoreCase("CLEANUP_ACTIVE_IND")) {
-				activeInd = paramValue;
-			} else if (paramName.equalsIgnoreCase("CLEANUP_RETENTION_PERIOD")) {
-				retentionPeriod = paramValue;
-			}
-		}
-		 if (rows != null) {
-			 rows.close();
-		 }
-		if (activeInd == null || retentionPeriod == null) {
-			throw new Exception("2 and only 2 entries in tdm_general_parameters are expected for CleanUp process");
-		}
-		
-		// Check if the Clean Up Functionality is activated
-		if (!activeInd.equalsIgnoreCase("true")) {
-			log.info("TDMDB_CleanUp - The TDMDB CleanUp is disabled, in order to enable it, change the active_ind in table tdm_general_parameters in TDM DB");
-			return;
+		if (retentionPeriod == null || "null".equalsIgnoreCase(retentionPeriod) || "".equals(retentionPeriod)) {
+			throw new Exception("tdm_general_parameters is missing parameter for CleanUp process");
 		}
 		
 		queryString = "SELECT date_trunc('day', NOW() - interval ' " + retentionPeriod + " MONTH')";

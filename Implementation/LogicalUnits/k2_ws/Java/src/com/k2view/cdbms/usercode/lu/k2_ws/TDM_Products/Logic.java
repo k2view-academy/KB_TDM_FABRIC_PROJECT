@@ -20,14 +20,29 @@ import java.util.List;
 import java.util.Map;
 
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
+import java.util.*;
+import java.sql.*;
+import java.math.*;
+import java.io.*;
+import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
+import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.k2view.cdbms.func.oracle.OracleRownum;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.usercode.common.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	final static String schema="public";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 
-	@desc("Gets all TDM Products (Active and Inactive) to populate Products window")
-	@webService(path = "products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets all TDM System (products), Active and Inactive, to populate Systems window")
+	@webService(path = "products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -85,8 +100,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets a Product by a product id.")
-	@webService(path = "product/{prodId}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets a System (product) by a product id.")
+	@webService(path = "product/{prodId}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"product_versions\": \"1.0,2.0\",\r\n" +
@@ -140,7 +155,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Creates a TDM Product.\r\n" +
+	@desc("Creates a TDM System (product).\r\n" +
 			"\r\n" +
 			"Notes:\r\n" +
 			"\r\n" +
@@ -149,7 +164,7 @@ public class Logic extends WebServiceUserCode {
 			"> At least one version must be set for a product. Multiple product versions can also be set, seperaed by a comma. For example: \"1.5,1.0,2.0\".\r\n" +
 			"\r\n" +
 			"> Each Active product gets a unique product name.")
-	@webService(path = "product", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "product", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 16\r\n" +
@@ -201,7 +216,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Updates the Product's description, vendor, or versions. Product versions are separated by a comma.\r\n" +
+	@desc("Updates the System's (product) description, vendor, or versions. The versions are separated by a comma.\r\n" +
 			"Example request body:\r\n" +
 			"{\r\n" +
 			"  \"product_name\": \"PROD\",\r\n" +
@@ -209,7 +224,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"product_vendor\": \"verndor\",\r\n" +
 			"  \"product_versions\": \"1.0,2.0\"\r\n" +
 			"}")
-	@webService(path = "product/{prodId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "product/{prodId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
@@ -256,8 +271,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of Logical Units related to a given Product.")
-	@webService(path = "product/{prodId}/logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets the list of Logical Units related to a given System (product).")
+	@webService(path = "product/{prodId}/logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -297,7 +312,7 @@ public class Logic extends WebServiceUserCode {
 		
 			for(Db.Row row:rows) {
 				productLogicalUnit=new HashMap<>();
-
+		
 				//product_logical_units
 				productLogicalUnit.put("lu_name", row.get("lu_name"));
 				productLogicalUnit.put("lu_description", row.get("lu_description"));
@@ -333,8 +348,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets a list of Logical Units (LUs) that are not attached to any TDM Product and therefore can be attached to the given TDM product. This API is called when attaching a combination of a Business Entity (BE) and an LU to a given TDM product.")
-	@webService(path = "logicalunitswithoutproduct", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets a list of Logical Units (LUs) that are not attached to any TDM System (product) and available to be attached to the given TDM system. This API is called when attaching a combination of a Business Entity (BE) and an LU to a given TDM system.")
+	@webService(path = "logicalunitswithoutproduct", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -384,7 +399,7 @@ public class Logic extends WebServiceUserCode {
 				productLogicalUnit.put("lu_parent_name", row.get("lu_parent_name"));
 				productLogicalUnit.put("product_id", Long.parseLong(row.get("product_id").toString()));
 				productLogicalUnit.put("lu_dc_name", row.get("lu_dc_name"));
-
+		
 				//business_entities
 				productLogicalUnit.put("be_name", row.get("be_name"));
 				productLogicalUnit.put("be_description", row.get("be_description"));
@@ -410,8 +425,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Deletes a Product")
-	@webService(path = "product/{prodId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Deletes a System (product)")
+	@webService(path = "product/{prodId}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
@@ -458,7 +473,7 @@ public class Logic extends WebServiceUserCode {
 					"env_product_interface_status=(?) " +
 					"WHERE product_id = " + prodId;
 				db("TDM").execute(updateEnvironmentProductInterfaces,"Inactive");
-
+		
 			}
 		
 			{
@@ -502,8 +517,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the list of Active environments with the input Product.")
-	@webService(path = "product/{productId}/envcount", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets the list of Active environments with the input System (product).")
+	@webService(path = "product/{productId}/envcount", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -598,8 +613,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets active Products With at least one LU. This API is called when adding a product to a TDM environment.")
-	@webService(path = "productsWithLUs", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets active System (products) that have at least one LU. This API is called when adding a System (product) to a TDM environment.")
+	@webService(path = "productsWithLUs", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +

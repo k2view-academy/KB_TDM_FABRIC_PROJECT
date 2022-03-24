@@ -510,7 +510,7 @@ public class TdmExecuteTask {
             case "L": // In case the task lists the entities to run
                String versionParams = VERSION_IND.get(taskProperties).equals("true") ? 
 					separator + SELECTED_VERSION_TASK_NAME.get(taskProperties) + separator + SELECTED_VERSION_DATETIME.get(taskProperties) : "";
-				entitiesList.replaceAll("\\s+","");
+				entitiesList = entitiesList.replaceAll("\\s+","");
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
 				
 				for (String entityID : entitiesListArray) {

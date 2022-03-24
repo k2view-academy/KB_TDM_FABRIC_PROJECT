@@ -1357,4 +1357,26 @@ public class TaskExecutionUtils {
 		String sql = "INSERT INTO task_globals (task_id, global_name, global_value) VALUES (?, ?, ?)";
 		db("TDM").execute(sql, taskId, globalName, globalValue);
 	}
+
+	public static Db.Rows fnGetTasks(String task_ids) throws Exception {
+		String sql= "SELECT tasks.*,environments.*,business_entities.*,environment_owners.user_name as owner,environment_owners.user_type as owner_type,environment_role_users.username as tester,environment_role_users.user_type as tester_type,environment_role_users.role_id  as role_id_orig, tasks.sync_mode," +
+			"( SELECT COUNT(*) FROM task_execution_list WHERE task_execution_list.task_id = tasks.task_id AND" +
+			" ( UPPER(task_execution_list.execution_status)" +
+			"  IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED'))) AS executioncount, " +
+			" ( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount,  " +
+			" ( SELECT string_agg(process_name::text, ',') FROM TASKS_POST_EXE_PROCESS WHERE TASKS_POST_EXE_PROCESS.task_id = tasks.task_id ) AS processnames " +
+			" FROM tasks LEFT JOIN environments" +
+			" ON (tasks.environment_id = environments.environment_id) LEFT JOIN business_entities ON" +
+			" (tasks.be_id = business_entities.be_id) LEFT JOIN environment_owners ON" +
+			" (tasks.environment_id = environment_owners.environment_id) " +
+			" LEFT JOIN environment_role_users ON" +
+			" (tasks.environment_id = environment_role_users.environment_id)";
+		
+		if(task_ids!=null&&task_ids.length()>0) {
+			sql+= " WHERE tasks.task_id in (" + task_ids + ")";
+		}
+	
+		Db.Rows result = db("TDM").fetch(sql);
+		return result;
+	}
 }

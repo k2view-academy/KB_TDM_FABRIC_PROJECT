@@ -253,24 +253,24 @@ public class Logic extends WebServiceUserCode {
 			"It invokes either regularTasksByUser API to bring regular tasks or VersionTasksByUser API to bring data versioning (Data Flux) tasks. \r\n" +
 			"The selection of the API that is used to get the tasks for the user is based on the value of the version_ind input value: \r\n" +
 			"\r\n" +
-			"\t- If the version_ind is true (get data versioning tasks): call the /VersionTasksByUser API.\r\n" +
-			"\t- If the version_ind is false or empty: call the /regularTasksByUser API.\r\n" +
+			"- If the version_ind is true (get data versioning tasks): call the /VersionTasksByUser API.\r\n" +
+			"- If the version_ind is false or empty: call the /regularTasksByUser API.\r\n" +
 			"\r\n" +
 			"The filteringParam input is a dynamic JSON string. It is an optional parameter. If is it not populated, the API returns all of the user's regular tasks.\r\n" +
 			"\r\n" +
 			"The following filtering parameters are supported: \r\n" +
 			"\r\n" +
 			"- task_type:\r\n" +
-			"\t- Populate the task type to filter the returned tasks based on their type.\r\n" +
-			"\t- Valid values: \r\n" +
-			"\t\t- LOAD\r\n" +
-			"\t\t- EXTRACT\r\n" +
-			"\t\t- RESERVE\r\n" +
+			"     - Populate the task type to filter the returned tasks based on their type.\r\n" +
+			"     - Valid values: \r\n" +
+			"\t- LOAD\r\n" +
+			"\t- EXTRACT\r\n" +
+			"\t- RESERVE\r\n" +
 			"\t\r\n" +
-			"\t- Notes:\r\n" +
+			"   - Notes:\r\n" +
 			"\r\n" +
-			"\t\t- To get a reserve-only task, populate the task type with RESERVE.\r\n" +
-			"\t\t- To get a delete-only task, populate the task type with LOAD, load_entity with false, and delete_before_load with true.\r\n" +
+			"       - To get a reserve-only task, populate the task type with RESERVE.\r\n" +
+			"       - To get a delete-only task, populate the task type with LOAD, load_entity with false, and delete_before_load with true.\r\n" +
 			"\r\n" +
 			"\r\n" +
 			"- version_ind:\r\n" +
@@ -297,6 +297,7 @@ public class Logic extends WebServiceUserCode {
 			"\t- 'C' (Custom Logic)\r\n" +
 			"\t- 'ALL' (Extract tasks: select a predefined entity list. Load Data Versioning tasks: select all entities of the selected version)\r\n" +
 			"\t- 'REF' (Reference Only)\r\n" +
+			"\r\n" +
 			"\r\n" +
 			"- sync_mode: \r\n" +
 			"\t- Populate this parameter to get tasks that override the default sync mode (sync ON which syncs new data based on the LU’s implementation sync policy):\r\n" +

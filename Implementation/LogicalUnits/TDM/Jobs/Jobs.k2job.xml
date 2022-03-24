@@ -9,7 +9,7 @@
     </Job>
     <Job methodName="TDMDB_CleanUp" jobName="TDMDB_CleanUp" active="true">
       <ScheduleType>TimeInterval</ScheduleType>
-      <ExecuteEvery>2.00:00:00</ExecuteEvery>
+      <ExecuteEvery>7.00:00:00</ExecuteEvery>
       <InputParams />
     </Job>
     <Job methodName="tdmCopyRefTablesForTDM" jobName="tdmCopyRefTablesForTDM" active="true">

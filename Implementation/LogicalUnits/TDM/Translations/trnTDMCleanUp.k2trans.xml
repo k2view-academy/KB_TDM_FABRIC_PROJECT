@@ -323,6 +323,14 @@
           <CLEANUP_LOGIC></CLEANUP_LOGIC>
           <SEQ>29</SEQ>
         </trnTDMCleanUp>
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp26" msdata:rowOrder="25">
+          <TABLE_NAME>TDM_LU_TYPE_RELATION_EID</TABLE_NAME>
+          <CLEANUP_ORDER>1</CLEANUP_ORDER>
+          <CLEANUP_IND>false</CLEANUP_IND>
+          <CLEANUP_STATEMENT>DELETE FROM TDM_LU_TYPE_RELATION_EID r where version_name &lt;&gt; '' and version_name||''||to_char(version_datetime, 'YYYYMMDDHH24MISS')||''||source_env in (select t.task_title||''||to_char(l.version_datetime, 'YYYYMMDDHH24MISS')||''||l.source_env_name from tasks t, task_Execution_list l where t.task_id = l.task_id and l.version_expiration_date &lt;= now())</CLEANUP_STATEMENT>
+          <CLEANUP_LOGIC></CLEANUP_LOGIC>
+          <SEQ>30</SEQ>
+        </trnTDMCleanUp>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

@@ -25,7 +25,6 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnIsOwner;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.fnInsertActivity;
@@ -37,7 +36,7 @@ import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermi
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
-	@desc("Get all reserved entities related to the envrironments of the user.")
+	@desc("Get all reserved entities related to the user's envrironments.")
 	@webService(path = "getReservedEntities", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
@@ -317,7 +316,29 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Release reserved Entities if user is allowed by deleting from table")
+	@desc("Release the input entity list. The release activity deletes the entities from the TDM reservation table (TDM_RESERVED_ENTITIES).\r\n" +
+			"\r\n" +
+			"Each entity must have the following parameters:\r\n" +
+			"- \"environment_name\": the name of the environment where the entity is reserved,\r\n" +
+			"- \"be_name\": the name of the Business Entity of the entity ID,\r\n" +
+			"- \"target_entity_id\": the entity ID.\r\n" +
+			"\r\n" +
+			"Request BODY example: \r\n" +
+			" \r\n" +
+			"{\r\n" +
+			"  \"listOfEntities\": [\r\n" +
+			"    {\r\n" +
+			"      \"environment_name\": \"TAR\",\r\n" +
+			"      \"be_name\":\"Customer\",\r\n" +
+			"      \"target_entity_id\":\"4984\"\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"environment_name\": \"TAR\",\r\n" +
+			"      \"be_name\":\"Customer\",\r\n" +
+			"      \"target_entity_id\":\"480\"\r\n" +
+			"    }\r\n" +
+			"  ]\r\n" +
+			"}")
 	@webService(path = "release/listOfEntities", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsReleaseReservedEntities(@param(required=true) List<Map<String,String>> listOfEntities) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
@@ -373,7 +394,29 @@ public class Logic extends WebServiceUserCode {
 
 
 
-	@desc("Add a note to reserved entities")
+	@desc("Add a note to the input list of reserved entities.\r\n" +
+			"Each entity must have the following parameters:\r\n" +
+			"- \"environment_name\": the name of the environment where the entity is reserved,\r\n" +
+			"- \"be_name\": the name of the Business Entity of the entity ID,\r\n" +
+			"- \"target_entity_id\": the entity ID.\r\n" +
+			"\r\n" +
+			"Request BODY example: \r\n" +
+			" \r\n" +
+			"{\r\n" +
+			"  \"newNote\": \"Testing the entity reservation!\",\r\n" +
+			"  \"listOfEntities\": [\r\n" +
+			"    {\r\n" +
+			"      \"environment_name\": \"TAR\",\r\n" +
+			"      \"be_name\":\"Customer\",\r\n" +
+			"      \"target_entity_id\":\"4984\"\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"environment_name\": \"TAR\",\r\n" +
+			"      \"be_name\":\"Customer\",\r\n" +
+			"      \"target_entity_id\":\"480\"\r\n" +
+			"    }\r\n" +
+			"  ]\r\n" +
+			"}")
 	@webService(path = "addNote", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsAddNoteToReservedEntities(@param(required=true) String newNote, @param(required=true) List<Map<String,String>> listOfEntities) throws Exception {
 		//log.info("Starting wsAddNoteToReservedEntities");
@@ -462,8 +505,18 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Extend the reservation of the given entity to the given date. If the user a tester then the new end date cannot exceed the limitation of the testers reservation period defined in tdm_general_parameters table.\r\n" +
-			"Example of inputs:\r\n" +
+	@desc("Update the reservation period of the input entity list: update the reservation's expiration date with the input date. If the user is added to the environment as a tester,  the new end date cannot exceed the limitation of the testers reservation period defined in tdm_general_parameters TDM table. For example, if the maximum reservation period is 10 days and the entity has been reserved on 10-MAR-22, the maximum expiration date on this entity can be set to 20-MAR-22.\r\n" +
+			"\r\n" +
+			"Each entity must have the following parameters:\r\n" +
+			"- \"environment_name\": the name of the environment where the entity is reserved,\r\n" +
+			"- \"be_name\": the name of the Business Entity of the entity ID,\r\n" +
+			"- \"target_entity_id\": the entity ID.\r\n" +
+			"\r\n" +
+			"The newEndDate must be populated with the following format: 'YYYYMMDDHHMMSS'.\r\n" +
+			"\r\n" +
+			"\r\n" +
+			"Request BODY examples: \r\n" +
+			"\r\n" +
 			"{\r\n" +
 			"  \"newEndDate\": \"20220210000000\",\r\n" +
 			"  \"listOfEntities\": [\r\n" +
@@ -473,6 +526,11 @@ public class Logic extends WebServiceUserCode {
 			"      \"target_entity_id\": \"3\"\r\n" +
 			"    }\r\n" +
 			"  ]\r\n" +
+			"}\r\n" +
+			"\r\n" +
+			"{\r\n" +
+			"  \"newEndDate\": \"20220328235900\",\r\n" +
+			"  \"listOfEntities\": [{\"environment_name\":\"TAR\",\"be_name\":\"Customer\",\"target_entity_id\":\"192\"},{\"environment_name\":\"TAR\",\"be_name\":\"Customer\",\"target_entity_id\":\"3097\"}]\r\n" +
 			"}")
 	@webService(path = "extend", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsExtendReservedEntities(@param(required=true) String newEndDate, @param(required=true) List<Map<String,String>> listOfEntities) throws Exception {
@@ -616,28 +674,50 @@ public class Logic extends WebServiceUserCode {
 
 
 
-	@desc("Validate if the given retention period does not exceed the max retention period allowed for user. Admin and Owner do not have limit\r\n" +
-			"If retention unit and value are given then validate by them else vailidate by given new end date.\r\n" +
-			"If the entities are already reseved by the user check against the existing start datetiime else check against the current datetime.\r\n" +
+	@desc("Validate if the given retention period on the input entity list and environment does not exceed the max retention period allowed for user. An admin user of the environment's owner can set an unlimited retention period.\r\n" +
 			"\r\n" +
-			"Request body example:\r\n" +
+			"If the entities are already reserved by the user, check the new expiration date against the existing start reservation date. Else, check the retention period against the current Datetime.\r\n" +
+			"\r\n" +
+			"The validated retention period can be populated either by the combination of retentionUnit and retentionValue input parameters or by populating the newEndDateTime parameter. If the retention unit and values are populated, validate the reservation period based on these parameter. Else, validate the reservation period based on the input newEndDateTime.\r\n" +
+			"\r\n" +
+			"\r\n" +
+			"Request BODY examples:\r\n" +
+			"\r\n" +
+			"Example 1: populate the retention unit and value parameters:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"  \"retentionUnit\": \"Days\",\r\n" +
-			"  \"retentionValue\": 8,\r\n" +
-			"  \"newEndDateTime\": \"20220201000000\",\r\n" +
-			"  \"listOfEntities\": [\r\n" +
-			"    {\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
-			"      \"be_name\": \"BE\",\r\n" +
-			"      \"target_entity_id\": \"1\"\r\n" +
-			"    },\r\n" +
+			"\t\"retentionUnit\": \"Days\",\r\n" +
+			"\t\"retentionValue\": 8,\r\n" +
+			"\t\"listOfEntities\": [\r\n" +
+			"\t{\r\n" +
+			"\t\t\"environment_name\": \"TAR\",\r\n" +
+			"\t\t\"be_name\": \"Customer\",\r\n" +
+			"\t\t\"target_entity_id\": \"1\"\r\n" +
+			"\t},\r\n" +
+			"\t{\r\n" +
+			"\t\t\"environment_name\": \"TAR\",\r\n" +
+			"\t\t\"be_name\": \"Customer\",\r\n" +
+			"\t\t\"target_entity_id\": \"2\"\r\n" +
+			"\t}\r\n" +
+			"\t]\r\n" +
+			"}\r\n" +
+			"\r\n" +
+			"Example 2: populate the new newEndDateTime parameter:\r\n" +
+			"\r\n" +
 			"{\r\n" +
-			"      \"environment_name\": \"TAR\",\r\n" +
-			"      \"be_name\": \"BE\",\r\n" +
-			"      \"target_entity_id\": \"2\"\r\n" +
-			"    }\r\n" +
-			"  ]\r\n" +
+			"\t\"newEndDateTime\": \"20220218000000\",\r\n" +
+			"\t\"listOfEntities\": [\r\n" +
+			"\t{\r\n" +
+			"\t\t\"environment_name\": \"TAR\",\r\n" +
+			"\t\"be_name\": \"Customer\",\r\n" +
+			"\t\"target_entity_id\": \"1\"\r\n" +
+			"\t},\r\n" +
+			"\t{\r\n" +
+			"\t\"environment_name\": \"TAR\",\r\n" +
+			"\t\"be_name\": \"Customer\",\r\n" +
+			"\t\"target_entity_id\": \"2\"\r\n" +
+			"\t}\r\n" +
+			"\t]\r\n" +
 			"}")
 	@webService(path = "validatereserveretentionperiod", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -794,9 +874,9 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Validate for each input entity if it is reserved and if it is reserved by the given user. If no user is given then check the calling user.\r\n" +
+	@desc("Validate each input entity ID if it is reserved for another user in the input environment. If the entity is reserved for another user in the environment, return a failure on the entity.\r\n" +
 			"\r\n" +
-			"Request body example:\r\n" +
+			"Request BODY example:\r\n" +
 			"\r\n" +
 			"{\r\n" +
 			"  \"beID\": \"1\",\r\n" +
@@ -811,9 +891,7 @@ public class Logic extends WebServiceUserCode {
 			"    {\r\n" +
 			"      \"target_entity_id\": \"4\"\r\n" +
 			"    }\r\n" +
-			"\r\n" +
-			"  ],\r\n" +
-			"  \"userName\": \"admin\"\r\n" +
+			"  ]\r\n" +
 			"}")
 	@webService(path = "validateReservedEntitiesList", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -868,7 +946,21 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Validate if the user still have the capacity to resrve the given number of reserved entities")
+	@desc("A tester user can reserve a limited number of entities per Business Entity and environment. The maximum number of reserved entities is set in the Environment permission set attached to the user. Admin and environment owners can reserve an unlimited number of entities in the environment. The API performs the following validation if the user is not an admin user and is not the owner of the environment:\r\n" +
+			"\r\n" +
+			"Get the Write permission set attached to the user. If the user does not have a Write permission set in the environment, an exception is thrown by the API.\r\n" +
+			"\r\n" +
+			"Sum the input number of entities with the number of entities that are already reserved by the user in the environment (if they exist). Validate that the the total number of reserved entities does not exceed the user's permissions.\r\n" +
+			"\r\n" +
+			"Example:\r\n" +
+			"\r\n" +
+			"- The user can reserve up to 70 customers on ST1.\r\n" +
+			"\r\n" +
+			"- The user already has 40 customers reserved on ST1.\r\n" +
+			"\r\n" +
+			"- The user asks to reserve 35 entities in the task: 40+35 = 75.\r\n" +
+			"\r\n" +
+			"- The API returns an error since the user cannot exceed a total of 70 customers (40 + 30) in the task.")
 	@webService(path = "validatenoofreserved", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsValidateNoOfReservedEntities(@param(required=true) Integer noOfEntities, @param(required=true) String envName, @param(required=true) String beName) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
@@ -903,7 +995,7 @@ public class Logic extends WebServiceUserCode {
 			"where env_id = ? and be_id = ? and reserve_owner = ? and end_datetime > CURRENT_TIMESTAMP";
 		
 		List<Map<String,Object>> targetRolesList = new ArrayList<>();
-		List<Map<String,Object>> rolesList = (List<Map<String, Object>>)((Map<String,Object>)wsGetListOfEnvsByUser()).get("result");
+		List<Map<String,Object>> rolesList = fnGetUserEnvs();
 		//log.info("------- Size: " + rolesList.size());
 		for (Map<String, Object> envType : rolesList) {
 			if (envType.get("target environments") != null) {

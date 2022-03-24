@@ -836,9 +836,7 @@ public class TdmSharedUtils {
 	
 	//checks if the registered user is an owner of the given environment
     public static Boolean fnIsOwner(String envId) throws Exception {
-	//FIXX
-       // List<Map<String, Object>> envsList = (List<Map<String, Object>>) ((Map<String, Object>) com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser()).get("result");
-	 List<Map<String, Object>> envsList =fnGetUserEnvs();
+        List<Map<String, Object>> envsList = fnGetUserEnvs();
         boolean found = false;
         for (Map<String, Object> envsGroup : envsList) {
             Map.Entry<String, Object> entry = envsGroup.entrySet().iterator().next();

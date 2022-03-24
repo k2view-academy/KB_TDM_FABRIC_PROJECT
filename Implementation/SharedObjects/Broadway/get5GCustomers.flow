@@ -9,7 +9,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Get Instance IDs",
+                            "name": "Get the entity list",
                             "remark": "It is better to use the NoOfEntities limit in the flow that retrieves the list of entities from performance POV.",
                             "actorType": {
                                 "parentType": "DbCommand",
@@ -117,7 +117,7 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get Instance IDs",
+                "actor": "Get the entity list",
                 "name": "result"
             },
             "rightPort": {

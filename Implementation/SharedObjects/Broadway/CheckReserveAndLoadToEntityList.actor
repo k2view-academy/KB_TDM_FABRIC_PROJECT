@@ -24,7 +24,14 @@
             "mandatory": true
         }
     ],
-    "outputs": [],
+    "outputs": [
+        {
+            "name": "recordLoaded",
+            "schema": {
+                "type": "integer"
+            }
+        }
+    ],
     "tags": [
         "tdm"
     ]

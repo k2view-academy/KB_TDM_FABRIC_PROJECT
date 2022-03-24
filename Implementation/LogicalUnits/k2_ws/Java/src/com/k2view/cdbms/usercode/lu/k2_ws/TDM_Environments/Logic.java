@@ -340,8 +340,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets the environment's Products  regardless of their status (Active and Inactive products)")
-	@webService(path = "environment/{envId}/products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets the environment's systems (products)  regardless of their status (Active and Inactive systems).")
+	@webService(path = "environment/{envId}/products", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -671,7 +671,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Creates an Environment Role")
+	@desc("Creates an Environment Permission Set (role)")
 	@webService(path = "environment/{envId}/envname/{envName}/role", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
@@ -934,36 +934,61 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets all TDM roles of a given environment")
+	@desc("Gets all TDM Environment permission sets (roles) of a given environment.")
 	@webService(path = "environment/{envId}/roles", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"role_last_updated_by\": \"K2View\",\r\n" +
-			"      \"maximum_number_of_entities_data_ownership\": null,\r\n" +
-			"      \"allowed_delete_before_load\": \"t\",\r\n" +
-			"      \"environment_id\": 11,\r\n" +
-			"      \"allowed_number_of_entities_to_read\": 1,\r\n" +
-			"      \"allowed_replace_sequences\": \"t\",\r\n" +
-			"      \"maximum_number_of_days_data_ownership\": null,\r\n" +
-			"      \"allowed_random_entity_selection\": \"t\",\r\n" +
-			"      \"role_created_by\": \"K2View\",\r\n" +
-			"      \"allow_read\": \"t\",\r\n" +
-			"      \"role_description\": \"roleDescription\",\r\n" +
-			"      \"allowed_task_scheduling\": \"t\",\r\n" +
-			"      \"allowed_request_of_fresh_data\": \"t\",\r\n" +
-			"      \"role_id\": 10,\r\n" +
-			"      \"allowed_entity_versioning\": \"t\",\r\n" +
-			"      \"role_last_updated_date\": \"2021-03-28 16:16:37.678\",\r\n" +
-			"      \"allowed_number_of_entities_to_copy\": 1,\r\n" +
-			"      \"role_expiration_date\": \"2021-03-25 12:04:01.633\",\r\n" +
-			"      \"allow_write\": \"t\",\r\n" +
-			"      \"allowed_creation_of_synthetic_data\": \"t\",\r\n" +
-			"      \"allowed_refresh_reference_data\": \"t\",\r\n" +
-			"      \"role_creation_date\": \"2021-03-28 16:16:37.678\",\r\n" +
-			"      \"role_name\": \"roleName\",\r\n" +
+			"      \"role_expiration_date\": null,\r\n" +
+			"      \"allow_write\": true,\r\n" +
+			"      \"role_last_updated_by\": \"admin\",\r\n" +
+			"      \"allowed_delete_before_load\": true,\r\n" +
+			"      \"environment_id\": 2,\r\n" +
+			"      \"allowed_number_of_entities_to_read\": 10,\r\n" +
+			"      \"allowed_replace_sequences\": false,\r\n" +
+			"      \"allowed_random_entity_selection\": true,\r\n" +
+			"      \"role_created_by\": \"admin\",\r\n" +
+			"      \"allowed_creation_of_synthetic_data\": false,\r\n" +
+			"      \"allow_read\": true,\r\n" +
+			"      \"allowed_refresh_reference_data\": false,\r\n" +
+			"      \"role_creation_date\": \"2021-11-22 07:20:58.183\",\r\n" +
+			"      \"role_description\": \"\",\r\n" +
+			"      \"role_name\": \"role2\",\r\n" +
+			"      \"allowed_task_scheduling\": false,\r\n" +
+			"      \"allowed_request_of_fresh_data\": false,\r\n" +
+			"      \"role_id\": 6,\r\n" +
+			"      \"allowed_number_of_reserved_entities\": 0,\r\n" +
 			"      \"role_status\": \"Active\",\r\n" +
-			"      \"allowed_test_conn_failure\": \"t\"\r\n" +
+			"      \"allowed_entity_versioning\": false,\r\n" +
+			"      \"role_last_updated_date\": \"2021-11-25 07:39:10.08\",\r\n" +
+			"      \"allowed_test_conn_failure\": true,\r\n" +
+			"      \"allowed_number_of_entities_to_copy\": 10\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"role_expiration_date\": null,\r\n" +
+			"      \"allow_write\": true,\r\n" +
+			"      \"role_last_updated_by\": \"admin\",\r\n" +
+			"      \"allowed_delete_before_load\": true,\r\n" +
+			"      \"environment_id\": 2,\r\n" +
+			"      \"allowed_number_of_entities_to_read\": 5,\r\n" +
+			"      \"allowed_replace_sequences\": false,\r\n" +
+			"      \"allowed_random_entity_selection\": true,\r\n" +
+			"      \"role_created_by\": \"admin\",\r\n" +
+			"      \"allowed_creation_of_synthetic_data\": true,\r\n" +
+			"      \"allow_read\": true,\r\n" +
+			"      \"allowed_refresh_reference_data\": false,\r\n" +
+			"      \"role_creation_date\": \"2021-11-07 15:11:00.655\",\r\n" +
+			"      \"role_description\": \"\",\r\n" +
+			"      \"role_name\": \"role1\",\r\n" +
+			"      \"allowed_task_scheduling\": true,\r\n" +
+			"      \"allowed_request_of_fresh_data\": false,\r\n" +
+			"      \"role_id\": 2,\r\n" +
+			"      \"allowed_number_of_reserved_entities\": 0,\r\n" +
+			"      \"role_status\": \"Active\",\r\n" +
+			"      \"allowed_entity_versioning\": false,\r\n" +
+			"      \"role_last_updated_date\": \"2021-12-27 08:27:52.475\",\r\n" +
+			"      \"allowed_test_conn_failure\": true,\r\n" +
+			"      \"allowed_number_of_entities_to_copy\": 5\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -1026,18 +1051,12 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"global_name\": \"globalName1\",\r\n" +
-			"      \"environment_id\": 10,\r\n" +
-			"      \"updated_by\": \"K2View\",\r\n" +
-			"      \"global_value\": \"globalValue1\",\r\n" +
-			"      \"update_date\": \"2021-03-25 11:30:48.609\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"global_name\": \"globalName2\",\r\n" +
-			"      \"environment_id\": 10,\r\n" +
-			"      \"updated_by\": \"K2View\",\r\n" +
-			"      \"global_value\": \"globalValue2\",\r\n" +
-			"      \"update_date\": \"2021-03-25 11:40:49.668\"\r\n" +
+			"      \"global_name\": \"MASK_FLAG\",\r\n" +
+			"      \"environment_id\": 1,\r\n" +
+			"      \"lu_name\": \"ALL\",\r\n" +
+			"      \"updated_by\": \"admin\",\r\n" +
+			"      \"global_value\": \"1\",\r\n" +
+			"      \"update_date\": \"2022-01-27 15:57:19.384\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -1084,7 +1103,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Modifies the environment's role setting except  the Testers setting. Adding or removing testers to the environment's role is handled by a separate API: /environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}/users")
+	@desc("Modifies the Environment's permission set (role) settings except  the Testers setting. Adding or removing testers to the environment's role is handled by a separate API: /environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}/users")
 	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -1170,7 +1189,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Deletes Environment Role")
+	@desc("Deletes an Environment permission set (role)")
 	@webService(path = "environment/{envId}/envname/{envName}/role/{roleId}/rolename/{roleName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -1222,8 +1241,8 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets Environment Testers attached to a given TDM Environment role")
-	@webService(path = "environment/{envId}/role/{roleId}/users", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets the list of users attached to a given TDM Environment permission set (role).")
+	@webService(path = "environment/{envId}/role/{roleId}/users", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "[\r\n" +
 			"  {\r\n" +
 			"    \"environment_id\": 11,\r\n" +
@@ -1272,7 +1291,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Updates the Testers setting on an TDM Environment role: add or delete testers. Note that this API needs to get the update testers list in the input BODY.\r\n" +
+	@desc("Updates the Testers setting on an TDM Environment permission set (role): add or delete testers. Note that this API needs to get the update testers list in the input BODY.\r\n" +
 			"\r\n" +
 			"Example of a request body:\r\n" +
 			"{\n  \"users\": [\n    {\n      \"user_id \": \"-1\",\n      \"username\": \"ALL\"\n    },\n    {\n      \"user_id\": \"tester1\",\n      \"username\": \"tester1\"\n    }\n  ]\n}")
@@ -1474,8 +1493,8 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-	@desc("Gets the TDM Environment roles of a given environment for the logged in user.")
-	@webService(path = "environment/{envId}/userRole", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@desc("Gets the TDM Environment permission sets (TDM env roles) of a given environment for the logged in user.")
+	@webService(path = "environment/{envId}/userRole", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "Example 1;\r\n" +
 			"{\r\n" +
 			"  \"result\": {\r\n" +
@@ -1486,38 +1505,42 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}\r\n" +
+			"\r\n" +
 			"Example 2:\r\n" +
+			"\r\n" +
 			"{\r\n" +
 			"  \"result\": {\r\n" +
-			"    \"minRead\": -1,\r\n" +
+			"    \"minRead\": 10,\r\n" +
 			"    \"userRole\": {\r\n" +
-			"      \"role_last_updated_by\": \"K2View\",\r\n" +
-			"      \"allowed_delete_before_load\": false,\r\n" +
-			"      \"environment_id\": 1,\r\n" +
-			"      \"allowed_number_of_entities_to_read\": 3,\r\n" +
+			"      \"role_last_updated_by\": \"admin\",\r\n" +
+			"      \"allowed_delete_before_load\": true,\r\n" +
+			"      \"environment_id\": 2,\r\n" +
+			"      \"allowed_number_of_entities_to_read\": 10,\r\n" +
 			"      \"allowed_replace_sequences\": false,\r\n" +
-			"      \"allowed_random_entity_selection\": false,\r\n" +
-			"      \"role_created_by\": \"K2View\",\r\n" +
+			"      \"allowed_random_entity_selection\": true,\r\n" +
+			"      \"role_created_by\": \"admin\",\r\n" +
 			"      \"allow_read\": true,\r\n" +
 			"      \"role_description\": \"\",\r\n" +
+			"      \"user_type\": \"ID\",\r\n" +
 			"      \"allowed_task_scheduling\": false,\r\n" +
-			"      \"role_id\": 5,\r\n" +
+			"      \"role_id\": 6,\r\n" +
 			"      \"allowed_request_of_fresh_data\": false,\r\n" +
+			"      \"allowed_number_of_reserved_entities\": 0,\r\n" +
 			"      \"allowed_entity_versioning\": false,\r\n" +
-			"      \"role_last_updated_date\": \"2021-05-24 10:36:33.328\",\r\n" +
-			"      \"allowed_number_of_entities_to_copy\": 3,\r\n" +
+			"      \"role_last_updated_date\": \"2022-03-21 09:55:56.891\",\r\n" +
+			"      \"allowed_number_of_entities_to_copy\": 10,\r\n" +
 			"      \"role_expiration_date\": null,\r\n" +
 			"      \"allow_write\": true,\r\n" +
 			"      \"allowed_creation_of_synthetic_data\": false,\r\n" +
 			"      \"allowed_refresh_reference_data\": false,\r\n" +
-			"      \"role_creation_date\": \"2021-05-24 10:36:33.328\",\r\n" +
-			"      \"role_name\": \"roleN\",\r\n" +
-			"      \"user_id\": \"admin\",\r\n" +
+			"      \"role_creation_date\": \"2021-11-22 07:20:58.183\",\r\n" +
+			"      \"role_name\": \"role2\",\r\n" +
+			"      \"user_id\": \"harry\",\r\n" +
 			"      \"role_status\": \"Active\",\r\n" +
-			"      \"allowed_test_conn_failure\": false,\r\n" +
-			"      \"username\": \"admin\"\r\n" +
+			"      \"allowed_test_conn_failure\": true,\r\n" +
+			"      \"username\": \"harry\"\r\n" +
 			"    },\r\n" +
-			"    \"minWrite\": -1\r\n" +
+			"    \"minWrite\": 10\r\n" +
 			"  },\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
@@ -1707,47 +1730,86 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Gets the list of all Global variables defined in the Fabric project except the TDM product Globals. If the optional input \"lus\" parameter is populated, return only shared Globals or Globals defined in the input LUs.")
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
+	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_VISITS.REDIS_MACHINE_PORT\",\r\n" +
-			"      \"globalValue\": \"6379\"\r\n" +
+			"      \"globalName\": \"CLONE_CLEANUP_RETENTION_PERIOD_VALUE\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"1\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_VISITS.REDIS_MACHINE_IP\",\r\n" +
-			"      \"globalValue\": \"10.21.3.4\"\r\n" +
+			"      \"globalName\": \"MASK_FLAG\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"1\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.REDIS_MACHINE_PORT\",\r\n" +
-			"      \"globalValue\": \"6379\"\r\n" +
+			"      \"globalName\": \"CLONE_CLEANUP_RETENTION_PERIOD_TYPE\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"Days\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.CLONE_CLEANUP_RETENTION_PERIOD_VALUE\",\r\n" +
-			"      \"globalValue\": \"3\"\r\n" +
+			"      \"globalName\": \"GET_RESERVED_ENTITIES_LIMIT\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"0\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.MASK_FLAG\",\r\n" +
-			"      \"globalValue\": \"0\"\r\n" +
+			"      \"globalName\": \"MAIL_ADDRESS\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.CLONE_CLEANUP_RETENTION_PERIOD_TYPE\",\r\n" +
-			"      \"globalValue\": \"Minutes\"\r\n" +
+			"      \"globalName\": \"DEVELOPMENT_PRODUCT_VERSION\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"DEV\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.TDM_SOURCE_PRODUCT_VERSION\",\r\n" +
-			"      \"globalValue\": \"false\"\r\n" +
+			"      \"globalName\": \"PRODUCTION_PRODUCT_VERSION\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"PROD\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.TDM_TARGET_PRODUCT_VERSION\",\r\n" +
-			"      \"globalValue\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.TDM_SYNTHETIC_DATA\",\r\n" +
-			"      \"globalValue\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"PATIENT_LU.REDIS_MACHINE_IP\",\r\n" +
-			"      \"globalValue\": \"10.21.3.4\"\r\n" +
+			"      \"globalName\": \"TDM_DEL_TABLE_PREFIX\",\r\n" +
+			"      \"Description\": \"\",\r\n" +
+			"      \"luList\": [\r\n" +
+			"        {\r\n" +
+			"          \"luName\": \"ALL\",\r\n" +
+			"          \"defaultValue\": \"TAR\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -2770,7 +2832,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Get details for environments in which the user is associated with a role or the user is the owner.")
+	@desc("Get a list of environments that are available for the user and contain a system (product) that has the root Logical Unit of the input Business Entity (BE).  This API is called when creating or editing a task to get the available environments for the user and the task's BE.")
 	@webService(path = "environmentsbyuserandbe", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +

@@ -40,7 +40,6 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments.Logic.wsGetListOfEnvsByUser;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -348,22 +347,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		
 		try{
-			String sql= "SELECT tasks.*,environments.*,business_entities.*,environment_owners.user_name as owner,environment_owners.user_type as owner_type,environment_role_users.username as tester,environment_role_users.user_type as tester_type,environment_role_users.role_id  as role_id_orig, tasks.sync_mode," +
-					"( SELECT COUNT(*) FROM task_execution_list WHERE task_execution_list.task_id = tasks.task_id AND" +
-					" ( UPPER(task_execution_list.execution_status)" +
-					"  IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED'))) AS executioncount, " +
-					" ( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount,  " +
-					" ( SELECT string_agg(process_name::text, ',') FROM TASKS_POST_EXE_PROCESS WHERE TASKS_POST_EXE_PROCESS.task_id = tasks.task_id ) AS processnames " +
-					" FROM tasks LEFT JOIN environments" +
-					" ON (tasks.environment_id = environments.environment_id) LEFT JOIN business_entities ON" +
-					" (tasks.be_id = business_entities.be_id) LEFT JOIN environment_owners ON" +
-					" (tasks.environment_id = environment_owners.environment_id) " +
-					" LEFT JOIN environment_role_users ON" +
-					" (tasks.environment_id = environment_role_users.environment_id)";
-			if(task_ids!=null&&task_ids.length()>0)
-				sql+= " WHERE tasks.task_id in (" + task_ids + ")";
-			
-			Db.Rows result = db("TDM").fetch(sql);
+			Db.Rows result = TaskExecutionUtils.fnGetTasks(task_ids);
 		
 			String q = "SELECT * FROM ENVIRONMENT_ROLES";
 			Db.Rows rolesResult = db("TDM").fetch(q);
@@ -1741,78 +1725,239 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Gets a list of available versions within a given time interval when creating load Data Flux tasks.\r\n" +
+	@desc("Get the list of the available data versions that match the input parameters. The user can select one of the data versions for the Data Versioning load task and reload the entities in the selected versions to the target environment. The API filters our expired data versions. For example, a data version that is created with a retention period of 5 days, will no longer be able to be retrieved after 6 days have passed.\r\n" +
 			"\r\n" +
-			"Example of a request body:\r\n" +
+			"Note that the from date and to date inputs must be populated with \"MM.DD.YYYY\" or \"MM-DD-YYYYY\" date formats. \r\n" +
+			"\r\n" +
+			"Request BODY examples:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"\"entitiesList\": \"1,2,7\",\r\n" +
-			"\"be_id\": 1,\r\n" +
-			"\"source_env_name\": \"SRC\",\r\n" +
-			"\"fromDate\": \"01.02.2022\",\r\n" +
-			"\"toDate\": \"28.02.2022\",\r\n" +
-			"\"lu_list\": [\r\n" +
-			"{\"lu_name\":\"Customer\"}\r\n" +
-			"],\r\n" +
-			"\"target_env_name\": \"TAR\"\r\n" +
+			"\t\"fromDate\":\"2022-02-18\",\r\n" +
+			"\t\"toDate\":\"2022-03-21\",\r\n" +
+			"\t\"entitiesList\":\"\",\r\n" +
+			"\t\"lu_list\":[\r\n" +
+			"\t\t{\"lu_name\":\"Customer\"},\r\n" +
+			"\t\t{\"lu_name\":\"Billing\"},\r\n" +
+			"\t\t{\"lu_name\":\"Orders\"},\r\n" +
+			"\t\t{\"lu_name\":\"Collection\"}],\r\n" +
+			"\t\"source_env_name\":\"TAR\",\r\n" +
+			"\t\"target_env_name\":\"TAR\",\"be_id\":1\r\n" +
+			"}\r\n" +
+			"\r\n" +
+			"\r\n" +
+			"{\r\n" +
+			"\t\"fromDate\":\"2022-02-18\",\r\n" +
+			"\t\"toDate\":\"2022-03-21\",\r\n" +
+			"\t\"entitiesList\":\"1, 2\",\r\n" +
+			"\t\"lu_list\":[\r\n" +
+			"\t\t{\"lu_name\":\"Customer\"},\r\n" +
+			"\t\t{\"lu_name\":\"Billing\"},\r\n" +
+			"\t\t{\"lu_name\":\"Orders\"},\r\n" +
+			"\t\t{\"lu_name\":\"Collection\"}],\r\n" +
+			"\t\"source_env_name\":\"TAR\",\r\n" +
+			"\t\"target_env_name\":\"TAR\",\"be_id\":1\r\n" +
 			"}")
 	@webService(path = "tasks/versionsForLoad", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
-			"    \"EntityReservationValidations\": {\r\n" +
-			"      \"message\": \"Entities reserved by other User: 1,2\",\r\n" +
-			"      \"listOfEntities\": [\r\n" +
-			"        {\r\n" +
-			"          \"start_datetime\": \"2022-02-13 12:08:33.879\",\r\n" +
-			"          \"end_datetime\": \"2022-02-23 12:12:04.640\",\r\n" +
-			"          \"entity_id\": \"1\",\r\n" +
-			"          \"reserve_owner\": \"admin\"\r\n" +
-			"        },\r\n" +
-			"        {\r\n" +
-			"          \"start_datetime\": \"2022-02-13 12:08:33.866\",\r\n" +
-			"          \"end_datetime\": \"2022-02-23 12:12:04.596\",\r\n" +
-			"          \"entity_id\": \"2\",\r\n" +
-			"          \"reserve_owner\": \"admin\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
+			"    \"EntityReservationValidations\": {},\r\n" +
 			"    \"ListOfVersions\": [\r\n" +
 			"      {\r\n" +
-			"        \"version_name\": \"extDF\",\r\n" +
-			"        \"task_id\": 21,\r\n" +
-			"        \"task_execution_id\": 138,\r\n" +
-			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 59,\r\n" +
+			"        \"task_execution_id\": 208,\r\n" +
+			"        \"task_last_updated_by\": \"harry\",\r\n" +
 			"        \"version_type\": \"Selected Entities\",\r\n" +
-			"        \"number_of_extracted_entities\": 10,\r\n" +
-			"        \"version_datetime\": \"2022-02-15 08:07:36.022\",\r\n" +
-			"        \"lu_name\": \"Customer\",\r\n" +
-			"        \"fabric_execution_id\": \"284f5979-b567-4c40-95a2-98574451f8ff\",\r\n" +
-			"        \"root_indicator\": \"Y\",\r\n" +
-			"        \"num_of_succeeded_entities\": 10,\r\n" +
+			"        \"number_of_extracted_entities\": 104,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 11:25:31.229\",\r\n" +
+			"        \"lu_name\": \"Collection\",\r\n" +
+			"        \"fabric_execution_id\": \"41079b2d-55ab-4ed7-9f74-e18941d5296e\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 104,\r\n" +
 			"        \"num_of_failed_entities\": 0,\r\n" +
 			"        \"execution_note\": null,\r\n" +
-			"        \"execution_order\": 1\r\n" +
+			"        \"version_no\": 1\r\n" +
 			"      },\r\n" +
 			"      {\r\n" +
-			"        \"version_name\": \"extDF\",\r\n" +
-			"        \"task_id\": 29,\r\n" +
-			"        \"task_execution_id\": 139,\r\n" +
-			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 59,\r\n" +
+			"        \"task_execution_id\": 208,\r\n" +
+			"        \"task_last_updated_by\": \"harry\",\r\n" +
 			"        \"version_type\": \"Selected Entities\",\r\n" +
-			"        \"number_of_extracted_entities\": 10,\r\n" +
-			"        \"version_datetime\": \"2022-02-15 08:36:21.387\",\r\n" +
+			"        \"number_of_extracted_entities\": 221,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 11:25:31.229\",\r\n" +
 			"        \"lu_name\": \"Customer\",\r\n" +
-			"        \"fabric_execution_id\": \"7f9e3f16-a44f-4c34-abea-609652932fde\",\r\n" +
+			"        \"fabric_execution_id\": \"eb4f3157-3c79-4138-a719-97840f8e3d0e\",\r\n" +
 			"        \"root_indicator\": \"Y\",\r\n" +
-			"        \"num_of_succeeded_entities\": 10,\r\n" +
+			"        \"num_of_succeeded_entities\": 221,\r\n" +
+			"        \"num_of_failed_entities\": 279,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 1\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 59,\r\n" +
+			"        \"task_execution_id\": 208,\r\n" +
+			"        \"task_last_updated_by\": \"harry\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 748,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 11:25:31.229\",\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"fabric_execution_id\": \"30622d98-d983-40eb-884b-c496642aa7c2\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 748,\r\n" +
+			"        \"num_of_failed_entities\": 27,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 1\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 59,\r\n" +
+			"        \"task_execution_id\": 208,\r\n" +
+			"        \"task_last_updated_by\": \"harry\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 1048,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 11:25:31.229\",\r\n" +
+			"        \"lu_name\": \"Orders\",\r\n" +
+			"        \"fabric_execution_id\": \"2da473d7-c795-443b-9b90-610c958a19b2\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 1048,\r\n" +
 			"        \"num_of_failed_entities\": 0,\r\n" +
 			"        \"execution_note\": null,\r\n" +
-			"        \"execution_order\": 2\r\n" +
+			"        \"version_no\": 1\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 209,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 112,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:25:31.230\",\r\n" +
+			"        \"lu_name\": \"Collection\",\r\n" +
+			"        \"fabric_execution_id\": \"8b6aef81-f632-48c7-8db6-2423cfb1a23f\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 112,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 2\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 209,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 253,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:25:31.230\",\r\n" +
+			"        \"lu_name\": \"Customer\",\r\n" +
+			"        \"fabric_execution_id\": \"ef84e092-9683-4f5a-b494-9d06b8aee711\",\r\n" +
+			"        \"root_indicator\": \"Y\",\r\n" +
+			"        \"num_of_succeeded_entities\": 253,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 2\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 209,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 861,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:25:31.230\",\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"fabric_execution_id\": \"665d6de7-caca-4d52-9e6a-aca57ef28994\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 861,\r\n" +
+			"        \"num_of_failed_entities\": 27,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 2\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 209,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 1109,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:25:31.230\",\r\n" +
+			"        \"lu_name\": \"Orders\",\r\n" +
+			"        \"fabric_execution_id\": \"4790ccfa-37d5-48f8-8b15-e1fc7a041ed6\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 1109,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 2\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 210,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 104,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:34:05.077\",\r\n" +
+			"        \"lu_name\": \"Collection\",\r\n" +
+			"        \"fabric_execution_id\": \"0f0c893c-182c-4bb8-938d-0529064b21c2\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 104,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 3\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 210,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 221,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:34:05.077\",\r\n" +
+			"        \"lu_name\": \"Customer\",\r\n" +
+			"        \"fabric_execution_id\": \"63644180-f674-4d21-a0b1-05677dc39fb5\",\r\n" +
+			"        \"root_indicator\": \"Y\",\r\n" +
+			"        \"num_of_succeeded_entities\": 221,\r\n" +
+			"        \"num_of_failed_entities\": 279,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 3\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 210,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 748,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:34:05.077\",\r\n" +
+			"        \"lu_name\": \"Billing\",\r\n" +
+			"        \"fabric_execution_id\": \"e18117d0-c599-4e11-ab60-2cc153c2cbd6\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 748,\r\n" +
+			"        \"num_of_failed_entities\": 27,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 3\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"version_name\": \"createCustSnapshot\",\r\n" +
+			"        \"task_id\": 60,\r\n" +
+			"        \"task_execution_id\": 210,\r\n" +
+			"        \"task_last_updated_by\": \"admin\",\r\n" +
+			"        \"version_type\": \"Selected Entities\",\r\n" +
+			"        \"number_of_extracted_entities\": 1048,\r\n" +
+			"        \"version_datetime\": \"2022-03-20 13:34:05.077\",\r\n" +
+			"        \"lu_name\": \"Orders\",\r\n" +
+			"        \"fabric_execution_id\": \"8c27aeb7-ccd8-4b7a-bb2a-d2cfddcc90a3\",\r\n" +
+			"        \"root_indicator\": \"N\",\r\n" +
+			"        \"num_of_succeeded_entities\": 1048,\r\n" +
+			"        \"num_of_failed_entities\": 0,\r\n" +
+			"        \"execution_note\": null,\r\n" +
+			"        \"version_no\": 3\r\n" +
 			"      }\r\n" +
 			"    ]\r\n" +
 			"  },\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": \"Entities reserved by other User: 1,2\"\r\n" +
+			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetVersionsForLoad(String entitiesList, Long be_id, String source_env_name, String fromDate, String toDate, List<Map<String,Object>> lu_list, String target_env_name) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
@@ -1821,7 +1966,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			//TDM 7.4 - 26/01/2022 - In addition to the returned versions, the inner function and the API will return the resevation info of the requested entities.
 			//Db.Rows rows = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
-			entitiesList.replaceAll("\\s+","");
+			entitiesList = entitiesList.replaceAll("\\s+","");
 			Map<String, Object> versions = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
 			
 			/*
@@ -3113,7 +3258,7 @@ public class Logic extends WebServiceUserCode {
 
 	//from TDM.logic
 	@desc("Gets the hierarchy of a given entity and LU name within the task execution")
-	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": {\n    \"PATIENT_LU\": {\n      \"luName\": \"PATIENT_LU\",\n      \"targetId\": \"1\",\n      \"sourceId\": \"1\",\n      \"entityStatus\": \"completed\",\n      \"parentLuName\": \"\",\n      \"parentTargetId\": \"\",\n      \"children\": [\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24900\",\n          \"sourceId\": \"24900\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24901\",\n          \"sourceId\": \"24901\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24902\",\n          \"sourceId\": \"24902\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"24903\",\n          \"sourceId\": \"24903\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        },\n        {\n          \"luName\": \"PATIENT_VISITS\",\n          \"targetId\": \"400\",\n          \"sourceId\": \"400\",\n          \"entityStatus\": \"completed\",\n          \"parentLuName\": \"PATIENT_LU\",\n          \"parentTargetId\": \"1\",\n          \"luStatus\": \"completed\"\n        }\n      ],\n      \"luStatus\": \"completed\"\n    }\n  },\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	public static Object wsGetTaskExeStatsForEntity(String taskExecutionId, String luName, String targetId) throws Exception {
 		String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
@@ -3404,302 +3549,318 @@ public class Logic extends WebServiceUserCode {
 			return wrapWebServiceResults("FAILED", "Mandatory Job(s): " + downJobsList + " Down!", jobDownError);
 		}
 		
-		Map<String, Object> taskData;
+		//Map<String, Object> taskData;
+		Db.Rows taskRows;
 		try {
-			taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
+			//taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
+			
+			taskRows = (TaskExecutionUtils.fnGetTasks(taskId.toString()));
+			
 		} catch(Exception e) {
 			throw new Exception("Task is not found");
 		}
-		
-		if(!TaskExecutionUtils.fnIsTaskActive(taskId)) throw new Exception("Task is not active");
-		String taskType = "" + taskData.get("task_type");
-		Boolean deleteBeforeLoad = (Boolean) taskData.get("delete_before_load");
-		Boolean insertToTarget = (Boolean) taskData.get("load_entity");
-		Boolean entityListInd = false;
-		Integer entityListSize = 0;
-		Boolean versionInd = (Boolean) taskData.get("version_ind");
-		if (entitieslist != null) {
-			entityListSize = (entitieslist.split(",")).length;
-			entityListInd = true;
-		} else if (taskData.get("selection_param_value") != null && "L".equalsIgnoreCase(taskData.get("selection_method").toString())) {
-			String[] entityList = ((String) taskData.get("selection_param_value")).split(",");
-			entityListSize = entityList.length;
-		}
-		//log.info("Entity list is given?: " + entityListInd);
-		Map<String,Object> overrideParams=new HashMap<>();
-		String selectionMethodOrig = "" + taskData.get("selection_method");
-		String selectionMethod = selectionMethodOrig;
-		if (entitieslist!=null) {
-			if ("S".equalsIgnoreCase(selectionMethodOrig)) {
-				if (entityListSize > 1) {
-					throw new Exception("This is a Synthetic Data Task, only one entity can be in the entity list");
-				} 
-			} else {
-				selectionMethod = "L";
+		for (Db.Row taskRow : taskRows) {
+			ResultSet taskData = taskRow.resultSet();
+			if(!TaskExecutionUtils.fnIsTaskActive(taskId)) throw new Exception("Task is not active");
+			String taskType = "" + taskData.getString("task_type");
+			Boolean deleteBeforeLoad = taskData.getBoolean("delete_before_load");
+			Boolean insertToTarget = taskData.getBoolean("load_entity");
+			Boolean entityListInd = false;
+			Integer entityListSize = 0;
+			Boolean versionInd = taskData.getBoolean("version_ind");
+			if (entitieslist != null) {
+				entityListSize = (entitieslist.split(",")).length;
+				entityListInd = true;
+			} else if (taskData.getString("selection_param_value") != null && "L".equalsIgnoreCase(taskData.getString("selection_method").toString())) {
+				String[] entityList = ((String) taskData.getString("selection_param_value")).split(",");
+				entityListSize = entityList.length;
 			}
-		}
-		
-		if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
-		if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
-		if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
-		if (!selectionMethod.equals(selectionMethodOrig)) overrideParams.put("SELECTION_METHOD",selectionMethod);
-		// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
-		if (numberOfEntities!=null && (!entityListInd  || ("S".equalsIgnoreCase(selectionMethod)))) {
-			//log.info("setting the number of entities to: " + numberOfEntities);
-			overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
-		}
-		if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
-		
-		if(overrideParams.get("ENTITY_LIST")!=null){
-			String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
-			Arrays.sort(entityList);
-			overrideParams.put("ENTITY_LIST",String.join(",",entityList));
-		}
-		
-		//TDM 7.4 - Support override for reserved entities
-		if(reserveInd!=null) overrideParams.put("RESERVE_IND", reserveInd);
-		
-		if (!TaskValidationsUtils.fnValidateParallelExecutions(taskId, overrideParams)) {
-			throw new Exception("Task already running");
-		}
-		
-		List<String> taskLogicalUnitsIds=new ArrayList<>();
-		try {
-			List<Map<String, Object>> LogicalUnitsList = (List<Map<String, Object>>) ((Map<String, Object>) wsGetTaskLogicalUnits(taskId)).get("result");
-			for(Map<String, Object> lu:LogicalUnitsList){
-				taskLogicalUnitsIds.add(lu.get("lu_id").toString());
-			}
-		} catch(Exception e) {
-			throw new Exception("can't get task's logicalunits");
-		}
-		
-		Map<String,Object> be_lus=new HashMap<>();
-		be_lus.put("be_id",taskData.get("be_id").toString());
-		be_lus.put("LU List",taskLogicalUnitsIds);
-		//log.info("selectionMethod: " + selectionMethod);
-		String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.get("source_env_name").toString();
-		//log.info("Source Env: " + sourceEnvName);
-		
-		if (dataVersionExecId!=null) {
-			Map<String, String> validateVersionID = TaskValidationsUtils.fnValidateVersionExecIdAndGetDetails(dataVersionExecId, be_lus, sourceEnvName);
-			if (validateVersionID.get("errorMessage") == null) {
-				overrideParams.put("SELECTED_VERSION_TASK_EXE_ID", dataVersionExecId);
-				overrideParams.put("SELECTED_VERSION_TASK_NAME", validateVersionID.get("versionName"));
-				overrideParams.put("SELECTED_VERSION_DATETIME", validateVersionID.get("versionDatetime"));
-			} else {
-				return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningtask", validateVersionID.get("errorMessage"));
-			}
-		}
-		Integer numberOfRequestedEntites = 0;
-		if (numberOfEntities != null) {
-			if (entityListInd && !"S".equalsIgnoreCase(selectionMethod) && numberOfEntities != entityListSize) {
-				numberOfRequestedEntites = entityListSize;
-				message = "The number of entities for execution is set based on the entity list";
-				overrideParams.put("NO_OF_ENTITIES",numberOfRequestedEntites);
-			} else {
-				numberOfRequestedEntites = numberOfEntities;
-				entityListSize = numberOfEntities;
-			}
-		} else {
-			if (entityListInd && !"S".equalsIgnoreCase(selectionMethod)) {
-				numberOfRequestedEntites = entityListSize;
-			} else {
-				numberOfRequestedEntites = (Integer) (taskData.get("num_of_entities"));
-			}
-		}
-		if ("S".equalsIgnoreCase(selectionMethod) && numberOfRequestedEntites > 0) {
-			entityListSize = numberOfRequestedEntites;
-		}
-		
-		// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
-		String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.get("environment_name").toString();
-		
-		if (dataVersionRetentionPeriod!=null) {
-			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, 
-					"versioning", targetExeEnvName);
-			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-				return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
-			}
-			overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
-		}
-		
-		if(reserveRetention!=null) {
-			Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(reserveRetention, 
-				"reverse", targetExeEnvName);
-			if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-				return TdmSharedUtils.wrapWebServiceResults("FAILED", "reverseRetentionPeriod", validateDFMessages.get("retention"));
-			}
-			overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
-		}
-		
-		List<Map<String,Object>> sourceRolesList = new ArrayList<>();
-		List<Map<String,Object>> targetRolesList = new ArrayList<>();
-		List<Map<String,Object>> rolesList = (List<Map<String, Object>>)((Map<String,Object>)wsGetListOfEnvsByUser()).get("result");
-		//log.info("------- Size: " + rolesList.size());
-		for (Map<String, Object> envType : rolesList) {
-			if (envType.get("source environments") != null) {
-				sourceRolesList = (List<Map<String, Object>>) (envType.get("source environments"));
-			}
-			if (envType.get("target environments") != null) {
-				targetRolesList = (List<Map<String, Object>>) (envType.get("target environments"));
-			}
-		}
-		//log.info("------- Size of sourceRolesList: " + sourceRolesList.size());
-		//log.info("------- Size of targetRolesList: " + targetRolesList.size());
-		
-		List<Map<String, String>> validationsErrorMesssagesByRole = new ArrayList<>();
-		
-		if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
-			if (sourceRolesList == null || sourceRolesList.isEmpty()) {
-				throw new Exception("Environment does not exist or user has no read permission on this environment");
-			}
-		
-			for (Map<String, Object> role : sourceRolesList) {
-				//Check if the current role is related to input environment, and not to other environment
-				//log.info("environment_name: " + role.get("environment_name"));
-				if (sourceEnvName.equals(role.get("environment_name"))) {
-					srcEnvFound = true;
-					int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-					int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
-				
-					Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, (Integer) taskData.get("refcount"),
-							selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
-							(String) taskData.get("sync_mode"), (Boolean) taskData.get("version_ind"), taskType, role);
-					//log.info("validateNumber: " + validateNumber);
-		
-					if (validateNumber == -1) {
-						sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
-					} else {
-						if ("extract".equalsIgnoreCase(taskType) && validateNumber > 0 && 
-							(numberOfEntities!=null || entityListInd))
-						{
-							overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-						}
-						
-						if (sourceValidationsErrorMesssages.isEmpty()) {
-							sourceEnvValidation = true;
-							break;
-						}
-					}
-		
-					validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
-				}
-			}
-		} else {// No Source validation
-			sourceEnvValidation = true;
-		}
-		
-		if("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType)) {
-			
-			if(targetRolesList == null || targetRolesList.isEmpty()) {
-				throw new Exception("Environment does not exist or user has no write permission on this environment");
-			}
-		
-			for (Map<String, Object> role : targetRolesList) {
-				if (targetExeEnvName.equals(role.get("environment_name"))) {
-					trgEnvFound = true;
-					Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
-					//String  entityTest = false;
-		
-					int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-					//entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetEnvironmentName);
-					int validateNumber = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetExeEnvName);
-				
-					// End of fix
-				
-					targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, (Integer) taskData.get("refcount"),
-							selectionMethod != null ? selectionMethod : (String) taskData.get("selection_method"),
-							(Boolean) taskData.get("version_ind"), 
-							(Boolean) taskData.get("replace_sequences"), (Boolean) taskData.get("delete_before_load"), taskType, 
-							reserveInd != null ? reserveInd : (Boolean) taskData.get("reserve_ind"), allowedEntitySize, role);
-					//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
-					if (validateNumber == -1) {
-						targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
-					} else if ( targetValidationsErrorMesssages.isEmpty()) { 
-						if ( validateNumber > 0  && (numberOfEntities!=null || entityListInd)) {
-							overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-						}			
-						targetEnvValidation = true;
-						break; 
-					}
-					validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+			//log.info("Entity list is given?: " + entityListInd);
+			Map<String,Object> overrideParams=new HashMap<>();
+			String selectionMethodOrig = "" + taskData.getString("selection_method");
+			String selectionMethod = selectionMethodOrig;
+			if (entitieslist!=null) {
+				if ("S".equalsIgnoreCase(selectionMethodOrig)) {
+					if (entityListSize > 1) {
+						throw new Exception("This is a Synthetic Data Task, only one entity can be in the entity list");
+					} 
+				} else {
+					selectionMethod = "L";
 				}
 			}
 			
-		} else{
-			//In case of Extract task, there are not target Env validations
-			targetEnvValidation = true;
-		}
-		//log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
-		if (!sourceEnvValidation && !srcEnvFound) {
-			Map<String, String> sourceValidationsErrorMesssages=new HashMap<>();
-			sourceValidationsErrorMesssages.put("SourceEnvironment", "No Source Environment was found For User");
-			validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
-		}
-		
-		if (!targetEnvValidation && !trgEnvFound) {
-			Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
-			targetValidationsErrorMesssages.put("TargetEnvironment", "No Target Environment was found For User");
-			validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
-		}
-		
-		if (!targetEnvValidation || !sourceEnvValidation) {
-			return TdmSharedUtils.wrapWebServiceResults("FAILED", "validation failure", validationsErrorMesssagesByRole);
-		}
-		try {
-			String envIdByName_sql= "select environment_id from environments where environment_name=(?) and environment_status = 'Active'";
-			Long overridenSrcEnvId=(Long)db("TDM").fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
-			Long overridenTarEnvId=(Long)db("TDM").fetch(envIdByName_sql,targetEnvironmentName).firstValue();
-		
-			TaskExecutionUtils.fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
-		
-			List<Map<String,Object>> taskExecutions = TaskExecutionUtils.fnGetActiveTaskForActivation(taskId);
-			if (taskExecutions == null || taskExecutions.size() == 0) {
-				throw new Exception("Failed to execute Task");
+			if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
+			if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
+			if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
+			if (!selectionMethod.equals(selectionMethodOrig)) overrideParams.put("SELECTION_METHOD",selectionMethod);
+			// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
+			if (numberOfEntities!=null && (!entityListInd  || ("S".equalsIgnoreCase(selectionMethod)))) {
+				//log.info("setting the number of entities to: " + numberOfEntities);
+				overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
 			}
-		
-			Long taskExecutionId = (Long) TaskExecutionUtils.fnGetNextTaskExecution(taskId);
-			if ((taskExecutions.get(0).get("selection_method") != null && (Long) taskExecutions.get(0).get("refcount") != null) && taskExecutions.get(0).get("selection_method").toString().equals("REF") ||
-					(Long) taskExecutions.get(0).get("refcount") > 0) {
-				TaskExecutionUtils.fnSaveRefExeTablestoTask((Long) taskExecutions.get(0).get("task_id"), taskExecutionId);
+			if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
+			
+			if(overrideParams.get("ENTITY_LIST")!=null){
+				String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
+				Arrays.sort(entityList);
+				overrideParams.put("ENTITY_LIST",String.join(",",entityList));
 			}
-		
-			TaskExecutionUtils.fnStartTaskExecutions(taskExecutions,taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
-					overridenTarEnvId!=null?overridenTarEnvId:null,
-					overridenSrcEnvId!=null?overridenSrcEnvId:null,
-					executionNote);
-		
-			if(!overrideParams.isEmpty()){
-				try{
-					TaskExecutionUtils.fnSaveTaskOverrideParameters(taskId,overrideParams,taskExecutionId);
-				}catch(Exception e){
-					throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
+			
+			//TDM 7.4 - Support override for reserved entities
+			if(reserveInd!=null) overrideParams.put("RESERVE_IND", reserveInd);
+			
+			if (!TaskValidationsUtils.fnValidateParallelExecutions(taskId, overrideParams)) {
+				throw new Exception("Task already running");
+			}
+			
+			List<String> taskLogicalUnitsIds=new ArrayList<>();
+			/*try {
+				List<Map<String, Object>> LogicalUnitsList = (List<Map<String, Object>>) ((Map<String, Object>) wsGetTaskLogicalUnits(taskId)).get("result");
+				for(Map<String, Object> lu:LogicalUnitsList){
+					taskLogicalUnitsIds.add(lu.get("lu_id").toString());
+				}
+			} catch(Exception e) {
+				throw new Exception("can't get task's logicalunits");
+			}*/
+			
+			Db.Rows rows = db("TDM").fetch("SELECT lu_id FROM tasks_logical_units WHERE task_id = ?", taskId);
+			for (Db.Row row : rows) {
+				taskLogicalUnitsIds.add("" + row.get("lu_id"));
+			}
+			
+			Map<String,Object> be_lus=new HashMap<>();
+			be_lus.put("be_id",taskData.getString("be_id"));
+			be_lus.put("LU List",taskLogicalUnitsIds);
+			//log.info("selectionMethod: " + selectionMethod);
+			String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.getString("source_env_name");
+			//log.info("Source Env: " + sourceEnvName);
+			
+			if (dataVersionExecId!=null) {
+				Map<String, String> validateVersionID = TaskValidationsUtils.fnValidateVersionExecIdAndGetDetails(dataVersionExecId, be_lus, sourceEnvName);
+				if (validateVersionID.get("errorMessage") == null) {
+					overrideParams.put("SELECTED_VERSION_TASK_EXE_ID", dataVersionExecId);
+					overrideParams.put("SELECTED_VERSION_TASK_NAME", validateVersionID.get("versionName"));
+					overrideParams.put("SELECTED_VERSION_DATETIME", validateVersionID.get("versionDatetime"));
+				} else {
+					return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningtask", validateVersionID.get("errorMessage"));
 				}
 			}
-		
-			TaskExecutionUtils.fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
-					overridenTarEnvId!=null?overridenTarEnvId:null,
-					overridenSrcEnvId!=null?overridenSrcEnvId:null);
-		
+			Integer numberOfRequestedEntites = 0;
+			if (numberOfEntities != null) {
+				if (entityListInd && !"S".equalsIgnoreCase(selectionMethod) && numberOfEntities != entityListSize) {
+					numberOfRequestedEntites = entityListSize;
+					message = "The number of entities for execution is set based on the entity list";
+					overrideParams.put("NO_OF_ENTITIES",numberOfRequestedEntites);
+				} else {
+					numberOfRequestedEntites = numberOfEntities;
+					entityListSize = numberOfEntities;
+				}
+			} else {
+				if (entityListInd && !"S".equalsIgnoreCase(selectionMethod)) {
+					numberOfRequestedEntites = entityListSize;
+				} else {
+					numberOfRequestedEntites =  (taskData.getInt("num_of_entities"));
+				}
+			}
+			if ("S".equalsIgnoreCase(selectionMethod) && numberOfRequestedEntites > 0) {
+				entityListSize = numberOfRequestedEntites;
+			}
+			
+			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
+			String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.getString("environment_name").toString();
+			
+			if (dataVersionRetentionPeriod!=null) {
+				Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, 
+						"versioning", targetExeEnvName);
+				if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
+					return TdmSharedUtils.wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
+				}
+				overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
+			}
+			
+			if(reserveRetention!=null) {
+				Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(reserveRetention, 
+					"reverse", targetExeEnvName);
+				if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
+					return TdmSharedUtils.wrapWebServiceResults("FAILED", "reverseRetentionPeriod", validateDFMessages.get("retention"));
+				}
+				overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
+			}
+			
+			List<Map<String,Object>> sourceRolesList = new ArrayList<>();
+			List<Map<String,Object>> targetRolesList = new ArrayList<>();
+			List<Map<String,Object>> rolesList = fnGetUserEnvs();
+			//log.info("------- Size: " + rolesList.size());
+			for (Map<String, Object> envType : rolesList) {
+				if (envType.get("source environments") != null) {
+					sourceRolesList = (List<Map<String, Object>>) (envType.get("source environments"));
+				}
+				if (envType.get("target environments") != null) {
+					targetRolesList = (List<Map<String, Object>>) (envType.get("target environments"));
+				}
+			}
+			//log.info("------- Size of sourceRolesList: " + sourceRolesList.size());
+			//log.info("------- Size of targetRolesList: " + targetRolesList.size());
+			
+			List<Map<String, String>> validationsErrorMesssagesByRole = new ArrayList<>();
+			
+			if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
+				if (sourceRolesList == null || sourceRolesList.isEmpty()) {
+					throw new Exception("Environment does not exist or user has no read permission on this environment");
+				}
+			
+				for (Map<String, Object> role : sourceRolesList) {
+					//Check if the current role is related to input environment, and not to other environment
+					//log.info("environment_name: " + role.get("environment_name"));
+					if (sourceEnvName.equals(role.get("environment_name"))) {
+						srcEnvFound = true;
+						int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+						int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
+					
+						Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, taskData.getInt("refcount"),
+								selectionMethod != null ? selectionMethod : taskData.getString("selection_method"),
+								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role);
+						//log.info("validateNumber: " + validateNumber);
+			
+						if (validateNumber == -1) {
+							sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
+						} else {
+							if ("extract".equalsIgnoreCase(taskType) && validateNumber > 0 && 
+								(numberOfEntities!=null || entityListInd))
+							{
+								overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
+							}
+							
+							if (sourceValidationsErrorMesssages.isEmpty()) {
+								sourceEnvValidation = true;
+								break;
+							}
+						}
+			
+						validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
+					}
+				}
+			} else {// No Source validation
+				sourceEnvValidation = true;
+			}
+			
+			if("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType)) {
+				
+				if(targetRolesList == null || targetRolesList.isEmpty()) {
+					throw new Exception("Environment does not exist or user has no write permission on this environment");
+				}
+			
+				for (Map<String, Object> role : targetRolesList) {
+					if (targetExeEnvName.equals(role.get("environment_name"))) {
+						trgEnvFound = true;
+						Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
+						//String  entityTest = false;
+			
+						int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
+						//entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetEnvironmentName);
+						int validateNumber = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetExeEnvName);
+					
+						// End of fix
+					
+						targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, taskData.getInt("refcount"),
+								selectionMethod != null ? selectionMethod : taskData.getString("selection_method"),
+								taskData.getBoolean("version_ind"), 
+								taskData.getBoolean("replace_sequences"), taskData.getBoolean("delete_before_load"), taskType, 
+								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role);
+						//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
+						if (validateNumber == -1) {
+							targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
+						} else if ( targetValidationsErrorMesssages.isEmpty()) { 
+							if ( validateNumber > 0  && (numberOfEntities!=null || entityListInd)) {
+								overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
+							}			
+							targetEnvValidation = true;
+							break; 
+						}
+						validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+					}
+				}
+				
+			} else{
+				//In case of Extract task, there are not target Env validations
+				targetEnvValidation = true;
+			}
+			//log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
+			if (!sourceEnvValidation && !srcEnvFound) {
+				Map<String, String> sourceValidationsErrorMesssages=new HashMap<>();
+				sourceValidationsErrorMesssages.put("SourceEnvironment", "No Source Environment was found For User");
+				validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
+			}
+			
+			if (!targetEnvValidation && !trgEnvFound) {
+				Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
+				targetValidationsErrorMesssages.put("TargetEnvironment", "No Target Environment was found For User");
+				validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
+			}
+			
+			if (!targetEnvValidation || !sourceEnvValidation) {
+				return TdmSharedUtils.wrapWebServiceResults("FAILED", "validation failure", validationsErrorMesssagesByRole);
+			}
 			try {
-				String activityDesc = "Execution list of task " + taskData.get("task_title");
-				TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+				String envIdByName_sql= "select environment_id from environments where environment_name=(?) and environment_status = 'Active'";
+				Long overridenSrcEnvId=(Long)db("TDM").fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
+				Long overridenTarEnvId=(Long)db("TDM").fetch(envIdByName_sql,targetEnvironmentName).firstValue();
+			
+				TaskExecutionUtils.fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
+			
+				List<Map<String,Object>> taskExecutions = TaskExecutionUtils.fnGetActiveTaskForActivation(taskId);
+				if (taskExecutions == null || taskExecutions.size() == 0) {
+					throw new Exception("Failed to execute Task");
+				}
+			
+				Long taskExecutionId = (Long) TaskExecutionUtils.fnGetNextTaskExecution(taskId);
+				if ((taskExecutions.get(0).get("selection_method") != null && (Long) taskExecutions.get(0).get("refcount") != null) && taskExecutions.get(0).get("selection_method").toString().equals("REF") ||
+						(Long) taskExecutions.get(0).get("refcount") > 0) {
+					TaskExecutionUtils.fnSaveRefExeTablestoTask((Long) taskExecutions.get(0).get("task_id"), taskExecutionId);
+				}
+			
+				TaskExecutionUtils.fnStartTaskExecutions(taskExecutions,taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
+						overridenTarEnvId!=null?overridenTarEnvId:null,
+						overridenSrcEnvId!=null?overridenSrcEnvId:null,
+						executionNote);
+			
+				if(!overrideParams.isEmpty()){
+					try{
+						TaskExecutionUtils.fnSaveTaskOverrideParameters(taskId,overrideParams,taskExecutionId);
+					}catch(Exception e){
+						throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
+					}
+				}
+			
+				TaskExecutionUtils.fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
+						overridenTarEnvId!=null?overridenTarEnvId:null,
+						overridenSrcEnvId!=null?overridenSrcEnvId:null);
+			
+				try {
+					String activityDesc = "Execution list of task " + taskData.getString("task_title");
+					TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+				} catch(Exception e){
+					log.error(e.getMessage());
+				}
+			
+			
+				Map<String,Object> map=new HashMap<>();
+				map.put("taskExecutionId",taskExecutionId);
+				response.put("result",map);
+				errorCode="SUCCESS";
 			} catch(Exception e){
-				log.error(e.getMessage());
+				message=e.getMessage();
+				log.error(message);
+				errorCode="FAILED";
 			}
-		
-		
-			Map<String,Object> map=new HashMap<>();
-			map.put("taskExecutionId",taskExecutionId);
-			response.put("result",map);
-			errorCode="SUCCESS";
-		} catch(Exception e){
-			message=e.getMessage();
-			log.error(message);
-			errorCode="FAILED";
+				
+			response.put("errorCode",errorCode);
+			response.put("message", message);
+			// The function TaskExecutionUtils.fnGetTasks can return more then one record for given task ID, 
+			// when the env has more than one permission set (entries in environment_role_users table)
+			// We should handle only one record	
+			break;
 		}
-		response.put("errorCode",errorCode);
-		response.put("message", message);
 		return response;
 	}
 

@@ -1169,7 +1169,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-	@desc("Get list of active business entities")
+	@desc("Get the list of active Business Entities. This API is used when creating or editing a TDM task to get the list of available Business Entities for the task.")
 	@webService(path = "getActiveBusinessentities", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
 			"    {\r\n" +
