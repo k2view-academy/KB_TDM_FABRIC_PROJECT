@@ -3,6 +3,40 @@
         {
             "stages": [
                 {
+                    "name": "Check If reservation to be handled",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check if Reservation is required",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get Delete Only indicator",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -15,6 +49,20 @@
                                     {
                                         "name": "key",
                                         "const": "TDM_DELETE_ONLY_TASK",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Task Reserve Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_RESERVE_IND",
                                         "isDefault": false
                                     }
                                 ],
@@ -104,7 +152,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Check if Reservation is required",
+                            "name": "Check if A Reservation Task",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -495,6 +543,16 @@
             },
             "rightPort": {
                 "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Reserve Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check if A Reservation Task",
                 "name": "a"
             }
         },

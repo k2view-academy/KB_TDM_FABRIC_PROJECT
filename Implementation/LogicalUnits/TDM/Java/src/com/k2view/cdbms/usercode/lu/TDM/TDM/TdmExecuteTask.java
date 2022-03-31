@@ -286,13 +286,15 @@ public class TdmExecuteTask {
         String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
         String entityInclusionOverride = "";
 	
+	/* For first Root LU, the reservation should be checked also for tasks withtout reservation. For other root LUs or child LUs, the reservation should not be handled
 		Boolean reserveInd = false;
 		if(RESERVE_IND.get(taskProperties) instanceof Boolean) {
 			reserveInd = RESERVE_IND.get(taskProperties);
 		} else {
 			reserveInd = Boolean.valueOf(RESERVE_IND.get(taskProperties));
 		}
-	
+	*/
+		Boolean reserveInd = true;
 		//log.info("executeFabricBatch - luName: " + luName + ", isChild: " + isChildLU(taskProperties));
         // check the selection method only for root LUs. Build only once the root selection method per task execution
         if(!isChildLU(taskProperties)){
@@ -510,7 +512,7 @@ public class TdmExecuteTask {
             case "L": // In case the task lists the entities to run
                String versionParams = VERSION_IND.get(taskProperties).equals("true") ? 
 					separator + SELECTED_VERSION_TASK_NAME.get(taskProperties) + separator + SELECTED_VERSION_DATETIME.get(taskProperties) : "";
-				entitiesList = entitiesList.replaceAll("\\s+","");
+				entitiesList.replaceAll("\\s+","");
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
 				
 				for (String entityID : entitiesListArray) {

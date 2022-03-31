@@ -3,6 +3,26 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtEnd.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtEnd.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtStart.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtStart.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>UpdateReserveEntitiesTableForAdminOnwer.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\UpdateReserveEntitiesTableForAdminOnwer.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
@@ -60,26 +80,6 @@
     <ProjectItemProp>
       <NodeName>ReleaseReservedEntity.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\ReleaseReservedEntity.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>HandleEntityReservationAtEnd.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>HandleEntityReservationAtEnd.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>HandleEntityReservationAtStart.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>HandleEntityReservationAtStart.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
