@@ -26,7 +26,7 @@
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
+                                        "name": "syncMode",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -39,12 +39,6 @@
                                     },
                                     {
                                         "name": "targetEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "syncMode",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -444,11 +438,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
-                "name": "luName"
+                "name": "syncMode"
             }
         },
         {
@@ -459,6 +453,16 @@
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
                 "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "InitiateTDMLoad_Actor1",
+                "name": "luName"
             }
         },
         {
@@ -479,26 +483,6 @@
             "rightPort": {
                 "actor": "InitiateTDMLoad_Actor1",
                 "name": "targetEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "syncMode"
             }
         },
         {
