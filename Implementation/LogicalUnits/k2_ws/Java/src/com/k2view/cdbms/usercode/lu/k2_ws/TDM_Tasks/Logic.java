@@ -908,7 +908,7 @@ public class Logic extends WebServiceUserCode {
 			}
 		}
 		
-		if (selection_param_value != null && !"".equals(selection_param_value)) {
+		if (selection_param_value != null && !"".equals(selection_param_value) && "L".equals(selection_method)) {
 			selection_param_value = selection_param_value.replaceAll("\\s+","");
 		}
 		
@@ -1234,7 +1234,7 @@ public class Logic extends WebServiceUserCode {
 			db("TDM").execute("UPDATE \"" + schema + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
 		
-		if (selection_param_value != null && !"".equals(selection_param_value)) {
+		if (selection_param_value != null && !"".equals(selection_param_value) && "L".equals(selection_method)) {
 			selection_param_value = selection_param_value.replaceAll("\\s+","");
 		}
 		
