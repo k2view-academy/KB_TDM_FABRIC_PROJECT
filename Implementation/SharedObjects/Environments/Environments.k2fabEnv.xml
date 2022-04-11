@@ -516,7 +516,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="TAR_CRM">
+    <Environment enabled="true" name="TarCRM">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="false">
           <dbHost>10.21.2.64</dbHost>
@@ -552,11 +552,11 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>10.21.2.69</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://10.21.2.69:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -573,12 +573,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>10.21.2.64</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5433</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://10.21.2.64:5433/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://host.docker.internal:5433/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>

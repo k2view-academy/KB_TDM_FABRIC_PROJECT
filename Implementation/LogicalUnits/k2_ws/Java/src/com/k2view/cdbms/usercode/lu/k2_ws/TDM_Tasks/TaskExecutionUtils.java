@@ -943,7 +943,7 @@ public class TaskExecutionUtils {
                 "group by task_execution_id) " +
                 "select distinct t1.task_title version_name, t1.task_id, l1.task_execution_id, t1.task_last_updated_by, " +
                 "CASE when t1.selection_method='ALL' then  'ALL' else  'Selected Entities' END version_Type, " +
-                "l1.num_of_copied_entities number_of_extracted_entities, l1.version_datetime , l1.task_execution_id, tlu.lu_name, l1.fabric_execution_id, " +
+                "l1.num_of_processed_entities number_of_extracted_entities, l1.version_datetime , l1.task_execution_id, tlu.lu_name, l1.fabric_execution_id, " +
                 "CASE when plu.lu_parent_id is null then 'Y' else 'N' END root_indicator, " +
 				"l1.num_of_copied_entities as num_of_succeeded_entities, l1.num_of_failed_entities, l1.execution_note, " +
 				"ROW_NUMBER () OVER (PARTITION BY t1.task_title, l1.lu_id ORDER BY l1.task_execution_id) version_no " +

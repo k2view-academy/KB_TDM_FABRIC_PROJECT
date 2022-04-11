@@ -2072,11 +2072,12 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String query = "SELECT summary.*, envs.environment_name, be.be_name " +
+			String query = "SELECT summary.*, envs.environment_name, be.be_name, list.execution_note " +
 			"FROM task_execution_summary AS summary " +
+			"INNER JOIN task_execution_list AS list ON summary.task_execution_id = list.task_execution_id and list.parent_lu_id is null " +
 			"INNER JOIN environments AS envs ON summary.environment_id = envs.environment_id " +
 			"LEFT JOIN business_entities AS be ON (summary.be_id = be.be_id) " +
-			"WHERE task_id = " + taskId +
+			"WHERE summary.task_id = " + taskId +
 					(userId != null ? " AND task_executed_by = '" + userId + "'" : "") +
 					(numberOfExecutions != null ? " ORDER BY end_execution_time DESC LIMIT " + numberOfExecutions + "" : "");
 		
