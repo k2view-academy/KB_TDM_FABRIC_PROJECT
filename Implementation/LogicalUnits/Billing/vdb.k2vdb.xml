@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.4.12">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.6.2">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -7,10 +7,6 @@
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
-    <OrderValidationTime>00:05:00</OrderValidationTime>
-    <HistoryStoreTime>7.00:00:00</HistoryStoreTime>
-    <DeltaSyncMethod>TimeInterval</DeltaSyncMethod>
-    <DeltaSyncTimeInterval>00:00:00</DeltaSyncTimeInterval>
   </IidFinderProp>
   <Tables>
     <Table>BALANCE</Table>
@@ -129,7 +125,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.4.12" name="vdb.k2vdb.xml">
+    <Graph version="6.5.6.2" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="312 193.40892" size="265 159.091141" wasexpanded="false" expanded="true">
         <Node name="LU_PARAMS" pos="316 212.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
