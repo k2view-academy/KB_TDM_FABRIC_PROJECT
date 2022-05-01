@@ -138,7 +138,7 @@ public class TaskValidationsUtils {
         if (version_ind != null && version_ind && !ownerOrAdminRole) {
             res = UserCode.db("TDM").fetch(versioning_sql, role_id).firstValue();
             if (res == null)
-                errorMessages.put("versioning", "The user has no permissions to run Data Flux tasks on the task's source environment");
+                errorMessages.put("versioning", "The user has no permissions to run Data Versioning tasks on the task's source environment");
         }
 
         //if (!errorMessages.isEmpty())  => test fails
@@ -208,7 +208,7 @@ public class TaskValidationsUtils {
         if (version_ind != null && version_ind && !ownerOrAdminRole) {
             res = UserCode.db("TDM").fetch(versioning_sql, role_id).firstValue();
             if (res == null)
-                errorMessages.put("versioning", "The user has no permissions to run Data Flux tasks on the task's target environment");
+                errorMessages.put("versioning", "The user has no permissions to run Data Versioning tasks on the task's target environment");
         }
 
         //check if target env satisfy replace sequence filtering

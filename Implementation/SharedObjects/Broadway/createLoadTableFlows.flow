@@ -13,12 +13,14 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "getLuTables"
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -46,17 +48,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "filterOutTDMTables_Actor1",
+                            "name": "filter Out TDM Tables",
                             "actorType": {
-                                "parentType": "filterOutTDMTables_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
+                                "parentType": "filterOutTDMTables",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -399,14 +394,14 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableName"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -418,7 +413,18 @@
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "checkMainTableAndSequentialIID1",
+                "name": "INPUT_TABLE_NAME"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -430,7 +436,7 @@
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -441,7 +447,7 @@
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -452,18 +458,7 @@
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "checkMainTableAndSequentialIID1",
-                "name": "INPUT_TABLE_NAME"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -588,7 +583,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "luName"
             }
         },

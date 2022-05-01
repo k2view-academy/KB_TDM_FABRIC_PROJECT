@@ -13,6 +13,17 @@
             "name": "retentionPeriodType",
             "schema": {
                 "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dropdown",
+                "options": [
+                    "Seconds",
+                    "Minutes",
+                    "Hours",
+                    "Days",
+                    "Weeks",
+                    "Years"
+                ]
             }
         },
         {

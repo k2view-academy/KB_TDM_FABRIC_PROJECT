@@ -512,7 +512,7 @@ public class TdmExecuteTask {
             case "L": // In case the task lists the entities to run
                String versionParams = VERSION_IND.get(taskProperties).equals("true") ? 
 					separator + SELECTED_VERSION_TASK_NAME.get(taskProperties) + separator + SELECTED_VERSION_DATETIME.get(taskProperties) : "";
-				entitiesList.replaceAll("\\s+","");
+				entitiesList = entitiesList.replaceAll("\\s+","");
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
 				
 				for (String entityID : entitiesListArray) {
@@ -568,7 +568,7 @@ public class TdmExecuteTask {
 				String broadwayCommand = "broadway " + luName + ".loadLuExternalEntityListTableJob"  +  
 					" LU_NAME=" + luName + ", EXTERNAL_TABLE_FLOW=" + SELECTION_PARAM_VALUE.get(taskProperties) + 
 					",NUM_OF_ENTITIES=" + entitiesLimit + 
-					", TASK_EXEC_ID=" + TASK_EXECUTION_ID.get(taskProperties) + ", LU_ID=" + LU_ID.get(taskProperties);
+					", TASK_EXEC_ID=" + TASK_EXECUTION_ID.get(taskProperties) + ", LU_ID=" + LU_ID.get(taskProperties) + ", FLOW_PARAMS = '" + getCLAddionalParams(taskProperties) + "'";
 				//log.info("getEntityInclusion - broadwayCommand: " + broadwayCommand);
 				Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
 				String entityListTable = "" + entityListTableRec.get("value");
@@ -582,6 +582,34 @@ public class TdmExecuteTask {
 		//log.info("getEntityInclusion - entityInclusion: " + entityInclusion);
         return entityInclusion;
     }
+
+    @NotNull
+	private static String getCLAddionalParams(Map<String, Object> taskProperties) {
+		Gson gson = new Gson();
+		String AdditonalParams = "";
+		String customLogicParams = PARAMETERS.get(taskProperties);
+		customLogicParams = customLogicParams.replaceAll("\\\\n","").replaceAll("\\\\t","");
+		//log.info("customLogicParams after replace: " + customLogicParams);
+		Type mapType = new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType();
+		Map<String, List<Map <String, Object>>> customLogicParamJson = gson.fromJson(customLogicParams, mapType);
+		if (!(customLogicParamJson.isEmpty())) {
+			List<Map <String, Object>> customLogicParamList = customLogicParamJson.get("inputs");
+			
+			List <HashMap<String, Object>> paramList = new ArrayList<>();
+			for (Map <String, Object> customLogicParamMap : customLogicParamList) {
+				HashMap <String, Object> paramMap = new HashMap<>();
+				paramMap.put("name", customLogicParamMap.get("name"));
+				paramMap.put("value", "'" + customLogicParamMap.get("value") + "'");
+				paramList.add(paramMap);
+			}
+			
+			AdditonalParams = gson.toJson(paramList, new TypeToken<ArrayList>(){}.getType());
+		}
+		
+		//log.info("AdditonalParams: " + AdditonalParams);
+		return AdditonalParams;
+		
+	}
 
     @NotNull
     private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
@@ -681,7 +709,9 @@ public class TdmExecuteTask {
 
 			//TDM 7.3 - Add global to mark dataflux tasks
 			globals.put("TDM_DATAFLUX_TASK", "true");
-			globals.put("TDM_DELETE_BEFORE_LOAD", "true");
+			if ("load".equalsIgnoreCase("" + TASK_TYPE.get(taskProperties))) {
+				globals.put("TDM_DELETE_BEFORE_LOAD", "true");
+			}
 
 		} else {
 			globals.put("TDM_VERSION_NAME", "");
@@ -1200,7 +1230,8 @@ public class TdmExecuteTask {
 	    RESERVE_IND("false"),
 		RESERVE_RETENTION_PERIOD_TYPE(""),
 		RESERVE_RETENTION_PERIOD_VALUE("0"),
-		TASK_EXECUTED_BY("");
+		TASK_EXECUTED_BY(""),
+		PARAMETERS("");
         private Object def;
 
         TASK_PROPERTIES(Object def) {

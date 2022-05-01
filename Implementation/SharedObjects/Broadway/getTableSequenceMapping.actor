@@ -7,12 +7,19 @@
             "name": "LU_NAME",
             "schema": {
                 "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.logicalUnit",
+                "addEmptyEntry": true
             }
         },
         {
             "name": "TARGET_TABLE_NAME",
             "schema": {
                 "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dbtable"
             }
         },
         {

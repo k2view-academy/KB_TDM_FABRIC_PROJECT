@@ -228,8 +228,8 @@ public class TdmSharedUtils {
                 "FROM tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv + "' AND lu_type_2 IN(" + childrenList + ")) AS rel_base ON t1.lu_type=rel_base.lu_type_1 ) as base " +
 
                 "UNION ALL SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid," +
-                "concat(table_params,',',(SELECT string_agg(lu_param_col::text, ',') as param from (select '\"' || column_name || '\"' AS lu_param_col from information_schema.columns where table_name=concat(LOWER(a.lu_type_1),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') AS params),','," +
-                "(SELECT string_agg(lu_param_col::text, ',') AS param from (select '\"' || column_name || '\"' AS lu_param_col from information_schema.columns where table_name=concat(LOWER(a.lu_type_2),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') as params))" +
+                "concat(table_params, (SELECT ',' || string_agg(lu_param_col::text, ',') as param from (select  concat('\"' || column_name || '\"', ',') AS lu_param_col from information_schema.columns where table_name=concat(LOWER(a.lu_type_1),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') AS params)," +
+                "(SELECT string_agg(lu_param_col::text, ',') AS param from (select concat('\"' || column_name || '\"' , ',') AS lu_param_col from information_schema.columns where table_name=concat(LOWER(a.lu_type_2),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') as params))" +
 
                 "FROM tdm_lu_type_relation_eid a " +
                 "INNER JOIN cols b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND a.lu_type_2 IN(" + childrenList + "))" +

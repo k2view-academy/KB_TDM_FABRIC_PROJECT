@@ -1,10 +1,23 @@
 {
-    "type": "checkMainTableAndSequentialIID",
+    "type": "GetTableFieldsFromCassandra",
     "parentType": "InnerFlow",
     "actorClass": null,
     "inputs": [
         {
-            "name": "INPUT_TABLE_NAME",
+            "name": "cassandraInterface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "database",
+                    "CassandraLoader"
+                ]
+            }
+        },
+        {
+            "name": "tableName",
             "schema": {
                 "type": "string"
             },
@@ -13,35 +26,21 @@
             }
         },
         {
-            "name": "luName",
-            "schema": {
-                "type": "string"
-            },
-            "editor": {
-                "id": "com.k2view.logicalUnit",
-                "addEmptyEntry": true
-            }
-        },
-        {
             "name": "flowName",
             "schema": {
                 "type": "string"
             },
-            "const": "checkMainTableAndSequentialIID",
-            "hidden": true
+            "const": "GetTableFieldsFromCassandra"
         }
     ],
     "outputs": [
         {
-            "name": "SEQ_FIELD_NAME",
+            "name": "result",
             "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "SEQUENCE_NAME",
-            "schema": {
-                "type": "string"
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
             }
         }
     ],

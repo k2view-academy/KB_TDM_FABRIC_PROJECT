@@ -13,12 +13,12 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "getLuTables"
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -41,12 +41,12 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "getDbTables"
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "dbInterfaceName",
@@ -86,17 +86,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "filterOutTDMTables_Actor1",
+                            "name": "filter Out TDM Tables",
                             "actorType": {
-                                "parentType": "filterOutTDMTables_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
+                                "parentType": "filterOutTDMTables",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -381,14 +374,14 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableName"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -400,7 +393,7 @@
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -412,7 +405,7 @@
         },
         {
             "leftPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -507,7 +500,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "filterOutTDMTables_Actor1",
+                "actor": "filter Out TDM Tables",
                 "name": "luName"
             }
         },

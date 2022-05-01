@@ -245,4 +245,16 @@ public class Logic extends WebServiceUserCode {
 		}
 	}
 
+
+	@webService(path = "getDateTimeFormat", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+	public static Object wsGetDateTimeFormat() throws Exception {
+		Map<String, Object> formats = new HashMap<>();
+		GlobalProperties gp = GlobalProperties.getInstance();
+		
+		formats.put("DateTimeFormat", gp.getDateTimeFormat());
+		formats.put("DateFormat", gp.getDateFormat());
+		formats.put("TimeFormat", gp.getTimeFormat());
+		return formats;
+	}
+
 }

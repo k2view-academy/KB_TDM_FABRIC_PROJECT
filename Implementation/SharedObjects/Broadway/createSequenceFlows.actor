@@ -1,12 +1,12 @@
 {
-    "type": "setTargetEntityId_Actor",
-    "actorClass": null,
+    "type": "createSequenceFlows",
     "parentType": "InnerFlow",
+    "actorClass": null,
     "inputs": [
         {
-            "name": "target_entity_id",
+            "name": "OVERRIDE_EXISTING_FLOWS",
             "schema": {
-                "type": "String"
+                "type": "boolean"
             }
         },
         {
@@ -14,7 +14,8 @@
             "schema": {
                 "type": "string"
             },
-            "const": "setTargetEntityId"
+            "const": "createSequenceFlows",
+            "mandatory": true
         }
     ],
     "outputs": [],

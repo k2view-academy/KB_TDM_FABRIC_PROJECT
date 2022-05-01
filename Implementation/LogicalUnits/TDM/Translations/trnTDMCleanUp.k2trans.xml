@@ -292,14 +292,6 @@
           <SEQ>25</SEQ>
         </trnTDMCleanUp>
         <trnTDMCleanUp diffgr:id="trnTDMCleanUp22" msdata:rowOrder="21">
-          <TABLE_NAME>TASK_EXE_STATS_SUMMARY</TABLE_NAME>
-          <CLEANUP_ORDER>1</CLEANUP_ORDER>
-          <CLEANUP_IND>true</CLEANUP_IND>
-          <CLEANUP_STATEMENT>DELETE FROM TASK_EXE_STATS_SUMMARY WHERE TASK_EXECUTION_ID IN (SELECT TASK_EXECUTION_ID FROM TASK_EXECUTION_LIST WHERE UPPER(EXECUTION_STATUS) NOT IN ('PENDING', 'RUNNING', 'WAITING') AND END_EXECUTION_TIME &lt; ?)</CLEANUP_STATEMENT>
-          <CLEANUP_LOGIC></CLEANUP_LOGIC>
-          <SEQ>26</SEQ>
-        </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp23" msdata:rowOrder="22">
           <TABLE_NAME>TASK_EXE_STATS_DETAILED</TABLE_NAME>
           <CLEANUP_ORDER>1</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -307,7 +299,7 @@
           <CLEANUP_LOGIC></CLEANUP_LOGIC>
           <SEQ>27</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp24" msdata:rowOrder="23">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp23" msdata:rowOrder="22">
           <TABLE_NAME>TASK_EXECUTION_OVERRIDE_ATTRS</TABLE_NAME>
           <CLEANUP_ORDER>1</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -315,7 +307,7 @@
           <CLEANUP_LOGIC></CLEANUP_LOGIC>
           <SEQ>28</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp25" msdata:rowOrder="24">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp24" msdata:rowOrder="23">
           <TABLE_NAME>TDM_RESERVED_ENTITIES</TABLE_NAME>
           <CLEANUP_ORDER>1</CLEANUP_ORDER>
           <CLEANUP_IND>true</CLEANUP_IND>
@@ -323,7 +315,7 @@
           <CLEANUP_LOGIC></CLEANUP_LOGIC>
           <SEQ>29</SEQ>
         </trnTDMCleanUp>
-        <trnTDMCleanUp diffgr:id="trnTDMCleanUp26" msdata:rowOrder="25">
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp25" msdata:rowOrder="24">
           <TABLE_NAME>TDM_LU_TYPE_RELATION_EID</TABLE_NAME>
           <CLEANUP_ORDER>1</CLEANUP_ORDER>
           <CLEANUP_IND>false</CLEANUP_IND>

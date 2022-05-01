@@ -9,9 +9,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 public class SharedGlobals {
 
 
-	@desc("The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB")
-	@category("TDM")
-	public static String ORACLE8_DB_TYPE = "Oracle8";
 
 
 	@desc("Maximum values of combo box input object")
@@ -83,6 +80,9 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
 
+	@desc("The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB")
+	@category("TDM")
+	public static String ORACLE8_DB_TYPE = "Oracle8";
 	@desc("In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
 	@category("TDM")
 	public static String CLONE_CLEANUP_RETENTION_PERIOD_TYPE = "Days";

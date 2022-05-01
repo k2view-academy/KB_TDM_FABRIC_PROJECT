@@ -255,9 +255,9 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CheckIfRootTableAndField_Actor1",
+                            "name": "Check If Root Table And Field",
                             "actorType": {
-                                "parentType": "CheckIfRootTableAndField_Actor",
+                                "parentType": "CheckIfRootTableAndField",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -542,7 +542,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CheckIfRootTableAndField_Actor1",
+                "actor": "Check If Root Table And Field",
                 "name": "luName"
             }
         },
@@ -583,7 +583,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CheckIfRootTableAndField_Actor1",
+                "actor": "Check If Root Table And Field",
                 "name": "tableName"
             },
             "iterate": "Iterate",
@@ -597,7 +597,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CheckIfRootTableAndField_Actor1",
+                "actor": "Check If Root Table And Field",
                 "name": "fieldName"
             },
             "iterate": "Iterate",
@@ -607,7 +607,7 @@
         },
         {
             "leftPort": {
-                "actor": "CheckIfRootTableAndField_Actor1",
+                "actor": "Check If Root Table And Field",
                 "name": "root_indicator"
             },
             "rightPort": {

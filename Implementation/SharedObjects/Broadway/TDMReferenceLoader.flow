@@ -9,47 +9,10 @@
                     "remark": "This Flow is used to load each TDM Reference Table from Cassandra to Target.\nThis Flow follows the following:\n1. The tables were extracted from Source to Cassandra Interface DB_CASSANDRA\n2. The tables were loaded under keyspace k2view_tdm\n3. The task execution job, sets the value for field TDM_TASK_EXECUTION_ID based on dataflux indicator and job properties.\n4. The Reference tables in Cassandra will have 3 additional control fields:\n   a. source_env_name\n   b. tdm_task_execution_id\n   c. rec_id\n   This fields will not be loaded to target table.\n4. At the end the flow will update the TDMDB table TASK_REF_EXE_STATS\n\n\n\n",
                     "actors": [
                         {
-                            "name": "InitiateTDMReferenceLoad_Actor1",
+                            "name": "Initiate TDM Reference Load",
                             "actorType": {
-                                "parentType": "InitiateTDMReferenceLoad_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "taskExecutionID",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "refTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "selectedRefVersionTaskName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "selectedRefVersionDateTime",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEnvName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
+                                "parentType": "InitiateTDMReferenceLoad",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -444,32 +407,6 @@
                             }
                         },
                         {
-                            "name": "Get Table Fields From Cassandra",
-                            "actorType": {
-                                "parentType": "GetTableFieldsFromCassandra_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "cassandraInterface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "DB_CASSANDRA"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "Initiate Counter",
                             "actorType": {
                                 "parentType": "JavaScript",
@@ -487,6 +424,20 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Get Table Fields From Cassandra",
+                            "minHeight": 181,
+                            "actorType": {
+                                "parentType": "GetTableFieldsFromCassandra",
+                                "inputs": [
+                                    {
+                                        "name": "cassandraInterface",
+                                        "const": "DB_CASSANDRA"
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -605,13 +556,13 @@
                             }
                         },
                         {
-                            "name": "JavaScript1",
+                            "name": "Throw Exception - Empty Source Table",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Fail",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": "throw \"Empty Source Table in Cassandra\""
+                                        "name": "message",
+                                        "const": "Empty Source Table in Cassandra"
                                     }
                                 ],
                                 "outputs": []
@@ -1190,7 +1141,40 @@
                                 "inputs": [
                                     {
                                         "name": "script",
-                                        "const": "flowArgs.count;"
+                                        "const": {
+                                            "userCode": "flowArgs.count;\r\n",
+                                            "script": "flowArgs.count;"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Build Exception Error",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "\"Number of loaded records: \" + flowArgs.count + \" is less than expected: \" + expectedRecs + \" for table \" + refTableName\r\n",
+                                            "script": "\"Number of loaded records: \" + flowArgs.count + \" is less than expected: \" + expectedRecs + \" for table \" + refTableName;"
+                                        }
+                                    },
+                                    {
+                                        "name": "expectedRecs",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -1252,31 +1236,13 @@
                             }
                         },
                         {
-                            "name": "JavaScript2",
+                            "name": "Throw Exception - Not All Records Were Loaded",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Fail",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": "throw \"Number of loaded records: \" + loadedRecs + \" is less than expected: \" + expectedRecs + \" for table \" + refTableName"
-                                    },
-                                    {
-                                        "name": "refTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "loadedRecs",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    {
-                                        "name": "expectedRecs",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
+                                        "name": "message",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -1434,7 +1400,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript2",
+                "actor": "Build Exception Error",
                 "name": "expectedRecs"
             }
         },
@@ -1515,18 +1481,18 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript2",
-                "name": "loadedRecs"
+                "actor": "LessThan1",
+                "name": "a"
             }
         },
         {
             "leftPort": {
-                "actor": "Get number of loaded records",
+                "actor": "Build Exception Error",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "LessThan1",
-                "name": "a"
+                "actor": "Throw Exception - Not All Records Were Loaded",
+                "name": "message"
             }
         },
         {
@@ -1535,7 +1501,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "actor": "Initiate TDM Reference Load",
                 "name": "luName"
             }
         },
@@ -1545,7 +1511,7 @@
                 "name": "taskExecutionID"
             },
             "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "actor": "Initiate TDM Reference Load",
                 "name": "taskExecutionID"
             }
         },
@@ -1555,7 +1521,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "actor": "Initiate TDM Reference Load",
                 "name": "refTableName"
             }
         },
@@ -1565,7 +1531,7 @@
                 "name": "selectedRefVersionTaskName"
             },
             "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "actor": "Initiate TDM Reference Load",
                 "name": "selectedRefVersionTaskName"
             }
         },
@@ -1575,7 +1541,7 @@
                 "name": "selectedRefVersionDateTime"
             },
             "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "actor": "Initiate TDM Reference Load",
                 "name": "selectedRefVersionDateTime"
             }
         },
@@ -1585,7 +1551,7 @@
                 "name": "targetEnvName"
             },
             "rightPort": {
-                "actor": "InitiateTDMReferenceLoad_Actor1",
+                "actor": "Initiate TDM Reference Load",
                 "name": "targetEnvName"
             }
         },
@@ -1745,7 +1711,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "JavaScript2",
+                "actor": "Build Exception Error",
                 "name": "refTableName"
             }
         }

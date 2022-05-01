@@ -1,36 +1,43 @@
 {
-    "type": "InitiateTDMLoad_Actor",
+    "type": "createDeleteTableFlows",
     "parentType": "InnerFlow",
     "actorClass": null,
     "inputs": [
         {
-            "name": "syncMode",
+            "name": "TARGET_INTERFACE",
             "schema": {
                 "type": "string"
             },
             "editor": {
-                "id": "com.k2view.dropdown",
-                "options": [
-                    "ON",
-                    "OFF",
-                    "FORCE"
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "database",
+                    "CassandraLoader"
                 ]
             }
         },
         {
-            "name": "iid",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "luName",
+            "name": "TARGET_SCHEMA",
             "schema": {
                 "type": "string"
             },
             "editor": {
-                "id": "com.k2view.logicalUnit",
-                "addEmptyEntry": true
+                "id": "com.k2view.default"
+            }
+        },
+        {
+            "name": "LU_NAME",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.logicalUnit"
+            }
+        },
+        {
+            "name": "OVERRIDE_EXISTING_FLOWS",
+            "schema": {
+                "type": "boolean"
             }
         },
         {
@@ -38,7 +45,7 @@
             "schema": {
                 "type": "string"
             },
-            "const": "InitiateTDMLoad",
+            "const": "createDeleteTableFlows",
             "mandatory": true
         }
     ],

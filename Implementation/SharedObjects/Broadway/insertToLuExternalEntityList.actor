@@ -5,11 +5,13 @@
     "inputs": [
         {
             "name": "LU_NAME",
-            "const": "",
             "schema": {
                 "type": "string"
             },
-            "isDefault": true,
+            "editor": {
+                "id": "com.k2view.logicalUnit",
+                "addEmptyEntry": true
+            },
             "doc": "The name of the Logical Unit"
         },
         {

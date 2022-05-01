@@ -80,6 +80,7 @@ public class Logic extends UserCode {
 	public static final String TASK_EXECUTION_LIST = "task_execution_list";
     public static final String FAILED = "failed";
     public  static final String COMPLETED = "completed";
+	public static final String PAUSED = "paused";
 	public static final String TDM_COPY_REFERENCE = "fnTdmCopyReference";
 	public static final String TDM_COPY_REF_TABLES_FOR_TDM = "tdmCopyRefTablesForTDM";
 	
@@ -107,7 +108,7 @@ public class Logic extends UserCode {
 	public static void fnCheckMigrateAndUpdateTDMDB() throws Exception {
 		// TDM 5.1- fix the query- check the task_type instead of the fabric_execution_id, since a reference only task does not have the fabric_execution_id (= migrate id)
 		String selectFromTaskExecutionListSql = "Select tel.fabric_execution_id, tel.task_id, tel.lu_id, tlu.lu_name, task_type," +
-				"tel.process_id, tpost.process_name, tel.task_execution_id from public.task_execution_list tel\n" +
+				"tel.process_id, tpost.process_name, tel.task_execution_id, tel.parent_lu_id from public.task_execution_list tel\n" +
 				"left join public.tasks_logical_units tlu on tel.task_id = tlu.task_id And tel.lu_id = tlu.lu_id " +
 				"left join public.tasks_post_exe_process tpost On tel.task_id = tpost.task_id " +
 				"and tel.process_id = tpost.process_id Where Lower(tel.execution_status) = 'running'";
@@ -142,6 +143,7 @@ public class Logic extends UserCode {
 				String status = COMPLETED;
 				
 				Long luID = 0L;
+				Long parentLuID = 0L;
 				Long processID = 0L;
 				String luName = "";
 				String taskType = "";
@@ -165,6 +167,9 @@ public class Logic extends UserCode {
 					//log.info("Procssing LU_NAME: " + luName + ", Migrate ID: " + batchID);
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
+					if (row.get("parent_lu_id") != null) {
+						parentLuID = (Long)row.get("parent_lu_id");
+					}
 					// TDM 5.1- Tali- Fix- get the selection_method from TASKS. If this selection_method is REF- do not call the migrate_summary command, 
 					//but check the reference status instead
 		
@@ -264,16 +269,32 @@ public class Logic extends UserCode {
 							if (!status.equalsIgnoreCase(RUNNING) && !status.equalsIgnoreCase("generate_iid_list") 
 									&& !status.equalsIgnoreCase("new") && !status.equalsIgnoreCase("WAITING_FOR_JOB")
 									&& !refStillRunning) {
+							
+										
+								// TDM 7.5 - if the task was paused or cancelled not from TDMGUI, fail the task
+								if (PAUSED.equals(status) || STOPPED.equals(status)) {						
+									log.error("The task execution ID: " + taskExecutionID + ", of LU: " + luName + "was " + status + " from outside TDM, failing it");
+									status = FAILED;
+								}
 								String total = "" + batchStats.get("Total");
 								String failed = "" + batchStats.get("Failed");
 								
+								// TDM 7.5 - if the total is zero for a root LU, then set the status of the task to failed
+								if (Long.parseLong(total) == 0 && parentLuID == 0) {
+									status = FAILED;
+									log.error("No Instances were handled by Task");
+									String insertSql = "insert into TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+										"ERROR_CATEGORY, ERROR_MESSAGE) " +
+										"VALUES (?, ?, ?, ?, ?, ?, ?)";
+									db(TDM).execute(insertSql, taskExecutionID, luName, " ", " ", " ", "No Instances were handled by Task", "No Instances");
+								}
 								//If all the entities failed, then set the status of the task to failed
 								if (failed.equals(total) && Long.parseLong(total) > 0) {
 									status = FAILED;
 								}
 								
 								//log.info("fnCheckMigrateAndUpdateTDMDB - total: " + total + ", failed: " + failed);
-								String copied = String.valueOf(Integer.parseInt(total) - Integer.parseInt(failed));
+								String copied = "" + batchStats.get("Succeeded");//String.valueOf(Integer.parseInt(total) - Integer.parseInt(failed));
 		
 								String start_time = "" + batchStats.get("Start time");
 								String end_time = "";
@@ -826,7 +847,9 @@ public class Logic extends UserCode {
 		int totNumOfSucceededPostExecutions = (int) fabric().fetch("select count(*) from TDM.task_execution_list where task_execution_id = ? and process_id > 0 and execution_status ='completed'", taskExecId).firstValue();
 		int totNumOfFailedPostExecutions = (int) fabric().fetch("select count(*) from TDM.task_execution_list where task_execution_id = ? and process_id > 0 and execution_status !='completed'", taskExecId).firstValue();
 		
-		if (totCopiedRootEnt == 0 && totCopiedRefTabs == 0) {
+		String rootTaskStatus = "" + fabric().fetch("select execution_status from TDM.task_execution_list where parent_lu_name = \"null\"").firstValue();
+		
+		if ((totCopiedRootEnt == 0 && totCopiedRefTabs == 0) || ("failed".equalsIgnoreCase(rootTaskStatus)) ) {
 			executionStatus = "failed";
 		}
 		
@@ -1427,6 +1450,8 @@ public class Logic extends UserCode {
 			return COMPLETED;
 		} else if (originalStatus.equals("CANCELLED")) {
 			return STOPPED;
+		} else if (originalStatus.equals("PAUSED")) {
+			return PAUSED;
 		}
 
 		return originalStatus.toString().toLowerCase();

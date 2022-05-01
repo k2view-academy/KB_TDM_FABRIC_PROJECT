@@ -1,10 +1,25 @@
 {
-    "type": "createLuExternalEntityListTable",
+    "type": "CheckIfRootTableAndField",
     "parentType": "InnerFlow",
     "actorClass": null,
     "inputs": [
         {
-            "name": "LU_NAME",
+            "name": "tableName",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dbtable"
+            }
+        },
+        {
+            "name": "fieldName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "luName",
             "schema": {
                 "type": "string"
             },
@@ -18,15 +33,14 @@
             "schema": {
                 "type": "string"
             },
-            "const": "createLuExternalEntityListTable",
-            "hidden": true
+            "const": "CheckIfRootTableAndField"
         }
     ],
     "outputs": [
         {
-            "name": "ENTITY_LIST_TABLE",
+            "name": "root_indicator",
             "schema": {
-                "type": "string"
+                "type": "boolean"
             }
         }
     ],

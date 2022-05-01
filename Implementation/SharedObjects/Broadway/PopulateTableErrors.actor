@@ -1,18 +1,24 @@
 {
-    "type": "PopulateTaskExecutionEntities_Actor",
+    "type": "PopulateTableErrors",
     "actorClass": null,
     "parentType": "InnerFlow",
     "inputs": [
         {
-            "name": "idType",
+            "name": "error",
+            "schema": {
+                "type": "Any"
+            }
+        },
+        {
+            "name": "error_category",
             "schema": {
                 "type": "string"
             },
             "editor": {
                 "id": "com.k2view.dropdown",
                 "options": [
-                    "REFERENCE",
-                    "ENTITY"
+                    "Record Rejected",
+                    "Entity Failed"
                 ]
             }
         },
@@ -21,7 +27,7 @@
             "schema": {
                 "type": "string"
             },
-            "const": "PopulateTaskExecutionEntities"
+            "const": "PopulateTableErrors"
         }
     ],
     "outputs": [],

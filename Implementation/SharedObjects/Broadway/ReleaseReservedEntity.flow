@@ -98,30 +98,6 @@
         {
             "stages": [
                 {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TDM_DELETE_ONLY_TASK : ${0}\r\nSOURCE_INSTANCE_ID : ${1}\r\nTARGET_ENVIRONMENT_ID : ${2}\r\nBE_ID : ${3}\r\nUSER_NAME : ${4}\r\nLU_TYPE ; ${5}"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Stage 2",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -226,17 +202,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get Delete Only Task Indicator",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
                 "actor": "Get Instance ID",
                 "name": "result"
             },
@@ -244,17 +209,6 @@
                 "actor": "LuFunction1",
                 "name": "entityID"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Instance ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 1
         },
         {
             "leftPort": {
@@ -268,17 +222,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Target Environment ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 2
-        },
-        {
-            "leftPort": {
                 "actor": "Get Business Entity ID",
                 "name": "result"
             },
@@ -286,17 +229,6 @@
                 "actor": "LuFunction1",
                 "name": "beID"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Business Entity ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 3
         },
         {
             "leftPort": {
@@ -310,17 +242,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Session User",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 4
-        },
-        {
-            "leftPort": {
                 "actor": "Get LU Type",
                 "name": "result"
             },
@@ -328,17 +249,6 @@
                 "actor": "LuFunction1",
                 "name": "luType"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 5
         },
         {
             "leftPort": {

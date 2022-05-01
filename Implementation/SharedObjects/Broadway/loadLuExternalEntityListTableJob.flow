@@ -8,7 +8,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "StringFormat3",
+                            "name": "Create the instance ID",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -35,13 +35,13 @@
                             }
                         },
                         {
-                            "name": "StringFormat1",
+                            "name": "Prepare the Broadway command",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "broadway ${LU_NAME}.loadLuExternalEntityListTable  iid=?, LU_NAME= ${LU_NAME}, EXTERNAL_TABLE_FLOW= ${EXTERNAL_TABLE_FLOW},NUM_OF_ENTITIES= ${NUM_OF_ENTITIES}"
+                                        "const": "broadway ${LU_NAME}.loadLuExternalEntityListTable  iid=?, LU_NAME= ${LU_NAME}, EXTERNAL_TABLE_FLOW= ${EXTERNAL_TABLE_FLOW},NUM_OF_ENTITIES= ${NUM_OF_ENTITIES}, FLOW_PARAMS = ${FLOW_PARAMS}"
                                     },
                                     {
                                         "name": "NUM_OF_ENTITIES",
@@ -63,6 +63,13 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "FLOW_PARAMS",
+                                        "schema": {
+                                            "type": "Object"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -80,7 +87,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "StringFormat2",
+                            "name": "Prepare the Batch Command",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -125,32 +132,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Logger1",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Running BATCH COMMAND: ${sql}"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "DbFetchField1",
+                            "name": "Run The Batch Command",
                             "actorType": {
                                 "parentType": "DbFetchField",
                                 "inputs": [
@@ -185,7 +167,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "DbCommand1",
+                            "name": "Set the batch_id",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -234,7 +216,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "BatchWait1",
+                            "name": "Wait for the batch",
                             "actorType": {
                                 "parentType": "BatchWait",
                                 "inputs": [],
@@ -248,7 +230,7 @@
         {
             "stages": [
                 {
-                    "name": "Return Table Name",
+                    "name": "Prepare Table Name",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -280,12 +262,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Output",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "StringFormat4",
+                            "name": "Return the Entity List able Name",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -319,61 +301,51 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "StringFormat3",
+                "actor": "Create the instance ID",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "StringFormat2",
+                "actor": "Prepare the Batch Command",
                 "name": "instanceList"
             }
         },
         {
             "leftPort": {
-                "actor": "StringFormat1",
+                "actor": "Prepare the Broadway command",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "StringFormat2",
+                "actor": "Prepare the Batch Command",
                 "name": "command"
             }
         },
         {
             "leftPort": {
-                "actor": "StringFormat2",
+                "actor": "Prepare the Batch Command",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "DbFetchField1",
+                "actor": "Run The Batch Command",
                 "name": "sql"
             }
         },
         {
             "leftPort": {
-                "actor": "StringFormat2",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Run The Batch Command",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "BatchWait1",
+                "actor": "Wait for the batch",
                 "name": "batchId"
             }
         },
         {
             "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Run The Batch Command",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "DbCommand1",
+                "actor": "Set the batch_id",
                 "name": "batchID"
             }
         },
@@ -383,7 +355,7 @@
                 "name": "string"
             },
             "rightPort": {
-                "actor": "StringFormat4",
+                "actor": "Return the Entity List able Name",
                 "name": "luName"
             }
         },
@@ -393,7 +365,7 @@
                 "name": "keyspace"
             },
             "rightPort": {
-                "actor": "StringFormat4",
+                "actor": "Return the Entity List able Name",
                 "name": "schema"
             }
         },
@@ -403,7 +375,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "StringFormat3",
+                "actor": "Create the instance ID",
                 "name": "LU_NAME"
             }
         },
@@ -413,7 +385,7 @@
                 "name": "TASK_EXEC_ID"
             },
             "rightPort": {
-                "actor": "StringFormat3",
+                "actor": "Create the instance ID",
                 "name": "TASK_EXEC_ID"
             }
         },
@@ -423,7 +395,7 @@
                 "name": "NUM_OF_ENTITIES"
             },
             "rightPort": {
-                "actor": "StringFormat1",
+                "actor": "Prepare the Broadway command",
                 "name": "NUM_OF_ENTITIES"
             }
         },
@@ -433,7 +405,7 @@
                 "name": "EXTERNAL_TABLE_FLOW"
             },
             "rightPort": {
-                "actor": "StringFormat1",
+                "actor": "Prepare the Broadway command",
                 "name": "EXTERNAL_TABLE_FLOW"
             }
         },
@@ -443,8 +415,18 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "StringFormat1",
+                "actor": "Prepare the Broadway command",
                 "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "FLOW_PARAMS"
+            },
+            "rightPort": {
+                "actor": "Prepare the Broadway command",
+                "name": "FLOW_PARAMS"
             }
         },
         {
@@ -453,7 +435,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "StringFormat2",
+                "actor": "Prepare the Batch Command",
                 "name": "LU_NAME"
             }
         },
@@ -463,7 +445,7 @@
                 "name": "TASK_EXEC_ID"
             },
             "rightPort": {
-                "actor": "DbCommand1",
+                "actor": "Set the batch_id",
                 "name": "TASK_EXEC_ID"
             }
         },
@@ -473,7 +455,7 @@
                 "name": "LU_ID"
             },
             "rightPort": {
-                "actor": "DbCommand1",
+                "actor": "Set the batch_id",
                 "name": "LU_ID"
             }
         },
@@ -489,7 +471,7 @@
         },
         {
             "leftPort": {
-                "actor": "StringFormat4",
+                "actor": "Return the Entity List able Name",
                 "name": "string"
             },
             "rightPort": {

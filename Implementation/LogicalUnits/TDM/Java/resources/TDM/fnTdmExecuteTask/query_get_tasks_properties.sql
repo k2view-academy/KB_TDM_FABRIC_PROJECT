@@ -23,6 +23,7 @@ SELECT task_title,
        sync_mode,
        reserve_ind,
        reserve_retention_period_type,
-       reserve_retention_period_value
+       reserve_retention_period_value,
+       parameters
 FROM   TASKS
 WHERE  task_id = ?

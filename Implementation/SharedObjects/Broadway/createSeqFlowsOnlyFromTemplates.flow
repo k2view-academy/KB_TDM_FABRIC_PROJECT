@@ -8,21 +8,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Create Flows of Sequences",
+                            "name": "Create Sequence Flows From Template",
                             "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createSequenceFlows"
-                                    },
-                                    {
-                                        "name": "OVERRIDE_EXISTING_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ],
+                                "parentType": "createSequenceFlows",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -38,21 +27,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Create Actors of Sequences",
+                            "name": "Create Sequence Actors From Template",
                             "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createSequenceActors"
-                                    },
-                                    {
-                                        "name": "OVERRIDE_EXISTING_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ],
+                                "parentType": "createSequenceActors",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -68,7 +46,7 @@
                 "name": "OVERRIDE_EXISTING_FLOWS"
             },
             "rightPort": {
-                "actor": "Create Flows of Sequences",
+                "actor": "Create Sequence Flows From Template",
                 "name": "OVERRIDE_EXISTING_FLOWS"
             }
         },
@@ -78,7 +56,7 @@
                 "name": "OVERRIDE_EXISTING_FLOWS"
             },
             "rightPort": {
-                "actor": "Create Actors of Sequences",
+                "actor": "Create Sequence Actors From Template",
                 "name": "OVERRIDE_EXISTING_FLOWS"
             }
         }

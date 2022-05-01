@@ -7,6 +7,9 @@
             "name": "FLOW_FILE_NAME",
             "schema": {
                 "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.innerFlow"
             }
         },
         {

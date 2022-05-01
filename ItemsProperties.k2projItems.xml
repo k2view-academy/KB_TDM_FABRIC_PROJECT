@@ -3,18 +3,8 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
-      <NodeName>HandleEntityReservationAtEnd.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>HandleEntityReservationAtEnd.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>HandleEntityReservationAtStart.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -31,6 +21,16 @@
       <NodeName>UpdateReserveEntitiesTableForTester.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\UpdateReserveEntitiesTableForTester.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>GetTableFieldsFromCassandra.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\GetTableFieldsFromCassandra.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CustomLogicFlows.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>GetCustomLogicFlows.flow</NodeName>
@@ -80,6 +80,16 @@
     <ProjectItemProp>
       <NodeName>ReleaseReservedEntity.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\ReleaseReservedEntity.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtEnd.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtEnd.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>HandleEntityReservationAtStart.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\HandleEntityReservationAtStart.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -158,6 +168,11 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
+      <NodeName>CheckReserveAndLoadToEntityList.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckReserveAndLoadToEntityList.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>getTableSequenceMapping.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -203,9 +218,9 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>CheckIfRootTableAndField_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfRootTableAndField_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+      <NodeName>PopulateTableErrors.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\PopulateTableErrors.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>CheckIfRootTableAndField.flow</NodeName>
@@ -215,11 +230,6 @@
     <ProjectItemProp>
       <NodeName>CheckIfDeleteOnlyTask.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckIfDeleteOnlyTask.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CheckIfDeleteOnlyTask_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfDeleteOnlyTask_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -248,8 +258,8 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>GetTableFieldsFromCassandra_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\GetTableFieldsFromCassandra_Actor.actor</RelativePath>
+      <NodeName>InitiateTDMReferenceLoad.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -263,19 +273,14 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>InitiateTDMReferenceLoad_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>PopulateTableErrors.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\PopulateTableErrors.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>PopulateTableErrors_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PopulateTableErrors_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
+      <NodeName>filterOutTDMTables.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>PopulateTableErrorsForRef.flow</NodeName>
@@ -358,9 +363,44 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>CustomLogicFlows.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
+      <NodeName>CheckIfRootTableAndField.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfRootTableAndField.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckReserveAndLoadToEntityList.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckReserveAndLoadToEntityList.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMReserveOrchestrator.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMReserveOrchestrator.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>PopulateTableErrors_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\PopulateTableErrors_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfRootTableAndField_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfRootTableAndField_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfDeleteOnlyTask_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfDeleteOnlyTask_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>GetTableFieldsFromCassandra_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\GetTableFieldsFromCassandra_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>InitiateTDMReferenceLoad_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>UpdateReserveEntitiesTable.flow</NodeName>

@@ -1,19 +1,15 @@
 {
-    "type": "PopulateTaskExecutionEntities_Actor",
-    "actorClass": null,
+    "type": "createLoadAllTablesFlow",
     "parentType": "InnerFlow",
+    "actorClass": null,
     "inputs": [
         {
-            "name": "idType",
+            "name": "LU_NAME",
             "schema": {
                 "type": "string"
             },
             "editor": {
-                "id": "com.k2view.dropdown",
-                "options": [
-                    "REFERENCE",
-                    "ENTITY"
-                ]
+                "id": "com.k2view.logicalUnit"
             }
         },
         {
@@ -21,7 +17,8 @@
             "schema": {
                 "type": "string"
             },
-            "const": "PopulateTaskExecutionEntities"
+            "const": "createLoadAllTablesFlow",
+            "mandatory": true
         }
     ],
     "outputs": [],

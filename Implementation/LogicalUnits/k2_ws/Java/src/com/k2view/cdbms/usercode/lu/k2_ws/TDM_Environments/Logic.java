@@ -1842,7 +1842,6 @@ public class Logic extends WebServiceUserCode {
 						!"TDM_TASK_ID".equals(keyParts[2]) &&
 						!"TDM_VERSION_DATETIME".equals(keyParts[2]) &&
 						!"TDM_VERSION_NAME".equals(keyParts[2]) &&
-						!"ORACLE8_DB_TYPE".equals(keyParts[2]) &&
 						!"COMBO_MAX_COUNT".equals(keyParts[2]) &&
 						!"TDM_SYNTHETIC_DATA".equals(keyParts[2]) &&
 						!"TDM_DATAFLUX_TASK".equals(keyParts[2]) &&

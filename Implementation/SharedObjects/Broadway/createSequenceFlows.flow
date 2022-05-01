@@ -223,12 +223,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "buildSeqTemplateData"
+                                    },
+                                    {
+                                        "const": "TDM",
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "seqName",
@@ -309,12 +310,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "transform"
+                                    },
+                                    {
+                                        "const": "TDM",
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "templateContent",

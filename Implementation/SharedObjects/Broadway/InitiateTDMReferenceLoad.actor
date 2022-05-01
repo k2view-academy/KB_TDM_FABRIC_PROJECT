@@ -1,10 +1,47 @@
 {
-    "type": "SplitIIDAndCloneNumber_Actor",
-    "actorClass": null,
+    "type": "InitiateTDMReferenceLoad",
     "parentType": "InnerFlow",
+    "actorClass": null,
     "inputs": [
         {
-            "name": "iid",
+            "name": "luName",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.logicalUnit",
+                "addEmptyEntry": true
+            }
+        },
+        {
+            "name": "taskExecutionID",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "refTableName",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dbtable"
+            }
+        },
+        {
+            "name": "selectedRefVersionTaskName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "selectedRefVersionDateTime",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "targetEnvName",
             "schema": {
                 "type": "string"
             }
@@ -14,47 +51,10 @@
             "schema": {
                 "type": "string"
             },
-            "const": "SplitIIDAndCloneNumber"
+            "const": "InitiateTDMReferenceLoad"
         }
     ],
-    "outputs": [
-        {
-            "name": "cloneNo",
-            "schema": {
-                "type": "integer"
-            }
-        },
-        {
-            "name": "instanceID",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "envName",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "versionName",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "versiionDateTime",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "UID",
-            "schema": {
-                "type": "Any"
-            }
-        }
-    ],
+    "outputs": [],
     "tags": [
         "tdm"
     ]

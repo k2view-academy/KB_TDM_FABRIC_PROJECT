@@ -1,10 +1,10 @@
 {
-    "type": "createLuExternalEntityListTable",
-    "parentType": "InnerFlow",
+    "type": "filterOutTDMTables",
     "actorClass": null,
+    "parentType": "InnerFlow",
     "inputs": [
         {
-            "name": "LU_NAME",
+            "name": "luName",
             "schema": {
                 "type": "string"
             },
@@ -14,17 +14,25 @@
             }
         },
         {
+            "name": "tableName",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.dbtable"
+            }
+        },
+        {
             "name": "flowName",
             "schema": {
                 "type": "string"
             },
-            "const": "createLuExternalEntityListTable",
-            "hidden": true
+            "const": "filterOutTDMTables"
         }
     ],
     "outputs": [
         {
-            "name": "ENTITY_LIST_TABLE",
+            "name": "tableNameOut",
             "schema": {
                 "type": "string"
             }

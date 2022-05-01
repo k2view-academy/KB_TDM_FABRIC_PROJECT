@@ -1,40 +1,41 @@
 {
-  "type": "getLUVariable_Actor",
-  "actorClass": null,
-  "parentType": "InnerFlow",
-  "inputs": [
-    {
-      "name": "luName",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "variableName",
-      "schema": {
-        "type": "Any"
-      },
-      "const": null
-    },
-    {
-      "name": "flowName",
-      "schema": {
-        "type": "string"
-      },
-      "const": "getLUVariable"
-    }
-  ],
-  "outputs": [
-    {
-      "name": "variableValue",
-      "schema": {
-        "type": "string"
-      },
-      "const": null
-    }
-  ],
-  "tags": [
-    "tdm"
-  ]
+    "type": "getLUVariable_Actor",
+    "actorClass": null,
+    "parentType": "InnerFlow",
+    "inputs": [
+        {
+            "name": "luName",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.logicalUnit",
+                "addEmptyEntry": true
+            }
+        },
+        {
+            "name": "variableName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "getLUVariable"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "variableValue",
+            "schema": {
+                "type": "string"
+            }
+        }
+    ],
+    "tags": [
+        "tdm"
+    ]
 }

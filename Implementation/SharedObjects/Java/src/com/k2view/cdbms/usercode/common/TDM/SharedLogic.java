@@ -1149,7 +1149,7 @@ public class SharedLogic {
 		}
 		
 		//log.info("fnGetChildHierarchy - LU status: " + entityStatus);
-		o_childHirarchyData.put("luStatus",  "" + entityRec.get("luStatus"));
+		o_childHirarchyData.put("luStatus",  "" + entityRec.get("entityStatus"));
 		
 		return o_childHirarchyData;
 	}

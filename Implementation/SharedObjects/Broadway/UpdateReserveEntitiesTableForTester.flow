@@ -292,27 +292,13 @@
                             }
                         },
                         {
-                            "name": "Throw Exception, reserved by other__1",
+                            "name": "Throw Exception, A Tester without Limit On Reservation",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Fail",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": "throw \"A tester Must have a limit on the reservation period\""
-                                    },
-                                    {
-                                        "name": "userName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "owner",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "name": "message",
+                                        "const": "A tester Must have a limit on the reservation period"
                                     }
                                 ],
                                 "outputs": []
@@ -500,6 +486,34 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "StringFormat1",
+                            "minHeight": 511,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "Entity cannot be reserved by user ${userName} as it is reseved by user: ${owner}"
+                                    },
+                                    {
+                                        "name": "owner",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -664,6 +678,27 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "StringFormat2",
+                            "minHeight": 416,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "Entity cannot be reserved by user ${userName} as the new End Date Exceed the Max End Date allowed to a Tester"
+                                    },
+                                    {
+                                        "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -705,25 +740,11 @@
                         {
                             "name": "Throw Exception, reserved by other",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Fail",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": "throw \"Entity cannot be reserved by user \" + userName + \" as it is reseved by user: \" + owner"
-                                    },
-                                    {
-                                        "name": "userName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "owner",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "name": "message",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -933,18 +954,11 @@
                         {
                             "name": "Throw Exception, Bad End Date",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Fail",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": "throw \"Entity cannot be reserved by user \" + userName + \" as the new End Date Exceed the Max End Date allowed to a Tester\""
-                                    },
-                                    {
-                                        "name": "userName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "name": "message",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -1179,27 +1193,27 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Throw Exception, Bad End Date",
-                "name": "userName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Session User",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Throw Exception, reserved by other",
-                "name": "userName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Session User",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
+                "name": "userName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Session User",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "userName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Session User",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat2",
                 "name": "userName"
             }
         },
@@ -1305,19 +1319,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Throw Exception, reserved by other",
-                "name": "owner"
-            },
-            "path": [
-                "reserve_owner"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "DbFetchFirstRow1",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "Compare Owner with User",
                 "name": "a"
             },
@@ -1336,6 +1337,19 @@
             },
             "path": [
                 "start_datetime"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "owner"
+            },
+            "path": [
+                "reserve_owner"
             ]
         },
         {
@@ -1360,6 +1374,16 @@
         },
         {
             "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Throw Exception, reserved by other",
+                "name": "message"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "GetNewEndDate2",
                 "name": "newEndDate"
             },
@@ -1376,6 +1400,16 @@
             "rightPort": {
                 "actor": "Update the End date",
                 "name": "end_datetime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Throw Exception, Bad End Date",
+                "name": "message"
             }
         }
     ]

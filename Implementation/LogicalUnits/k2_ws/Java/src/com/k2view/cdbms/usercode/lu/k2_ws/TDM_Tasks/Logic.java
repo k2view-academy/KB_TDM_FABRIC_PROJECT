@@ -5083,7 +5083,7 @@ public class Logic extends WebServiceUserCode {
 		List<Map<String, Object>> finalSourceEnvs = new ArrayList<>();
 		List<Map<String, Object>> finalTargetEnvs = new ArrayList<>();
 		
-		lus.replaceAll("\\s+","");
+		lus = lus.replaceAll("\\s+","");
 		String[] lus_arr=lus.split(",");
 		ArrayList<String> lus_list = new ArrayList<String>();
 		for(String str : lus_arr)
@@ -5201,7 +5201,7 @@ public class Logic extends WebServiceUserCode {
 		
 		if (logicalUnitList != "") logicalUnitList = logicalUnitList.substring(0, logicalUnitList.length() - 1);
 		
-		entitiesList.replaceAll("\\s+","");
+		entitiesList = entitiesList.replaceAll("\\s+","");
 		String[] entitiesArray = entitiesList.split(",");
 		String entitiesListForQuery = "";
 		for (String entityID : entitiesArray) {
@@ -5254,10 +5254,14 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"flowName\": \"flow1\"\r\n" +
+			"      \"luName\": \"Customer\",\r\n" +
+			"      \"flowName\": \"test\",\r\n" +
+			"      \"Description\": \"test 1\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"flowName\": \"flow2\"\r\n" +
+			"      \"luName\": \"Customer\",\r\n" +
+			"      \"flowName\": \"test2\",\r\n" +
+			"      \"Description\": \"test 2\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -5269,18 +5273,13 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "SUCCESS";
 		 List<HashMap<String,Object>> result = new ArrayList<>();
 		
-		luList.replaceAll("\\s+", "");
+		luList = luList.replaceAll("\\s+", "");
 		String[] lus = luList.split(",");
 		
 		for (String luName : lus) {
-			List<String> listCustomFlows = (List<String>)(fabric().fetch("broadway " + luName + ".GetCustomLogicFlows LU_NAME='" + luName + "'").firstRow()).get("value");
-		
-			if (listCustomFlows != null && !listCustomFlows.isEmpty()) {
-				for (String flowName : listCustomFlows) {
-					HashMap<String,Object> map = new HashMap<>();
-					map.put("flowName", flowName);
-					result.add(map);
-				}
+			List<HashMap<String,Object>> luResult = (List<HashMap<String,Object>>)(fabric().fetch("broadway " + luName + ".GetCustomLogicFlows LU_NAME='" + luName + "'").firstRow()).get("value");
+			if (luResult != null) {
+				result.addAll(luResult);
 			}
 		}
 		
@@ -5288,6 +5287,60 @@ public class Logic extends WebServiceUserCode {
 		response.put("errorCode", errorCode);
 		response.put("message", message);
 		return response;
+	}
+
+
+	@desc("Get the list of parameters of the given custom Flow")
+	@webService(path = "getCustomLogicParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": [\r\n" +
+			"    {\r\n" +
+			"      \"schema\": {\r\n" +
+			"        \"type\": \"string\"\r\n" +
+			"      },\r\n" +
+			"      \"name\": \"MAIN_TABLE_NAME\",\r\n" +
+			"\t  \"description\": \"\",\r\n" +
+			"      \"type\": \"string\"\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"schema\": {\r\n" +
+			"        \"type\": \"string\"\r\n" +
+			"      },\r\n" +
+			"      \"name\": \"MAIN_FIELD_NAME\",\r\n" +
+			"\t  \"description\": \"\",\r\n" +
+			"      \"type\": \"string\"\r\n" +
+			"    }\r\n" +
+			"  ],\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetCustomLogicParam(String luName, String flowName) throws Exception {
+		List<HashMap<String,Object>> result = new ArrayList<>();
+		
+		if ("ALL".equalsIgnoreCase(luName)) {
+			luName = "TDM";
+		}
+		try {
+			Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName +"'");
+			
+			for (Db.Row row : rows) {
+				if ( !"LU_NAME".equalsIgnoreCase("" + row.get("name")) 
+					&& !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name"))
+					&& "input".equalsIgnoreCase("" + row.get("param")) ) {
+					HashMap<String, Object> map = new HashMap<>();
+					map.put("name", row.get("name"));
+					map.put("type", row.get("type"));
+					map.put("schema", row.get("schema"));
+					map.put("description", "");
+					result.add(map);
+				}
+				
+			}
+		} catch (Exception e) {
+			return wrapWebServiceResults("FAILED", e.getMessage(), null);
+		}
+		
+		return wrapWebServiceResults("SUCCESS", null, result);
 	}
 
 }

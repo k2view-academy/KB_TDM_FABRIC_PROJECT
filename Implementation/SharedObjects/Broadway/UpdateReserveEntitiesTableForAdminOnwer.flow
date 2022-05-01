@@ -532,6 +532,34 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "StringFormat1",
+                            "minHeight": 354,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "Entity cannot be reserved by user ${userName} as it is reseved by user: ${owner}"
+                                    },
+                                    {
+                                        "name": "owner",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -781,25 +809,11 @@
                         {
                             "name": "Throw Exception, reserved by other",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Fail",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": "throw \"Entity cannot be reserved by user \" + userName + \" as it is reseved by user: \" + owner"
-                                    },
-                                    {
-                                        "name": "userName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "owner",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "name": "message",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -1025,7 +1039,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Throw Exception, reserved by other",
+                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
                 "name": "userName"
             }
         },
@@ -1035,7 +1049,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
+                "actor": "StringFormat1",
                 "name": "userName"
             }
         },
@@ -1148,19 +1162,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Throw Exception, reserved by other",
-                "name": "owner"
-            },
-            "path": [
-                "reserve_owner"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "DbFetchFirstRow1",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "NotNull1",
                 "name": "value"
             },
@@ -1183,6 +1184,19 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "owner"
+            },
+            "path": [
+                "reserve_owner"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Compare Owner with User",
                 "name": "result"
             },
@@ -1199,6 +1213,16 @@
             "rightPort": {
                 "actor": "Update the End date",
                 "name": "newEndDate"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Throw Exception, reserved by other",
+                "name": "message"
             }
         }
     ]
