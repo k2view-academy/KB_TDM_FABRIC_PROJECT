@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Empty Stage",
+                    "name": "Logger",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
@@ -30,7 +30,7 @@
                 {
                     "name": "Contract Status",
                     "dependsOnList": [
-                        "Empty Stage"
+                        "Logger"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -64,7 +64,7 @@
                 {
                     "name": "Stage 2",
                     "dependsOnList": [
-                        "Empty Stage"
+                        "Logger"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -97,7 +97,7 @@
                 {
                     "name": "Stage 4",
                     "dependsOnList": [
-                        "Empty Stage"
+                        "Logger"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
