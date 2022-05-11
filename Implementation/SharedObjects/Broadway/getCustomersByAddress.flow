@@ -3,116 +3,8 @@
         {
             "stages": [
                 {
-                    "name": "Empty Stage",
+                    "name": "Build the Address list",
                     "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Logger2",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TESTING the get5GCustomersFlow"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Contract Status",
-                    "dependsOnList": [
-                        "Empty Stage"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Open status",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "remark": "Contract Status: Open, Close, or empty",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "open"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Empty Stage"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "EqualsIgnoreCase1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "close"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [
-                        "Empty Stage"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [
-                        "Contract Status"
-                    ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
@@ -126,7 +18,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "Select Distinct cust.customer_id As SOURCE_IID From customer cust, contract cont Where cust.customer_id = cont.customer_id and const.contract_Description Like '5G%' and (to_date is null or to_date > now()) Limit 1000"
+                                        "const": "'"
                                     }
                                 ],
                                 "outputs": [
@@ -138,17 +30,15 @@
                                     }
                                 ]
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [
-                        "Stage 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
+                        },
+                        {
+                            "name": "Split Input to Array",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Const2",
                             "actorType": {
@@ -157,9 +47,132 @@
                                     {
                                         "name": "value",
                                         "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Trim1",
+                            "actorType": {
+                                "parentType": "Trim",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Concat2",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "StringBuild1",
+                            "actorType": {
+                                "parentType": "StringBuild",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Query1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
                                             "type": "string"
                                         },
-                                        "const": "Select Distinct customer_id As SOURCE_IID From contract Where contract_Description Like '5G%' and to_date <= now() Limit 1000"
+                                        "const": "SELECT distinct cust.customer_id FROM public.customer cust, public.address  addr where cust.customer_id = addr.customer_id and addr.state in ("
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Query2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ")"
                                     }
                                 ],
                                 "outputs": [
@@ -173,36 +186,28 @@
                             }
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "stages": [
                 {
-                    "name": "Stage 5",
-                    "dependsOnList": [
-                        "Stage 4"
-                    ],
+                    "name": "Stage 9",
+                    "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Const3",
+                            "name": "Concat1",
                             "actorType": {
-                                "parentType": "Const",
+                                "parentType": "Concat",
                                 "inputs": [
                                     {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "Select Distinct customer_id As SOURCE_IID From contract Where contract_Description Like '5G%' Limit 1000"
+                                        "name": "delimiter",
+                                        "const": ""
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -265,7 +270,7 @@
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "TEST SQL query: ${0}"
+                                        "const": "Select statement: ${0}"
                                     }
                                 ],
                                 "outputs": []
@@ -310,6 +315,19 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Logger2",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "TEST- source IID : ${0} ${1}"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -343,9 +361,10 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Get the entity list",
-                "name": "sql"
-            }
+                "actor": "Concat2",
+                "name": "elements"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -353,6 +372,83 @@
                 "name": "value"
             },
             "rightPort": {
+                "actor": "Concat2",
+                "name": "elements"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Split Input to Array",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Trim1",
+                "name": "string"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Trim1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Concat2",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Concat2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "StringBuild1",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "StringBuild1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Query1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Query2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Concat1",
+                "name": "string"
+            },
+            "rightPort": {
                 "actor": "Logger1",
                 "name": "params"
             },
@@ -360,45 +456,13 @@
         },
         {
             "leftPort": {
-                "actor": "Const2",
-                "name": "value"
+                "actor": "Concat1",
+                "name": "string"
             },
             "rightPort": {
                 "actor": "Get the entity list",
                 "name": "sql"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Const2",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Const3",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Get the entity list",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const3",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -416,6 +480,20 @@
         },
         {
             "leftPort": {
+                "actor": "Get the entity list",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger2",
+                "name": "params"
+            },
+            "path": [
+                "source_iid"
+            ],
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
                 "actor": "ToString1",
                 "name": "string"
             },
@@ -423,6 +501,17 @@
                 "actor": "Check Reserve And Load To Entity List Table",
                 "name": "SOURCE_IID"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "ToString1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Logger2",
+                "name": "params"
+            },
+            "arrayPosition": 1
         },
         {
             "leftPort": {
@@ -437,21 +526,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "Contract_Status"
+                "name": "State_List"
             },
             "rightPort": {
-                "actor": "Open status",
-                "name": "a"
+                "actor": "Split Input to Array",
+                "name": "string"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "Contract_Status"
+                "name": "testIntParam"
             },
             "rightPort": {
-                "actor": "EqualsIgnoreCase1",
-                "name": "a"
+                "actor": "Const2",
+                "name": "value"
             }
         },
         {
