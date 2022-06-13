@@ -2,7 +2,7 @@
 <Project xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>KB_TDM_FABRIC_PROJECT</Name>
   <CreateDate>2021-02-16T20:22:44.1650338+02:00</CreateDate>
-  <ProductVersion>6.5.4.12</ProductVersion>
+  <ProductVersion>7.0.0.3</ProductVersion>
   <Mdm>false</Mdm>
   <ProjectHasDiagramBinFiles>false</ProjectHasDiagramBinFiles>
   <DataChangeIndicators>
