@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Build the Address list",
+                    "name": "Build the Address Array",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
@@ -75,7 +75,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Trim1",
+                            "name": "Trim",
                             "actorType": {
                                 "parentType": "Trim",
                                 "inputs": [],
@@ -114,7 +114,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 5",
+                    "name": "Build the Address List for the Query",
                     "dependsOnList": [],
                     "isLast": 1,
                     "isTransactional": false,
@@ -192,7 +192,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 9",
+                    "name": "Build the Select Query",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
@@ -383,14 +383,14 @@
                 "name": "strings"
             },
             "rightPort": {
-                "actor": "Trim1",
+                "actor": "Trim",
                 "name": "string"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "Trim1",
+                "actor": "Trim",
                 "name": "string"
             },
             "rightPort": {

@@ -32,12 +32,14 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "buildTemplateData"
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "luTable",
@@ -165,12 +167,12 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "transform"
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "templateContent",

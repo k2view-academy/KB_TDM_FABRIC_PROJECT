@@ -27,6 +27,7 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.setGlobals;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_PROPERTIES.*;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_TYPES.*;
+import static com.k2view.cdbms.usercode.lu.TDM.TDM_Extract.Logic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TdmExecuteTask {
@@ -445,30 +446,30 @@ public class TdmExecuteTask {
 		
 		if ("S".equals(selectionMethod)) {
 			
-			entityIdSelectChildID = "DISTINCT "+ entityIdSelectChildID + "||'#params#{\"clone_id\"='||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}'";
+			entityIdSelectChildID = entityIdSelectChildID + "||'#params#{\"clone_id\"='||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}'";
 		}
 		
 		if (isDeleteOnlyMode(taskProperties)){
-			// TDM 7.2 use iid istead of target_entity_id
-			entityInclusion = "select " + entityIdSelectChildID + " as child_entity_id from task_execution_entities t, tdm_lu_type_rel_tar_eid rel " +
+			// TDM 7.2 use iid instead of target_entity_id
+			entityInclusion = "select distinct " + entityIdSelectChildID + " as child_entity_id from task_execution_entities t, tdm_lu_type_rel_tar_eid rel " +
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
 						" and t.lu_name = '" + parentLU + "' and rel.target_env = '" + TARGET_ENVIRONMENT_NAME.get(taskProperties) + "' and t.lu_name = rel.lu_type_1 " +
 						" and t.iid = rel.lu_type1_eid and rel.lu_type_2= '" + luName + "'"; 
 		} else if (isDeleteAndLoad(taskProperties)) {
-			// TDM 7.2 use iid istead of target_entity_id
-			entityInclusion = "SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel " +
+			// TDM 7.2 use iid instead of target_entity_id
+			entityInclusion = "SELECT distinct " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel " +
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
 						" and t.lu_name = '" + parentLU + "' and rel.source_env = t.source_env " +
 						" and t.lu_name = rel.lu_type_1 and t.iid = rel.lu_type1_eid " +
 						" and rel.lu_type_2= '" + luName + "'" +  versionClause +
 					// In case of delete from target, there could be entries added to the target environment after the TDM load.
-					" UNION SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_rel_tar_eid rel " +
+					" UNION SELECT distinct " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_rel_tar_eid rel " +
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
 						" and t.lu_name = '" + parentLU + "' and rel.target_env = '" + TARGET_ENVIRONMENT_NAME.get(taskProperties) + 
 						"' and t.lu_name = rel.lu_type_1 and t.iid = rel.lu_type1_eid and rel.lu_type_2= '" + luName + "'"; 
 		} else {// Case of insert to target only
-			// TDM 7.2 use iid istead of target_entity_id
-			entityInclusion = "SELECT " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel " + 
+			// TDM 7.2 use iid instead of target_entity_id
+			entityInclusion = "SELECT distinct " + entityIdSelectChildID + " child_entity_id FROM task_execution_entities t, tdm_lu_type_relation_eid rel " + 
 						" where t.task_execution_id= '" + taskExecutionID + "' and t.execution_status = 'completed' " + 
 						" and t.lu_name = '" + parentLU + "' and rel.source_env = t.source_env " +
 						" and t.lu_name = rel.lu_type_1 and t.iid = rel.lu_type1_eid " +
@@ -558,21 +559,37 @@ public class TdmExecuteTask {
                 break;
 			// TDM 7.4 - New selection method - Custom Logic
 			case "C" :
+				// TDM 7.5 - Set the environment before calling the Flow to make sure that the records are restored from the right DB.
+				fabric().execute("set environment " + env);
+	
 				String luName = LU_NAME.get(taskProperties);
+	
+				// TDM 7.5.1 - If the entity List table does not exists create it
+				String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable luName = " + luName;
+				fabric().execute(createEntityListTab);
+
 				Long entitiesLimit = 0L;
 				if(NUM_OF_ENTITIES.get(taskProperties) instanceof Long) {
 					entitiesLimit = NUM_OF_ENTITIES.get(taskProperties);
 				} else {
 					entitiesLimit = Long.valueOf(NUM_OF_ENTITIES.get(taskProperties));
 				}
-				String broadwayCommand = "broadway " + luName + ".loadLuExternalEntityListTableJob"  +  
-					" LU_NAME=" + luName + ", EXTERNAL_TABLE_FLOW=" + SELECTION_PARAM_VALUE.get(taskProperties) + 
-					",NUM_OF_ENTITIES=" + entitiesLimit + 
-					", TASK_EXEC_ID=" + TASK_EXECUTION_ID.get(taskProperties) + ", LU_ID=" + LU_ID.get(taskProperties) + ", FLOW_PARAMS = '" + getCLAddionalParams(taskProperties) + "'";
-				//log.info("getEntityInclusion - broadwayCommand: " + broadwayCommand);
-				Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
+
+				String broadwayCommand = geCLBroadwayCmd(taskProperties);
+				//Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
+				//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
+				String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
+				String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
+				String batchCommand = "BATCH " + luName + ".("+ luName + "_" + TASK_EXECUTION_ID.get(taskProperties) + ") fabric_command=? with " + affinity + " async=true";
+				//log.info("Custom Logic batchCommand: " + batchCommand);
+				String batchId = "" + fabric().fetch(batchCommand, broadwayCommand).firstValue();
+				db(TDM).execute("UPDATE task_execution_list set execution_status = 'STARTEXECUTIONREQUESTED', fabric_execution_id = ? " + 
+					"WHERE task_execution_id=? and lu_id = ?", batchId, TASK_EXECUTION_ID.get(taskProperties), LU_ID.get(taskProperties));
+
+				String waitForBatch = "broadway " + luName + ".WaitForCustomLogicFlow luName = " + luName + ", batchId = '" + batchId + "'";
+				//log.info("Custom Logic waitForBatch: " + waitForBatch);
+				Db.Row entityListTableRec = fabric().fetch(waitForBatch).firstRow();
 				String entityListTable = "" + entityListTableRec.get("value");
-				//interface_name = "DB_CASSANDRA";
 				entityInclusion = "select tdm_eid from " + entityListTable + " where task_execution_id = '" +  TASK_EXECUTION_ID.get(taskProperties) + "'";
 				break;
             default: // This column is populated automatically by the application and should not include any other options
@@ -583,33 +600,56 @@ public class TdmExecuteTask {
         return entityInclusion;
     }
 
-    @NotNull
-	private static String getCLAddionalParams(Map<String, Object> taskProperties) {
+	@NotNull
+	private static String geCLBroadwayCmd(Map<String, Object> taskProperties) {
+		
+		String luName = LU_NAME.get(taskProperties);
+		Long entitiesLimit = 0L;
+		if(NUM_OF_ENTITIES.get(taskProperties) instanceof Long) {
+			entitiesLimit = NUM_OF_ENTITIES.get(taskProperties);
+		} else {
+			entitiesLimit = Long.valueOf(NUM_OF_ENTITIES.get(taskProperties));
+		}
+		String clFlowName = SELECTION_PARAM_VALUE.get(taskProperties);
+		String clFlowParams = PARAMETERS.get(taskProperties);
+		
+		clFlowParams = clFlowParams.replaceAll("\\\\n","").replaceAll("\\\\t","");
+		//log.info("clFlowParams after replace: " + clFlowParams);
 		Gson gson = new Gson();
-		String AdditonalParams = "";
-		String customLogicParams = PARAMETERS.get(taskProperties);
-		customLogicParams = customLogicParams.replaceAll("\\\\n","").replaceAll("\\\\t","");
-		//log.info("customLogicParams after replace: " + customLogicParams);
 		Type mapType = new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType();
-		Map<String, List<Map <String, Object>>> customLogicParamJson = gson.fromJson(customLogicParams, mapType);
-		if (!(customLogicParamJson.isEmpty())) {
-			List<Map <String, Object>> customLogicParamList = customLogicParamJson.get("inputs");
-			
-			List <HashMap<String, Object>> paramList = new ArrayList<>();
-			for (Map <String, Object> customLogicParamMap : customLogicParamList) {
-				HashMap <String, Object> paramMap = new HashMap<>();
-				paramMap.put("name", customLogicParamMap.get("name"));
-				paramMap.put("value", "'" + customLogicParamMap.get("value") + "'");
-				paramList.add(paramMap);
+		Map<String, List<Map <String, Object>>> clFlowParamJson = gson.fromJson(clFlowParams, mapType);
+		
+		String fabricCommandParams = " LU_NAME='" + luName + "', NUM_OF_ENTITIES=" + entitiesLimit;
+		if (!(clFlowParamJson.isEmpty())) {
+			List<Map <String, Object>> clFlowParamList = clFlowParamJson.get("inputs");
+			for (Map <String, Object> clFlowParamMap : clFlowParamList) {
+				String paramValue = "" + clFlowParamMap.get("value");
+				fabricCommandParams += ", " + clFlowParamMap.get("name") + "=\"" + paramValue + "\"";
+				//fabricCommandParams += ", " + clFlowParamMap.get("name") + "=" + paramValue;
 			}
-			
-			AdditonalParams = gson.toJson(paramList, new TypeToken<ArrayList>(){}.getType());
 		}
 		
-		//log.info("AdditonalParams: " + AdditonalParams);
-		return AdditonalParams;
-		
-	}
+		String broadwayCommand = "broadway " + luName + "."  +  clFlowName +  " iid=?," + fabricCommandParams;
+		return broadwayCommand;
+      }
+
+
+//    @NotNull
+//    private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
+//        String entityExclusionLIst = ENTITY_EXCLUSION_LIST.get(taskProperties);
+//		String env = isDeleteOnlyMode(taskProperties) ? TARGET_ENVIRONMENT_NAME.get(taskProperties) : SOURCE_ENVIRONMENT_NAME.get(taskProperties);
+//        String entityExclusionListWhere = !Util.isEmpty(entityExclusionLIst) ? "cast (entity_id as text) NOT IN (" + Arrays.stream(entityExclusionLIst.split(","))
+//                .map(entityID -> buildEntityExclusion(env, SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
+//                .map(eID -> "'" + eID + "'").collect(Collectors.joining(",")) + ")" : "1 = 1";
+//
+//        String eIDsToExcludeBasedOnEnvAndBE = (String) db(TDM).fetch("select replace(string_agg(exclusion_list, ','), ' ', '') from TDM_BE_ENV_EXCLUSION_LIST where be_id=? and environment_id=?;", BE_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)).firstValue();
+//        if(!Util.isEmpty(eIDsToExcludeBasedOnEnvAndBE)){
+//            entityExclusionListWhere += " AND cast (entity_id as text) NOT IN (" + Arrays.stream(eIDsToExcludeBasedOnEnvAndBE.split(","))
+//                    .map(entityID -> buildEntityExclusion(env, SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
+//                    .map(eID -> "'" + eID + "'").collect(Collectors.joining(",")) + ")";
+//        }
+//        return entityExclusionListWhere;
+//    }
 
     @NotNull
     private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
@@ -734,8 +774,6 @@ public class TdmExecuteTask {
 			case "reserve":
 				
 				additionalGlobals.put("TDM_SYNC_SOURCE_DATA", getSrcSyncDataVal(taskProperties));
-				//additionalGlobals.put("SYNC", SYNC_MODE.get(taskProperties));
-                additionalGlobals.put("TDM_TARGET_ENVIRONMENT_NAME", TARGET_ENVIRONMENT_NAME.get(taskProperties));
                 additionalGlobals.put("TDM_DELETE_BEFORE_LOAD", DELETE_BEFORE_LOAD.get(taskProperties));
 				additionalGlobals.put("SELECTION_METHOD", SELECTION_METHOD.get(taskProperties));
                 additionalGlobals.put("TDM_INSERT_TO_TARGET", LOAD_ENTITY.get(taskProperties));
@@ -1068,7 +1106,7 @@ public class TdmExecuteTask {
 			}
 	
             float retentionPeriodValue = Float.parseFloat(RETENTION_PERIOD_VALUE.get(taskProperties));
-            return SharedLogic.fnMigrateEntitiesForTdmExtract(
+            return fnMExtractEntities(
                     LU_NAME.get(taskProperties),
                     LU_DC_NAME.get(taskProperties),
                     sourceEnv,

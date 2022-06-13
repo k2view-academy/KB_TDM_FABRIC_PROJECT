@@ -46,13 +46,14 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${LU_NAME}_entity_list"
+                                        "const": "${luName}_entity_list"
                                     },
                                     {
-                                        "name": "LU_NAME",
+                                        "name": "luName",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -80,13 +81,20 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select count(1) from system_schema.tables where keyspace_name = 'k2view_tdm' and table_name = ${tableName}"
+                                        "const": "select count(1) from system_schema.tables where keyspace_name = ${schema_name} and table_name = ${tableName}"
                                     },
                                     {
                                         "name": "tableName",
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "schema_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -259,7 +267,7 @@
             },
             "rightPort": {
                 "actor": "Format the Table Name",
-                "name": "LU_NAME"
+                "name": "luName"
             }
         },
         {
@@ -280,6 +288,16 @@
             "rightPort": {
                 "actor": "Set The Output Table Name",
                 "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDM LU Key Space",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "Check if Table already Exists",
+                "name": "schema_name"
             }
         },
         {
@@ -335,7 +353,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "LU_NAME"
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Lower Case LU Name",

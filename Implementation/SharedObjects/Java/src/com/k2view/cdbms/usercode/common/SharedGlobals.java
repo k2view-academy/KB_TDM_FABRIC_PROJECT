@@ -43,9 +43,9 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String MASK_FLAG = "0";
 	@category("TDM")
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "ENV1";
+	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
 	@category("TDM")
-	public static String TDM_TAR_ENV_NAME = "ENV2";
+	public static String TDM_TAR_ENV_NAME = "TAR";
 	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")
@@ -80,6 +80,30 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
 
+	@category("TDM")
+	public static String USER_NAME = "admin";
+	@category("TDM")
+	public static String USER_FABRIC_ROLES = "admin";
+	@category("TDM")
+	public static String USER_PERMISSION_GROUP = "admin";
+	@category("TDM")
+	public static String TDM_RESERVE_IND = "false";
+	@category("TDM")
+	public static String RESERVE_RETENTION_PERIOD_TYPE = "Days";
+	@category("TDM")
+	public static String RESERVE_RETENTION_PERIOD_VALUE = "10";
+	@category("TDM")
+	public static String BE_ID = "0";
+	@category("TDM")
+	public static String TASK_TYPE = "EXTRACT";
+	@category("TDM")
+	public static String enable_masking = "false";
+	@category("TDM")
+	public static String enable_sequences = "false";
+
+	@category("TDM")
+	public static String TDM_REF_UPD_SIZE = "10000";
+
 	@desc("The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB")
 	@category("TDM")
 	public static String ORACLE8_DB_TYPE = "Oracle8";
@@ -95,6 +119,5 @@ public class SharedGlobals {
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 	public static String MAIL_ADDRESS = "";
-
 
 }

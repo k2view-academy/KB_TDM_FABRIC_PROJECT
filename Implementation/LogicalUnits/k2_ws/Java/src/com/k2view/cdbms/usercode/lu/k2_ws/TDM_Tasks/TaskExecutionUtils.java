@@ -1379,4 +1379,150 @@ public class TaskExecutionUtils {
 		Db.Rows result = db("TDM").fetch(sql);
 		return result;
 	}
+	
+	//This function returns the details of the child records of the given entity. It is a recursive function that iterates till the leaves and go back, each child record will be added to the parent's children list.
+	public static Map<String,Object> fnGetChildHierarchy(String i_luName, String i_targetEntityID) throws Exception {
+		String entityStatus = "completed";
+		LinkedHashMap<String,Object> o_childHirarchyData =  new LinkedHashMap<>();
+		LinkedHashMap<String,Object> innerChild =  new LinkedHashMap<>();
+		List<Object> childData = new ArrayList<>();
+		
+		//log.info("fnGetChildHierarchy inputs - Lu Name: " + i_luName + ", target ID: " + i_targetEntityID);
+		
+		String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
+			"execution_status entityStatus, parent_lu_name parentLuName, TARGET_PARENT_ID parentTargetId, root_entity_status luStatus from TDM.task_Execution_link_entities " +
+			"where lu_name= ? and target_entity_id = ?";
+		
+		String sqlGetChildren = "select lu_name, target_entity_id from TDM.task_Execution_link_entities " +
+			"where parent_lu_name= ? and target_parent_id = ?";
+		
+		Db.Rows childRecs = fabric().fetch(sqlGetChildren, i_luName, i_targetEntityID);
+		
+		ArrayList<String[]> childrenRecs = new ArrayList<>();
+		
+		//Get the list of direct children of the current (input) entity if such exists
+		for (Db.Row childRec : childRecs) {
+			String[] childInfo = {"" + childRec.get("lu_name"), "" + childRec.get("target_entity_id")};
+			childrenRecs.add(childInfo);
+		}
+		
+		if (childRecs != null) {
+			childRecs.close();
+		}
+		//log.info("fnGetChildHierarchy - Number of child Recs: " + childrenRecs.size());
+		//Loop over the direct children entities and call this function to get for each child it own children
+		for (int i=0; i< childrenRecs.size(); i++) {
+			
+			String[] child = childrenRecs.get(i);
+			String childLuName = child[0];
+			String childTargetId = child[1];
+			
+			//log.info("fnGetChildHierarchy - Child Rec: Lu Name: " + childLuName + ", target ID: " + childTargetId);
+			if (childLuName != null && !childLuName.isEmpty()) {
+				//a recursive call to this function until we get to a leaf entity
+				innerChild = (LinkedHashMap<String, Object>)fnGetChildHierarchy(childLuName, childTargetId);
+						
+				childData.add(innerChild);
+			}
+		}
+		// This point is reached, either the current entity has no children (leaf) or all it direct children (and their own children) were
+		// already processed.
+		Db.Row entityRec = (fabric().fetch(sqlGetEntityData, i_luName, i_targetEntityID)).firstRow();
+		
+		o_childHirarchyData.put("luName", "" + entityRec.get("luName"));
+		o_childHirarchyData.put("targetId", "" + entityRec.get("targetId"));
+		
+		//Get instance ID from entity id
+		//log.info("fnGetChildHierarchy - entity_id: " + entityRec.get("sourceId"));
+		Object[] splitId = fnSplitUID("" + entityRec.get("sourceId"));
+		String instanceId = "" + splitId[0];
+		o_childHirarchyData.put("sourceId", "" + instanceId);
+		
+		o_childHirarchyData.put("entityStatus", "" + entityRec.get("entityStatus"));
+		o_childHirarchyData.put("parentLuName", "" + entityRec.get("parentLuName"));
+		o_childHirarchyData.put("parentTargetId", "" + entityRec.get("parentTargetId"));
+		
+		//log.info("fnGetChildHierarchy - Adding children Data, size: " + childData.size());
+		if (childData.size() > 0){
+			o_childHirarchyData.put("children", childData);
+		}
+		
+		//log.info("fnGetChildHierarchy - LU status: " + entityStatus);
+		o_childHirarchyData.put("luStatus",  "" + entityRec.get("entityStatus"));
+		
+		return o_childHirarchyData;
+	}
+
+
+	//This function returns the details of the ancestors records of the given entity, if such exists. It is a recursive function, that travels until  it reaches the root and goes back. Each Ancestor will get the data of its children and will added it to its record as children data, The final data prepared for the root entity, will be eventually returned from this function
+	public static Map<String,Object> fnGetParentHierarchy(String i_luName, String i_targetEntityID, Object i_children) throws Exception {
+		String entityStatus = "completed";
+		LinkedHashMap<String,Object> currentEntity =  new LinkedHashMap<>();
+		LinkedHashMap<String,Object> upperParent =  new LinkedHashMap<>();
+		
+		//LinkedHashMap<String,Object> childrenRecs = new LinkedHashMap<>();
+		List<Object> childrenRecs = new ArrayList<>();
+		
+		if (i_children != null){
+			childrenRecs.add(i_children);
+		}
+		
+		//log.info("fnGetParentHierarchy inputs - Lu Name: " + i_luName + ", target ID: " + i_targetEntityID);
+		
+		String sqlGetEntityData = "select lu_name luName, target_entity_id targetId, entity_id sourceId, " +
+			"execution_status entityStatus, parent_lu_name parentLuName, TARGET_PARENT_ID parentTargetId, root_entity_status luStatus " +
+			"from TDM.task_Execution_link_entities where lu_name= ? and target_entity_id = ?";
+		
+		String sqlGetParent = "select parent_lu_name, target_parent_id from TDM.task_Execution_link_entities " +
+			"where lu_name= ? and target_entity_id = ? limit 1";
+		
+		//Get the data of the current (input) entity
+		Db.Row entityRec = (fabric().fetch(sqlGetEntityData, i_luName, i_targetEntityID)).firstRow();
+		
+		currentEntity.put("luName", "" + entityRec.get("luName"));
+		currentEntity.put("targetId", "" + entityRec.get("targetId"));
+		
+		//Get instance ID from entity id
+		//log.info("fnGetParentHierarchy - entity_id: " + entityRec.get(""));
+		Object[] splitId = fnSplitUID("" + entityRec.get("sourceId"));
+		String instanceId = "" + splitId[0];
+		currentEntity.put("sourceId", "" + instanceId);
+		
+		currentEntity.put("entityStatus", "" + entityRec.get("entityStatus"));
+		currentEntity.put("parentLuName", "" + entityRec.get("parentLuName"));
+		currentEntity.put("parentTargetId", "" + entityRec.get("parentTargetId"));
+			
+		currentEntity.put("children",childrenRecs);
+		
+		//log.info("fnGetParentHierarchy - LU status: " + entityStatus);
+		currentEntity.put("luStatus", "" + entityRec.get("luStatus"));
+		
+		String parentLuName = "";
+		String parentTargetId = "";
+		
+		//Get the parent record, as each entity can have only one parent, only one row wil be returned
+		Db.Row parentRec = fabric().fetch(sqlGetParent, i_luName, i_targetEntityID).firstRow();
+		if (!parentRec.isEmpty()) {
+				parentLuName = "" + parentRec.get("parent_lu_name");
+				parentTargetId = "" + parentRec.get("target_parent_id");
+		}
+		//log.info("fnGetParentHierarchy - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
+		
+		if ( parentLuName != null && !"".equals(parentLuName) ) {
+			
+			//log.info("fnGetParentHierarchy - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
+			//a recursive call to this function until we get to a leaf entity
+			upperParent = (LinkedHashMap<String, Object>)fnGetParentHierarchy(parentLuName, parentTargetId, currentEntity);
+			//log.info("fnGetParentHierarchy - parent Status: " + upperParent.get("luStatus"));
+			
+		}
+		
+		//No parent, therefore a root, and return the root data, as it already includes the data of all the children
+		if (upperParent == null || upperParent.isEmpty()){
+			return currentEntity;
+		}
+		
+		//Return the parent, so eventually return the root record with the whole hierarchy data
+		return upperParent;
+	}
 }

@@ -35,6 +35,20 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Set Target Environment",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENVIRONMENT",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -67,10 +81,18 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "checkMainTableAndSequentialIID1",
+                            "name": "check Main Table And Sequential IID",
                             "minHeight": 320,
                             "actorType": {
                                 "parentType": "checkMainTableAndSequentialIID",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Target Table Name",
+                            "actorType": {
+                                "parentType": "SetTargetTableName",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -86,20 +108,6 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "targetTablePattern",
-                            "minHeight": 204,
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${0}"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "flowName",
                             "minHeight": 239,
@@ -405,34 +413,10 @@
                 "name": "tableNameOut"
             },
             "rightPort": {
-                "actor": "targetTablePattern",
-                "name": "params"
-            },
-            "iterate": "Iterate",
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "checkMainTableAndSequentialIID1",
+                "actor": "check Main Table And Sequential IID",
                 "name": "INPUT_TABLE_NAME"
             },
             "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "flowName",
-                "name": "params"
-            },
-            "iterate": "Iterate",
-            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -469,7 +453,18 @@
         },
         {
             "leftPort": {
-                "actor": "checkMainTableAndSequentialIID1",
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Set Target Table Name",
+                "name": "TABLE_NAME"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "check Main Table And Sequential IID",
                 "name": "SEQ_FIELD_NAME"
             },
             "rightPort": {
@@ -479,7 +474,7 @@
         },
         {
             "leftPort": {
-                "actor": "checkMainTableAndSequentialIID1",
+                "actor": "check Main Table And Sequential IID",
                 "name": "SEQUENCE_NAME"
             },
             "rightPort": {
@@ -489,7 +484,7 @@
         },
         {
             "leftPort": {
-                "actor": "checkMainTableAndSequentialIID1",
+                "actor": "check Main Table And Sequential IID",
                 "name": "SEQ_FIELD_NAME"
             },
             "rightPort": {
@@ -499,7 +494,7 @@
         },
         {
             "leftPort": {
-                "actor": "checkMainTableAndSequentialIID1",
+                "actor": "check Main Table And Sequential IID",
                 "name": "SEQUENCE_NAME"
             },
             "rightPort": {
@@ -509,8 +504,8 @@
         },
         {
             "leftPort": {
-                "actor": "targetTablePattern",
-                "name": "string"
+                "actor": "Set Target Table Name",
+                "name": "TARGET_TABLE_NAME"
             },
             "rightPort": {
                 "actor": "create Flow for New Table",
@@ -519,13 +514,24 @@
         },
         {
             "leftPort": {
-                "actor": "targetTablePattern",
-                "name": "string"
+                "actor": "Set Target Table Name",
+                "name": "TARGET_TABLE_NAME"
             },
             "rightPort": {
                 "actor": "create Flow",
                 "name": "TARGET_TABLE"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "Set Target Table Name",
+                "name": "TARGET_TABLE_NAME"
+            },
+            "rightPort": {
+                "actor": "flowName",
+                "name": "params"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -580,6 +586,16 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "TARGET_ENVIRONMENT"
+            },
+            "rightPort": {
+                "actor": "Set Target Environment",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "LU_NAME"
             },
             "rightPort": {
@@ -593,8 +609,18 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "checkMainTableAndSequentialIID1",
+                "actor": "check Main Table And Sequential IID",
                 "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Set Target Table Name",
+                "name": "LU_NAME"
             }
         },
         {

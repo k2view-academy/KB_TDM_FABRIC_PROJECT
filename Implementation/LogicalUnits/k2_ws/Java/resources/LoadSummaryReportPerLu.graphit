@@ -85,7 +85,7 @@
         {
           "name": "Error Summary",
           "type": "sql",
-          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, error_message, count(distinct target_entity_id) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \nwhere lu_name = ${i_luName}\ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, entity_id"
+          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \nwhere lu_name = ${i_luName}\ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, entity_id"
         },
         {
           "name": "Error Details",

@@ -3,39 +3,11 @@
         {
             "stages": [
                 {
-                    "name": "Trim Spaces",
+                    "name": "Logger",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
-                        {
-                            "name": "Trim1",
-                            "actorType": {
-                                "parentType": "Trim",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "Split1",
-                            "actorType": {
-                                "parentType": "Split",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Logger1",
                             "actorType": {
@@ -43,7 +15,7 @@
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "TEST- INPUT params for SQL: ${0}"
+                                        "const": "TEST- INPUT SQL: ${0}"
                                     }
                                 ],
                                 "outputs": []
@@ -99,19 +71,6 @@
                             "actorType": {
                                 "parentType": "InitRecordCount",
                                 "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Logger3",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "TEST2 - INPUT params for SQL: ${0} ${1}"
-                                    }
-                                ],
                                 "outputs": []
                             }
                         }
@@ -196,47 +155,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Trim1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Split1",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Trim1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Split1",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "Get the entity list",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split1",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "Logger3",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get the entity list",
                 "name": "result"
             },
@@ -287,11 +205,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "SQLparams"
+                "name": "SQLQuery"
             },
             "rightPort": {
-                "actor": "Trim1",
-                "name": "string"
+                "actor": "Logger1",
+                "name": "params"
             }
         },
         {

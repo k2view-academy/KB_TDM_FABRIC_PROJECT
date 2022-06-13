@@ -142,7 +142,7 @@ public class TdmSharedUtils {
             setTypesQuery.append(getSetTypesQuery(sourceEnv, rootLu, jsonTypeName, childrenList));
 
 
-            String paramsSql = getParamsSql(sourceEnv, rootLu, rootLuStrL, jsonTypeName, childrenList);
+            String paramsSql = getParamsSql(sourceEnv, rootLu, rootLuStrL, jsonTypeName, childrenList, beID);
 
             getParamsSqlMap.put(rootLu, paramsSql);
             getEntitiesSqlList.add(" SELECT DISTINCT " + rootLuStrL + "_root_id as entity_id FROM \"" + luRelationsView + "\" " + where);
@@ -163,6 +163,7 @@ public class TdmSharedUtils {
         }
 
         String createViewSql = createViewSql(luRelationsView, setTypesQuery.toString(), getParamsSql);
+		//log.info("createViewSql: " + createViewSql);
         tdmDB.execute(createViewSql);
         return getEntitiesSqlList.stream().map(Object::toString).collect(Collectors.joining(" UNION "));
 
@@ -181,9 +182,10 @@ public class TdmSharedUtils {
                 "END $$ ";
     }
 
-    private static String getParamsSql(String sourceEnv, String rootLu, String rootLuStrL, String jsonTypeName, String childrenList) {
+    private static String getParamsSql(String sourceEnv, String rootLu, String rootLuStrL, String jsonTypeName, String childrenList, Long beID) {
 
         String str = "IN(" + childrenList.replace("'", "''") + ")";
+		// TDM 7.5.1 - Fix the query to support hierarchy with more than 2 levels
         return "WITH RECURSIVE relations AS(" +
             "SELECT lu_type_1, lu_type_2, entity_id as lu_type1_eid, lu_type2_eid, entity_id as root_id," +
             " param_values('" + rootLu +"',entity_id,lower(base.lu_type_1) || '_params','" + sourceEnv + "'," +
@@ -195,47 +197,48 @@ public class TdmSharedUtils {
             "FROM ( " +
             "SELECT entity_id, '" + rootLu + "'::text as lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid " +
             "FROM " + rootLu + "_params " +
-            " LEFT JOIN (SELECT * FROM tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv +"' AND lu_type_2 IN(" + childrenList + ") AND version_name='' " +
-			" AND (EXISTS (SELECT 1 FROM information_schema.columns WHERE columns.table_name::name = (lower(tdm_lu_type_relation_eid.lu_type_2::text) || '_params'::text) AND columns.column_name::name <> 'entity_id'::name AND columns.column_name::name <> 'source_environment'::name LIMIT 1))  )" +
+            " LEFT JOIN (SELECT * FROM tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv +
+            "' AND lu_type_2 IN(" + childrenList + ") AND version_name='' " +
+			" AND (EXISTS (SELECT 1 FROM information_schema.columns WHERE " +
+            "columns.table_name::name = (lower(tdm_lu_type_relation_eid.lu_type_2::text) || '_params'::text) " +
+            "AND columns.column_name::name <> 'entity_id'::name AND columns.column_name::name <> 'source_environment'::name LIMIT 1)) " +
+            " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = lu_type_2 AND lu_parent_name = lu_type_1)) )" +
             " AS rel_base ON " + rootLu + "_params.entity_id=rel_base.lu_type1_eid" +
             " WHERE source_environment='" + sourceEnv + "') AS base " +
             " UNION ALL" +
             " SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid, root_id," +
-            " param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
+            " param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
             " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid', '-1')::text as p1," +
-            " param_values('" + rootLu + "',a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
+            " param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
             " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
             "'" + str + "', 'lu_type2_eid'" +
             ",a.lu_type_2)::text as p2 " +
             "FROM tdm_lu_type_relation_eid a " +
-            "INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv + "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList + ") AND b.lu_type_1 IN("+ childrenList +"))" +
+            "INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv +
+            "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList +
+            ") AND b.lu_type_1 IN("+ childrenList +") " +
+            " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = a.lu_type_2 AND lu_parent_name = a.lu_type_1)) " +
+            " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = b.lu_type_2 AND lu_parent_name = b.lu_type_1)) ) " +
             " SELECT * FROM ( " +
             " SELECT root_id AS " + rootLuStrL + "_root_id, (json_populate_recordset(null::\"" + jsonTypeName +"\", json_agg(path))).*" +
             " FROM (" +
-            " SELECT root_id,  json_append(p1::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path from relations GROUP BY root_id, p1) colsMerged GROUP BY root_id) AS final";
+            " SELECT root_id, json_append((replace(string_agg(p1, ', '), '}, {', ','))::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path " + 
+			" from relations GROUP BY root_id) colsMerged GROUP BY root_id) AS final";
     }
 
     private static String getSetTypesQuery(String sourceEnv, String rootLu, String json_type_name, String childrenList) {
+		// TDM 7.5.1 - Change the creation of the TYPE to make it match simpler
+		String[] paramTablesArray = childrenList.split(",");
+        for (int i = 0; i < paramTablesArray.length; i++) {
+            String tableName = paramTablesArray[i].toLowerCase();
+            tableName = tableName.substring(0,tableName.length() - 1) + "_params'";
+            paramTablesArray[i] = tableName;
+        }
+		String paramTablesList = String.join(",", paramTablesArray);
         return " " +
                 "DROP TYPE IF EXISTS \"" + json_type_name + "\";" +
-                "WITH RECURSIVE cols AS " +
-                "(SELECT lu_type as lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, concat(table_params1, table_params2) AS table_params FROM (" +
-                "SELECT * FROM (SELECT '" + rootLu + "'::text as lu_type, (SELECT string_agg(lu_param_col::text, ',') AS param FROM (select '\"' || column_name || '\"' AS lu_param_col FROM information_schema.columns WHERE table_name=concat(LOWER('" + rootLu + "'),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') AS params) AS table_params1) AS t1 " +
-                "LEFT JOIN (" +
-                "SELECT lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid," +
-                "(SELECT CASE WHEN lu_type_2 IN(" + childrenList + ") THEN ',' || string_agg(lu_param_col::text, ',')  ELSE '' END AS param FROM (SELECT '\"' || column_name || '\"' AS lu_param_col FROM information_schema.columns WHERE table_name=concat(LOWER(lu_type_2),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') AS params) AS table_params2 " +
-
-                "FROM tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv + "' AND lu_type_2 IN(" + childrenList + ")) AS rel_base ON t1.lu_type=rel_base.lu_type_1 ) as base " +
-
-                "UNION ALL SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid," +
-                "concat(table_params, (SELECT ',' || string_agg(lu_param_col::text, ',') as param from (select  concat('\"' || column_name || '\"', ',') AS lu_param_col from information_schema.columns where table_name=concat(LOWER(a.lu_type_1),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') AS params)," +
-                "(SELECT string_agg(lu_param_col::text, ',') AS param from (select concat('\"' || column_name || '\"' , ',') AS lu_param_col from information_schema.columns where table_name=concat(LOWER(a.lu_type_2),'_params') AND column_name <> 'source_environment' AND column_name <> 'be_id' AND column_name <> 'entity_id') as params))" +
-
-                "FROM tdm_lu_type_relation_eid a " +
-                "INNER JOIN cols b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND a.lu_type_2 IN(" + childrenList + "))" +
-
-                "select ' CREATE type \"" + json_type_name + "\" AS (' || string_agg(distinct unnest || ' text[] ' , ',') || ');' into type_var from cols ,unnest(string_to_array(cols.table_params, ','));" +
-
+	            "select ' CREATE type \"" + json_type_name + "\" AS (' || string_agg(concat('\"' || column_name || '\"', ' TEXT[]'), ',')  || ');' into type_var " +
+                "from information_schema.columns where table_name in (" + paramTablesList + ") AND column_name <> 'source_environment' AND column_name <> 'entity_id' ; " +
                 "IF type_var IS NOT NULL " +
                 "THEN EXECUTE type_var;" +
                 "ELSE EXECUTE ' CREATE type \"" + json_type_name + "\" AS (" + rootLu + "_dummy text);';" +

@@ -1,5 +1,5 @@
 {
-    "type": "getTableSequenceMapping",
+    "type": "SetTargetTableName",
     "parentType": "InnerFlow",
     "actorClass": null,
     "inputs": [
@@ -13,7 +13,7 @@
             }
         },
         {
-            "name": "FABRIC_TABLE_NAME",
+            "name": "TABLE_NAME",
             "schema": {
                 "type": "string"
             }
@@ -23,19 +23,15 @@
             "schema": {
                 "type": "string"
             },
-            "const": "getTableSequenceMapping",
+            "const": "SetTargetTableName",
             "mandatory": true
         }
     ],
     "outputs": [
         {
-            "name": "tableSeqList",
+            "name": "TARGET_TABLE_NAME",
             "schema": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": null
-                }
+                "type": "string"
             }
         }
     ],

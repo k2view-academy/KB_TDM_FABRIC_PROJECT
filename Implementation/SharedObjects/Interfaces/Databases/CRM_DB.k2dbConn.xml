@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="6.5.1.13">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="6.5.7.0">
   <Active>true</Active>
-  <DataSource>10.21.2.64</DataSource>
+  <DataSource>localhost</DataSource>
   <PortNum>5433</PortNum>
   <DataBase>CRM_DB</DataBase>
   <UserId>CRM_USER</UserId>
   <Password>15cKQ47hOqX5oDXywL1D3e9qI45HcudcK2Vx716Lv7s=:isNU25fJ+cZ/Y4PFKXHUU3UDvq+xv1Jqsw2ACppCD0M=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://10.21.2.64:5433/CRM_DB?stringtype=unspecified</ConnectionStringServerSide>
+  <ConnectionStringServerSide>jdbc:postgresql://localhost:5433/CRM_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

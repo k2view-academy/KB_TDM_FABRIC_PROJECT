@@ -33,7 +33,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "DbCommand1",
+                            "name": "Get A table Record",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -44,7 +44,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from ${@refKeySpace}.${@tableName} limit 1"
+                                        "const": "select rec_data from ${@refKeySpace}.${@tableName} limit 1"
                                     },
                                     {
                                         "name": "refKeySpace",
@@ -67,47 +67,37 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "source_env_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "tdm_task_execution_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "rec_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "address": {
-                                                        "type": "string"
-                                                    },
-                                                    "city": {
-                                                        "type": "string"
-                                                    },
-                                                    "country": {
-                                                        "type": "string"
-                                                    },
-                                                    "date1": {
-                                                        "type": "date"
-                                                    },
-                                                    "first_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "last_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "patient_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "ssn": {
-                                                        "type": "string"
-                                                    },
-                                                    "state": {
-                                                        "type": "string"
-                                                    },
-                                                    "zip": {
+                                                    "rec_data": {
                                                         "type": "string"
                                                     }
                                                 }
                                             }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Json from Table Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Parse Record",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object"
                                         }
                                     }
                                 ]
@@ -125,15 +115,15 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "JavaScript1",
+                            "name": "Prepare the list of fields",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "self.result = new Array();\r\nfor (var x in tableData) {\r\n  if (x.toLowerCase() != 'source_env_name' && x.toLowerCase() != 'tdm_task_execution_id' && x.toLowerCase() != 'tdm_rec_id') {\r\n     self.result.push(x.toLowerCase());\r\n     self.result;\r\n  }\r\n}",
-                                            "script": "self.result = new Array();\n\nfor (var x in tableData) {\n  if (x.toLowerCase() != 'source_env_name' && x.toLowerCase() != 'tdm_task_execution_id' && x.toLowerCase() != 'tdm_rec_id') {\n    self.result.push(x.toLowerCase());\n    self.result;\n  }\n}"
+                                            "userCode": "self.result = new Array();\r\nfor (var x in tableData) {\r\n  self.result.push(x.toLowerCase());\r\n}\r\nself.result;",
+                                            "script": "self.result = new Array();\n\nfor (var x in tableData) {\n  self.result.push(x.toLowerCase());\n}\n\nself.result;"
                                         }
                                     },
                                     {
@@ -174,20 +164,30 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "DbCommand1",
+                "actor": "Get A table Record",
                 "name": "refKeySpace"
             }
         },
         {
             "leftPort": {
-                "actor": "DbCommand1",
+                "actor": "Get A table Record",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript1",
-                "name": "tableData"
+                "actor": "Parse Record",
+                "name": "stream"
             },
             "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Parse Record",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Prepare the list of fields",
+                "name": "tableData"
+            }
         },
         {
             "leftPort": {
@@ -195,7 +195,7 @@
                 "name": "cassandraInterface"
             },
             "rightPort": {
-                "actor": "DbCommand1",
+                "actor": "Get A table Record",
                 "name": "interface"
             }
         },
@@ -205,13 +205,13 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "DbCommand1",
+                "actor": "Get A table Record",
                 "name": "tableName"
             }
         },
         {
             "leftPort": {
-                "actor": "JavaScript1",
+                "actor": "Prepare the list of fields",
                 "name": "result"
             },
             "rightPort": {

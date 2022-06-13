@@ -38,12 +38,30 @@
                             "name": "Initiate TDM Load",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set No Trx For Fabric",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "No Trx",
+                            "actorType": {
+                                "parentType": "NoTx",
                                 "inputs": [
                                     {
-                                        "name": "syncMode",
-                                        "schema": {
-                                        "type": "string"
-                                        }
+                                        "name": "interface",
+                                        "const": "fabric"
                                     }
                                 ],
                                 "outputs": []
@@ -88,14 +106,14 @@
                             }
                         },
                         {
-                            "name": "HandleEntityReservationAtStart1",
+                            "name": "Handle Entity Reservation At Start",
                             "actorType": {
                                 "parentType": "HandleEntityReservationAtStart",
                                 "inputs": [
                                     {
                                         "name": "reserveInd",
                                         "schema": {
-                                        "type": "string"
+                                        "type": "boolean"
                                         }
                                     }
 								],
@@ -257,7 +275,7 @@
                     "remark": "Load tables into target.\nThis flow will first check if data should be loaded to target tables or not",
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "Equals",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -361,10 +379,17 @@
                             }
                         },
                         {
-                            "name": "HandleEntityReservationAtEnd1",
+                            "name": "Handle Entity Reservation At End",
                             "actorType": {
                                 "parentType": "HandleEntityReservationAtEnd",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "reserveInd",
+                                        "schema": {
+                                        "type": "boolean"
+                                        }
+                                    }
+								],
                                 "outputs": []
                             }
                         }
@@ -415,7 +440,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Logger1",
+                            "name": "Print Finish Note",
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
@@ -465,7 +490,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Equals1",
+                "actor": "Equals",
                 "name": "a"
             }
         },
@@ -505,7 +530,7 @@
                 "name": "reserveInd"
             },
             "rightPort": {
-                "actor": "HandleEntityReservationAtStart1",
+                "actor": "Handle Entity Reservation At Start",
                 "name": "reserveInd"
             }
         },
@@ -515,7 +540,7 @@
                 "name": "reserveInd"
             },
             "rightPort": {
-                "actor": "HandleEntityReservationAtEnd1",
+                "actor": "Handle Entity Reservation At End",
                 "name": "reserveInd"
             }
         },
@@ -525,7 +550,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "Logger1",
+                "actor": "Print Finish Note",
                 "name": "luType"
             }
         },
@@ -535,7 +560,7 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "Logger1",
+                "actor": "Print Finish Note",
                 "name": "iid"
             }
         }

@@ -511,9 +511,6 @@ public class Logic extends WebServiceUserCode {
 						ownerMap.put("owner_type", resultSet.getString("owner_type"));
 						owners.add(ownerMap);
 					}
-					/*if (resultSet.getString("owner") != null) {
-						owners.add(resultSet.getString("owner"));
-					}*/
 		
 					List<Map<String, Object>> testers = new ArrayList<>();
 					newRow.put("testers", testers);
@@ -1604,17 +1601,7 @@ public class Logic extends WebServiceUserCode {
 			Db.Rows rows = db("TDM").fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
-			/*
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
-				}
-				result.add(rowMap);
-			}
-			*/
+
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
 				HashMap<String, Object> global = new HashMap<>();
@@ -1655,11 +1642,6 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			/*String luArray="[";
-			for(String lu:logicalUnits) luArray+="'"+lu+"',";
-			if(luArray.charAt(luArray.length()-1)=='\'')luArray=luArray.substring(0,luArray.length()-1);
-			luArray+="]";
-			 */
 		
 			if (task_type.equals("EXTRACT")){
 				//Object resultList = com.k2view.cdbms.usercode.lu.k2_ws.TDM.Logic.wsGetRefTablesByLu(luArray);
@@ -1968,22 +1950,7 @@ public class Logic extends WebServiceUserCode {
 			//Db.Rows rows = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
 			entitiesList = entitiesList.replaceAll("\\s+","");
 			Map<String, Object> versions = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
-			
-			/*
-			List<Map<String,Object>> result=new ArrayList<>();
-		
-			List<String> columnNames = rows.getColumnNames();
-			for (Db.Row row : rows) {
-				ResultSet resultSet = row.resultSet();
-				Map<String, Object> rowMap = new HashMap<>();
-				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
-				}
-				result.add(rowMap);
-			}
-		
-			response.put("result",result);
-			*/
+
 			Map<String, Object> validations = (Map<String, Object>)versions.get("EntityReservationValidations");
 			message = (String) validations.get("message");
 			response.put("result",versions);
@@ -3279,7 +3246,7 @@ public class Logic extends WebServiceUserCode {
 		fabric().execute( "get TDM." + taskExecutionId);
 		
 		//Get the Hierarchy starting from the given entity and below
-		childHierarchyDetails = fnGetChildHierarchy(luName, targetId);
+		childHierarchyDetails = TaskExecutionUtils.fnGetChildHierarchy(luName, targetId);
 		
 		String parentLuName = "";
 		String parentTargetId = "";
@@ -3297,7 +3264,7 @@ public class Logic extends WebServiceUserCode {
 			//log.info("wsGetTaskExeStatsForEntity - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
 			//Starting for the parent as the details of the input entity is already included in the children part
 			//Sending the chilren hierarchy in order to add it to the ancestors as child hierarchy
-			parentHierarchyDetails = fnGetParentHierarchy(parentLuName, parentTargetId, childHierarchyDetails);
+			parentHierarchyDetails = TaskExecutionUtils.fnGetParentHierarchy(parentLuName, parentTargetId, childHierarchyDetails);
 		} else {// Given inputs are of a root entity
 			//log.info("The given LU is a root");
 			parentHierarchyDetails =  childHierarchyDetails;
@@ -3572,7 +3539,7 @@ public class Logic extends WebServiceUserCode {
 			if (entitieslist != null) {
 				entityListSize = (entitieslist.split(",")).length;
 				entityListInd = true;
-			} else if (taskData.getString("selection_param_value") != null && "L".equalsIgnoreCase(taskData.getString("selection_method").toString())) {
+			} else if (taskData.getString("selection_param_value") != null && "L".equalsIgnoreCase(taskData.getString("selection_method"))) {
 				String[] entityList = ((String) taskData.getString("selection_param_value")).split(",");
 				entityListSize = entityList.length;
 			}
@@ -3615,14 +3582,6 @@ public class Logic extends WebServiceUserCode {
 			}
 			
 			List<String> taskLogicalUnitsIds=new ArrayList<>();
-			/*try {
-				List<Map<String, Object>> LogicalUnitsList = (List<Map<String, Object>>) ((Map<String, Object>) wsGetTaskLogicalUnits(taskId)).get("result");
-				for(Map<String, Object> lu:LogicalUnitsList){
-					taskLogicalUnitsIds.add(lu.get("lu_id").toString());
-				}
-			} catch(Exception e) {
-				throw new Exception("can't get task's logicalunits");
-			}*/
 			
 			Db.Rows rows = db("TDM").fetch("SELECT lu_id FROM tasks_logical_units WHERE task_id = ?", taskId);
 			for (Db.Row row : rows) {
@@ -3633,7 +3592,8 @@ public class Logic extends WebServiceUserCode {
 			be_lus.put("be_id",taskData.getString("be_id"));
 			be_lus.put("LU List",taskLogicalUnitsIds);
 			//log.info("selectionMethod: " + selectionMethod);
-			String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.getString("source_env_name");
+			//String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.getString("source_env_name");
+			String sourceEnvName = (sourceEnvironmentName != null && !sourceEnvironmentName .trim().isEmpty()) ? sourceEnvironmentName : taskData.getString("source_env_name");
 			//log.info("Source Env: " + sourceEnvName);
 			
 			if (dataVersionExecId!=null) {
@@ -3668,7 +3628,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			
 			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
-			String targetExeEnvName = targetEnvironmentName != null ? targetEnvironmentName : taskData.getString("environment_name").toString();
+			String targetExeEnvName = (targetEnvironmentName != null &&  !targetEnvironmentName .trim().isEmpty())? targetEnvironmentName : taskData.getString("environment_name");
 			
 			if (dataVersionRetentionPeriod!=null) {
 				Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, 
@@ -5331,6 +5291,7 @@ public class Logic extends WebServiceUserCode {
 					map.put("name", row.get("name"));
 					map.put("type", row.get("type"));
 					map.put("schema", row.get("schema"));
+					map.put("mandatory", row.get("mandatory"));
 					map.put("description", "");
 					result.add(map);
 				}

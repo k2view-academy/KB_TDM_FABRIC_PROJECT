@@ -35,6 +35,12 @@
             }
         },
         {
+            "name": "TARGET_ENVIRONMENT",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
             "name": "OVERRIDE_EXISTING_FLOWS",
             "schema": {
                 "type": "boolean"

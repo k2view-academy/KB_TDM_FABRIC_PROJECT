@@ -1848,7 +1848,18 @@ public class Logic extends WebServiceUserCode {
 						!"TDM_EXTERNAL_ENTITY_LIST_TTL".equals(keyParts[2]) &&
 						!"MAX_NUMBER_OF_ENTITIES_IN_LIST".equals(keyParts[2]) &&
 						!"TDM_LU_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
-						!"TDM_LU_RETENTION_PERIOD_VALUE".equals(keyParts[2])
+						!"TDM_LU_RETENTION_PERIOD_VALUE".equals(keyParts[2]) &&
+						!"GET_RESERVED_ENTITIES_LIMIT".equals(keyParts[2]) &&
+						!"USER_NAME".equals(keyParts[2]) &&
+						!"USER_FABRIC_ROLES".equals(keyParts[2]) &&
+						!"USER_PERMISSION_GROUP".equals(keyParts[2]) &&
+						!"TDM_RESERVE_IND".equals(keyParts[2]) &&
+						!"RESERVE_RETENTION_PERIOD_TYPE".equals(keyParts[2]) &&
+						!"RESERVE_RETENTION_PERIOD_VALUE".equals(keyParts[2]) &&
+						!"BE_ID".equals(keyParts[2]) &&
+						!"TASK_TYPE".equals(keyParts[2]) &&
+						!"enable_masking".equals(keyParts[2]) &&
+						!"enable_sequences".equals(keyParts[2])
 					) 
 					{
 						if ("k2_ws".equals(keyParts[1])) {

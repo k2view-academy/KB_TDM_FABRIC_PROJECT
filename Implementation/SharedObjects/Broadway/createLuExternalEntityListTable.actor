@@ -4,7 +4,7 @@
     "actorClass": null,
     "inputs": [
         {
-            "name": "LU_NAME",
+            "name": "luName",
             "schema": {
                 "type": "string"
             },
@@ -19,7 +19,7 @@
                 "type": "string"
             },
             "const": "createLuExternalEntityListTable",
-            "hidden": true
+            "mandatory": true
         }
     ],
     "outputs": [

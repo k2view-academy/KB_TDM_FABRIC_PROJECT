@@ -44,26 +44,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "Initiate Indicator",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.isFirst = true;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -84,8 +64,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "if (flowArgs.isFirst == true) {\r\n    flowArgs.isFirst = false;\r\n    flowArgs.SeqList = new Array();\r\n}\r\nif (seqRec.get(\"LU_NAME\") == luName && \r\n    seqRec.get(\"TARGET_TABLE_NAME\") == tableName) {\r\n        flowArgs.SeqList.push(seqRec);\r\n}\r\nflowArgs.SeqList",
-                                            "script": "if (flowArgs.isFirst == true) {\n  flowArgs.isFirst = false;\n  flowArgs.SeqList = new Array();\n}\n\nif (seqRec.get(\"LU_NAME\") == luName && seqRec.get(\"TARGET_TABLE_NAME\") == tableName) {\n  flowArgs.SeqList.push(seqRec);\n}\n\nflowArgs.SeqList;"
+                                            "userCode": "flowArgs.SeqList = flowArgs.SeqList||new Array();\r\nif (seqRec.get(\"LU_NAME\") == luName && \r\n    (seqRec.get(\"FABRIC_TABLE_NAME\")).toLowerCase() == tableName.toLowerCase()) {\r\n        flowArgs.SeqList.push(seqRec);\r\n}\r\nflowArgs.SeqList",
+                                            "script": "flowArgs.SeqList = flowArgs.SeqList || new Array();\n\nif (seqRec.get(\"LU_NAME\") == luName && seqRec.get(\"FABRIC_TABLE_NAME\").toLowerCase() == tableName.toLowerCase()) {\n  flowArgs.SeqList.push(seqRec);\n}\n\nflowArgs.SeqList;"
                                         }
                                     },
                                     {
@@ -247,7 +227,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "TARGET_TABLE_NAME"
+                "name": "FABRIC_TABLE_NAME"
             },
             "rightPort": {
                 "actor": "JavaScript1",

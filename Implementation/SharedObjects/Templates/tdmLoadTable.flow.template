@@ -21,53 +21,10 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "InitiateTDMLoad_Actor1",
+                            "name": "Initiate TDM Load",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "deleteBeforeLoad",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "insertToTarget",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "sourceEnv",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "syncMode",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -94,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from {{LU_TABLE}}"
+                                        "const": "select * from {{getLUName this}}.{{LU_TABLE}}"
                                     }
                                 ],
                                 "outputs": [
@@ -440,61 +397,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "globals"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "globals"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "deleteBeforeLoad"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "deleteBeforeLoad"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "insertToTarget"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "insertToTarget"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "targetEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "targetEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceEnv"
-            },
-            "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "sourceEnv"
             }
         },
         {
@@ -503,7 +410,7 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "iid"
             }
         },
@@ -513,7 +420,7 @@
                 "name": "syncMode"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "syncMode"
             }
         }

@@ -46,7 +46,14 @@
                                         "const": "ALL"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -61,7 +68,9 @@
                                     {
                                         "const": "TDM",
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "luName",
@@ -170,7 +179,7 @@
                         },
                         {
                             "name": "Delete Target Table",
-                            "minHeight": 346,
+                            "minHeight": 373,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -237,7 +246,7 @@
                             }
                         },
                         {
-                            "name": "DbFetchField1",
+                            "name": "Get Ref Table Count",
                             "actorType": {
                                 "parentType": "DbFetchField",
                                 "inputs": [
@@ -291,9 +300,57 @@
         {
             "stages": [
                 {
+                    "name": "Initiate the TDMDB Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Update TDMDB table Before loading",
+                            "minHeight": 468,
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET number_of_processed_records = 0,\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "recsToBeLoaded",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get Reference Data and Fields List",
                     "dependsOnList": [
-                        "Count Records in Source Table"
+                        "Initiate the TDMDB Table"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -349,7 +406,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from ${@refKeySpace}.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                        "const": "select rec_data from ${@refKeySpace}.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
                                     },
                                     {
                                         "name": "refTableName",
@@ -384,19 +441,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "source_env_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "tdm_task_execution_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "rec_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "medication_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "medication_name": {
+                                                    "rec_data": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -427,8 +472,28 @@
                             }
                         },
                         {
+                            "name": "Get Commit Size",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_REF_UPD_SIZE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "name": "Get Table Fields From Cassandra",
-                            "minHeight": 181,
                             "actorType": {
                                 "parentType": "GetTableFieldsFromCassandra",
                                 "inputs": [
@@ -445,10 +510,10 @@
                 {
                     "name": "Empty Source Table",
                     "dependsOnList": [
-                        "Count Records in Source Table"
+                        "Initiate the TDMDB Table"
                     ],
                     "isLast": 0,
-                    "isTransactional": true,
+                    "isTransactional": false,
                     "hasElse": true,
                     "actors": [
                         {
@@ -466,8 +531,8 @@
                                                     "message": ""
                                                 },
                                                 "actions": {
-                                                    "suppress": true,
-                                                    "log": true,
+                                                    "suppress": false,
+                                                    "log": false,
                                                     "flowName": "PopulateTableErrorsForRef"
                                                 }
                                             }
@@ -539,23 +604,6 @@
                             }
                         },
                         {
-                            "name": "Commit Changes",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "commit"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Throw Exception - Empty Source Table",
                             "actorType": {
                                 "parentType": "Fail",
@@ -575,12 +623,159 @@
         {
             "stages": [
                 {
-                    "name": "Load Data to Target",
-                    "dependsOnList": [
-                        "Get Reference Data and Fields List"
-                    ],
+                    "name": "Group Records to Commit Group",
+                    "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "ArrayGrouper1",
+                            "actorType": {
+                                "parentType": "ArrayGrouper",
+                                "inputs": [
+                                    {
+                                        "name": "size",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "rec_data": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Finish Transaction",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get List of Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "ConstStrings1",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare the Table Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Parse the Record",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Strip The record's values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Get the values of the record",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "self.result = new Array();\r\nfor (var x in tableData) {\r\n  self.result.push(tableData[x]);\r\n}\r\nself.result;",
+                                            "script": "self.result = new Array();\n\nfor (var x in tableData) {\n  self.result.push(tableData[x]);\n}\n\nself.result;"
+                                        }
+                                    },
+                                    {
+                                        "name": "tableData",
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    {
+                                        "name": "count",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data to Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
                     "actors": [
                         {
                             "name": "Error Handler Of Loading",
@@ -610,7 +805,7 @@
                         },
                         {
                             "name": "Set Record Status to Success",
-                            "minHeight": 179,
+                            "minHeight": 266,
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -628,7 +823,7 @@
                         },
                         {
                             "name": "Insert Data To Target Table",
-                            "minHeight": 308,
+                            "minHeight": 311,
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -647,21 +842,16 @@
                                     {
                                         "name": "fields",
                                         "const": null
+                                    },
+                                    {
+                                        "name": "batch",
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Do Nothing",
-                    "dependsOnList": [
-                        "Empty Source Table"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         },
@@ -669,35 +859,9 @@
             "stages": [
                 {
                     "name": "Get Record Status",
-                    "dependsOnList": [
-                        "Load Data to Target"
-                    ],
+                    "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "FabricSetRead1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "RECORD_STATUS",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do Nothing 1",
-                    "dependsOnList": [
-                        "Do Nothing"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
+                    "isTransactional": true,
                     "actors": []
                 }
             ]
@@ -706,35 +870,10 @@
             "stages": [
                 {
                     "name": "Count Records in case of load succeeded ",
-                    "dependsOnList": [
-                        "Get Record Status"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "isTransactional": true,
                     "actors": [
-                        {
-                            "name": "Equals2",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "succeed"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Count Loaded Records",
                             "actorType": {
@@ -743,8 +882,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "if (flowArgs.isNewTable == true) {\r\n    flowArgs.isNewTable = false;\r\n    flowArgs.count = affected;\r\n} else {\r\n    flowArgs.count += affected;\r\n}\r\nflowArgs.count;",
-                                            "script": "if (flowArgs.isNewTable == true) {\n  flowArgs.isNewTable = false;\n  flowArgs.count = affected;\n} else {\n  flowArgs.count += affected;\n}\n\nflowArgs.count;"
+                                            "userCode": "if (flowArgs.isNewTable == true) {\r\n    flowArgs.isNewTable = false;\r\n    flowArgs.count = 1;\r\n} else {\r\n    flowArgs.count += 1;\r\n}\r\nflowArgs.count;",
+                                            "script": "if (flowArgs.isNewTable == true) {\n  flowArgs.isNewTable = false;\n  flowArgs.count = 1;\n} else {\n  flowArgs.count += 1;\n}\n\nflowArgs.count;"
                                         }
                                     },
                                     {
@@ -765,92 +904,6 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Count Records in case of  load  failed",
-                    "dependsOnList": [
-                        "Get Record Status"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Count Loaded Records reduce",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "if (flowArgs.isNewTable == true) {\r\n    flowArgs.isNewTable = false;\r\n    flowArgs.count = 0;\r\n} else {\r\n    flowArgs.count -= affected;\r\n}\r\nflowArgs.count;",
-                                            "script": "if (flowArgs.isNewTable == true) {\n  flowArgs.isNewTable = false;\n  flowArgs.count = 0;\n} else {\n  flowArgs.count -= affected;\n}\n\nflowArgs.count;"
-                                        }
-                                    },
-                                    {
-                                        "name": "affected",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do Nothing 2",
-                    "dependsOnList": [
-                        "Do Nothing 1"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check if 100 records were handled",
-                    "dependsOnList": [
-                        "Count Records in case of load succeeded ",
-                        "Count Records in case of  load  failed"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "JavaScript3",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.count % 100;"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do Nothing 3",
-                    "dependsOnList": [
-                        "Do Nothing 2"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         },
@@ -858,35 +911,10 @@
             "stages": [
                 {
                     "name": "Update Count",
-                    "dependsOnList": [
-                        "Check if 100 records were handled"
-                    ],
+                    "dependsOnList": [],
                     "isLast": 1,
-                    "isTransactional": false,
+                    "isTransactional": true,
                     "actors": [
-                        {
-                            "name": "Equals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Error Handler Of Updating number of records",
                             "onError": "result",
@@ -915,7 +943,7 @@
                         },
                         {
                             "name": "Update TDMDB table during loop",
-                            "minHeight": 260,
+                            "minHeight": 326,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -954,34 +982,58 @@
                                 ],
                                 "outputs": []
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Count Of loaded Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
-                            "name": "Commit",
+                            "name": "Get Final Count of Target Table",
+                            "minHeight": 397,
                             "actorType": {
-                                "parentType": "DbCommand",
+                                "parentType": "DbFetchField",
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "TDM"
+                                        "const": null
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "commit;"
+                                        "const": "select count(*) as recordsCount from ${@refSchema}.${@refTableName}"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Do Nothing 4",
-                    "dependsOnList": [
-                        "Do Nothing 3"
-                    ],
-                    "isLast": 1,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         },
@@ -989,9 +1041,7 @@
             "stages": [
                 {
                     "name": "Update TDMDB Table",
-                    "dependsOnList": [
-                        "Update Count"
-                    ],
+                    "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
@@ -1023,6 +1073,7 @@
                         },
                         {
                             "name": "Update TDMDB table for Reference Table",
+                            "minHeight": 176,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -1118,23 +1169,6 @@
                             }
                         },
                         {
-                            "name": "Commit 2",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "commit;"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get number of loaded records",
                             "actorType": {
                                 "parentType": "JavaScript",
@@ -1147,7 +1181,14 @@
                                         }
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -1177,19 +1218,17 @@
                                         "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Do Nothing 5",
-                    "dependsOnList": [
-                        "Do Nothing 4"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         },
@@ -1199,6 +1238,7 @@
                     "name": "If loaded records is less than read records",
                     "dependsOnList": [],
                     "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "LessThan1",
@@ -1270,7 +1310,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "selectedRefVersionTaskExeId"
             }
         },
@@ -1336,11 +1376,41 @@
         },
         {
             "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Get Final Count of Target Table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Get Final Count of Target Table",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetSchemaName"
+            },
+            "rightPort": {
+                "actor": "Get Final Count of Target Table",
+                "name": "refSchema"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Key Space Name",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "refKeySpace"
             }
         },
@@ -1356,7 +1426,7 @@
         },
         {
             "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "result"
             },
             "rightPort": {
@@ -1366,7 +1436,7 @@
         },
         {
             "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "result"
             },
             "rightPort": {
@@ -1376,7 +1446,7 @@
         },
         {
             "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "result"
             },
             "rightPort": {
@@ -1386,7 +1456,7 @@
         },
         {
             "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "result"
             },
             "rightPort": {
@@ -1396,7 +1466,7 @@
         },
         {
             "leftPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "result"
             },
             "rightPort": {
@@ -1406,14 +1476,33 @@
         },
         {
             "leftPort": {
+                "actor": "Get Ref Table Count",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table Before loading",
+                "name": "recsToBeLoaded"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Data From Cassandra",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Insert Data To Target Table",
-                "name": "params"
+                "actor": "ArrayGrouper1",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Commit Size",
+                "name": "result"
             },
-            "iterate": "Iterate"
+            "rightPort": {
+                "actor": "ArrayGrouper1",
+                "name": "size"
+            }
         },
         {
             "leftPort": {
@@ -1427,32 +1516,44 @@
         },
         {
             "leftPort": {
+                "actor": "ArrayGrouper1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ConstStrings1",
+                "name": "strings"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "ConstStrings1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Parse the Record",
+                "name": "stream"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Parse the Record",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Get the values of the record",
+                "name": "tableData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the values of the record",
+                "name": "result"
+            },
+            "rightPort": {
                 "actor": "Insert Data To Target Table",
-                "name": "affected"
-            },
-            "rightPort": {
-                "actor": "Count Loaded Records",
-                "name": "affected"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Equals2",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Count Loaded Records",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update TDMDB table for Reference Table",
-                "name": "loadedRecCnt"
+                "name": "params"
             }
         },
         {
@@ -1467,12 +1568,12 @@
         },
         {
             "leftPort": {
-                "actor": "JavaScript3",
+                "actor": "Get Final Count of Target Table",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "loadedRecCnt"
             }
         },
         {
@@ -1591,7 +1692,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "refTableName"
             }
         },
@@ -1601,8 +1702,28 @@
                 "name": "sourceEnvName"
             },
             "rightPort": {
-                "actor": "DbFetchField1",
+                "actor": "Get Ref Table Count",
                 "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table Before loading",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table Before loading",
+                "name": "refTableName"
             }
         },
         {

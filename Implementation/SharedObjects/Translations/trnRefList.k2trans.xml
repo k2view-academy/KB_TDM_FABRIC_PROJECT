@@ -62,13 +62,25 @@
       <GridColumnProperties width="120" />
     </Column>
     <Column>
+      <Title>target_ref_table_name</Title>
+      <ColumnName>target_ref_table_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>3</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="135" />
+    </Column>
+    <Column>
       <Title>target_schema_name</Title>
       <ColumnName>target_schema_name</ColumnName>
       <Direction>Output</Direction>
       <Type>Text</Type>
       <Length>50</Length>
       <Format />
-      <Index>3</Index>
+      <Index>4</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="130" />
@@ -80,7 +92,7 @@
       <Type>DB Interface</Type>
       <Length>50</Length>
       <Format />
-      <Index>4</Index>
+      <Index>5</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="134" />
@@ -92,7 +104,7 @@
       <Type>Text</Type>
       <Length>100</Length>
       <Format />
-      <Index>5</Index>
+      <Index>6</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <Comment>It is used to list the PK of the reference Table</Comment>
@@ -139,6 +151,13 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
+                  <xs:element name="target_ref_table_name" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="50" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
                   <xs:element name="target_schema_name" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
@@ -171,11 +190,23 @@
       <DocumentElement>
         <trnRefList diffgr:id="trnRefList1" msdata:rowOrder="0">
           <lu_name>Customer</lu_name>
+          <id>1</id>
           <reference_table_name>DEVICESTABLE2017</reference_table_name>
           <schema_name>public</schema_name>
           <interface_name>CRM_DB</interface_name>
+          <target_ref_table_name>DEVICESTABLE2017</target_ref_table_name>
           <target_schema_name>public</target_schema_name>
           <target_interface_name>CRM_DB</target_interface_name>
+          <table_pk_list></table_pk_list>
+        </trnRefList>
+        <trnRefList diffgr:id="trnRefList2" msdata:rowOrder="1">
+          <lu_name>Customer</lu_name>
+          <reference_table_name>MASSVOL_REF</reference_table_name>
+          <schema_name>TDM_SOURCE</schema_name>
+          <interface_name>HIS_DB</interface_name>
+          <target_ref_table_name>MASSVOL_REF</target_ref_table_name>
+          <target_schema_name>TDM_TARGET</target_schema_name>
+          <target_interface_name>HIS_DB</target_interface_name>
           <table_pk_list></table_pk_list>
         </trnRefList>
       </DocumentElement>

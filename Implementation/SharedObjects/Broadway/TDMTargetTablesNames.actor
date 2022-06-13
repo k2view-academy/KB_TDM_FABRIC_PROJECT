@@ -1,13 +1,24 @@
 {
-    "type": "CustomLogicFlows",
-    "badge": "Cu",
+    "type": "TDMTargetTablesNames",
+    "badge": "TD",
     "tags": [
         "basic"
     ],
     "inputs": [
         {
             "name": "table",
-            "const": [],
+            "const": [
+                {
+                    "LU_NAME": "CU",
+                    "FABRIC_TABLE_NAME": "Customer",
+                    "TARGET_TABLE_NAME": "Customer_2"
+                },
+                {
+                    "LU_NAME": "CU",
+                    "FABRIC_TABLE_NAME": "Activity",
+                    "TARGET_TABLE_NAME": "ACT"
+                }
+            ],
             "schema": {
                 "type": "array",
                 "items": {
@@ -16,10 +27,10 @@
                         "LU_NAME": {
                             "type": "string"
                         },
-                        "FLOW_NAME": {
+                        "FABRIC_TABLE_NAME": {
                             "type": "string"
                         },
-                        "DESCRIPTION": {
+                        "TARGET_TABLE_NAME": {
                             "type": "string"
                         }
                     }

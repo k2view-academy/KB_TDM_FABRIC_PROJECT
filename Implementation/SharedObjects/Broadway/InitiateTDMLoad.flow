@@ -310,14 +310,7 @@
                             "minHeight": 265,
                             "actorType": {
                                 "parentType": "SplitIIDAndCloneNumber_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": [
                                     {
                                         "name": "UID",
@@ -348,16 +341,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
@@ -383,7 +367,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_TARGET_ENVIRONMENT_NAME",
+                                        "const": "TDM_TAR_ENV_NAME",
                                         "isDefault": false
                                     }
                                 ],

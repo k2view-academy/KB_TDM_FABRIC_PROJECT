@@ -73,7 +73,7 @@ public class SharedLogic {
 		
 		handlebars.registerHelper("getSourceFieldName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
-				return map.get("FABRIC_FIELD_NAME");
+				return (map.get("FABRIC_FIELD_NAME")).toUpperCase();
 			}
 		});
 		
@@ -86,6 +86,12 @@ public class SharedLogic {
 		handlebars.registerHelper("getSequenceActorName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
 				return map.get("SEQUENCE_NAME") + "_Actor";
+			}
+		});
+		
+		handlebars.registerHelper("getLUName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return getLuType().luName;
 			}
 		});
 		
@@ -109,6 +115,9 @@ public class SharedLogic {
 		String seqIID;
 		String seqName;
 		
+
+		luTableColumns.replaceAll(String::toUpperCase);
+
 		Map<String, Object> map = new TreeMap<>();
 		map.put("LU_TABLE", luTable);
 		map.put("LU_TABLE_COLUMNS", luTableColumns);
@@ -129,7 +138,7 @@ public class SharedLogic {
 		map.put("MAIN_TABLE_SEQ_ID", seqIID);
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
 		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
-		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", TARGET_TABLE_NAME = " + targetDbTable;
+		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = " + luTable;
 		//log.info("buildTemplateData - cmd: " + cmd);
 		
 		LinkedList<Object> tableSeq = (LinkedList<Object>)fabric().fetch(cmd).firstRow().get("value");
@@ -158,6 +167,7 @@ public class SharedLogic {
 			return al;
 			
 		al = new ArrayList<>(luType.ludbObjects.get(table).getLudbObjectColumns().keySet());
+		al.replaceAll(String::toLowerCase);
 		return al;
 	}
 
@@ -324,6 +334,33 @@ private static String[] getDBCollection(DatabaseMetaData md, String catalogSchem
 		map.put("SEQUENCE_REDIS_DB", redisOrDBName);
 		map.put("INITIATE_VALUE_FLOW", initiationScriptOrValue);
 		return map;
+	}
+
+
+	@out(name = "res", type = Object.class, desc = "")
+	public static Object buildTransTemplateData(String transName, Object transColumns, Object transKeys) throws Exception {
+		Map<String, Object> map = new TreeMap<>();
+		map.put("TRANSLATION_NAME", transName);
+		map.put("TRANS_COLUMNS", transColumns);
+		map.put("TRANS_KEYS", transKeys);
+		
+		return map;
+	}
+
+
+	@out(name = "output", type = Map.class, desc = "")
+	public static Map<String,Object> getTransDefaults(Object[] transDefinition, String luName, String transName) throws Exception {
+		HashMap<String, Object> output = new HashMap<>();
+		for (Object rec : transDefinition) {
+			HashMap<String, String> map = (HashMap<String, String>) rec;
+			if (transName.equals(map.get("translation_name")) && 
+				("ALL".equals(map.get("owner_lu")) || luName.equals(map.get("owner_lu"))) ) {
+					output.put(map.get("title"), map.get("default_value"));
+					
+			}
+		}
+		
+		return output;
 	}
 
 }

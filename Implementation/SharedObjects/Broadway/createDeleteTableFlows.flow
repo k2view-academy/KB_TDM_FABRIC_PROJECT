@@ -18,7 +18,9 @@
                                     },
                                     {
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -35,43 +37,17 @@
                             }
                         },
                         {
-                            "name": "getDbTargetTablesList",
-                            "isDisabled": true,
+                            "name": "Set Target Environment",
                             "actorType": {
-                                "parentType": "LuFunction",
+                                "parentType": "FabricSet",
                                 "inputs": [
                                     {
-                                        "name": "functionName",
-                                        "const": "getDbTables"
-                                    },
-                                    {
-                                        "name": "luType",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "dbInterfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "name": "key",
+                                        "const": "ENVIRONMENT",
+                                        "isDefault": false
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "res",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -105,20 +81,27 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "targetTablePattern",
+                            "name": "Set Target Table Name",
                             "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${0}"
-                                    }
-                                ],
+                                "parentType": "SetTargetTableName",
+                                "inputs": [],
                                 "outputs": []
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 10",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
                         {
-                            "name": "flowName",
+                            "name": "Flow Name",
+                            "minHeight": 191,
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -139,7 +122,7 @@
                 {
                     "name": "Stage 2",
                     "dependsOnList": [
-                        "Stage 7"
+                        "Stage 10"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -168,6 +151,7 @@
                         },
                         {
                             "name": "CheckIfFlowExists",
+                            "minHeight": 169,
                             "actorType": {
                                 "parentType": "CheckIfFlowExists",
                                 "inputs": [],
@@ -179,7 +163,7 @@
                 {
                     "name": "Stage 5",
                     "dependsOnList": [
-                        "Stage 7"
+                        "Stage 10"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -271,7 +255,7 @@
                             }
                         },
                         {
-                            "name": "create Delete Flow__1",
+                            "name": "create New Delete Flow",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -365,6 +349,16 @@
                     "actors": []
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
@@ -385,30 +379,6 @@
                 "name": "tableNameOut"
             },
             "rightPort": {
-                "actor": "targetTablePattern",
-                "name": "params"
-            },
-            "iterate": "Iterate",
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "flowName",
-                "name": "params"
-            },
-            "iterate": "Iterate",
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
                 "actor": "Logger1",
                 "name": "TABLE_NAME"
             },
@@ -416,8 +386,51 @@
         },
         {
             "leftPort": {
-                "actor": "targetTablePattern",
-                "name": "string"
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Set Target Table Name",
+                "name": "TABLE_NAME"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "create New Delete Flow",
+                "name": "LU_TABLE"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "create Delete Flow",
+                "name": "LU_TABLE"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Set Target Table Name",
+                "name": "TARGET_TABLE_NAME"
+            },
+            "rightPort": {
+                "actor": "create New Delete Flow",
+                "name": "TARGET_TABLE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set Target Table Name",
+                "name": "TARGET_TABLE_NAME"
             },
             "rightPort": {
                 "actor": "create Delete Flow",
@@ -426,17 +439,18 @@
         },
         {
             "leftPort": {
-                "actor": "targetTablePattern",
-                "name": "string"
+                "actor": "Set Target Table Name",
+                "name": "TARGET_TABLE_NAME"
             },
             "rightPort": {
-                "actor": "create Delete Flow__1",
-                "name": "TARGET_TABLE"
-            }
+                "actor": "Flow Name",
+                "name": "params"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {
-                "actor": "flowName",
+                "actor": "Flow Name",
                 "name": "string"
             },
             "rightPort": {
@@ -446,17 +460,17 @@
         },
         {
             "leftPort": {
-                "actor": "flowName",
+                "actor": "Flow Name",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "create Delete Flow__1",
+                "actor": "create New Delete Flow",
                 "name": "FLOW_NAME"
             }
         },
         {
             "leftPort": {
-                "actor": "flowName",
+                "actor": "Flow Name",
                 "name": "string"
             },
             "rightPort": {
@@ -487,11 +501,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "LU_NAME"
+                "name": "TARGET_ENVIRONMENT"
             },
             "rightPort": {
-                "actor": "getDbTargetTablesList",
-                "name": "luType"
+                "actor": "Set Target Environment",
+                "name": "value"
             }
         },
         {
@@ -502,6 +516,16 @@
             "rightPort": {
                 "actor": "filter Out TDM Tables",
                 "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Set Target Table Name",
+                "name": "LU_NAME"
             }
         },
         {
@@ -560,7 +584,7 @@
                 "name": "TARGET_INTERFACE"
             },
             "rightPort": {
-                "actor": "create Delete Flow__1",
+                "actor": "create New Delete Flow",
                 "name": "TARGET_INTERFACE"
             }
         },
@@ -570,7 +594,7 @@
                 "name": "TARGET_SCHEMA"
             },
             "rightPort": {
-                "actor": "create Delete Flow__1",
+                "actor": "create New Delete Flow",
                 "name": "TARGET_SCHEMA"
             }
         },
@@ -580,7 +604,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "create Delete Flow__1",
+                "actor": "create New Delete Flow",
                 "name": "luType"
             }
         }

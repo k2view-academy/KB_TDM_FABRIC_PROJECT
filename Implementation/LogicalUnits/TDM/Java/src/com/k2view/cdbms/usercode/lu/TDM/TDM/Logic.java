@@ -4,6 +4,8 @@
 
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.Utils;
@@ -15,9 +17,11 @@ import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
 import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.cdbms.usercode.lu.TDM.TdmTaskScheduler;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
+import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import com.k2view.loader.Loader;
+import groovy.json.JsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.nio.ByteBuffer;
@@ -48,6 +52,7 @@ import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
@@ -415,8 +420,7 @@ public class Logic extends UserCode {
 		"synced_to_fabric = FALSE "+ 
 		"and not exists (select 1 from task_execution_list tbl, tasks t where tbl.task_execution_id = out.task_execution_id " +  
 		"and t.task_id = tbl.task_id " +
-		"and ( ( t.task_type = 'LOAD' and tbl.execution_status not in ('completed','failed','killed') )" +
-			  "OR ( t.task_type = 'EXTRACT' and tbl.execution_status not in ('completed','failed','killed') ) ) )";
+		"and tbl.execution_status not in ('completed','failed','killed') )";
 		
 		String taskExecutionId= "";
 		String taskType="";
@@ -433,15 +437,32 @@ public class Logic extends UserCode {
 					taskType = "" + row.get("task_type");
 					
 					//log.info("fnCheckMigrateAndUpdateTDMDB - Loading task: " + taskExecutionId + " to TDM");
-					try
-					{
-						// Get the task into the TDM LU
-						fabric().execute("get TDM." + taskExecutionId);
-						db("TDM").execute("update task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
-					}catch(Exception e){
-						log.error("Failed to get task execution id: " + taskExecutionId + " into TDM LU and update synced_to_fabric indicator of TDM DB. Error message: " + e.getMessage(),e);
+					int count = 0;
+					int retries = 5;
+					while(!Thread.currentThread().isInterrupted()) {
+						try
+						{
+							// Get the task into the TDM LU
+							fabric().execute("get TDM." + taskExecutionId);
+							db("TDM").execute("update task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
+							break;
+						}catch(Exception e){
+							if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
+								throw e;
+							}
+							if (++count >= retries) {
+								db("TDM").execute("update task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
+								log.error("Failed to get task execution id: " + taskExecutionId + " into TDM LU. Updating the synced_to_fabric indicator of TDM DB. Error message: " + e.getMessage(),e);
+								retries = 0;
+								break;
+							} else {
+																log.warn("Failed to update to get the task execution id: " + taskExecutionId + " into TDM LU.  this is retry number: " + count);
+								Thread.sleep(5000);
+							}
+						}
+
 					}
-		
+
 					if (taskType.equalsIgnoreCase("EXTRACT")) {
 						// Refresh the LU Params Materialized View
 						// For each LU Param view asssociated with this LU...
@@ -581,8 +602,8 @@ public class Logic extends UserCode {
 		
 			ResultSet refTableRS = select.executeQuery("Select * from " + schemaName + "." + tableName);
 			ResultSetMetaData metaData = refTableRS.getMetaData();
-		
-		
+			
+			
 			String table = "";
 			//String clusterID = (String) DBSelectValue(DB_FABRIC, "clusterid", null);
 			String clusterID = (String) fabric().fetch("clusterid").firstValue();
@@ -591,16 +612,20 @@ public class Logic extends UserCode {
 			} else {
 				table = "k2view_tdm_" + clusterID + "." + tableName;
 			}
-		
-			StringBuilder insertStmt = new StringBuilder("INSERT INTO ").append(table).append(" ( source_env_name, tdm_task_execution_id, tdm_rec_id, ");
+
+			// Tali - 9-MAY-22- fix the insert statement and insert prepare- insert the entire record as a JSON into the new field: rec_data
+			StringBuilder insertStmt = new StringBuilder("INSERT INTO ").append(table).append(" ( source_env_name, tdm_task_execution_id, tdm_rec_id, rec_data ");
 			StringBuilder insertPrepare = new StringBuilder();
 		
-			insertPrepare.append("?,?,?");
+			insertPrepare.append("?,?,?,?");
 		
 			int colsCount = metaData.getColumnCount();
-			if (colsCount > 0) {
+
+			// Tali- 9-May-22- comment this part- the insert statement insets the entire record into the new field: rec_Data
+			/*if (colsCount > 0) {
 				insertPrepare.append(COMMA_DEL);
 			}
+
 			for (int i = 1; i <= colsCount; i++) {
 				String colName = metaData.getColumnName(i);
 				insertStmt.append(colName);
@@ -610,6 +635,7 @@ public class Logic extends UserCode {
 					insertPrepare.append(COMMA_DEL);
 				}
 			}
+			*/
 		
 			if (!ttl.isEmpty() && !ttl.equals("0")) {
 				insertStmt.append(") VALUES (").append(insertPrepare).append(") USING TTL ").append(ttl);
@@ -660,6 +686,7 @@ public class Logic extends UserCode {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 		Date date = new Date();
 		int processedCounter = 0;
+		int updateStatsSize = Integer.parseInt(TDM_REF_UPD_SIZE);
 		AtomicInteger counter = new AtomicInteger(0);
 		AtomicBoolean failed = new AtomicBoolean(false);
 		Loader loader = buildLoader(counter, failed, tableName);
@@ -674,18 +701,41 @@ public class Logic extends UserCode {
 			}
 			//log.info("colsCount: " + colsCount);
 
-			Object[] row = new Object[colsCount + 3];
+			// Tali - 9-May-22 - Fix the row size and set it 4.
+			//Object[] row = new Object[colsCount + 3];
+			Object[] row = new Object[4];
 			row[0] = sourceEnv;
 			row[1] = versionID ?  taskExecID : "ALL";
 			row[2]= String.valueOf(tdm_rec_id++);
 
             try {
+				// Tali- 9-May-22- build a JSON object with the record's columns + values
+				String JSONObject;
+				Map<String, Object> dataRec = new LinkedHashMap<String, Object>();
+
 				for (int j = 1; j <= colsCount; j++) {
 					//log.info("type: " + refTableRS.getMetaData().getColumnTypeName(j).toLowerCase());
-					row[j+2] = typeCheck(refTableRS.getObject(j));
+
+					// Tali- 9-May-22- build a JSON object with the record's columns + values
+					Object fieldVal =  typeCheck(refTableRS.getObject(j));
+
+					String colName = refTableRS.getMetaData().getColumnName(j);
+
+					if(fieldVal == null) {
+						dataRec.put(colName, null);
+					}else{
+						dataRec.put(colName, fieldVal);
+					}
+
+					//row[j+2] = typeCheck(refTableRS.getObject(j));
 					//log.info("val: " + row[j]);
 				}
-				//log.info("TEST=- insert statement for loader: " + insertStmt.toString() + Arrays.toString(row));
+
+				// Tali- 9-May-22- build a JSON from the map and populate it in the row[] out of the for loop
+				GsonBuilder gsonMapBuilder = new GsonBuilder();
+				Gson gsonObject = gsonMapBuilder.serializeNulls().create();
+				JSONObject = gsonObject.toJson(dataRec);
+				row[3] = JSONObject;
 
                 loader.submit(insertStmt.toString(), row);
             }
@@ -698,14 +748,16 @@ public class Logic extends UserCode {
 				throw new RuntimeException(e.getMessage());
             }
 			processedCounter++;
-			db("TDM").execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
-					"where task_execution_id = ? and task_ref_table_id = ?; ", processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
+			if(processedCounter%updateStatsSize == 0) {
+				db("TDM").execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
+						"where task_execution_id = ? and task_ref_table_id = ?; ", processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
+			}
 		}
 		loader.join();
 		loader.close();
 
-		db("TDM").execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
-				"where task_execution_id = ? and task_ref_table_id = ? and execution_status != ?; ", COMPLETED, TDM_COPY_REF_TABLES_FOR_TDM, null, taskExecID, taskRefTableID, FAILED);
+		db("TDM").execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  number_of_processed_records = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
+				"where task_execution_id = ? and task_ref_table_id = ? and execution_status != ?; ", COMPLETED, processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, null, taskExecID, taskRefTableID, FAILED);
 	}
 
 	private static boolean isCommonlyUsedType(Object val) {
@@ -1297,7 +1349,7 @@ public class Logic extends UserCode {
 			//log.info("pkList: " + pkList);
 
 			String table = "";
-			//TDM 5.1, replacing dbFabtic with fabric as Frabic 5.3 expectations
+			//TDM 5.1, replacing dbFabtic with fabric as Fabric 5.3 expectations
 			//String clusterID = (String) DBSelectValue(DB_FABRIC, "clusterid", null);
 			String clusterID = "" + fabric().fetch("clusterid").firstValue();
 			if (clusterID == null || clusterID.isEmpty()) {
@@ -1313,12 +1365,20 @@ public class Logic extends UserCode {
 				tableInfoRes = selectTableInfo.executeQuery("SELECT * FROM system_schema.columns WHERE keyspace_name = 'k2view_tdm_" + clusterID + "' AND table_name = '" + tableName.toLowerCase() + "';");
 			}
 
+			// TALI- 9-MAY-22- fix - comment the original columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field
+			/*
 			Set<String> originColumns = new HashSet<>();
 			while (tableInfoRes.next()) {
 				//log.info("Adding Original Column: " + tableInfoRes.getString("column_name"));
 				originColumns.add(tableInfoRes.getString("column_name"));
 			}
 
+			 */
+
+
+			// TALI- 9-MAY-22- fix - comment the new columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field. Update the create statement to include the new field: rec_data
+			StringBuilder createStmt = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(table).append(" ( source_env_name text, tdm_task_execution_id text, tdm_rec_id text, rec_data text, ");
+/*
 			Set<String> newColumns = new HashSet<>();
 			
 			// Fix- add rec_id field. This field will be added to the PK to avoid an override of the same record if the source table does not have its own PK fields
@@ -1345,7 +1405,11 @@ public class Logic extends UserCode {
 				}
 			}
 
-			createStmt.append(" , PRIMARY KEY (source_env_name, tdm_task_execution_id, tdm_rec_id ").append(pkList).append("));");
+ */
+
+			// Tali - 9-May-22- remove the append of the source PK fields to the Cassandra PK fields
+			//createStmt.append(" , PRIMARY KEY (source_env_name, tdm_task_execution_id, tdm_rec_id ").append(pkList).append("));");
+			createStmt.append(" PRIMARY KEY (source_env_name, tdm_task_execution_id, tdm_rec_id ))");
 
 			StringBuilder updateStatement = new StringBuilder();
 			updateStatement.append("update task_ref_exe_stats set execution_status = 'invalid', updated_by = 'createCassandraTable'");
@@ -1358,6 +1422,10 @@ public class Logic extends UserCode {
 			//log.info("updateStatement: " + updateStatement.toString() + ", size of existing table: " + originColumns.size() + ", size of new table: " + newColumns.size());
 
 			//Compare the columns list only if the table already exists in DB
+
+			// TALI- 9-MAY-22- fix - comment the original columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field
+			db(DBCASSANDRA).execute("" + createStmt);
+			/*
 			if ((originColumns.size() > 0) && (!originColumns.equals(newColumns))) {
 				//log.info("---- The table" + tableName.toLowerCase() + " exists, but the schema was changed ---");
 
@@ -1373,6 +1441,7 @@ public class Logic extends UserCode {
 				//log.info("Creating the table as it does not exist");
 				db(DBCASSANDRA).execute("" + createStmt);
 			}
+			*/
 			select.close();
 			pk.close();
 			selectTableInfo.close();
