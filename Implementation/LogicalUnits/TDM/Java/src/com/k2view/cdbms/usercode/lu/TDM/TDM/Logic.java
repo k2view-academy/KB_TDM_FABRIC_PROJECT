@@ -4,9 +4,9 @@
 
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
+//import com.google.gson.Gson;
+//import com.google.gson.GsonBuilder;
+//import com.google.gson.annotations.SerializedName;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.Utils;
 import com.k2view.cdbms.shared.user.UserCode;
@@ -732,9 +732,11 @@ public class Logic extends UserCode {
 				}
 
 				// Tali- 9-May-22- build a JSON from the map and populate it in the row[] out of the for loop
-				GsonBuilder gsonMapBuilder = new GsonBuilder();
-				Gson gsonObject = gsonMapBuilder.serializeNulls().create();
-				JSONObject = gsonObject.toJson(dataRec);
+				//Replace Gson with k2view Json
+				//GsonBuilder gsonMapBuilder = new GsonBuilder();
+				//Gson gsonObject = gsonMapBuilder.serializeNulls().create();
+				//JSONObject = gsonObject.toJson(dataRec);
+				JSONObject = Json.get(Json.Feature.SERIALIZE_NULLS).toJson(dataRec);
 				row[3] = JSONObject;
 
                 loader.submit(insertStmt.toString(), row);

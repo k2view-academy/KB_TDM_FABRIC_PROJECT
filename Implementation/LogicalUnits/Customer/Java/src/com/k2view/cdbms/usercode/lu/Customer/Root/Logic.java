@@ -47,7 +47,7 @@ public class Logic extends UserCode {
 	@type(RootFunction)
 	@out(name = "dummy_output", type = void.class, desc = "")
 	public static void fnPop_tdm_lu_type_rel_tar_eid(String dummy_input) throws Exception {
-		if(1 == 2)yield(new Object[] {null});
+		if(1 == 2) UserCode.yield(new Object[] {null});
 	}
 
 

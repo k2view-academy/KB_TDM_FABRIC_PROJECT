@@ -1,6 +1,6 @@
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
@@ -615,9 +615,11 @@ public class TdmExecuteTask {
 		
 		clFlowParams = clFlowParams.replaceAll("\\\\n","").replaceAll("\\\\t","");
 		//log.info("clFlowParams after replace: " + clFlowParams);
-		Gson gson = new Gson();
+		// Replace gson with K2view Json
+		//Gson gson = new Gson();
 		Type mapType = new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType();
-		Map<String, List<Map <String, Object>>> clFlowParamJson = gson.fromJson(clFlowParams, mapType);
+		//Map<String, List<Map <String, Object>>> clFlowParamJson = gson.fromJson(clFlowParams, mapType);
+		Map<String, List<Map <String, Object>>> clFlowParamJson = Json.get().fromJson(clFlowParams, mapType);
 		
 		String fabricCommandParams = " LU_NAME='" + luName + "', NUM_OF_ENTITIES=" + entitiesLimit;
 		if (!(clFlowParamJson.isEmpty())) {
@@ -714,7 +716,8 @@ public class TdmExecuteTask {
         globals.putAll(args);
 
         Util.rte(() -> db(TDM).fetch(globalsQuery, params).forEach(res ->Util.rte(() -> globals.put(res.resultSet().getString("global_name"), res.resultSet().getString("global_value")))));
-        Gson gson = new Gson();
+		// Replace Gson with k2view Json
+        //Gson gson = new Gson();
 		
 		//TDM 7.2 - Get task execution override globals and add them to the task's globals.
 		Map <String, Object> taskOverrideAttrs = TdmSharedUtils.fnGetTaskExecOverrideAttrs(TASK_ID.get(taskProperties), TASK_EXECUTION_ID.get(taskProperties));
@@ -723,7 +726,8 @@ public class TdmExecuteTask {
 	
 		if (!"".equals(overrideGlobalsStr) && !"null".equals(overrideGlobalsStr)) {
 			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
-			Map <String, Object> overrideGlobals = gson.fromJson(overrideGlobalsStr, mapType);
+			//Map <String, Object> overrideGlobals = gson.fromJson(overrideGlobalsStr, mapType);
+			Map <String, Object> overrideGlobals = Json.get().fromJson(overrideGlobalsStr, mapType);
 			globals.putAll(overrideGlobals);
 		}
 		
@@ -813,8 +817,10 @@ public class TdmExecuteTask {
 				break;
 		}
 		
-		Gson gson = new Gson();
-		String globalsJson = gson.toJson(globals, new TypeToken<HashMap>(){}.getType());
+		//Replace Gson with k2view Json
+		//Gson gson = new Gson();
+		//String globalsJson = gson.toJson(globals, new TypeToken<HashMap>(){}.getType());
+		String globalsJson = Json.get().toJson(globals);
 		//log.info("globalsJson: " + globalsJson);
 		Util.rte(() -> setGlobals(globalsJson));
 	}

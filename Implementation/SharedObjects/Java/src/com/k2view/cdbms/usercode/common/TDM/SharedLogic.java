@@ -4,7 +4,7 @@
 
 package com.k2view.cdbms.usercode.common.TDM;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 import com.k2view.cdbms.exceptions.InstanceNotFoundException;
 import com.k2view.cdbms.lut.DbInterface;
 import com.k2view.cdbms.shared.Db;
@@ -14,6 +14,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
 import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.Json;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
@@ -124,16 +125,15 @@ public class SharedLogic {
 	@out(name = "task_name", type = String.class, desc = "")
 	@out(name = "timestamp", type = String.class, desc = "")
 	public static void fnRtK2TDMRoot(String TDM_INSTANCE_ID) throws Exception {
-		yield(fnValidateNdGetInstance());
+		UserCode.yield(fnValidateNdGetInstance());
 	}
 
 
-    @type(RootFunction)
-    @out(name = "ENTITY_ID", type = String.class, desc = "")
-    public static void fnRootLuParams(String ENTITY_ID) throws Exception {
-        if (1 == 2) yield(new Object[]{null});
-
-    }
+	@type(RootFunction)
+	@out(name = "ENTITY_ID", type = void.class, desc = "")
+	public static void fnRootLuParams(String ENTITY_ID) throws Exception {
+		if (1 == 2) UserCode.yield(new Object[]{null});
+	}
 
 
 	public static void fnEnrichmentLuParams() throws Exception {
@@ -767,20 +767,19 @@ public class SharedLogic {
 	}
 
 
-    @type(RootFunction)
-    @out(name = "output", type = String.class, desc = "")
-    public static void fnRootINSTANCE_TABLE_COUNT(String input) throws Exception {
-        if (1 == 2) {
-            yield(new Object[]{null});
-        }
-
-    }
+	@type(RootFunction)
+	@out(name = "output", type = void.class, desc = "")
+	public static void fnRootINSTANCE_TABLE_COUNT(String input) throws Exception {
+		if (1 == 2) {
+		    UserCode.yield(new Object[]{null});
+		}
+	}
 
 
 	@type(RootFunction)
-	@out(name = "dummy_output", type = String.class, desc = "")
+	@out(name = "dummy_output", type = void.class, desc = "")
 	public static void fnPop_TDM_LU_TYPE_RELATION_EID(String dummy_input) throws Exception {
-		if(1 == 2)yield(new Object[] {null});
+		if(1 == 2) UserCode.yield(new Object[] {null});
 	}
 
 
@@ -1259,7 +1258,7 @@ public class SharedLogic {
 	@type(RootFunction)
 	@out(name = "dummy_output", type = void.class, desc = "")
 	public static void fnDummyPop(String dummy_input) throws Exception {
-		if(1 == 2)yield(new Object[] {null});
+		if(1 == 2) UserCode.yield(new Object[] {null});
 	}
 
 
@@ -1300,8 +1299,10 @@ public class SharedLogic {
 
 	public static void setGlobals(String globals) throws Exception {
 		if (!Util.isEmpty(globals)) {
-			Gson gson = new Gson();
-			Map statusData = gson.fromJson(globals, Map.class);
+			// Replace gson with K2view Json
+			//Gson gson = new Gson();
+			//Map statusData = gson.fromJson(globals, Map.class);
+			Map statusData = Json.get().fromJson(globals, Map.class);
 			if (!(statusData.isEmpty())) {
 				statusData.forEach((key, value) -> {
 					try {

@@ -63,7 +63,7 @@ public class Logic extends UserCode {
 				}
 		}
 		
-		yield(new Object[]{TASK_EXECUTION_ID});
+		UserCode.yield(new Object[]{TASK_EXECUTION_ID});
 	}
 
 	@desc("Tali- 4-Dec-18- add target_entity_id as input to support clone\r\n" +
@@ -84,7 +84,7 @@ public class Logic extends UserCode {
 	@out(name = "VERSION_DATETIME", type = String.class, desc = "")
 	public static void fnPopTaskExecutionLinkEntities(String LU_NAME, String ENTITY_ID, String EXECUTION_STATUS, String target_entity_id, String id_type) throws Exception {
 		if (1==2) {
-		yield(new Object[]{null});
+			UserCode.yield(new Object[]{null});
 		}
 	}
 
@@ -109,7 +109,7 @@ public class Logic extends UserCode {
 	@out(name = "version_datetime", type = String.class, desc = "")
 	public static void fnPop_tdm_lu_type_relation_eid(String LU_NAME, String LU_EID, String SOURCE_ENV_NAME) throws Exception {
 		if (1==2) {
-			yield (null);
+			UserCode.yield (null);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class Logic extends UserCode {
 		if (rows != null) {
 			rows.close();
 		}
-		yield(new Object[]{TASK_EXECUTION_ID, luListStr});
+		UserCode.yield(new Object[]{TASK_EXECUTION_ID, luListStr});
 	}
 
 
@@ -203,7 +203,7 @@ public class Logic extends UserCode {
 				rows2 = db("TDM").fetch(sql2, taskExecutionID, versionName, versionDateTime);
 			}
 			for (Db.Row row : rows2) {
-				yield(row.cells());
+				UserCode.yield(row.cells());
 			}
 			if (rows2 != null) {
 				rows2.close();
@@ -311,7 +311,7 @@ public class Logic extends UserCode {
 			fabric_execution_id = "" + tdmTaskExecRec.get("fabric_execution_id");
 			task_executed_by = "" + tdmTaskExecRec.get("task_executed_by");
 			
-			yield(new Object[]{task_execution_id,task_id,lu_id,lu_name, parent_lu_id, parent_lu_name, version_ind,version_name,version_datetime,
+			UserCode.yield(new Object[]{task_execution_id,task_id,lu_id,lu_name, parent_lu_id, parent_lu_name, version_ind,version_name,version_datetime,
 				version_expiration_date,execution_status,start_execution_time,end_execution_time,num_of_processed_entities,
 				num_of_copied_entities,num_of_failed_entities,data_center_name,num_of_processed_ref_tables,num_of_copied_ref_tables,
 				num_of_failed_ref_tables,fabric_execution_id, task_executed_by,process_id,process_name});
@@ -352,7 +352,7 @@ public class Logic extends UserCode {
 		
 		if ("extract".equalsIgnoreCase(taskType)) {
 			for (Db.Row errRec : errTableData) {
-				yield(errRec.cells());	
+				UserCode.yield(errRec.cells());	
 			}
 		
 		// In case of Load tasks and the instance is not a reference table, the target_entity_id and iid should be set correctly,
@@ -386,7 +386,7 @@ public class Logic extends UserCode {
 					targetEntId = "" + entityRec.get("TARGET_ENTITY_ID");
 				}
 				
-				yield(new Object[]{task_execution_id,luName,entityId,iid,targetEntId,errorCat,errorCode,errorMsg,createDate,flowName,stageName,actorName,actorParams});
+				UserCode.yield(new Object[]{task_execution_id,luName,entityId,iid,targetEntId,errorCat,errorCode,errorMsg,createDate,flowName,stageName,actorName,actorParams});
 			}
 		
 		}

@@ -92,7 +92,7 @@ public class Logic extends UserCode {
 					
 				}
 			}
-		yield(null);
+		UserCode.yield(null);
 	}
 
 	

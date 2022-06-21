@@ -43,7 +43,7 @@ public class Logic extends UserCode {
 	@out(name = "o_Be_root_entity_id", type = String.class, desc = "")
 	public static void fun_createTdmTaskExecutionEntities(Integer i_dummy) throws Exception {
 		Object[] row = {null};
-		yield(row);
+		UserCode.yield(row);
 	}
 
 	
