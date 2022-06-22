@@ -10,7 +10,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Delete Tables Level 1",
@@ -18,13 +18,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "delete_orders",
+                            "name": "delete_ORDERS",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "delete_orders"
+                                        "const": "delete_ORDERS"
                                     }
                                 ],
                                 "outputs": []

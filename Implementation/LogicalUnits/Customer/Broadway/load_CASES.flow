@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from CASES"
+                                        "const": "select * from Customer.CASES"
                                     }
                                 ],
                                 "outputs": [
@@ -62,11 +62,11 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "activity_id": {"type": "Any"},
-													"case_id": {"type": "Any"},
-													"case_date": {"type": "Any"},
-													"case_type": {"type": "Any"},
-													"status": {"type": "Any"}
+                                                    "ACTIVITY_ID": {"type": "Any"},
+													"CASE_ID": {"type": "Any"},
+													"CASE_DATE": {"type": "Any"},
+													"CASE_TYPE": {"type": "Any"},
+													"STATUS": {"type": "Any"}
 													
                                                 }
                                             }
@@ -402,7 +402,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "case_id"
+                "CASE_ID"
             ]
         },
         {
@@ -426,7 +426,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "activity_id"
+                "ACTIVITY_ID"
             ]
         },
         {
@@ -450,7 +450,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "case_id"
+                "CASE_ID"
             ]
         },
         {

@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from CUSTOMER"
+                                        "const": "select * from Customer.CUSTOMER"
                                     }
                                 ],
                                 "outputs": [
@@ -62,10 +62,10 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {"type": "Any"},
-													"ssn": {"type": "Any"},
-													"first_name": {"type": "Any"},
-													"last_name": {"type": "Any"}
+                                                    "CUSTOMER_ID": {"type": "Any"},
+													"SSN": {"type": "Any"},
+													"FIRST_NAME": {"type": "Any"},
+													"LAST_NAME": {"type": "Any"}
 													
                                                 }
                                             }
@@ -370,7 +370,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "customer_id"
+                "CUSTOMER_ID"
             ]
         },
         {

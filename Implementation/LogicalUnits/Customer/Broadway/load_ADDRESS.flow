@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from ADDRESS"
+                                        "const": "select * from Customer.ADDRESS"
                                     }
                                 ],
                                 "outputs": [
@@ -62,14 +62,14 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {"type": "Any"},
-													"address_id": {"type": "Any"},
-													"street_address_1": {"type": "Any"},
-													"street_address_2": {"type": "Any"},
-													"city": {"type": "Any"},
-													"zip": {"type": "Any"},
-													"state": {"type": "Any"},
-													"country": {"type": "Any"}
+                                                    "CUSTOMER_ID": {"type": "Any"},
+													"ADDRESS_ID": {"type": "Any"},
+													"STREET_ADDRESS_1": {"type": "Any"},
+													"STREET_ADDRESS_2": {"type": "Any"},
+													"CITY": {"type": "Any"},
+													"ZIP": {"type": "Any"},
+													"STATE": {"type": "Any"},
+													"COUNTRY": {"type": "Any"}
 													
                                                 }
                                             }
@@ -420,7 +420,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "customer_id"
+                "CUSTOMER_ID"
             ]
         },
         {
@@ -444,7 +444,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "address_id"
+                "ADDRESS_ID"
             ]
         },
         {
@@ -468,7 +468,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "address_id"
+                "ADDRESS_ID"
             ]
         },
         {

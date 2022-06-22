@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from ACTIVITY"
+                                        "const": "select * from Customer.ACTIVITY"
                                     }
                                 ],
                                 "outputs": [
@@ -62,10 +62,10 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {"type": "Any"},
-													"activity_id": {"type": "Any"},
-													"activity_date": {"type": "Any"},
-													"activity_note": {"type": "Any"}
+                                                    "CUSTOMER_ID": {"type": "Any"},
+													"ACTIVITY_ID": {"type": "Any"},
+													"ACTIVITY_DATE": {"type": "Any"},
+													"ACTIVITY_NOTE": {"type": "Any"}
 													
                                                 }
                                             }
@@ -373,7 +373,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "activity_id"
+                "ACTIVITY_ID"
             ]
         },
         {
@@ -397,7 +397,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "customer_id"
+                "CUSTOMER_ID"
             ]
         },
         {
