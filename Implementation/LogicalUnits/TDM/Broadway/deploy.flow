@@ -31,6 +31,34 @@
         {
             "stages": [
                 {
+                    "name": "Deployment of  Environments",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Deploy Environments",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "DEPLOY ENVIRONMENTS FROM FILE '/opt/apps/fabric/workspace/project/Implementation/SharedObjects/Environments/Environments.k2fabEnv.xml'"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Check If Environments Are Deployed",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -73,7 +101,7 @@
                                     },
                                     {
                                         "name": "value",
-                                        "const": "\"Please set the environment for the Cassandra and Redis connections\"",
+                                        "const": "SRC",
                                         "isDefault": false
                                     }
                                 ],
@@ -93,6 +121,7 @@
                     "actors": [
                         {
                             "name": "Check Redis",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [

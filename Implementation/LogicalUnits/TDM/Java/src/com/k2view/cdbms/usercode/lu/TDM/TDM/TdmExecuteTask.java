@@ -595,7 +595,7 @@ public class TdmExecuteTask {
             default: // This column is populated automatically by the application and should not include any other options
                 break;
         }
-        entityInclusions.put(TASK_EXECUTION_ID.get(taskProperties), entityInclusion);
+        entityInclusions.put("" + TASK_EXECUTION_ID.get(taskProperties), entityInclusion);
 		//log.info("getEntityInclusion - entityInclusion: " + entityInclusion);
         return entityInclusion;
     }
