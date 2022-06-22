@@ -38,11 +38,11 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-cassandra-service</dbHost>
           <dbPort>9042</dbPort>
-          <dbUser>cassandra</dbUser>
-          <dbPasswordEncrypted>+suLEUL/JlMp2jFA17J+0n+4QGYNY2zUM//pynb3mwA=:fdZqiDXqips6X607ApOD03aJLl7v476iM5G4RCP3SUc=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <dbUser>k2vdb</dbUser>
+          <dbPasswordEncrypted>AnBR1P7cbmiK6FbCePBufcCqkqZS9ql7c2fUOlHRmzg=:XULXk8W5N870+n3wi8q/sR7y+JRrGpLw71dgQZn+4SY=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -226,7 +226,7 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers">
@@ -328,11 +328,11 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-cassandra-service</dbHost>
           <dbPort>9042</dbPort>
-          <dbUser>cassandra</dbUser>
-          <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <dbUser>k2vdb</dbUser>
+          <dbPasswordEncrypted>oZRanpZ3Ezb46sWR4qjRphZchwgpX/MtLUdThChVd+E=:ernoSSnxs5JsXJLRtHOETUbeMWY9keJAAZyGHL67e78=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
@@ -516,7 +516,7 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers">
