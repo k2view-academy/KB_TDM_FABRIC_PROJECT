@@ -259,6 +259,7 @@ public class Logic extends WebServiceUserCode {
 		}
 	}
 
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
 	public static Object wsGetFabricRolesByUser(String user) throws Exception {
 		List<String> roles=new ArrayList<>();
 		fabric().fetch("list users;").
@@ -267,14 +268,15 @@ public class Logic extends WebServiceUserCode {
 				roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
 			}
 		});
-
+		
 		return wrapWebServiceResults("SUCCESS", null, roles);
 	}
 
 
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
 	public static Object wsGetPermissionGroupByUser(String user) throws Exception {
 		String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(user)).get("result"));
-
+		
 		Integer[] weight = {0};
 		db(TDM_INTERFACE_NAME).fetch(SELECT_PERMISSION_GROUP, fabricRoles).forEach(row -> {
 			Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
@@ -282,7 +284,7 @@ public class Logic extends WebServiceUserCode {
 				weight[0] = nextWeight;
 			}
 		});
-
+		
 		if (weight[0] == 0) {
 			return wrapWebServiceResults("FAILED", "Can't find permission group for the user " + sessionUser().name() + ".", null);
 		} else {
@@ -293,7 +295,7 @@ public class Logic extends WebServiceUserCode {
 					break;
 				}
 			}
-
+		
 			return wrapWebServiceResults("SUCCESS", null, permissionGroup);
 		}
 	}
