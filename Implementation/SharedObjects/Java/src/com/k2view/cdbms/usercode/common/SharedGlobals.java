@@ -43,9 +43,9 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String MASK_FLAG = "0";
 	@category("TDM")
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
+	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC_local_debug";
 	@category("TDM")
-	public static String TDM_TAR_ENV_NAME = "TAR";
+	public static String TDM_TAR_ENV_NAME = "TAR_local_debug";
 	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")

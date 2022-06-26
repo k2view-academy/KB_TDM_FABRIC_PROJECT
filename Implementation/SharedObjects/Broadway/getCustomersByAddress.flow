@@ -38,29 +38,6 @@
                                 "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Const2",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -245,7 +222,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "source_iid": {
+                                                    "customer_id": {
                                                         "type": "integer"
                                                     }
                                                 }
@@ -475,22 +452,8 @@
             },
             "iterate": "Iterate",
             "path": [
-                "source_iid"
+                "customer_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get the entity list",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Logger2",
-                "name": "params"
-            },
-            "path": [
-                "source_iid"
-            ],
-            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -531,16 +494,6 @@
             "rightPort": {
                 "actor": "Split Input to Array",
                 "name": "string"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "testIntParam"
-            },
-            "rightPort": {
-                "actor": "Const2",
-                "name": "value"
             }
         },
         {

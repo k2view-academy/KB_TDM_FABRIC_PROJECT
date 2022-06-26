@@ -115,9 +115,9 @@ public class SharedLogic {
 		String seqIID;
 		String seqName;
 		
-
+		
 		luTableColumns.replaceAll(String::toUpperCase);
-
+		
 		Map<String, Object> map = new TreeMap<>();
 		map.put("LU_TABLE", luTable);
 		map.put("LU_TABLE_COLUMNS", luTableColumns);
@@ -138,7 +138,7 @@ public class SharedLogic {
 		map.put("MAIN_TABLE_SEQ_ID", seqIID);
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
 		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
-		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = " + luTable;
+		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = '" + luTable + "'";
 		//log.info("buildTemplateData - cmd: " + cmd);
 		
 		LinkedList<Object> tableSeq = (LinkedList<Object>)fabric().fetch(cmd).firstRow().get("value");
@@ -211,8 +211,8 @@ public class SharedLogic {
 				}
 			}
 			//log.info("handling  Table: " + originalTableName);
-			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=" +
-					originalTableName + ", luName=" + luType.luName).firstValue();
+			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+					originalTableName + "', luName=" + luType.luName).firstValue();
 			if( !tables.contains(originalTableName) && !"null".equals(tableFiltered) && !Util.isEmpty(tableFiltered)) {
 				tmpBucket.add(originalTableName);
 				tables.add(originalTableName);

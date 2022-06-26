@@ -223,6 +223,54 @@
                     "FABRIC_TABLE_NAME": "orders",
                     "FABRIC_FIELD_NAME": "order_id",
                     "SEQUENCE_NAME": "ORDER_ID_SEQ"
+                },
+                {
+                    "LU_NAME": "Cases",
+                    "TARGET_TABLE_NAME": "cases",
+                    "TARGET_FIELD_NAME": "case_id",
+                    "FABRIC_TABLE_NAME": "cases",
+                    "FABRIC_FIELD_NAME": "case_id",
+                    "SEQUENCE_NAME": "CASE_ID_SEQ"
+                },
+                {
+                    "LU_NAME": "Cases",
+                    "TARGET_TABLE_NAME": "cases",
+                    "TARGET_FIELD_NAME": "activity_id",
+                    "FABRIC_TABLE_NAME": "cases",
+                    "FABRIC_FIELD_NAME": "activity_id",
+                    "SEQUENCE_NAME": "ACTIVITY_ID_SEQ"
+                },
+                {
+                    "LU_NAME": "Cases",
+                    "TARGET_TABLE_NAME": "case_note",
+                    "TARGET_FIELD_NAME": "note_id",
+                    "FABRIC_TABLE_NAME": "case_note",
+                    "FABRIC_FIELD_NAME": "note_id",
+                    "SEQUENCE_NAME": "NOTE_ID_SEQ"
+                },
+                {
+                    "LU_NAME": "Cases",
+                    "TARGET_TABLE_NAME": "activity",
+                    "TARGET_FIELD_NAME": "activity_id",
+                    "FABRIC_TABLE_NAME": "activity",
+                    "FABRIC_FIELD_NAME": "activity_id",
+                    "SEQUENCE_NAME": "ACTIVITY_ID_SEQ"
+                },
+                {
+                    "LU_NAME": "Cases",
+                    "TARGET_TABLE_NAME": "case_note",
+                    "TARGET_FIELD_NAME": "case_id",
+                    "FABRIC_TABLE_NAME": "case_note",
+                    "FABRIC_FIELD_NAME": "case_id",
+                    "SEQUENCE_NAME": "CASE_ID_SEQ"
+                },
+                {
+                    "LU_NAME": "Cases",
+                    "TARGET_TABLE_NAME": "activity",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "activity",
+                    "FABRIC_FIELD_NAME": "customer_id",
+                    "SEQUENCE_NAME": "CUSTOMER_ID_SEQ"
                 }
             ],
             "schema": {
