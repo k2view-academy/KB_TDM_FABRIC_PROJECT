@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from CASE_NOTE"
+                                        "const": "select * from Customer.CASE_NOTE"
                                     }
                                 ],
                                 "outputs": [
@@ -62,10 +62,10 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "case_id": {"type": "Any"},
-													"note_id": {"type": "Any"},
-													"note_date": {"type": "Any"},
-													"note_text": {"type": "Any"}
+                                                    "CASE_ID": {"type": "Any"},
+													"NOTE_ID": {"type": "Any"},
+													"NOTE_DATE": {"type": "Any"},
+													"NOTE_TEXT": {"type": "Any"}
 													
                                                 }
                                             }
@@ -373,7 +373,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "case_id"
+                "CASE_ID"
             ]
         },
         {
@@ -397,7 +397,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "note_id"
+                "NOTE_ID"
             ]
         },
         {

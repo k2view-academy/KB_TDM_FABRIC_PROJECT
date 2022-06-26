@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from CONTRACT"
+                                        "const": "select * from Customer.CONTRACT"
                                     }
                                 ],
                                 "outputs": [
@@ -62,15 +62,15 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {"type": "Any"},
-													"contract_id": {"type": "Any"},
-													"contract_ref_id": {"type": "Any"},
-													"associated_line": {"type": "Any"},
-													"contract_description": {"type": "Any"},
-													"from_date": {"type": "Any"},
-													"to_date": {"type": "Any"},
-													"mymsisdn": {"type": "Any"},
-													"associated_line_fmt": {"type": "Any"}
+                                                    "CUSTOMER_ID": {"type": "Any"},
+													"CONTRACT_ID": {"type": "Any"},
+													"CONTRACT_REF_ID": {"type": "Any"},
+													"ASSOCIATED_LINE": {"type": "Any"},
+													"CONTRACT_DESCRIPTION": {"type": "Any"},
+													"FROM_DATE": {"type": "Any"},
+													"TO_DATE": {"type": "Any"},
+													"MYMSISDN": {"type": "Any"},
+													"ASSOCIATED_LINE_FMT": {"type": "Any"}
 													
                                                 }
                                             }
@@ -398,7 +398,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "contract_id"
+                "CONTRACT_ID"
             ]
         },
         {
@@ -422,7 +422,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "customer_id"
+                "CUSTOMER_ID"
             ]
         },
         {

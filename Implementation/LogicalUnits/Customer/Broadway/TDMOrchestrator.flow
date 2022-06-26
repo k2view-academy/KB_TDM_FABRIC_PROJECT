@@ -49,6 +49,31 @@
         {
             "stages": [
                 {
+                    "name": "Set No Trx For Fabric",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "No Trx",
+                            "actorType": {
+                                "parentType": "NoTx",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Reserve Entity If Required",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -88,10 +113,10 @@
                                     {
                                         "name": "reserveInd",
                                         "schema": {
-                                            "type": "boolean"
+                                        "type": "boolean"
                                         }
                                     }
-                                ],
+								],
                                 "outputs": []
                             }
                         }
@@ -361,10 +386,10 @@
                                     {
                                         "name": "reserveInd",
                                         "schema": {
-                                            "type": "boolean"
+                                        "type": "boolean"
                                         }
                                     }
-                                ],
+								],
                                 "outputs": []
                             }
                         }
