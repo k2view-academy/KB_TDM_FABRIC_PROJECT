@@ -62,18 +62,11 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CASE_ID": {
-                                                        "type": "Any"
-                                                    },
-                                                    "NOTE_ID": {
-                                                        "type": "Any"
-                                                    },
-                                                    "NOTE_DATE": {
-                                                        "type": "Any"
-                                                    },
-                                                    "NOTE_TEXT": {
-                                                        "type": "Any"
-                                                    }
+                                                    "CASE_ID": {"type": "Any"},
+													"NOTE_ID": {"type": "Any"},
+													"NOTE_DATE": {"type": "Any"},
+													"NOTE_TEXT": {"type": "Any"}
+													
                                                 }
                                             }
                                         }
@@ -99,11 +92,13 @@
         {
             "stages": [
                 {
+					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",
+					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
                     "actors": [
+						
                         {
                             "name": "Transformation Error Handler",
                             "onError": "result",
@@ -130,111 +125,59 @@
                                 "outputs": []
                             }
                         },
-                        {
+						{
                             "name": "Get Sequence for case_id",
                             "actorType": {
                                 "parentType": "CASE_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "case_note"
                                     },
                                     {
                                         "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "case_id"
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        },
-                        {
+							}
+                         }, 
+						{
                             "name": "Get Sequence for note_id",
                             "actorType": {
                                 "parentType": "NOTE_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "case_note"
                                     },
                                     {
                                         "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "note_id"
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "case_note.csv"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "FabricSetRead1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
+
                 }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Concat1",
-                            "actorType": {
-                                "parentType": "Concat",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": "_"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "CsvBuilder1",
-                            "actorType": {
-                                "parentType": "CsvBuilder",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
+				
             ]
         },
         {
@@ -243,21 +186,7 @@
                     "name": "Transformation 2",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FileWrite1",
-                            "actorType": {
-                                "parentType": "FileWrite",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM_APIDOC_JSON"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -294,6 +223,7 @@
                                 "outputs": []
                             }
                         },
+						
                         {
                             "name": "Load CASE_NOTE Table",
                             "actorType": {
@@ -303,7 +233,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-                                    {
+									{
                                         "name": "schema",
                                         "const": "public"
                                     },
@@ -315,34 +245,36 @@
                                         "name": "fields",
                                         "const": [
                                             "case_id",
-                                            "note_id",
-                                            "note_date",
-                                            "note_text"
+											"note_id",
+											"note_date",
+											"note_text"
+											
                                         ]
                                     },
-                                    {
+									{
                                         "name": "keys",
                                         "const": [
                                             "note_id"
+											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-                                    {
+									{
                                         "name": "case_id",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "note_id",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "note_date",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "note_text",
                                         "schema": {}
                                     }
@@ -430,7 +362,7 @@
             },
             "iterate": "Iterate"
         },
-        {
+		{
             "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
@@ -446,6 +378,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Sequence for case_id",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CASE_NOTE Table",
+                "name": "case_id"
+            }
+        },
+		{
+            "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
@@ -460,27 +402,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "CsvBuilder1",
-                "name": "maps"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Get Sequence for case_id",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load CASE_NOTE Table",
-                "name": "case_id"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Sequence for note_id",
                 "name": "NewSeqValue"
             },
@@ -489,51 +410,11 @@
                 "name": "note_id"
             }
         },
+		
+		
         {
             "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Concat1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "path"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CsvBuilder1",
-                "name": "csv"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Read Stats",
+               "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -544,11 +425,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "syncMode"
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "syncMode"
+                "name": "luName"
             }
         },
         {
@@ -563,12 +444,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
+                "actor": "flowArgs",							 
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "luName"
+                "name": "syncMode"
             }
         }
     ]

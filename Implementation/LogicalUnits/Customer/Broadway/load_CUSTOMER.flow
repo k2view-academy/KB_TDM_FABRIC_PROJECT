@@ -146,42 +146,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "customer.csv"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "FabricSetRead1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -190,27 +154,22 @@
         {
             "stages": [
                 {
-                    "name": "Transformation 2",
+                    "name": "Masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Concat1",
+                            "name": "FirstNames1",
                             "actorType": {
-                                "parentType": "Concat",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": "_"
-                                    }
-                                ],
+                                "parentType": "FirstNames",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "CsvBuilder1",
+                            "name": "LastNames1",
                             "actorType": {
-                                "parentType": "CsvBuilder",
+                                "parentType": "LastNames",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -222,18 +181,56 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Masking2",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "FileWrite1",
+                            "name": "MaskFirstName",
                             "actorType": {
-                                "parentType": "FileWrite",
+                                "parentType": "MaskingWithCollection",
                                 "inputs": [
                                     {
+                                        "name": "maskingId",
+                                        "const": "maskFirstName"
+                                    },
+                                    {
                                         "name": "interface",
-                                        "const": "TDM_APIDOC_JSON"
+                                        "const": "DB_CASSANDRA"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MaskLastName",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskLastName"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MaskingSSN1",
+                            "actorType": {
+                                "parentType": "MaskingSSN",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskSSN"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
                                     }
                                 ],
                                 "outputs": []
@@ -333,9 +330,7 @@
                                     },
                                     {
                                         "name": "customer_id",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "schema": {}
                                     },
                                     {
                                         "name": "ssn",
@@ -453,10 +448,41 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CsvBuilder1",
-                "name": "maps"
+                "actor": "MaskingSSN1",
+                "name": "value"
             },
-            "iterate": "Iterate"
+            "iterate": "Iterate",
+            "path": [
+                "SSN"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskFirstName",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "FIRST_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskLastName",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "LAST_NAME"
+            ]
         },
         {
             "leftPort": {
@@ -480,44 +506,52 @@
         },
         {
             "leftPort": {
-                "actor": "Const1",
-                "name": "value"
+                "actor": "FirstNames1",
+                "name": "strings"
             },
             "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Concat1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "path"
+                "actor": "MaskFirstName",
+                "name": "collection"
             }
         },
         {
             "leftPort": {
-                "actor": "CsvBuilder1",
-                "name": "csv"
+                "actor": "LastNames1",
+                "name": "strings"
             },
             "rightPort": {
-                "actor": "FileWrite1",
-                "name": "stream"
+                "actor": "MaskLastName",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskFirstName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load CUSTOMER Table",
+                "name": "first_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskLastName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load CUSTOMER Table",
+                "name": "last_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingSSN1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load CUSTOMER Table",
+                "name": "ssn"
             }
         },
         {

@@ -62,18 +62,11 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {
-                                                        "type": "Any"
-                                                    },
-                                                    "ACTIVITY_ID": {
-                                                        "type": "Any"
-                                                    },
-                                                    "ACTIVITY_DATE": {
-                                                        "type": "Any"
-                                                    },
-                                                    "ACTIVITY_NOTE": {
-                                                        "type": "Any"
-                                                    }
+                                                    "CUSTOMER_ID": {"type": "Any"},
+													"ACTIVITY_ID": {"type": "Any"},
+													"ACTIVITY_DATE": {"type": "Any"},
+													"ACTIVITY_NOTE": {"type": "Any"}
+													
                                                 }
                                             }
                                         }
@@ -99,11 +92,13 @@
         {
             "stages": [
                 {
+					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",
+					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
                     "actors": [
+						
                         {
                             "name": "Transformation Error Handler",
                             "onError": "result",
@@ -130,129 +125,59 @@
                                 "outputs": []
                             }
                         },
-                        {
+						{
                             "name": "Get Sequence for activity_id",
                             "actorType": {
                                 "parentType": "ACTIVITY_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "activity"
                                     },
                                     {
                                         "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "activity_id"
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        },
-                        {
+							}
+                         }, 
+						{
                             "name": "Get Sequence for customer_id",
                             "actorType": {
                                 "parentType": "CUSTOMER_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "activity"
                                     },
                                     {
                                         "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": "customer_id"
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "activity.csv"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Test the external iid: ${0}"
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "FabricSetRead1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
+
                 }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "CsvBuilder1",
-                            "actorType": {
-                                "parentType": "CsvBuilder",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Concat1",
-                            "actorType": {
-                                "parentType": "Concat",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": "_"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
+				
             ]
         },
         {
@@ -261,21 +186,7 @@
                     "name": "Transformation 2",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FileWrite1",
-                            "actorType": {
-                                "parentType": "FileWrite",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM_APIDOC_JSON"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -312,6 +223,7 @@
                                 "outputs": []
                             }
                         },
+						
                         {
                             "name": "Load ACTIVITY Table",
                             "actorType": {
@@ -321,7 +233,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-                                    {
+									{
                                         "name": "schema",
                                         "const": "public"
                                     },
@@ -333,38 +245,36 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-                                            "activity_id",
-                                            "activity_date",
-                                            "activity_note"
+											"activity_id",
+											"activity_date",
+											"activity_note"
+											
                                         ]
                                     },
-                                    {
+									{
                                         "name": "keys",
                                         "const": [
                                             "activity_id"
+											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-                                    {
+									{
                                         "name": "customer_id",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "schema": {}
                                     },
-                                    {
+									{
                                         "name": "activity_id",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "schema": {}
                                     },
-                                    {
+									{
                                         "name": "activity_date",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "activity_note",
                                         "schema": {}
                                     }
@@ -452,7 +362,7 @@
             },
             "iterate": "Iterate"
         },
-        {
+		{
             "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
@@ -468,6 +378,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Sequence for activity_id",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load ACTIVITY Table",
+                "name": "activity_id"
+            }
+        },
+		{
+            "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
@@ -482,38 +402,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Transformation Error Handler",
-                "name": "error"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "CsvBuilder1",
-                "name": "maps"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Get Sequence for activity_id",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load ACTIVITY Table",
-                "name": "activity_id"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Sequence for customer_id",
                 "name": "NewSeqValue"
             },
@@ -522,51 +410,11 @@
                 "name": "customer_id"
             }
         },
+		
+		
         {
             "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Concat1",
-                "name": "elements"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "CsvBuilder1",
-                "name": "csv"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Concat1",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "FileWrite1",
-                "name": "path"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Read Stats",
+               "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -577,26 +425,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "syncMode"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "syncMode"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Initiate TDM Load",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "luName"
             },
             "rightPort": {
@@ -610,8 +438,18 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "Logger1",
+                "actor": "Initiate TDM Load",
                 "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",							 
+                "name": "syncMode"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Load",
+                "name": "syncMode"
             }
         }
     ]
