@@ -8,14 +8,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Key Space Name",
+                            "name": "Get TDM LU Key Space",
                             "actorType": {
-                                "parentType": "FabricSetRead",
+                                "parentType": "LuKeyspace",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "REF_KEYSPACE_NAME",
-                                        "isDefault": false
+                                        "name": "luType",
+                                        "const": "TDM"
                                     }
                                 ],
                                 "outputs": []
@@ -160,8 +159,8 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get Key Space Name",
-                "name": "result"
+                "actor": "Get TDM LU Key Space",
+                "name": "keyspace"
             },
             "rightPort": {
                 "actor": "Get A table Record",

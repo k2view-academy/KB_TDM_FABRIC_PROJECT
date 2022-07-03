@@ -43,9 +43,9 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String MASK_FLAG = "0";
 	@category("TDM")
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC_local_debug";
+	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
 	@category("TDM")
-	public static String TDM_TAR_ENV_NAME = "TAR_local_debug";
+	public static String TDM_TAR_ENV_NAME = "TAR";
 	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")
@@ -80,25 +80,25 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String GET_RESERVED_ENTITIES_LIMIT = "0";
 
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String USER_NAME = "admin";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String USER_FABRIC_ROLES = "admin";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String USER_PERMISSION_GROUP = "admin";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String TDM_RESERVE_IND = "false";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String RESERVE_RETENTION_PERIOD_TYPE = "Days";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String RESERVE_RETENTION_PERIOD_VALUE = "10";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String BE_ID = "0";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String TASK_TYPE = "EXTRACT";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String enable_masking = "false";
-	@category("TDM")
+	@category("TDM_DEBUG")
 	public static String enable_sequences = "false";
 
 	@category("TDM")

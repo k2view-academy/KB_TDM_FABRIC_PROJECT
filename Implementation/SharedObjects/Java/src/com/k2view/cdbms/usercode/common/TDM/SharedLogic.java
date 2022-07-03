@@ -4,7 +4,7 @@
 
 package com.k2view.cdbms.usercode.common.TDM;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 import com.k2view.cdbms.exceptions.InstanceNotFoundException;
 import com.k2view.cdbms.lut.DbInterface;
 import com.k2view.cdbms.shared.Db;
@@ -14,6 +14,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
 import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.Json;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
@@ -1031,14 +1032,13 @@ public class SharedLogic {
 
 	@out(name = "refDetailedStats", type = Object.class, desc = "")
 	public static Object fnGetReferenceDetailedData(String refTaskExecutionId) throws Exception {
-		//ResultSetWrapper rs =null;
 		Db.Rows rows = null;
 		
 		// Calculate the estimated remaining time for running tasks using the following formula:
 		// ((Current time (UTC) – start_time (UTC) )/ number_of_processed_records) * (number_of_records_to_process- number_of_processed_records)
 				
 		String selectDetailedRefTablesStats = "SELECT rt.lu_name, es.ref_table_name, es.execution_status, es.start_time, es.end_time, " +
-			"CASE WHEN execution_status = 'running' THEN " +
+			"CASE WHEN execution_status = 'running' and number_of_processed_records > 0 THEN " +
 			"to_char(((CURRENT_TIMESTAMP AT TIME ZONE 'UTC' - start_time )/number_of_processed_records) * " +
 			"(number_of_records_to_process - number_of_processed_records), 'HH24:MI:SS') " + 
 			"ELSE '0' END estimated_remaining_duration, number_of_records_to_process, " +
@@ -1046,7 +1046,6 @@ public class SharedLogic {
 			"FROM TASK_REF_EXE_STATS es, task_ref_tables rt where task_execution_id = ? and es.task_id = rt.task_id " +
 			"and es.task_ref_table_id = rt.task_ref_table_id"; 
 			
-			//rs = DBQuery("TDM", selectDetailedRefTablesStats, new Object[]{refTaskExecutionId});
 			rows = db("TDM").fetch(selectDetailedRefTablesStats, refTaskExecutionId);
 		
 		return rows;
@@ -1241,7 +1240,11 @@ public class SharedLogic {
 				//log.info("fnGetRefTableData - Found table in translation");
 				schemaName = valMap.get("schema_name");
 				interfaceName = valMap.get("interface_name");
-				targetRefTableName =  valMap.get("target_ref_table_name");
+				if (valMap.get("target_ref_table_name") != null && !Util.isEmpty(valMap.get("target_ref_table_name"))) {
+					targetRefTableName =  valMap.get("target_ref_table_name");
+				} else {
+					targetRefTableName = trnTableName;
+				}
 				targetSchemaName = valMap.get("target_schema_name");
 				targetInterfaceName = valMap.get("target_interface_name");
 				targetTablePK = valMap.get("table_pk_list");
@@ -1300,8 +1303,10 @@ public class SharedLogic {
 
 	public static void setGlobals(String globals) throws Exception {
 		if (!Util.isEmpty(globals)) {
-			Gson gson = new Gson();
-			Map statusData = gson.fromJson(globals, Map.class);
+			// Replace gson with K2view Json
+			//Gson gson = new Gson();
+			//Map statusData = gson.fromJson(globals, Map.class);
+			Map statusData = Json.get().fromJson(globals, Map.class);
 			if (!(statusData.isEmpty())) {
 				statusData.forEach((key, value) -> {
 					try {
@@ -1418,6 +1423,16 @@ public class SharedLogic {
 		result.put("ErrorMessage", ErrorMessage);
 		
 		return result;
+	}
+	@out(name = "result", type = String.class, desc = "")
+	public static String fnGetRefrenceTables() throws Exception {
+		String trnTableName = "";
+		Map<String,Map<String, String>> trnRefListValues = getTranslationsData("trnRefList");
+		for(String index: trnRefListValues.keySet()){
+			Map<String, String> valMap = trnRefListValues.get(index);
+			trnTableName = valMap.get("reference_table_name");
+		}
+		return trnTableName ;
 	}
 
 }

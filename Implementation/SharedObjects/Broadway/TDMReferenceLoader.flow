@@ -126,14 +126,13 @@
                             }
                         },
                         {
-                            "name": "Get Key Space Name",
+                            "name": "Get TDM LU Key Space",
                             "actorType": {
-                                "parentType": "FabricSetRead",
+                                "parentType": "LuKeyspace",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "REF_KEYSPACE_NAME",
-                                        "isDefault": false
+                                        "name": "luType",
+                                        "const": "TDM"
                                     }
                                 ],
                                 "outputs": []
@@ -1406,8 +1405,8 @@
         },
         {
             "leftPort": {
-                "actor": "Get Key Space Name",
-                "name": "result"
+                "actor": "Get TDM LU Key Space",
+                "name": "keyspace"
             },
             "rightPort": {
                 "actor": "Get Ref Table Count",
@@ -1416,8 +1415,8 @@
         },
         {
             "leftPort": {
-                "actor": "Get Key Space Name",
-                "name": "result"
+                "actor": "Get TDM LU Key Space",
+                "name": "keyspace"
             },
             "rightPort": {
                 "actor": "Get Data From Cassandra",

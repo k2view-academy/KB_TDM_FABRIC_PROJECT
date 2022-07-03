@@ -1,6 +1,6 @@
 package com.k2view.cdbms.usercode.common.TDM;
 
-import com.google.gson.Gson;
+//import com.google.gson.Gson;
 import com.k2view.cdbms.exceptions.InstanceNotFoundException;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.ResultSetWrapper;
@@ -217,9 +217,9 @@ public class TdmSharedUtils {
             "INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv +
             "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList +
             ") AND b.lu_type_1 IN("+ childrenList +") " +
-            " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = a.lu_type_2 AND lu_parent_name = a.lu_type_1)) " +
+             " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = a.lu_type_2 AND lu_parent_name = a.lu_type_1)) " +
             " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = b.lu_type_2 AND lu_parent_name = b.lu_type_1)) ) " +
-            " SELECT * FROM ( " +
+			" SELECT * FROM ( " +
             " SELECT root_id AS " + rootLuStrL + "_root_id, (json_populate_recordset(null::\"" + jsonTypeName +"\", json_agg(path))).*" +
             " FROM (" +
             " SELECT root_id, json_append((replace(string_agg(p1, ', '), '}, {', ','))::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path " + 
@@ -1085,8 +1085,10 @@ public class TdmSharedUtils {
 			//log.info("getTaskExecOverrideAttrs - overrideAttrStr: " + overrideAttrStr);
 			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
 			if (!"".equals(overrideAttrStr)) {
-				Gson gson = new Gson();
-				overrideAttrubtes = gson.fromJson(overrideAttrStr, mapType);
+				// Replace gson with K2view Json
+				//Gson gson = new Gson();
+				//overrideAttrubtes = gson.fromJson(overrideAttrStr, mapType);
+				overrideAttrubtes = Json.get().fromJson(overrideAttrStr, mapType);
 			}
 		} catch (SQLException e) {
 			log.error("Failed to get override attributes for task_execution_id: " + taskExecutionId);

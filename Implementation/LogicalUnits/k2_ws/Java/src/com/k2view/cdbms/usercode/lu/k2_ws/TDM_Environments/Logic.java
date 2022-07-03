@@ -1068,9 +1068,9 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT * FROM \"" + schema + "\".tdm_env_globals " +
-					"WHERE environment_id = " + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			String sql = "SELECT * FROM tdm_env_globals " +
+					"WHERE environment_id = ?";
+			Db.Rows rows = db("TDM").fetch(sql, envId);
 		
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -1078,7 +1078,7 @@ public class Logic extends WebServiceUserCode {
 				String luName = "ALL";
 				String globalName = "" + resultSet.getString("global_name");
 				if (globalName.contains(".")) {
-					String[] arr = globalName.split(".");
+					String[] arr = globalName.split("\\.");
 					luName = arr[0];
 					globalName = arr[1];
 				}

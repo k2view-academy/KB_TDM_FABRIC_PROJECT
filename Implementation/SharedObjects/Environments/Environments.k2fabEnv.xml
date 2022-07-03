@@ -282,11 +282,11 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.4">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
-              <Value>C:\k2view\TDM_APIDOC</Value>
+              <Value>/usr/local/k2view/CSV_FILES</Value>
             </Property>
             <Property name="FilesFilter">
               <Value />
@@ -578,7 +578,7 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.4">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
@@ -874,11 +874,11 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.4">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
-              <Value>C:\k2view\TDM_APIDOC</Value>
+              <Value>/usr/local/k2view/CSV_FILES</Value>
             </Property>
             <Property name="FilesFilter">
               <Value />
@@ -1170,7 +1170,7 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.4">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">

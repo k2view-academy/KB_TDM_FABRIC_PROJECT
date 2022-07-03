@@ -39,7 +39,7 @@ public class Logic extends UserCode {
 
 		@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,String> fnMExtractEntities(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode, String selectionMethod, Long luId) throws Exception {
-		if (syncMode != "ON") {
+		if (!"ON".equalsIgnoreCase(syncMode)) {
 			fabric().execute("SET SYNC " + syncMode);
 		}
 	

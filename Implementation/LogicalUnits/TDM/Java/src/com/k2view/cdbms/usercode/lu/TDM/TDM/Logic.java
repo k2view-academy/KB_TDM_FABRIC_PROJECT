@@ -4,9 +4,9 @@
 
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
+//import com.google.gson.Gson;
+//import com.google.gson.GsonBuilder;
+//import com.google.gson.annotations.SerializedName;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.Utils;
 import com.k2view.cdbms.shared.user.UserCode;
@@ -552,7 +552,6 @@ public class Logic extends UserCode {
 		
 		try {
 		
-		//countObj = DBSelectValue(iface, "Select count(*) from " + schemaName + "." + tableName, new Object[]{});
 			countObj = db(iface).fetch("Select count(*) from " + schemaName + "." + tableName).firstValue();
 		//if(countObj!= null)	
 			//log.info("tdmCopyRefTablesForTDM - number of records for table: " + schemaName+ "." + tableName + " and interface: " + iface + " is: " + countObj.toString());	
@@ -613,6 +612,10 @@ public class Logic extends UserCode {
 				table = "k2view_tdm_" + clusterID + "." + tableName;
 			}
 
+
+			// TDM 7.5.1 - 29-June-22 - Create the Table in Cassandra if it does not exist yet
+			createCassandraTable(iface, schemaName, tableName);
+			
 			// Tali - 9-MAY-22- fix the insert statement and insert prepare- insert the entire record as a JSON into the new field: rec_data
 			StringBuilder insertStmt = new StringBuilder("INSERT INTO ").append(table).append(" ( source_env_name, tdm_task_execution_id, tdm_rec_id, rec_data ");
 			StringBuilder insertPrepare = new StringBuilder();
@@ -732,9 +735,10 @@ public class Logic extends UserCode {
 				}
 
 				// Tali- 9-May-22- build a JSON from the map and populate it in the row[] out of the for loop
-				GsonBuilder gsonMapBuilder = new GsonBuilder();
-				Gson gsonObject = gsonMapBuilder.serializeNulls().create();
-				JSONObject = gsonObject.toJson(dataRec);
+				//GsonBuilder gsonMapBuilder = new GsonBuilder();
+				//Gson gsonObject = gsonMapBuilder.serializeNulls().create();
+				//JSONObject = gsonObject.toJson(dataRec);
+				JSONObject = Json.get(Json.Feature.SERIALIZE_NULLS).toJson(dataRec);
 				row[3] = JSONObject;
 
                 loader.submit(insertStmt.toString(), row);
@@ -793,32 +797,37 @@ public class Logic extends UserCode {
 
 			if (val instanceof K2TimestampWithTimeZone) {
 				//log.info("val " + val + "instanceof K2TimestampWithTimeZone ");
-				return ((Date) val).getTime();
+				//return ((Date) val).getTime();
 				/*return StringUtils.isBlank(TypeConversion.DATETIME_WITH_TIMEZONE_FORMAT) ? val.toString()
 						:((K2TimestampWithTimeZone) val).formatWithTZ(TypeConversion.DATETIME_WITH_TIMEZONE_FORMAT);*/
+				return ((Date) val).toString();
 			}
 
 			if (val instanceof java.sql.Timestamp) {
-				return ((Date) val).getTime();
+				//return ((Date) val).getTime();
+				return ((Date) val).toString();
 			}
 
 			if (val instanceof java.sql.Date) {
-				return ((Date) val).getTime();
+				//return ((Date) val).getTime();
 				/*return StringUtils.isBlank(DATE_FORMAT) ? val.toString()
 						: new SimpleDateFormat(DATE_FORMAT).format((java.sql.Date) val);*/
+				return ((Date) val).toString();
 			}
 
 			if (val instanceof java.sql.Time) {
-				return ((Date) val).getTime();
+				//return ((Date) val).getTime();
 				/*return StringUtils.isBlank(TIME_FORMAT) ? val.toString()
 						: new SimpleDateFormat(TIME_FORMAT).format((java.sql.Time) val);*/
+				return ((Date) val).toString();
 			}
 
 			if (val instanceof java.util.Date) {
 				//log.info("val " + val + " instanceof java.util.Date");
-				return ((Date) val).getTime();
+				//return ((Date) val).getTime();
 				/*return StringUtils.isBlank(DATETIME_FORMAT) ? val.toString()
 						: new SimpleDateFormat(DATETIME_FORMAT).format((java.util.Date) val);*/
+				return ((Date) val).toString();
 			}
 
 			if (val instanceof Blob) {
@@ -1324,29 +1333,8 @@ public class Logic extends UserCode {
 
 	private static void createCassandraTable(String iface, String schemaName, String tableName) throws SQLException {
 
-		try  (Connection conn = getConnection(iface);
-				Connection cassandraConn = getConnection(DBCASSANDRA);)
+		try  (Connection cassandraConn = getConnection(DBCASSANDRA);)
 		{
-
-			Statement select = conn.createStatement();
-
-			ResultSet refTableRS = select.executeQuery("Select * from " + schemaName + "." + tableName + " where 1 = 0");
-
-			ResultSetMetaData metaData = refTableRS.getMetaData();
-			DatabaseMetaData dbmd = conn.getMetaData();
-			
-			// Tali- Fix- send the schema name as parameter to getPrimaryKeys
-			ResultSet pk = dbmd.getPrimaryKeys(null, schemaName, tableName);
-			//ResultSet pk = dbmd.getPrimaryKeys(null, null, tableName);
-			
-			Statement selectTableInfo = cassandraConn.createStatement();
-			ResultSet tableInfoRes = null;
-
-			StringBuilder pkList = new StringBuilder();
-			while (pk.next()) {
-				pkList.append(',').append((pk.getString("COLUMN_NAME")).toLowerCase());
-			}
-			//log.info("pkList: " + pkList);
 
 			String table = "";
 			//TDM 5.1, replacing dbFabtic with fabric as Fabric 5.3 expectations
@@ -1358,95 +1346,20 @@ public class Logic extends UserCode {
 				table = "k2view_tdm_" + clusterID + "." + tableName.toLowerCase();
 			}
 
-
-			if (clusterID == null || clusterID.isEmpty()) {
-				tableInfoRes = selectTableInfo.executeQuery("SELECT * FROM system_schema.columns WHERE keyspace_name = 'k2view_tdm' AND table_name = '" + tableName.toLowerCase() + "';");
-			} else {
-				tableInfoRes = selectTableInfo.executeQuery("SELECT * FROM system_schema.columns WHERE keyspace_name = 'k2view_tdm_" + clusterID + "' AND table_name = '" + tableName.toLowerCase() + "';");
-			}
-
-			// TALI- 9-MAY-22- fix - comment the original columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field
-			/*
-			Set<String> originColumns = new HashSet<>();
-			while (tableInfoRes.next()) {
-				//log.info("Adding Original Column: " + tableInfoRes.getString("column_name"));
-				originColumns.add(tableInfoRes.getString("column_name"));
-			}
-
-			 */
-
+			// TDM 7.5.1 - 29-June-22 - The table will be created only in case it did not exists before, the compare of table structure in source and Cassandra is disabled.
 
 			// TALI- 9-MAY-22- fix - comment the new columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field. Update the create statement to include the new field: rec_data
 			StringBuilder createStmt = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(table).append(" ( source_env_name text, tdm_task_execution_id text, tdm_rec_id text, rec_data text, ");
-/*
-			Set<String> newColumns = new HashSet<>();
-			
-			// Fix- add rec_id field. This field will be added to the PK to avoid an override of the same record if the source table does not have its own PK fields
-			// TDM 7.2 - rename field rec_id to tdm_rec_id to support cases where the reference table includes field named rec_id
-			StringBuilder createStmt = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(table).append(" ( source_env_name text, tdm_task_execution_id text, tdm_rec_id text, ");
-
-			//Add the control fields, otherwise the structure will always be different
-			newColumns.add("source_env_name");
-			newColumns.add("tdm_task_execution_id");
-			newColumns.add("tdm_rec_id");
-
-			int colsCount = metaData.getColumnCount();
-			//log.info("colsCount: " + colsCount);
-			//log.info("first Col Name: " + metaData.getColumnName(0));
-			for (int i = 1; i <= colsCount; i++) {
-				String colType;
-				colType = convertToCassandraType(metaData.getColumnTypeName(i).toLowerCase());
-				String colName = metaData.getColumnName(i);
-				//log.info("colName: " + colName);
-				newColumns.add(colName.toLowerCase());
-				createStmt.append(colName.toLowerCase()).append(" ").append(colType);
-				if (i < colsCount) {
-					createStmt.append(',');
-				}
-			}
-
- */
 
 			// Tali - 9-May-22- remove the append of the source PK fields to the Cassandra PK fields
-			//createStmt.append(" , PRIMARY KEY (source_env_name, tdm_task_execution_id, tdm_rec_id ").append(pkList).append("));");
 			createStmt.append(" PRIMARY KEY (source_env_name, tdm_task_execution_id, tdm_rec_id ))");
-
-			StringBuilder updateStatement = new StringBuilder();
-			updateStatement.append("update task_ref_exe_stats set execution_status = 'invalid', updated_by = 'createCassandraTable'");
-			updateStatement.append(" where lower(ref_table_name) = lower('");
-			updateStatement.append(tableName);
-			updateStatement.append("') and task_execution_id in (select task_execution_id from task_execution_list");
-			updateStatement.append(" where (version_expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC' or version_expiration_date is null))");
 
 			//log.info("createStmt: " + createStmt.toString());
 			//log.info("updateStatement: " + updateStatement.toString() + ", size of existing table: " + originColumns.size() + ", size of new table: " + newColumns.size());
 
-			//Compare the columns list only if the table already exists in DB
-
 			// TALI- 9-MAY-22- fix - comment the original columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field
 			db(DBCASSANDRA).execute("" + createStmt);
-			/*
-			if ((originColumns.size() > 0) && (!originColumns.equals(newColumns))) {
-				//log.info("---- The table" + tableName.toLowerCase() + " exists, but the schema was changed ---");
-
-				// Update the task_execution_list and expire the entries related to the rebuilt reference table
-				//log.info("Updating the task_ref_exe_stats table");
-				db("TDM").execute("" + updateStatement);
-				//log.info("Dropping the table");
-				db(DBCASSANDRA).execute("DROP TABLE " + table);
-				//log.info("Creating the table after dropping");
-				db(DBCASSANDRA).execute("" + createStmt);
-
-			} else if (originColumns.size() == 0) {
-				//log.info("Creating the table as it does not exist");
-				db(DBCASSANDRA).execute("" + createStmt);
-			}
-			*/
-			select.close();
-			pk.close();
-			selectTableInfo.close();
-			tableInfoRes.close();
-			refTableRS.close();
+			
 		} catch (Exception e) {
 			log.error("Table: " + schemaName + "." + tableName + " at Interface: " + iface + " failed with Err Message: " + e.getMessage());
 		}

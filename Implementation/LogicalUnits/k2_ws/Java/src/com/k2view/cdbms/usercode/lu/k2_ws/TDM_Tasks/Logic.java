@@ -5255,20 +5255,22 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"schema\": {\r\n" +
-			"        \"type\": \"string\"\r\n" +
-			"      },\r\n" +
-			"      \"name\": \"MAIN_TABLE_NAME\",\r\n" +
-			"\t  \"description\": \"\",\r\n" +
-			"      \"type\": \"string\"\r\n" +
+			"      \"name\": \"luName\",\r\n" +
+			"      \"description\": \"\",\r\n" +
+			"      \"type\": \"array\",\r\n" +
+			"      \"mandatory\": false\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"schema\": {\r\n" +
-			"        \"type\": \"string\"\r\n" +
-			"      },\r\n" +
-			"      \"name\": \"MAIN_FIELD_NAME\",\r\n" +
-			"\t  \"description\": \"\",\r\n" +
-			"      \"type\": \"string\"\r\n" +
+			"      \"name\": \"syncMode\",\r\n" +
+			"      \"description\": \"\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"name\": \"iid\",\r\n" +
+			"      \"description\": \"\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": true\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -5290,7 +5292,7 @@ public class Logic extends WebServiceUserCode {
 					HashMap<String, Object> map = new HashMap<>();
 					map.put("name", row.get("name"));
 					map.put("type", row.get("type"));
-					map.put("schema", row.get("schema"));
+					//map.put("schema", row.get("schema"));
 					map.put("mandatory", row.get("mandatory"));
 					map.put("description", "");
 					result.add(map);

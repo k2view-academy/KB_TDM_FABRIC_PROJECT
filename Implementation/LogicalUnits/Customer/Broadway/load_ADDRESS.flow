@@ -62,15 +62,30 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {"type": "Any"},
-													"ADDRESS_ID": {"type": "Any"},
-													"STREET_ADDRESS_1": {"type": "Any"},
-													"STREET_ADDRESS_2": {"type": "Any"},
-													"CITY": {"type": "Any"},
-													"ZIP": {"type": "Any"},
-													"STATE": {"type": "Any"},
-													"COUNTRY": {"type": "Any"}
-													
+                                                    "CUSTOMER_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ADDRESS_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "STREET_ADDRESS_1": {
+                                                        "type": "Any"
+                                                    },
+                                                    "STREET_ADDRESS_2": {
+                                                        "type": "Any"
+                                                    },
+                                                    "CITY": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ZIP": {
+                                                        "type": "Any"
+                                                    },
+                                                    "STATE": {
+                                                        "type": "Any"
+                                                    },
+                                                    "COUNTRY": {
+                                                        "type": "Any"
+                                                    }
                                                 }
                                             }
                                         }
@@ -96,13 +111,11 @@
         {
             "stages": [
                 {
-					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
+                    "remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",
                     "actors": [
-						
                         {
                             "name": "Transformation Error Handler",
                             "onError": "result",
@@ -129,82 +142,127 @@
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "Get Sequence for customer_id",
                             "actorType": {
                                 "parentType": "CUSTOMER_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "address"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "customer_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         }, 
-						{
+                            }
+                        },
+                        {
                             "name": "Get Sequence for address_id",
                             "actorType": {
                                 "parentType": "ADDRESS_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "address"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "address_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         }, 
-						{
+                            }
+                        },
+                        {
                             "name": "Get Sequence for address_id",
                             "actorType": {
                                 "parentType": "ADDRESS_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "address"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "address_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         } 
-						
-
-						
+                            }
+                        },
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "address.csv"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
                     ]
-
                 }
-				
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Concat1",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "_"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CsvBuilder1",
+                            "actorType": {
+                                "parentType": "CsvBuilder",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
             ]
         },
         {
@@ -213,7 +271,21 @@
                     "name": "Transformation 2",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "FileWrite1",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM_APIDOC_JSON"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -250,7 +322,6 @@
                                 "outputs": []
                             }
                         },
-						
                         {
                             "name": "Load ADDRESS Table",
                             "actorType": {
@@ -260,7 +331,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "public"
                                     },
@@ -272,56 +343,54 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-											"address_id",
-											"street_address_1",
-											"street_address_2",
-											"city",
-											"zip",
-											"state",
-											"country"
-											
+                                            "address_id",
+                                            "street_address_1",
+                                            "street_address_2",
+                                            "city",
+                                            "zip",
+                                            "state",
+                                            "country"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "address_id"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "customer_id",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "address_id",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "street_address_1",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "street_address_2",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "city",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "zip",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "state",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "country",
                                         "schema": {}
                                     }
@@ -409,7 +478,7 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
@@ -425,6 +494,31 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Sequence for address_id",
+                "name": "OriginalSeqValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "ADDRESS_ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CsvBuilder1",
+                "name": "maps"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
                 "actor": "Get Sequence for customer_id",
                 "name": "NewSeqValue"
             },
@@ -433,20 +527,6 @@
                 "name": "customer_id"
             }
         },
-		{
-            "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Sequence for address_id",
-                "name": "OriginalSeqValue"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "ADDRESS_ID"
-            ]
-        },
         {
             "leftPort": {
                 "actor": "Get Sequence for address_id",
@@ -457,35 +537,51 @@
                 "name": "address_id"
             }
         },
-		{
+        {
             "leftPort": {
-                "actor": "Get Table Data",
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Get Sequence for address_id",
-                "name": "OriginalSeqValue"
+                "actor": "Concat1",
+                "name": "elements"
             },
-            "iterate": "Iterate",
-            "path": [
-                "ADDRESS_ID"
-            ]
+            "arrayPosition": 0
         },
         {
             "leftPort": {
-                "actor": "Get Sequence for address_id",
-                "name": "NewSeqValue"
+                "actor": "Concat1",
+                "name": "string"
             },
             "rightPort": {
-                "actor": "Load ADDRESS Table",
-                "name": "address_id"
+                "actor": "FileWrite1",
+                "name": "path"
             }
         },
-		
-		
         {
             "leftPort": {
-               "actor": "Read Stats",
+                "actor": "CsvBuilder1",
+                "name": "csv"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -496,11 +592,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "luName"
+                "name": "syncMode"
             }
         },
         {
@@ -515,12 +611,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
-                "name": "syncMode"
+                "actor": "flowArgs",
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "syncMode"
+                "name": "luName"
             }
         }
     ]

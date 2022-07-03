@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 
 import com.github.jknack.handlebars.*;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.Globals;
 import com.k2view.cdbms.shared.user.UserCode;

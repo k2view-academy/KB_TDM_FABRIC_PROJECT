@@ -3,13 +3,18 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
-      <NodeName>getTableSequenceMapping.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.flow</RelativePath>
+      <NodeName>checkIfFieldSequential.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>getTableSequenceMapping.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>getTableSequenceMapping.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getTableSequenceMapping.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -193,11 +198,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>CustomLogicFlows.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>ReserveEntity.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\ReserveEntity.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
@@ -250,11 +250,6 @@
     <ProjectItemProp>
       <NodeName>CheckIfFlowExists.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>checkIfFieldSequential.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -446,6 +441,11 @@
       <NodeName>TDMTargetTablesNames.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\TDMTargetTablesNames.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CustomLogicFlows.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CustomLogicFlows.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>loadLuExternalEntityListTable.flow</NodeName>
