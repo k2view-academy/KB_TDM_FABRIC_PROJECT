@@ -315,6 +315,22 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "ToBool1",
+                            "actorType": {
+                                "parentType": "ToBool",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ToBool2",
+                            "actorType": {
+                                "parentType": "ToBool",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -518,8 +534,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Check if Instance Was Not Found In Source",
-                "name": "deleteBeforeLoad"
+                "actor": "ToBool1",
+                "name": "value"
             }
         },
         {
@@ -528,8 +544,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Check if Instance Was Not Found In Source",
-                "name": "isChildLu"
+                "actor": "ToBool2",
+                "name": "value"
             }
         },
         {
@@ -595,22 +611,22 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
+                "actor": "ToBool1",
+                "name": "bool"
             },
             "rightPort": {
-                "actor": "Delete Root Table",
-                "name": "table"
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "deleteBeforeLoad"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "{{KEY}}"
+                "actor": "ToBool2",
+                "name": "bool"
             },
             "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "{{KEY}}"
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "isChildLu"
             }
         },
         {

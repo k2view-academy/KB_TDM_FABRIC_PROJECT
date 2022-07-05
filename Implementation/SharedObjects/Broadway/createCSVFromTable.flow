@@ -154,6 +154,33 @@
                                                     },
                                                     "last_name": {
                                                         "type": "string"
+                                                    },
+                                                    "act_cust_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "activity_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "activity_date": {
+                                                        "type": "date"
+                                                    },
+                                                    "activity_note": {
+                                                        "type": "string"
+                                                    },
+                                                    "case_act_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "case_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "case_date": {
+                                                        "type": "date"
+                                                    },
+                                                    "case_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "status": {
+                                                        "type": "string"
                                                     }
                                                 }
                                             }
@@ -257,16 +284,6 @@
         },
         {
             "leftPort": {
-                "actor": "Concat2",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "DbCommand1",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Concat1",
                 "name": "string"
             },
@@ -314,6 +331,16 @@
             "rightPort": {
                 "actor": "DbCommand1",
                 "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sql"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "sql"
             }
         }
     ]

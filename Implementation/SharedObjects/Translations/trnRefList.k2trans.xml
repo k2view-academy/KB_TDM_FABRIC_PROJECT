@@ -199,16 +199,6 @@
           <target_interface_name>CRM_DB</target_interface_name>
           <table_pk_list></table_pk_list>
         </trnRefList>
-        <trnRefList diffgr:id="trnRefList2" msdata:rowOrder="1">
-          <lu_name>Customer</lu_name>
-          <reference_table_name>MASSVOL_REF</reference_table_name>
-          <schema_name>TDM_SOURCE</schema_name>
-          <interface_name>HIS_DB</interface_name>
-          <target_ref_table_name>MASSVOL_REF</target_ref_table_name>
-          <target_schema_name>TDM_TARGET</target_schema_name>
-          <target_interface_name>HIS_DB</target_interface_name>
-          <table_pk_list></table_pk_list>
-        </trnRefList>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

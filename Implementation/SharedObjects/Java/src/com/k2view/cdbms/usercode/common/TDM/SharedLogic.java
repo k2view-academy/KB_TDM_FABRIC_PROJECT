@@ -13,8 +13,8 @@ import com.k2view.cdbms.shared.logging.MsgId;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
-import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.Json;
+import com.k2view.fabric.common.Util;
 import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
@@ -1032,6 +1032,7 @@ public class SharedLogic {
 
 	@out(name = "refDetailedStats", type = Object.class, desc = "")
 	public static Object fnGetReferenceDetailedData(String refTaskExecutionId) throws Exception {
+		//ResultSetWrapper rs =null;
 		Db.Rows rows = null;
 		
 		// Calculate the estimated remaining time for running tasks using the following formula:
@@ -1046,6 +1047,7 @@ public class SharedLogic {
 			"FROM TASK_REF_EXE_STATS es, task_ref_tables rt where task_execution_id = ? and es.task_id = rt.task_id " +
 			"and es.task_ref_table_id = rt.task_ref_table_id"; 
 			
+			//rs = DBQuery("TDM", selectDetailedRefTablesStats, new Object[]{refTaskExecutionId});
 			rows = db("TDM").fetch(selectDetailedRefTablesStats, refTaskExecutionId);
 		
 		return rows;
@@ -1303,7 +1305,7 @@ public class SharedLogic {
 
 	public static void setGlobals(String globals) throws Exception {
 		if (!Util.isEmpty(globals)) {
-			// Replace gson with K2view Json
+			// Replace gson with k2view's Json
 			//Gson gson = new Gson();
 			//Map statusData = gson.fromJson(globals, Map.class);
 			Map statusData = Json.get().fromJson(globals, Map.class);
@@ -1424,15 +1426,18 @@ public class SharedLogic {
 		
 		return result;
 	}
-	@out(name = "result", type = String.class, desc = "")
-	public static String fnGetRefrenceTables() throws Exception {
-		String trnTableName = "";
+
+	@out(name = "result", type = ArrayList.class, desc = "")
+	public static ArrayList fnGetRefrenceTables() throws Exception {
+		ArrayList trnTableName = new ArrayList<>();
+		String field = "";
 		Map<String,Map<String, String>> trnRefListValues = getTranslationsData("trnRefList");
 		for(String index: trnRefListValues.keySet()){
 			Map<String, String> valMap = trnRefListValues.get(index);
-			trnTableName = valMap.get("reference_table_name");
+			field = valMap.get("reference_table_name");
+			trnTableName.add(field);
 		}
-		return trnTableName ;
+		return trnTableName;
 	}
 
 }
