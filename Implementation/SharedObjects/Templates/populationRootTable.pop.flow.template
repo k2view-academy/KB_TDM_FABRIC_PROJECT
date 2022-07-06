@@ -635,8 +635,18 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "Query",
+                "actor": "Delete Root Table",
                 "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "{{KEY}}"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "{{KEY}}"
             }
         },
         {
