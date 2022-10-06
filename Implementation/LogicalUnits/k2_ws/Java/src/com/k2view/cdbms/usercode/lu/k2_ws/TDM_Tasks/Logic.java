@@ -68,15 +68,15 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try{
-			String sql= "SELECT * FROM \"" + schema + "\".product_logical_units " +
-					"INNER JOIN \"" + schema + "\".products " +
-					"ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".products.product_id AND \"" + schema + "\".products.product_status = \'Active\') " +
-					"INNER JOIN \"" + schema + "\".environment_products " +
-					"ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".environment_products.product_id AND \"" + schema + "\".environment_products.status = \'Active\') " +
-					"INNER JOIN \"" + schema + "\".business_entities " +
-					"ON (\"" + schema + "\".business_entities.be_id = \"" + schema + "\".product_logical_units.be_id) " +
+			String sql= "SELECT * FROM \"" + TDMDB_SCHEMA + "\".product_logical_units lu " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".products p " +
+					"ON (lu.product_id = p.product_id AND p.product_status = \'Active\') " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".environment_products ep " +
+					"ON (lu.product_id = ep.product_id AND ep.status = \'Active\') " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".business_entities be " +
+					"ON (be.be_id = lu.be_id) " +
 					"WHERE environment_id = " + envId + " AND be_status = \'Active\'";
-			Db.Rows rows= db("TDM").fetch(sql);
+			Db.Rows rows= db(TDM).fetch(sql);
 		
 		
 			HashMap<String,Object> be;
@@ -349,24 +349,33 @@ public class Logic extends WebServiceUserCode {
 		try{
 			Db.Rows result = TaskExecutionUtils.fnGetTasks(task_ids);
 		
-			String q = "SELECT * FROM ENVIRONMENT_ROLES";
-			Db.Rows rolesResult = db("TDM").fetch(q);
+			String q = "SELECT * FROM " + TDMDB_SCHEMA + ".ENVIRONMENT_ROLES";
+			Db.Rows rolesResult = db(TDM).fetch(q);
 		
-			//modified newRow will be added to newResult list
+			Map<String, List<String>> usersRoles = new HashMap<>();
+			fabric().fetch("list users;").forEach(r -> {
+				List<String> roles=new ArrayList<>();
+				roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
+				usersRoles.put("" + r.get("user"), roles);
+			});
+
+						//modified newRow will be added to newResult list
 			List<Map<String,Object>> newResult=new ArrayList<>();
 		
-			for (Db.Row row:result) {
+			Integer prevTaskId = 0;
+			HashMap<String, Object> prevRow = new HashMap<>();
+
+					for (Db.Row row:result) {
 				HashMap<String, Object> newRow = new HashMap<>();
 						
 				ResultSet resultSet = row.resultSet();
 				
 				String userId = resultSet.getString("task_created_by");
-				List<String> creatorfabricRoles = new ArrayList<>();
-				if (userId != null && !"".equals(userId)) {
-					creatorfabricRoles = (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(userId)).get("result");
-					//log.info("wsGetTasks - userId: " + userId + ", fabricRoles: " + creatorfabricRoles);
-				} 
+				List<String> creatorfabricRoles = usersRoles.get(userId);
 				
+				if(creatorfabricRoles != null && creatorfabricRoles.size() > 0) {
+					newRow.put("creatorRoles", creatorfabricRoles);
+				}
 				newRow.put("task_id",resultSet.getInt("task_id"));
 				newRow.put("task_title", resultSet.getString("task_title"));
 				newRow.put("task_status", resultSet.getString("task_status"));
@@ -435,13 +444,15 @@ public class Logic extends WebServiceUserCode {
 				newRow.put("reserve_ind",resultSet.getBoolean("reserve_ind"));
 				newRow.put("reserve_retention_period_type", resultSet.getString("reserve_retention_period_type"));
 				newRow.put("reserve_retention_period_value", resultSet.getString("reserve_retention_period_value"));
+				newRow.put("reserve_note", resultSet.getString("reserve_note"));
 		
 				Map<String, Object> task = null;
-				for (Map<String, Object> e : newResult) {
-					if (Integer.parseInt(e.get("task_id").toString()) == resultSet.getInt("task_id")) {
-						task = e;
-						break;
-					}
+				
+				if (prevTaskId == resultSet.getInt("task_id")) {
+					task = prevRow;
+				} else {
+					prevTaskId = resultSet.getInt("task_id");
+					prevRow = newRow;
 				}
 		
 				List<Map<String, Object>> roleArr = new ArrayList<>();
@@ -533,10 +544,7 @@ public class Logic extends WebServiceUserCode {
 					newResult.add(newRow);
 				}
 		
-				if(creatorfabricRoles != null && creatorfabricRoles.size() > 0) {
-					newRow.put("creatorRoles", creatorfabricRoles);
 				}
-			}
 		
 			errorCode="SUCCESS";
 			response.put("result",newResult);
@@ -574,10 +582,10 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try{
-			String sql= "select DISTINCT task_id from task_execution_list " +
+			String sql= "select DISTINCT task_id from " + TDMDB_SCHEMA + ".task_execution_list " +
 					"where  (lower(execution_status) <> 'failed' AND lower(execution_status) <> 'completed' " +
 					"AND lower(execution_status) <> 'stopped' AND lower(execution_status) <> 'killed')";
-			Db.Rows rows= db("TDM").fetch(sql);
+			Db.Rows rows= db(TDM).fetch(sql);
 			List<String> result = new ArrayList<>();
 			for(Db.Row row:rows){
 				result.add(row.get("task_id").toString());
@@ -627,14 +635,14 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try{
-			String sql= "SELECT * FROM \"" + schema + "\".product_logical_units " +
-					"INNER JOIN \"" + schema + "\".products " +
-					"ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".products.product_id) " +
-					"INNER JOIN \"" + schema + "\".environment_products " +
-					"ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".environment_products.product_id " +
-					"AND environment_products.status = \'Active\') " +
+			String sql= "SELECT * FROM \"" + TDMDB_SCHEMA + "\".product_logical_units lu " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".products p " +
+					"ON (lu.product_id = p.product_id) " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".environment_products ep " +
+					"ON (lu.product_id = ep.product_id " +
+					"AND ep.status = \'Active\') " +
 					"WHERE be_id = " + beId + " AND environment_id = " + envId;
-			Db.Rows rows= db("TDM").fetch(sql);
+			Db.Rows rows= db(TDM).fetch(sql);
 			List<HashMap<String,Object>> result = new ArrayList<>();
 		
 			HashMap<String,Object> lU;
@@ -771,7 +779,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note) throws Exception {
 		Long taskId;
 		
 		if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !"REF".equals(selection_method) && num_of_entities == null) {
@@ -786,7 +794,7 @@ public class Logic extends WebServiceUserCode {
 				scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name,
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
 				selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference,
-				reserve_ind, reserve_retention_period_type, reserve_retention_period_value);
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
 				return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -889,7 +897,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -932,20 +940,20 @@ public class Logic extends WebServiceUserCode {
 		}
 		
 		try{
-			String sql= "INSERT INTO \"" + schema + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
+			String sql= "INSERT INTO \"" + TDMDB_SCHEMA + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
 					"num_of_entities,selection_method,selection_param_value,entity_exclusion_list, task_execution_status, " +
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, task_title, parameters, refresh_reference_data,replace_sequences, " +
 					"source_environment_id, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
 					"selected_version_datetime, selected_version_task_exe_id,task_globals, " +
 					"selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, reserve_ind, " + 
-					"reserve_retention_period_type, reserve_retention_period_value) " +
+					"reserve_retention_period_type, reserve_retention_period_value, reserve_note) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?," +
-					"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
+					"?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-			Db.Row row = db("TDM").fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
+			Db.Row row = db(TDM).fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
 					scheduler, delete_before_load,
 					num_of_entities, selection_method,
 					selection_param_value, entity_exclusion_list, "Active",
@@ -958,7 +966,7 @@ public class Logic extends WebServiceUserCode {
 					selected_version_task_name, selected_version_datetime,
 					selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id,
 					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode,
-					reserve_ind, reserve_retention_period_type, reserve_retention_period_value).firstRow();
+					reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note).firstRow();
 			Long taskId=Long.parseLong(row.get("task_id").toString());
 		
 			if (refList!=null ) {
@@ -974,7 +982,7 @@ public class Logic extends WebServiceUserCode {
 						/* TDM 7.4 - LU Name is sent separately in Globals input
 						String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
 						for(Map<String,Object> global:globals){
-							db("TDM").execute(insertGlobalSql,taskId, global.get("global_name").toString(), global.get("global_value").toString());
+							db(TDM).execute(insertGlobalSql,taskId, global.get("global_name").toString(), global.get("global_value").toString());
 						}*/
 						for(Map<String,Object> global:globals){
 							TaskExecutionUtils.createTaskGlobals(taskId, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
@@ -1104,7 +1112,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note) throws Exception {
 		Long newTaskId = null;
 		
 		db(TDM).beginTransaction();
@@ -1115,7 +1123,7 @@ public class Logic extends WebServiceUserCode {
 				task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, 
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, 
 				selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference, task_created_by, task_creation_date,
-				reserve_ind, reserve_retention_period_type, reserve_retention_period_value);
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
 				return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -1221,14 +1229,14 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value) throws Exception {
+	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		Map<String,Object> result=new HashMap<>();
 		String message=null;
 		String errorCode="";
 		
 		try {
-			db("TDM").execute("UPDATE \"" + schema + "\".tasks SET " +
+			db(TDM).execute("UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
 		
 		if (selection_param_value != null && !"".equals(selection_param_value) && "L".equals(selection_method)) {
@@ -1265,17 +1273,17 @@ public class Logic extends WebServiceUserCode {
 			if (selectAllEntites != null && selectAllEntites) {
 				selection_method = "ALL";
 			}
-			String sql = "INSERT INTO \"" + schema + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
+			String sql = "INSERT INTO \"" + TDMDB_SCHEMA + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
 					"num_of_entities, selection_method,selection_param_value,entity_exclusion_list, task_execution_status," +
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, " +
 					"task_title, parameters,refresh_reference_data, replace_sequences, source_environment_id, source_env_name, load_entity, task_type, " +
 					"scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
 					"selected_version_datetime, selected_version_task_exe_id, task_globals, " +
 					"selected_ref_version_task_exe_id, selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, reserve_ind, " + 
-					"reserve_retention_period_type, reserve_retention_period_value) " +
-					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
+					"reserve_retention_period_type, reserve_retention_period_value, reserve_note) " +
+					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
 			String username=sessionUser().name();
-			Db.Row row = db("TDM").fetch(sql, be_id, environment_id!=null?environment_id:source_environment_id,
+			Db.Row row = db(TDM).fetch(sql, be_id, environment_id!=null?environment_id:source_environment_id,
 					scheduler,
 					delete_before_load,
 					num_of_entities,
@@ -1294,7 +1302,7 @@ public class Logic extends WebServiceUserCode {
 					retention_period_value, selected_version_task_name, selected_version_datetime,
 					selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id,
 					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode,
-					reserve_ind, reserve_retention_period_type, reserve_retention_period_value).firstRow();
+					reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note).firstRow();
 		
 			Long id = Long.parseLong(row.get("task_id").toString());
 		
@@ -1310,7 +1318,7 @@ public class Logic extends WebServiceUserCode {
 					/* TDM 7.4 - LU Name is sent separately in Globals input
 					String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
 					for(Map<String,Object> global:globals){
-						db("TDM").execute(insertGlobalSql,id, global.get("global_name").toString(), global.get("global_value").toString());
+						db(TDM).execute(insertGlobalSql,id, global.get("global_name").toString(), global.get("global_value").toString());
 					}*/
 					for(Map<String,Object> global:globals){
 							TaskExecutionUtils.createTaskGlobals(id, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
@@ -1488,8 +1496,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM \"" + schema + "\".TASKS_POST_EXE_PROCESS  WHERE task_id =" + taskId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".TASKS_POST_EXE_PROCESS  WHERE task_id =" + taskId;
+			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> result=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -1546,8 +1554,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM \"" + schema + "\".tasks_logical_units WHERE task_id =" + taskId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".tasks_logical_units WHERE task_id =" + taskId;
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -1597,8 +1605,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM \"" + schema + "\".task_globals WHERE task_globals.task_id = " + taskId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".task_globals WHERE task_globals.task_id = " + taskId;
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
 
@@ -2039,16 +2047,16 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String query = "SELECT summary.*, envs.environment_name, be.be_name, list.execution_note " +
-			"FROM task_execution_summary AS summary " +
-			"INNER JOIN task_execution_list AS list ON summary.task_execution_id = list.task_execution_id and list.parent_lu_id is null " +
-			"INNER JOIN environments AS envs ON summary.environment_id = envs.environment_id " +
-			"LEFT JOIN business_entities AS be ON (summary.be_id = be.be_id) " +
+			String query = "SELECT DISTINCT summary.*, envs.environment_name, be.be_name, list.execution_note " +
+			"FROM " + TDMDB_SCHEMA + ".task_execution_summary AS summary " +
+			"INNER JOIN " + TDMDB_SCHEMA + ".task_execution_list AS list ON summary.task_execution_id = list.task_execution_id and list.parent_lu_id is null " +
+			"INNER JOIN " + TDMDB_SCHEMA + ".environments AS envs ON summary.environment_id = envs.environment_id " +
+			"LEFT JOIN " + TDMDB_SCHEMA + ".business_entities AS be ON (summary.be_id = be.be_id) " +
 			"WHERE summary.task_id = " + taskId +
-					(userId != null ? " AND task_executed_by = '" + userId + "'" : "") +
+					(userId != null ? " AND summary.task_executed_by = '" + userId + "'" : "") +
 					(numberOfExecutions != null ? " ORDER BY end_execution_time DESC LIMIT " + numberOfExecutions + "" : "");
 		
-			Db.Rows rows = db("TDM").fetch(query);
+			Db.Rows rows = db(TDM).fetch(query);
 		
 			List<Map<String, Object>> result = new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -2244,14 +2252,14 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		try {
 			String query = "select t.task_execution_id, l.lu_id, lu_name, " +
-					"(select count(*) from task_Execution_list t where parent_lu_id = l.lu_id and " +
+					"(select count(*) from " + TDMDB_SCHEMA + ".task_Execution_list t where parent_lu_id = l.lu_id and " +
 					"t.task_execution_id = " + taskExecutionId + "), " +
 					"case when (num_of_failed_entities > 0 or num_of_failed_ref_tables > 0) " +
 					"then 'failed' else 'completed' end lu_status from task_Execution_list t, " +
 					"(select lu_id, lu_name, lu_parent_name from product_logical_units) l " +
 					"where t.task_execution_id =" + taskExecutionId + " and " +
 					"l.lu_parent_name = '" + lu_name + "' and t.lu_id = l.lu_id ";
-			Db.Rows rows = db("TDM").fetch(query);
+			Db.Rows rows = db(TDM).fetch(query);
 		
 			//if(true) return rows;
 		
@@ -2287,7 +2295,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Returns the list of all executed Logical Units and Post Execution Processes of the input task execution id.")
-	@webService(path = "task/{taskExeId}/history", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskExeId}/history", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -2401,24 +2409,24 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		try {
 			String query = "SELECT * , " +
-					"( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = task_execution_list.task_id " +
-					"and task_ref_tables.lu_name in (select lu_name from tasks_logical_units " +
-					"where  tasks_logical_units.lu_id = task_execution_list.lu_id)) AS refcount " +
-					"FROM task_execution_list " +
-					"LEFT JOIN products " +
-					"ON (task_execution_list.product_id = products.product_id) " +
-					"INNER JOIN tasks " +
-					"ON (task_execution_list.task_id = tasks.task_id) " +
-					"INNER JOIN environments " +
-					"ON (task_execution_list.environment_id = environments.environment_id) " +
-					"LEFT JOIN business_entities " +
-					"ON (task_execution_list.be_id = business_entities.be_id) " +
-					"LEFT JOIN product_logical_units " +
-					"ON (task_execution_list.lu_id = product_logical_units.lu_id) " +
-					"LEFT JOIN TASKS_POST_EXE_PROCESS " +
-					"ON (task_execution_list.process_id = TASKS_POST_EXE_PROCESS.process_id AND task_execution_list.task_id = TASKS_POST_EXE_PROCESS.task_id) " +
-					"WHERE task_execution_list.task_execution_id = " + taskExeId;
-			Db.Rows rows = db("TDM").fetch(query);
+					"( SELECT COUNT(*) FROM " + TDMDB_SCHEMA + ".task_ref_tables rt WHERE rt.task_id = el.task_id " +
+					"and rt.lu_name in (select lu_name from " + TDMDB_SCHEMA + ".tasks_logical_units lu " +
+					"where  lu.lu_id = el.lu_id)) AS refcount " +
+					"FROM " + TDMDB_SCHEMA + ".task_execution_list el " +
+					"LEFT JOIN " + TDMDB_SCHEMA + ".products p " +
+					"ON (el.product_id = p.product_id) " +
+					"INNER JOIN " + TDMDB_SCHEMA + ".tasks t " +
+					"ON (el.task_id = t.task_id) " +
+					"INNER JOIN " + TDMDB_SCHEMA + ".environments e " +
+					"ON (el.environment_id = e.environment_id) " +
+					"LEFT JOIN " + TDMDB_SCHEMA + ".business_entities be " +
+					"ON (el.be_id = be.be_id) " +
+					"LEFT JOIN " + TDMDB_SCHEMA + ".product_logical_units plu " +
+					"ON (el.lu_id = plu.lu_id) " +
+					"LEFT JOIN " + TDMDB_SCHEMA + ".TASKS_POST_EXE_PROCESS pep " +
+					"ON (el.process_id = pep.process_id AND el.task_id = pep.task_id) " +
+					"WHERE el.task_execution_id = " + taskExeId;
+			Db.Rows rows = db(TDM).fetch(query);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -2426,7 +2434,12 @@ public class Logic extends WebServiceUserCode {
 				ResultSet resultSet = row.resultSet();
 				Map<String, Object> rowMap = new HashMap<>();
 				for (String columnName : columnNames) {
-					rowMap.put(columnName, resultSet.getObject(columnName));
+					if ("task_executed_by".equalsIgnoreCase(columnName)) {
+						String[] userData = resultSet.getObject(columnName).toString().split("##");
+						rowMap.put(columnName, userData[0]);
+					} else {
+						rowMap.put(columnName, resultSet.getObject(columnName));
+					}
 				}
 				Map <String, Object> taskOverrideAttrs = TdmSharedUtils.fnGetTaskExecOverrideAttrs(
 						(Long) row.get("task_id"), (Long) row.get("task_execution_id"));
@@ -2455,13 +2468,15 @@ public class Logic extends WebServiceUserCode {
 								break;
 							case "source_environment_name":
 								rowMap.put(attrName, overrideValue);
-								String srcEnvId = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+								String srcEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments " +
+									"where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
 								rowMap.put("source_environment_id", srcEnvId);
 								
 								break;
 							case "target_environment_name":
 								rowMap.put(attrName, overrideValue);
-								String tarEnvId = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
+								String tarEnvId = "" + db(TDM).fetch("select environment_id from " + TDMDB_SCHEMA + ".environments " +
+									"where environment_name = ? and lower(environment_status) = 'active'", overrideValue).firstValue();
 								rowMap.put("environment_id", tarEnvId);
 								break;
 							// TDM 7.4 - 16-Jan-22 - Add support for overriding DataFlux parameters
@@ -2488,11 +2503,11 @@ public class Logic extends WebServiceUserCode {
 						}
 					}
 				}
-
+		
 								result.add(rowMap);
 			}
 		
-
+		
 			response.put("result",result);
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -2544,6 +2559,56 @@ public class Logic extends WebServiceUserCode {
 			"        \"reserve_retention_period_value\": null\r\n" +
 			"      }\r\n" +
 			"    ],\r\n" +
+			"    \"Source Environment\": {\r\n" +
+			"      \"Environment Name\": [\r\n" +
+			"        {\r\n" +
+			"          \"name\": \"SRC\"\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"Source Environment Products\": [\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"BILLING\",\r\n" +
+			"          \"source_product_version\": \"PROD\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"COLLECTION\",\r\n" +
+			"          \"source_product_version\": \"1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"CRM\",\r\n" +
+			"          \"source_product_version\": \"1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"ORDERING\",\r\n" +
+			"          \"source_product_version\": \"1\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    },\r\n" +
+			"    \"Target Environment\": {\r\n" +
+			"      \"Environment Name\": [\r\n" +
+			"        {\r\n" +
+			"          \"name\": \"TAR\"\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"Target Environment Products\": [\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"BILLING\",\r\n" +
+			"          \"target_product_version\": \"PROD\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"COLLECTION\",\r\n" +
+			"          \"target_product_version\": \"1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"CRM\",\r\n" +
+			"          \"target_product_version\": \"1.5\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"ORDERING\",\r\n" +
+			"          \"target_product_version\": \"1\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    },\r\n" +
 			"    \"Task Execution Summary\": [\r\n" +
 			"      {\r\n" +
 			"        \"lu_name\": \"Customer\",\r\n" +
@@ -2795,6 +2860,56 @@ public class Logic extends WebServiceUserCode {
 			"        \"fabric_execution_id\": \"c30a97f2-fc3e-4b66-9986-aa0c6108456a\"\r\n" +
 			"      }\r\n" +
 			"    ],\r\n" +
+			"    \"Source Environment\": {\r\n" +
+			"      \"Environment Name\": [\r\n" +
+			"        {\r\n" +
+			"          \"name\": \"SRC\"\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"Source Environment Products\": [\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"BILLING\",\r\n" +
+			"          \"source_product_version\": \"PROD\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"COLLECTION\",\r\n" +
+			"          \"source_product_version\": \"1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"CRM\",\r\n" +
+			"          \"source_product_version\": \"1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"ORDERING\",\r\n" +
+			"          \"source_product_version\": \"1\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    },\r\n" +
+			"    \"Target Environment\": {\r\n" +
+			"      \"Environment Name\": [\r\n" +
+			"        {\r\n" +
+			"          \"name\": \"TAR\"\r\n" +
+			"        }\r\n" +
+			"      ],\r\n" +
+			"      \"Target Environment Products\": [\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"BILLING\",\r\n" +
+			"          \"target_product_version\": \"PROD\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"COLLECTION\",\r\n" +
+			"          \"target_product_version\": \"1\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"CRM\",\r\n" +
+			"          \"target_product_version\": \"1.5\"\r\n" +
+			"        },\r\n" +
+			"        {\r\n" +
+			"          \"product_name\": \"ORDERING\",\r\n" +
+			"          \"target_product_version\": \"1\"\r\n" +
+			"        }\r\n" +
+			"      ]\r\n" +
+			"    },\r\n" +
 			"    \"Task Execution Summary\": [\r\n" +
 			"      {\r\n" +
 			"        \"lu_name\": \"Billing\",\r\n" +
@@ -3493,9 +3608,16 @@ public class Logic extends WebServiceUserCode {
 						functionName + "' WITH UID='" + uid + "'").firstRow();
 				jobStatus = "" + jobDetails.get("Status");
 				//log.info("Job Status: " + jobStatus);
+				
+				// if the cluster ID is define, add it to the name of the keyspace.
+				String clusterID = "" + ludb().fetch("clusterid").firstValue();
+				String tableName = "k2system.k2_jobs";
+				if (clusterID != null && !clusterID.isEmpty()) {
+					tableName = "k2system_" + clusterID + ".k2_jobs";
+				}
 				if (!"IN_PROCESS".equalsIgnoreCase(jobStatus) && !"SCHEDULED".equalsIgnoreCase(jobStatus) && !"WAITING".equalsIgnoreCase(jobStatus)) {
 					if ("tdmExecuteTask".equalsIgnoreCase(functionName) || "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
-						String errMsg = "" + db("DB_CASSANDRA").fetch("select error_msg from k2system.k2_jobs where type = 'USER_JOB' and name ='TDM." +
+						String errMsg = "" + db("DB_CASSANDRA").fetch("select error_msg from " + tableName + " where type = 'USER_JOB' and name ='TDM." +
 							functionName + "' and uid = '" + uid + "'").firstValue();
 		
 						log.error("Job " + functionName + " is down, cannot run task. The Error Messge: " + errMsg);		
@@ -3583,7 +3705,7 @@ public class Logic extends WebServiceUserCode {
 			
 			List<String> taskLogicalUnitsIds=new ArrayList<>();
 			
-			Db.Rows rows = db("TDM").fetch("SELECT lu_id FROM tasks_logical_units WHERE task_id = ?", taskId);
+			Db.Rows rows = db(TDM).fetch("SELECT lu_id FROM " + TDMDB_SCHEMA + ".tasks_logical_units WHERE task_id = ?", taskId);
 			for (Db.Row row : rows) {
 				taskLogicalUnitsIds.add("" + row.get("lu_id"));
 			}
@@ -3763,9 +3885,9 @@ public class Logic extends WebServiceUserCode {
 				return TdmSharedUtils.wrapWebServiceResults("FAILED", "validation failure", validationsErrorMesssagesByRole);
 			}
 			try {
-				String envIdByName_sql= "select environment_id from environments where environment_name=(?) and environment_status = 'Active'";
-				Long overridenSrcEnvId=(Long)db("TDM").fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
-				Long overridenTarEnvId=(Long)db("TDM").fetch(envIdByName_sql,targetEnvironmentName).firstValue();
+				String envIdByName_sql= "select environment_id from " + TDMDB_SCHEMA + ".environments where environment_name=(?) and environment_status = 'Active'";
+				Long overridenSrcEnvId=(Long)db(TDM).fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
+				Long overridenTarEnvId=(Long)db(TDM).fetch(envIdByName_sql,targetEnvironmentName).firstValue();
 			
 				TaskExecutionUtils.fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
 			
@@ -3832,8 +3954,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql="UPDATE \"" + schema + "\".tasks SET task_execution_status = \'onHold\' WHERE \"" + schema + "\".tasks.task_id = " + taskId + "RETURNING \"" + schema + "\".tasks.task_title";
-			Db.Row row = db("TDM").fetch(sql).firstRow();
+			String sql="UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET task_execution_status = \'onHold\' WHERE \"" + schema + "\".tasks.task_id = " + taskId + "RETURNING \"" + schema + "\".tasks.task_title";
+			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Object task_name = row.cell(0);
 			try {
 				String activityDesc = "task # " + task_name + " was Holded";
@@ -3888,8 +4010,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "UPDATE \"" + schema + "\".tasks SET task_execution_status = \'Active\' WHERE \"" + schema + "\".tasks.task_id = " + taskId + "RETURNING \"" + schema + "\".tasks.task_title";
-			Db.Row row = db("TDM").fetch(sql).firstRow();
+			String sql = "UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET task_execution_status = \'Active\' WHERE \"" + schema + "\".tasks.task_id = " + taskId + "RETURNING \"" + schema + "\".tasks.task_title";
+			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Object taskTitle= row.get("task_title");
 		
 			try {
@@ -3967,8 +4089,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM \"" + schema + "\".task_ref_tables where task_id = " + task_id;
-			Db.Rows rows = db("TDM").fetch(sql);
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".task_ref_tables where task_id = " + task_id;
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> referenceTableData=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -4505,21 +4627,21 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\n  <result>\n    <task_last_updated_date>1615278319339</task_last_updated_date>\n    <be_id>1</be_id>\n    <selected_version_task_name/>\n    <environment_id>1</environment_id>\n    <selection_method>L</selection_method>\n    <selected_ref_version_task_name/>\n    <refresh_reference_data/>\n    <task_id>21</task_id>\n    <source_environment_id>1</source_environment_id>\n    <scheduler>immediate</scheduler>\n    <selected_ref_version_datetime/>\n    <source_env_name>ENV1</source_env_name>\n    <load_entity>false</load_entity>\n    <task_title>tester</task_title>\n    <selected_version_task_exe_id/>\n    <task_created_by>k2vtester01</task_created_by>\n    <fabric_environment_name/>\n    <scheduling_end_date/>\n    <delete_before_load>false</delete_before_load>\n    <retention_period_type/>\n    <task_status>Active</task_status>\n    <selection_param_value>1,2,3,4,5,6,7,8,9,10</selection_param_value>\n    <retention_period_value/>\n    <selected_version_datetime/>\n    <task_last_updated_by>k2vtester01</task_last_updated_by>\n    <selected_ref_version_task_exe_id/>\n    <task_execution_status>Active</task_execution_status>\n    <version_ind>false</version_ind>\n    <sync_mode/>\n    <num_of_entities>10</num_of_entities>\n    <task_creation_date>1615278319339</task_creation_date>\n    <task_globals>false</task_globals>\n    <replace_sequences/>\n    <entity_exclusion_list/>\n    <task_type>EXTRACT</task_type>\n    <parameters/>\n  </result>\n  <errorCode>SUCCESS</errorCode>\n  <message/>\n</HashMap>")
 	@resultMetaData(mediaType = Produce.JSON, example = "{\n  \"result\": [\n    {\n      \"task_last_updated_date\": \"2021-03-09 08:25:19.339\",\n      \"be_id\": 1,\n      \"selected_version_task_name\": null,\n      \"environment_id\": 1,\n      \"selection_method\": \"L\",\n      \"selected_ref_version_task_name\": null,\n      \"refresh_reference_data\": null,\n      \"task_id\": 21,\n      \"source_environment_id\": 1,\n      \"scheduler\": \"immediate\",\n      \"selected_ref_version_datetime\": null,\n      \"source_env_name\": \"ENV1\",\n      \"load_entity\": false,\n      \"task_title\": \"tester\",\n      \"selected_version_task_exe_id\": null,\n      \"task_created_by\": \"k2vtester01\",\n      \"fabric_environment_name\": null,\n      \"scheduling_end_date\": null,\n      \"delete_before_load\": false,\n      \"retention_period_type\": null,\n      \"task_status\": \"Active\",\n      \"selection_param_value\": \"1,2,3,4,5,6,7,8,9,10\",\n      \"retention_period_value\": null,\n      \"selected_version_datetime\": null,\n      \"task_last_updated_by\": \"k2vtester01\",\n      \"selected_ref_version_task_exe_id\": null,\n      \"task_execution_status\": \"Active\",\n      \"version_ind\": false,\n      \"sync_mode\": null,\n      \"num_of_entities\": 10,\n      \"task_creation_date\": \"2021-03-09 08:25:19.339\",\n      \"task_globals\": false,\n      \"replace_sequences\": null,\n      \"entity_exclusion_list\": null,\n      \"task_type\": \"EXTRACT\",\n      \"parameters\": null\n    }\n  ],\n  \"errorCode\": \"SUCCESS\",\n  \"message\": null\n}")
 	public static Object wsGetUserTasks(@param(required=true) String userName, @param(description="admin, owner or tester", required=true) String userType) throws Exception {
-		String adminQuery = "select * from tasks where task_status = 'Active' and task_execution_status = 'Active'";
+		String adminQuery = "select * from " + TDMDB_SCHEMA + ".tasks where task_status = 'Active' and task_execution_status = 'Active'";
 		String envOwnerQuery =
 				//Query 1- get the extract tasks where the user is the owner of the source env
-				"select t.* from tasks t, environment_owners o " +
+				"select t.* from " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".environment_owners o " +
 						"where lower(task_type) = 'extract' and lower(task_status) = 'active' " +
 						"and lower(task_execution_status) = 'active' and t.source_environment_id = o.environment_id " +
 						"and o.user_name = ? " +
 						"UNION " +
 						//Query 2- get the tasks, created by the user
-						"select t.* from tasks t where lower(task_type) = 'extract' " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t where lower(task_type) = 'extract' " +
 						"and lower(task_status) = 'active' and lower(task_execution_status) = 'active' " +
 						"and t.task_Created_by = ? " +
 						"UNION " +
 						//Query 3 - get the task created by another tester which belongs to the same role of the user
-						"select t.* from tasks t, environment_roles r, environment_role_users u " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
 						"where lower(task_type) = 'extract' and lower(task_status) = 'active' "+
 						"and lower(task_execution_status) = 'active' and t.task_Created_by <> ? " +
 						"and not exists (select 1 from environment_owners o1 where o1.environment_id  = t.source_environment_id and o1.user_name = t.task_Created_by) " +
@@ -4527,17 +4649,17 @@ public class Logic extends WebServiceUserCode {
 						"and lower(r.role_status) = 'active' and (t.task_Created_by = u.username or lower(u.username) = 'all') " +
 						"and exists (select 1 from " +
 						"(Select env_list.environment_id, u.role_id " +
-						"From environment_roles r, environment_role_users u, " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u, " +
 						"(Select r1.environment_id, 'user' As assignment_type " +
-						"From environment_roles r1, environment_role_users u1 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r1, " + TDMDB_SCHEMA + ".environment_role_users u1 " +
 						"Where r1.role_id = u1.role_id And u1.username = ? And " +
 						"lower(r1.role_status) = 'active' " +
 						"UNION " +
 						"Select r2.environment_id, 'all' As assignment_Type " +
-						"From environment_roles r2, environment_role_users u2 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r2, " + TDMDB_SCHEMA + ".environment_role_users u2 " +
 						"Where r2.role_id = u2.role_id And Lower(u2.username) = 'all' " +
 						"And lower(r2.role_status) = 'active' And Not exists " +
-						"(select 1 from environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
+						"(select 1 from " + TDMDB_SCHEMA + ".environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
 						"Where r.environment_id = env_list.environment_id " +
 						"And r.role_id = u.role_id And lower(r.role_status) = 'active' " +
 						"And ((env_list.assignment_type = 'all' And " +
@@ -4545,36 +4667,36 @@ public class Logic extends WebServiceUserCode {
 						"where user_roles.role_id = r.role_id)" +
 						"UNION " +
 						//Query 4- get the load tasks where the user is the owner of the target env
-						"select t.* from tasks t, environment_owners o " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".environment_owners o " +
 						"where lower(task_type) = 'load' and lower(task_status) = 'active' " +
 						"and lower(task_execution_status) = 'active' and t.environment_id = o.environment_id " +
 						"and o.user_name = ? " +
 						"UNION " +
 						//Query 5 - get the tasks, created by the user
-						"select t.* from tasks t where lower(task_type) = 'load' " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t where lower(task_type) = 'load' " +
 						"and lower(task_status) = 'active' and lower(task_execution_status) = 'active' " +
 						"and t.task_Created_by = ? " +
 						"UNION " +
 						//Query 6 - get the task created by another user which belongs to the same role of the user on the target env
-						"select t.* from tasks t, environment_roles r, environment_role_users u " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
 						"where lower(task_type) = 'load' and lower(task_status) = 'active' " +
 						"and lower(task_execution_status) = 'active' and t.task_Created_by <> ? " +
-						"and not exists (select 1 from environment_owners o1 where o1.environment_id  = t.environment_id and o1.user_name = t.task_Created_by) " +
+						"and not exists (select 1 from " + TDMDB_SCHEMA + ".environment_owners o1 where o1.environment_id  = t.environment_id and o1.user_name = t.task_Created_by) " +
 						"and t.environment_id = r.environment_id and r.role_id = u.role_id " +
 						"and lower(r.role_status) = 'active' and (t.task_Created_by = u.username or lower(u.username) = 'all') " +
 						"and exists (select 1 from " +
 						"(Select env_list.environment_id, u.role_id " +
-						"From environment_roles r, environment_role_users u, " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u, " +
 						"(Select r1.environment_id, 'user' As assignment_type " +
-						"From environment_roles r1, environment_role_users u1 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r1," + TDMDB_SCHEMA + ". environment_role_users u1 " +
 						"Where r1.role_id = u1.role_id And u1.username = ? And " +
 						"lower(r1.role_status) = 'active' " +
 						"UNION " +
 						"Select r2.environment_id, 'all' As assignment_Type " +
-						"From environment_roles r2, environment_role_users u2 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r2, " + TDMDB_SCHEMA + ".environment_role_users u2 " +
 						"Where r2.role_id = u2.role_id And Lower(u2.username) = 'all' " +
 						"And lower(r2.role_status) = 'active' And Not exists " +
-						"(select 1 from environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
+						"(select 1 from " + TDMDB_SCHEMA + ".environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
 						"Where r.environment_id = env_list.environment_id " +
 						"And r.role_id = u.role_id And lower(r.role_status) = 'active' " +
 						"And ((env_list.assignment_type = 'all' And " +
@@ -4583,31 +4705,31 @@ public class Logic extends WebServiceUserCode {
 		
 		String testerQuery =
 				//Query 1 - get the tasks, created by the user
-				"select t.* from tasks t where lower(task_type) = 'extract' " +
+				"select t.* from " + TDMDB_SCHEMA + ".tasks t where lower(task_type) = 'extract' " +
 						"and lower(task_status) = 'active' and lower(task_execution_status) = 'active' " +
 						"and t.task_Created_by = ? " +
 						"UNION " +
 						//Query 2 - get the task created by another user which belongs to the same role of the user
-						"select t.* from tasks t, environment_roles r, environment_role_users u " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
 						"where lower(task_type) = 'extract' and lower(task_status) = 'active' " +
 						"and lower(task_execution_status) = 'active' and t.task_Created_by <> ? " +
-						"and not exists (select 1 from environment_owners o1 where o1.environment_id  = t.source_environment_id and o1.user_name = t.task_Created_by) " +
+						"and not exists (select 1 from " + TDMDB_SCHEMA + ".environment_owners o1 where o1.environment_id  = t.source_environment_id and o1.user_name = t.task_Created_by) " +
 						"and t.source_environment_id = r.environment_id " +
 						"and r.role_id = u.role_id and lower(r.role_status) = 'active' " +
 						"and (t.task_Created_by = u.username or lower(u.username) = 'all') " +
 						"and exists (select 1 from " +
 						"(Select env_list.environment_id, u.role_id " +
-						"From environment_roles r, environment_role_users u, " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u, " +
 						"(Select r1.environment_id, 'user' As assignment_type " +
-						"From environment_roles r1, environment_role_users u1 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r1, " + TDMDB_SCHEMA + ".environment_role_users u1 " +
 						"Where r1.role_id = u1.role_id And u1.username = ? And " +
 						"lower(r1.role_status) = 'active' " +
 						"UNION " +
 						"Select r2.environment_id, 'all' As assignment_Type " +
-						"From environment_roles r2, environment_role_users u2 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r2, " + TDMDB_SCHEMA + ".environment_role_users u2 " +
 						"Where r2.role_id = u2.role_id And Lower(u2.username) = 'all' " +
 						"And lower(r2.role_status) = 'active' And Not exists " +
-						"(select 1 from environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
+						"(select 1 from " + TDMDB_SCHEMA + ".environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
 						"Where r.environment_id = env_list.environment_id " +
 						"And r.role_id = u.role_id And lower(r.role_status) = 'active' " +
 						"And ((env_list.assignment_type = 'all' And " +
@@ -4615,30 +4737,30 @@ public class Logic extends WebServiceUserCode {
 						"where user_roles.role_id = r.role_id) " +
 						"UNION " +
 						//Query 3 - get the tasks, created by the user
-						"select t.* from tasks t " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t " +
 						"where lower(task_type) = 'load' and lower(task_status) = 'active' " +
 						"and lower(task_execution_status) = 'active' and t.task_Created_by = ? " +
 						"UNION " +
 						//Query 4 - get the task created by another user which belongs to the same role of the user on the target env
-						"select t.* from tasks t, environment_roles r, environment_role_users u " +
+						"select t.* from " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
 						"where lower(task_type) = 'load' and lower(task_status) = 'active' " +
 						"and lower(task_execution_status) = 'active' and t.task_Created_by <> ? " +
-						"and not exists (select 1 from environment_owners o1 where o1.environment_id  = t.environment_id and o1.user_name = t.task_Created_by) " +
+						"and not exists (select 1 from " + TDMDB_SCHEMA + ".environment_owners o1 where o1.environment_id  = t.environment_id and o1.user_name = t.task_Created_by) " +
 						"and t.environment_id = r.environment_id and r.role_id = u.role_id and lower(r.role_status) = 'active' " +
 						"and (t.task_Created_by = u.username or lower(u.username) = 'all') " +
 						"and exists (select 1 from " +
 						"(Select env_list.environment_id, u.role_id " +
-						"From environment_roles r, environment_role_users u, " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u, " +
 						"(Select r1.environment_id, 'user' As assignment_type " +
-						"From environment_roles r1, environment_role_users u1 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r1, " + TDMDB_SCHEMA + ".environment_role_users u1 " +
 						"Where r1.role_id = u1.role_id And u1.username = ? And " +
 						"lower(r1.role_status) = 'active' " +
 						"UNION " +
 						"Select r2.environment_id, 'all' As assignment_Type " +
-						"From environment_roles r2, environment_role_users u2 " +
+						"From " + TDMDB_SCHEMA + ".environment_roles r2, " + TDMDB_SCHEMA + ".environment_role_users u2 " +
 						"Where r2.role_id = u2.role_id And Lower(u2.username) = 'all' " +
 						"And lower(r2.role_status) = 'active' And Not exists " +
-						"(select 1 from environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
+						"(select 1 from " + TDMDB_SCHEMA + ".environment_role_users r3 where r3.environment_id = r2.environment_id and r3.username = ?)) env_list " +
 						"Where r.environment_id = env_list.environment_id " +
 						"And r.role_id = u.role_id And lower(r.role_status) = 'active' " +
 						"And ((env_list.assignment_type = 'all' And " +
@@ -4650,17 +4772,17 @@ public class Logic extends WebServiceUserCode {
 		
 		switch (userType.toLowerCase()) {
 			case "admin" :
-				taskList = db("TDM").fetch(adminQuery);
+				taskList = db(TDM).fetch(adminQuery);
 				break;
 			case "owner" :
 				Object[] ownerParams = new Object[12];
 				Arrays.fill(ownerParams, userName);
-				taskList = db("TDM").fetch(envOwnerQuery, ownerParams);
+				taskList = db(TDM).fetch(envOwnerQuery, ownerParams);
 				break;
 			case "tester" :
 				Object[] testerParams = new Object[10];
 				Arrays.fill(testerParams, userName);
-				taskList = db("TDM").fetch(testerQuery, testerParams);
+				taskList = db(TDM).fetch(testerQuery, testerParams);
 				break;
 			default:
 				log.error("wsGetUserTasks - Wrong User Type, supported types: admin, owner, tester");
@@ -4790,17 +4912,17 @@ public class Logic extends WebServiceUserCode {
 		String executionIdWhere = executionID == null ? "(SELECT MAX(TASK_EXECUTION_ID) FROM TASK_EXECUTION_LIST L2 WHERE TASK_ID = " + taskID + ")" : executionID;
 		String getExecIDsQuery = "SELECT task_execution_id, execution_status, fabric_execution_id, " +
 				"lu_name as name, task_title, 'LU' as type " +
-				"FROM TASK_EXECUTION_LIST L, TASKS_LOGICAL_UNITS U, TASKS T WHERE " +
+				"FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS_LOGICAL_UNITS U, " + TDMDB_SCHEMA + ".TASKS T WHERE " +
 				"t.task_id = l.task_id AND u.task_id = l.task_id AND u.lu_id = l.lu_id AND T.task_id = " + taskID + " " +
 				"AND l.task_execution_id = " + executionIdWhere + " and process_id = 0 " +
 				"UNION " +
 				"SELECT task_execution_id, execution_status, fabric_execution_id, " +
 				"process_name as name, task_title, 'Process' as type " +
-				"FROM TASK_EXECUTION_LIST L, TASKS_POST_EXE_PROCESS P, TASKS T WHERE " +
+				"FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS_POST_EXE_PROCESS P, " + TDMDB_SCHEMA + ".TASKS T WHERE " +
 				"t.task_id = l.task_id AND p.task_id = l.task_id AND p.process_id = l.process_id AND T.task_id = " + taskID + " " +
 				"AND l.task_execution_id = " + executionIdWhere + " AND lu_id = 0";
 		
-		Db.Rows execIDsList = db("TDM").fetch(getExecIDsQuery);
+		Db.Rows execIDsList = db(TDM).fetch(getExecIDsQuery);
 		
 		HashMap <String, Object> taskInfo = new HashMap<>();
 		List <Object> taskList = new ArrayList<>();
@@ -4876,8 +4998,8 @@ public class Logic extends WebServiceUserCode {
 			"\t\"message\": null\r\n" +
 			"}")
 	public static Object wsGetTaskId(@param(required=true) String taskName) throws Exception {
-		Object response = db("TDM").
-				fetch("select public.tasks.task_id from public.tasks where public.tasks.task_title= ? and public.tasks.task_status='Active'", taskName).firstValue();
+		Object response = db(TDM).
+				fetch("select t.task_id from " + TDMDB_SCHEMA + ".tasks where t.task_title= ? and t.task_status='Active'", taskName).firstValue();
 		if (response == null) {
 			return TdmSharedUtils.wrapWebServiceResults("FAILED", "No active task found for task name '" + taskName + "'.", response);
 		} else {
@@ -4904,7 +5026,7 @@ public class Logic extends WebServiceUserCode {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
-		String sql = "UPDATE task_globals SET " +
+		String sql = "UPDATE " + TDMDB_SCHEMA + ".task_globals SET " +
 				"global_value=(?) " +
 				"WHERE task_id = ? AND global_name = ?";
 		try {
@@ -4916,7 +5038,7 @@ public class Logic extends WebServiceUserCode {
 					if (luName != null && !"".equals(luName) && !"ALL".equals(luName) && !"null".equals(luName)) {
 						globalName = luName + "." + globalName;
 					}
-					db("TDM").execute(sql, globalValue, taskId, globalName);
+					db(TDM).execute(sql, globalValue, taskId, globalName);
 				}
 			}
 			response.put("result",new HashMap<>());
@@ -4942,13 +5064,13 @@ public class Logic extends WebServiceUserCode {
 				.format(Instant.now());
 
 		try {
-			String sql = "UPDATE \"" + schema + "\".tasks SET " +
+			String sql = "UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET " +
 					"task_status=(?), task_execution_status=(?), " +
 					"task_last_updated_date=(?), " +
 					"task_last_updated_by=(?) " +
 					"WHERE task_id = " + taskId;
 			String username=sessionUser().name();
-			db("TDM").execute(sql,"Inactive", "Inactive", now, username);
+			db(TDM).execute(sql,"Inactive", "Inactive", now, username);
 			try {
 				String activityDesc = "Task " + taskName + " was deleted";
 				TaskExecutionUtils.fnInsertActivity("delete", "Tasks", activityDesc);

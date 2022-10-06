@@ -104,6 +104,15 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_REF_UPD_SIZE = "10000";
 
+	@desc("Prefix of delete tables")
+	@category("TDM")
+	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
+	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
+	public static String MAIL_ADDRESS = "";
+
+	@category("TDM")
+	public static String TDMDB_SCHEMA = "public";
+
 	@desc("The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB")
 	@category("TDM")
 	public static String ORACLE8_DB_TYPE = "Oracle8";
@@ -116,8 +125,5 @@ public class SharedGlobals {
 	@desc("Prefix of delete tables")
 	@category("TDM")
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";
-	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
-	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
-	public static String MAIL_ADDRESS = "";
 
 }

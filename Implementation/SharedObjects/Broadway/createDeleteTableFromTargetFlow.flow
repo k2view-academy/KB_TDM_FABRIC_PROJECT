@@ -36,12 +36,6 @@
                                         "const": "buildTemplateData"
                                     },
                                     {
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "luTable",
                                         "schema": {
                                             "type": "string"
@@ -64,6 +58,29 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableIidFieldName",
+                                        "const": "",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceName",
+                                        "const": "",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -290,16 +307,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "LU_TABLE"
             },
             "rightPort": {
@@ -335,6 +342,16 @@
             "rightPort": {
                 "actor": "LuFunction2",
                 "name": "targetDbTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "luName"
             }
         },
         {

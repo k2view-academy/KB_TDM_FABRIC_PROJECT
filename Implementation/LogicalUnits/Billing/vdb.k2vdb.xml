@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.6.2">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.9.7">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -16,6 +16,7 @@
     <Table>OFFER</Table>
     <Table>PAYMENT</Table>
     <Table>SUBSCRIBER</Table>
+    <Table>subscriber_balance</Table>
     <Table>TAR_INVOICE</Table>
     <Table>TAR_PAYMENT</Table>
     <Table>TAR_SUBSCRIBER</Table>
@@ -57,6 +58,11 @@
         <Population name="popSubscriber.flow" order="2" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
+    <TableProperties name="subscriber_balance">
+      <Populations>
+        <Population name="query_public_subscriber_balance" order="2" disabled="false" populationType="Regular" />
+      </Populations>
+    </TableProperties>
     <TableProperties name="TAR_INVOICE">
       <Populations>
         <Population name="popTar_Invoice" order="6" disabled="false" populationType="Regular" />
@@ -92,6 +98,10 @@
       <To tableType="TableObject" table="SUBSCRIBER" populationObjectName="popSubscriber.flow" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
     </Relation>
     <Relation>
+      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+      <To tableType="TableObject" table="subscriber_balance" populationObjectName="query_public_subscriber_balance" column="subscriber_id" columnId="queryCol_0" />
+    </Relation>
+    <Relation>
       <From tableType="TableObject" table="INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
       <To tableType="TableObject" table="PAYMENT" populationObjectName="query_main_PAYMENT_Development" column="invoice_id" columnId="queryCol_0" />
     </Relation>
@@ -125,23 +135,24 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.6.2" name="vdb.k2vdb.xml">
+    <Graph version="6.5.9.7" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 389" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="312 193.40892" size="265 159.091141" wasexpanded="false" expanded="true">
         <Node name="LU_PARAMS" pos="316 212.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="686 155.454437" size="869 543.0912" wasexpanded="false" expanded="true">
-        <Node name="SUBSCRIBER" pos="690 317.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="OFFER" pos="992 558.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="INVOICE" pos="992 358.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="BALANCE" pos="992 174.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
-        <Node name="PAYMENT" pos="1294 383.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
+      <Group name="Source Tables" pos="677 181.454437" size="869 527.0912" wasexpanded="false" expanded="true">
+        <Node name="SUBSCRIBER" pos="681 327.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="OFFER" pos="983 568.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="INVOICE" pos="983 368.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="BALANCE" pos="983 200.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
+        <Node name="PAYMENT" pos="1285 393.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Group name="Target Tables for Delete" pos="312 774.621033" size="855.666748 183.4245" wasexpanded="false" expanded="true">
         <Node name="TAR_PAYMENT" pos="906.6667 793.712158" size="257.000061 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_INVOICE" pos="618 802.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_SUBSCRIBER" pos="316 818.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
+      <Node name="subscriber_balance" pos="677 500" size="257 136" listGroupSize="250 100" viewType="Table" />
     </Graph>
   </DiagramGraph>
 </VirtualDB>

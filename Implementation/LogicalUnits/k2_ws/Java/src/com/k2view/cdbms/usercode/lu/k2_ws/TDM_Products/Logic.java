@@ -38,7 +38,8 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
-	final static String schema="public";
+	public static final String TDM = "TDM";
+	final static String schema = TDMDB_SCHEMA;
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 
 	@desc("Gets all TDM System (products), Active and Inactive, to populate Systems window")
@@ -68,7 +69,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try{
 			String sql = "SELECT * FROM \"" + schema + "\".products";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> result=new ArrayList<>();
 			Map<String,Object> product;
 			for(Db.Row row:rows) {
@@ -126,7 +127,7 @@ public class Logic extends WebServiceUserCode {
 		try{
 			String sql = "SELECT * FROM \"" + schema + "\".products " +
 					"WHERE \"" + schema + "\".products.product_id = " + prodId;
-			Db.Row row = db("TDM").fetch(sql).firstRow();
+			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Map<String,Object> product;
 			if(!row.isEmpty()) {
 				product=new HashMap<>();
@@ -189,7 +190,7 @@ public class Logic extends WebServiceUserCode {
 					"product_creation_date, product_last_updated_date, product_last_updated_by, product_status) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING product_id";
 			String username = sessionUser().name();
-			Db.Row row = db("TDM").fetch(sql,product_name, product_description, product_vendor, product_versions, username, now, now,
+			Db.Row row = db(TDM).fetch(sql,product_name, product_description, product_vendor, product_versions, username, now, now,
 					username, "Active").firstRow();
 			int prodId = Integer.parseInt(row.get("product_id").toString());
 		
@@ -248,7 +249,7 @@ public class Logic extends WebServiceUserCode {
 					"product_last_updated_by=(?) " +
 					"WHERE product_id = " + prodId;
 			String username = sessionUser().name();
-			db("TDM").execute(sql, product_name, product_description, product_vendor, product_versions, now, username);
+			db(TDM).execute(sql, product_name, product_description, product_vendor, product_versions, now, username);
 		
 			String activityDesc = "Product " + product_name + " was updated";
 			try {
@@ -305,7 +306,7 @@ public class Logic extends WebServiceUserCode {
 			String sql = "SELECT * FROM \"" + schema + "\".product_logical_units " +
 			"INNER JOIN \"" + schema + "\".business_entities ON (\"" + schema + "\".product_logical_units.be_id = \"" + schema + "\".business_entities.be_id) " +
 					"WHERE product_logical_units.product_id = " + prodId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> productLogicalUnits=new ArrayList<>();
 			Map<String,Object> productLogicalUnit;
@@ -383,7 +384,7 @@ public class Logic extends WebServiceUserCode {
 			String sql = "SELECT * FROM \"" + schema + "\".product_logical_units " +
 			"INNER JOIN \"" + schema + "\".business_entities ON (\"" + schema + "\".product_logical_units.be_id = \"" + schema + "\".business_entities.be_id) " +
 					"WHERE product_id = -1 AND be_status = 'Active'";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> productLogicalUnits=new ArrayList<>();
 			Map<String,Object> productLogicalUnit;
 		
@@ -449,53 +450,22 @@ public class Logic extends WebServiceUserCode {
 			String sql= "UPDATE \"" + schema + "\".products  SET " +
 					"product_status=(?) " +
 					"WHERE product_id = " + prodId + " RETURNING product_name";
-			Db.Row row = db("TDM").fetch(sql,"Inactive").firstRow();
+			Db.Row row = db(TDM).fetch(sql,"Inactive").firstRow();
 			String prodName = row.get("product_name").toString();
 		
 			{
 				String updateProductLogicalUnits = "UPDATE \"" + schema + "\".product_logical_units " +
 						"SET product_id=(?), product_name=(?) " +
 						"WHERE product_id = " + prodId;
-				db("TDM").execute(updateProductLogicalUnits,-1,"");
+				db(TDM).execute(updateProductLogicalUnits,-1,"");
 			}
 		
 			{
 				String updateEnvironmentProducts = "UPDATE \"" + schema + "\".environment_products " +
 						"SET status=(?) " +
 						"WHERE product_id = " + prodId ;
-				db("TDM").execute(updateEnvironmentProducts,"Inactive");
+				db(TDM).execute(updateEnvironmentProducts,"Inactive");
 			}
-		
-			/*
-			{
-				// relation environment_product_interfaces no longer exist
-				String updateEnvironmentProductInterfaces = "UPDATE \"" + schema + "\".environment_product_interfaces SET " +
-					"env_product_interface_status=(?) " +
-					"WHERE product_id = " + prodId;
-				db("TDM").execute(updateEnvironmentProductInterfaces,"Inactive");
-		
-			}
-		
-			{
-				String updateTasks = "WITH src AS ( " +
-				"UPDATE \"" + schema + "\".tasks_products " +
-						"SET task_product_status = (?) " +
-						"WHERE \"" + schema + "\".tasks_products.product_id = " + prodId + " " +
-						"RETURNING \"" + schema + "\".tasks_products.task_id ) " +
-						" " +
-						"UPDATE \"" + schema + "\".tasks SET task_status = (?) " +
-						"FROM ( SELECT \"" + schema + "\".tasks_products.task_id FROM \"" + schema + "\".tasks_products " +
-						"WHERE \"" + schema + "\".tasks_products.task_product_status = \'Active\' " +
-						"GROUP BY \"" + schema + "\".tasks_products.task_id " +
-						"HAVING COUNT(*) = 1 " +
-						"INTERSECT " +
-						"SELECT \"" + schema + "\".tasks_products.task_id " +
-						"FROM \"" + schema + "\".tasks_products " +
-						"WHERE \"" + schema + "\".tasks_products.product_id = " + prodId + " ) AS sq " +
-						"WHERE \"" + schema + "\".tasks.task_id = sq.task_id AND \"" + schema + "\".tasks.task_status = \'Active\'";
-				db("TDM").execute(updateTasks,"Inactive","Inactive");
-			}
-			 */
 		
 			try {
 				String activityDesc = "Product " + prodName + " was deleted";
@@ -564,7 +534,7 @@ public class Logic extends WebServiceUserCode {
 					"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".environment_products.environment_id AND \"" + schema + "\".environments.environment_status = \'Active\' )" +
 					"WHERE \"" + schema + "\".environment_products.product_id = " +  productId +
 					" AND \"" + schema + "\".environment_products.status = 'Active'";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			HashMap<String,Object> env;
 			List<HashMap<String,Object>> result=new ArrayList<>();
@@ -644,7 +614,7 @@ public class Logic extends WebServiceUserCode {
 					"LEFT JOIN \"" + schema + "\".product_logical_units ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".products.product_id) " +
 					"WHERE \"" + schema + "\".products.product_status = 'Active' " +
 					"GROUP BY \"" + schema + "\".products.product_id ";
-			Db.Rows rows= db("TDM").fetch(sql);
+			Db.Rows rows= db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
 			Map<String,Object> product;
@@ -680,7 +650,7 @@ public class Logic extends WebServiceUserCode {
 				"product_last_updated_date=(?)," +
 				"product_last_updated_by=(?) " +
 				"WHERE product_id = " + prodId;
-		db("TDM").execute(sql,now,username);
+		db(TDM).execute(sql,now,username);
 	}
 
 	static void fnInsertActivity(String action,String entity, String description) throws Exception{
@@ -692,7 +662,7 @@ public class Logic extends WebServiceUserCode {
 		String sql= "INSERT INTO \"" + schema + "\".activities " +
 				"(date, action, entity, user_id, username, description) " +
 				"VALUES (?, ?, ?, ?, ?, ?)";
-		db("TDM").execute(sql,now,action,entity,userId,username,description);
+		db(TDM).execute(sql,now,action,entity,userId,username,description);
 	}
 
 }

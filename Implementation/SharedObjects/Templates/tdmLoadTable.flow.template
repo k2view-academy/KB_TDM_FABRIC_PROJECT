@@ -252,10 +252,6 @@
                                             "{{this}}"{{#if @last}}{{^}},{{/if}}
 											{{/each}}
                                         ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "oracle"
                                     }{{#each TARGET_TABLE_COLUMNS}},
 									{
                                         "name": "{{this}}",

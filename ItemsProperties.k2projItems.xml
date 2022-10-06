@@ -3,6 +3,16 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
+      <NodeName>createLoadAllTablesFlow.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\createLoadAllTablesFlow.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>createDeleteAllTablesFlow.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\createDeleteAllTablesFlow.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>checkIfFieldSequential.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -83,11 +93,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>createLoadAllTablesFlow.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\createLoadAllTablesFlow.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>createLoadAllTablesFlow.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createLoadAllTablesFlow.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
@@ -111,11 +116,6 @@
       <NodeName>createDeleteTableFlows.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createDeleteTableFlows.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>createDeleteAllTablesFlow.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\createDeleteAllTablesFlow.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>createDeleteAllTablesFlow.actor</NodeName>
@@ -723,99 +723,9 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>TestIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TestIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>VisitIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\VisitIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>AllergyIDInit.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\AllergyIDInit.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>AllergyIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\AllergyIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>InvoiceIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\InvoiceIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PatientIdInit.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PatientIdInit.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PatientIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PatientIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PaymentIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PaymentIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PolicyIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PolicyIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>AllergyIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\AllergyIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>InvoiceIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\InvoiceIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PatientIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PatientIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PaymentIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PaymentIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>PolicyIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\PolicyIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>VisitIdInit.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\VisitIdInit.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>VisitIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\VisitIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TestIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TestIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>LabIdSeq.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\LabIdSeq.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>LabIdSeq_Actor.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\LabIdSeq_Actor.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
+      <NodeName>sharedUtilsTali.java&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;com\k2view\cdbms\usercode\common&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\SharedObjects\Java\src\com\k2view\cdbms\usercode\common\sharedUtilsTali</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Java\src@Test</CategoryKey>
     </ProjectItemProp>
   </ProjectItemPropList>
   <ProjectItemsCategoryList>
@@ -878,6 +788,10 @@
     <ProjectItemsCategory>
       <Name>Exrternal_Entity_List</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@Exrternal_Entity_List</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>Test</Name>
+      <Key>Implementation\SharedObjects\Java\src@Test</Key>
     </ProjectItemsCategory>
   </ProjectItemsCategoryList>
 </ProjectItemsProperties>

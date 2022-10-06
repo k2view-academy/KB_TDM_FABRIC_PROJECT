@@ -32,10 +32,6 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "buildTemplateData"
                                     },
@@ -74,6 +70,13 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -222,12 +225,12 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "transform"
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "templateContent",
@@ -345,16 +348,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "luType"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "LU_TABLE"
             },
             "rightPort": {
@@ -410,6 +403,16 @@
             "rightPort": {
                 "actor": "LuFunction2",
                 "name": "sequenceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "LuFunction2",
+                "name": "luName"
             }
         },
         {

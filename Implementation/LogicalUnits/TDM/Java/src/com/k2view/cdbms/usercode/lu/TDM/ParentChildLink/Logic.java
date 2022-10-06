@@ -32,7 +32,8 @@ import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {
 
-
+	public static final String TDM = "TDM";
+	
 	public static void fnEnrParentChildLink() throws Exception {
 		// Tali- 3-Dec-18- fix the query- add a join with task_execution_entities to get only the relevant records
 		//log.info("fnEnrParentChildLink - Start");
@@ -47,7 +48,8 @@ public class Logic extends UserCode {
 			// TDM 7.1- performance improvement- remove the to_char from the version_datetime in the WHERE statement
 			String sql = "SELECT rel.source_env, rel.lu_type_1, rel.lu_type_2, rel.lu_type1_eid, rel.lu_type2_eid, rel.creation_date, rel.version_name, " +
 				"to_char(rel.version_datetime,'YYYY-MM-DD HH24:MI:SS') as version_datetime, parent.target_entity_id as parent_id, child.target_entity_id as child_id " +
-				"FROM tdm_lu_type_relation_eid rel, task_execution_entities parent, task_execution_entities child " +
+				"FROM " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid rel, " + TDMDB_SCHEMA + ".task_execution_entities parent, " + 
+				TDMDB_SCHEMA + ".task_execution_entities child " +
 				"where parent.task_execution_id = ? and parent.lu_name = rel.lu_type_1 " +
 				"and parent.source_env = rel.source_env and parent.iid = rel.lu_type1_eid " +
 				"and parent.version_name = rel.version_name "+
@@ -81,7 +83,7 @@ public class Logic extends UserCode {
 					loadRelTar = true;
 				}
 				//log.info("fnEnrParentChildLink - sql: " + sql);
-				rows = db("TDM").fetch(sql, taskExecId);
+				rows = db(TDM).fetch(sql, taskExecId);
 			
 				//log.info("fnEnrParentChildLink - Loading data to Relation tables");
 				for (Db.Row row : rows) {
@@ -183,10 +185,11 @@ public class Logic extends UserCode {
 				//log.info("fnEncTaskExecutionLinkEntities - Before execute insertChildSql: " + insertChildSql);
 				fabric().execute(insertChildSql);
 				//log.info("fnEncTaskExecutionLinkEntities - after execute insertChildSql");
-				String getRootLus = "select lu_name from task_execution_list l, product_logical_units p where l.lu_id = p.lu_id and l.task_execution_id = ? " + 
+				String getRootLus = "select lu_name from " + TDMDB_SCHEMA + ".task_execution_list l, " + 
+					TDMDB_SCHEMA + ".product_logical_units p where l.lu_id = p.lu_id and l.task_execution_id = ? " + 
 					"and parent_lu_id is null and l.lu_id > 0";
 				
-				rootList = db("TDM").fetch(getRootLus, ludb().fetch("SELECT IID('TDM')").firstValue());
+				rootList = db(TDM).fetch(getRootLus, ludb().fetch("SELECT IID('TDM')").firstValue());
 				String rootListIn = "";
 				String comma = "";
 				for(Db.Row root : rootList) {

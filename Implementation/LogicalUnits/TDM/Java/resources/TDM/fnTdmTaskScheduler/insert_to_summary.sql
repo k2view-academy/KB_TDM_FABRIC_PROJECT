@@ -1,4 +1,4 @@
-INSERT INTO TASK_EXECUTION_SUMMARY (
+INSERT INTO @TDMDB_SCHEMA@.TASK_EXECUTION_SUMMARY (
     task_id,
     task_execution_id,
     start_execution_time,

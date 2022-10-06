@@ -306,6 +306,20 @@
                     "remark": "The task receives a set of  Globals, these Globals will be set at this stage to impact the run of the Entity loading.",
                     "actors": [
                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Split IID And Clone Number",
                             "minHeight": 265,
                             "actorType": {
@@ -355,7 +369,7 @@
         {
             "stages": [
                 {
-                    "name": "Get Values of Globals And Set  Indicators And IDs",
+                    "name": "Get Values of Globals And Set Indicators And IDs",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
@@ -385,7 +399,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select p.data_center_name from environment_products p, task_execution_list l, tasks_logical_units u\r\nwhere l.task_execution_id=${taskExeID} and  l.task_id = u.task_id and l.lu_id = u.lu_id and u.lu_name = ${luName}\r\nand l.source_environment_id= p.environment_id and l.product_id = p.product_id\r\n"
+                                        "const": "select p.data_center_name from ${@schema}.environment_products p, ${@schema}.task_execution_list l, ${@schema}.tasks_logical_units u\r\nwhere l.task_execution_id=${taskExeID} and  l.task_id = u.task_id and l.lu_id = u.lu_id and u.lu_name = ${luName}\r\nand l.source_environment_id= p.environment_id and l.product_id = p.product_id\r\n"
                                     },
                                     {
                                         "name": "taskExeID",
@@ -398,6 +412,13 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -522,7 +543,7 @@
                 {
                     "name": "Get Instance From Fabric",
                     "dependsOnList": [
-                        "Get Values of Globals And Set  Indicators And IDs"
+                        "Get Values of Globals And Set Indicators And IDs"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -619,7 +640,7 @@
                 {
                     "name": "Stage 1",
                     "dependsOnList": [
-                        "Get Values of Globals And Set  Indicators And IDs"
+                        "Get Values of Globals And Set Indicators And IDs"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -822,6 +843,16 @@
             "rightPort": {
                 "actor": "Set Start Processing Time",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Source Environment DC",
+                "name": "schema"
             }
         },
         {

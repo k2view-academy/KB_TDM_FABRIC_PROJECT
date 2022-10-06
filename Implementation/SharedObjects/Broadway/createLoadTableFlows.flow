@@ -17,10 +17,11 @@
                                         "const": "getLuTables"
                                     },
                                     {
-                                        "name": "luType",
+                                        "name": "luName",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -580,7 +581,7 @@
             },
             "rightPort": {
                 "actor": "geLuTables",
-                "name": "luType"
+                "name": "luName"
             }
         },
         {

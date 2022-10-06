@@ -1,4 +1,4 @@
-INSERT INTO TASK_EXECUTION_LIST(
+INSERT INTO @TDMDB_SCHEMA@.TASK_EXECUTION_LIST(
     task_id,
     task_execution_id,
     creation_date,

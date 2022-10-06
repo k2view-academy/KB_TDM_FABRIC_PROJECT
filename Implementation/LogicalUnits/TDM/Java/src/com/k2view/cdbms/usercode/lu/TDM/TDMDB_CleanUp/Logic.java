@@ -27,10 +27,11 @@ import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import com.k2view.fabric.events.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {
-
+	public static final String TDM = "TDM";
 
 	@desc("The function will be  called by user job to clean up the TDMDB tables\r\n" +
 			" based on retention period given in TDMDB table tdm_general_parameters")
@@ -41,10 +42,10 @@ public class Logic extends UserCode {
 		String retentionDate = "";
 		
 		//Set the SQL parameter
-		String queryString = "SELECT param_value FROM tdm_general_parameters where UPPER(param_name) = 'CLEANUP_RETENTION_PERIOD'";
+		String queryString = "SELECT param_value FROM " + TDMDB_SCHEMA + ".tdm_general_parameters where UPPER(param_name) = 'CLEANUP_RETENTION_PERIOD'";
 		
 		//Execute the query
-		String retentionPeriod = "" + db("TDM").fetch(queryString).firstValue();
+		String retentionPeriod = "" + db(TDM).fetch(queryString).firstValue();
 		
 		if (retentionPeriod == null || "null".equalsIgnoreCase(retentionPeriod) || "".equals(retentionPeriod)) {
 			throw new Exception("tdm_general_parameters is missing parameter for CleanUp process");
@@ -52,7 +53,7 @@ public class Logic extends UserCode {
 		
 		queryString = "SELECT date_trunc('day', NOW() - interval ' " + retentionPeriod + " MONTH')";
 		
-		retentionDate = "" + db("TDM").fetch(queryString).firstValue();
+		retentionDate = "" + db(TDM).fetch(queryString).firstValue();
 		
 		//log.info("retentionDate = " + retentionDate);		
 		//Loop on the translation table and run each delete statement
@@ -92,7 +93,7 @@ public class Logic extends UserCode {
 			//Execute the query	
 			try {
 				//log.info("Running Statement: " + statement);
-				db("TDM").execute(statement, queryParam);
+				db(TDM).execute(statement, queryParam);
 			} 
 			catch (Exception e) {
 				

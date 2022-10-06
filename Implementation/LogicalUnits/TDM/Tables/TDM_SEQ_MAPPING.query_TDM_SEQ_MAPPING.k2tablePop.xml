@@ -36,7 +36,7 @@
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_8" name="target_id" dataType="Text" index="8" />
         <Output xsi:type="DBQueryDataSaveColumn" id="queryCol_9" name="is_instance_id" dataType="Text" index="9" />
       </OutputsList>
-      <SQL><![CDATA[SELECT distinct * FROM public.tdm_seq_mapping]]></SQL>
+      <SQL><![CDATA[SELECT distinct * FROM @TDMDB_SCHEMA@.tdm_seq_mapping]]></SQL>
     </Item>
   </ItemsList>
   <LinksList>
@@ -53,21 +53,21 @@
   </LinksList>
   <ModeKeyColumnIDs />
   <DiagramGraph>
-    <Graph name="TDM_SEQ_MAPPING.query_TDM_SEQ_MAPPING.k2tablePop.xml" lastPartID="287">
-      <TableNode partID="0" name="TDM_SEQ_MAPPING" pos="556.659241 16.59896" width="305.462646" />
-      <DBQueryNode partID="266" name="TDM" pos="144 30" size="253 192.802063" isRoot="true">
-        <DBQuery>{"Name":"query_public_tdm_seq_mapping","ID":"query_query_public_tdm_seq_mapping","ConnName":"TDM","SQL":"SELECT distinct * FROM public.tdm_seq_mapping","ColumnsList":[{"ID":"queryCol_0","Name":"task_execution_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"lu_type","DataType":"Text","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"source_env","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"entity_target_id","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"seq_name","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"table_name","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"column_name","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"source_id","DataType":"Text","Index":7,"IsInputArgument":true},{"ID":"queryCol_8","Name":"target_id","DataType":"Text","Index":8,"IsInputArgument":true},{"ID":"queryCol_9","Name":"is_instance_id","DataType":"Text","Index":9,"IsInputArgument":true},{"ID":"queryCol_10","Name":"entity_sequence","DataType":"Integer","Index":10,"IsInputArgument":true}]}</DBQuery>
+    <Graph name="TDM_SEQ_MAPPING.query_TDM_SEQ_MAPPING.k2tablePop.xml" lastPartID="333">
+      <TableNode partID="0" name="TDM_SEQ_MAPPING" pos="557.896 16.59896" width="304.2259" />
+      <DBQueryNode partID="266" name="TDM" pos="139 32" size="253 192.802063" isRoot="true">
+        <DBQuery>{"Name":"query_public_tdm_seq_mapping","ID":"query_query_public_tdm_seq_mapping","ConnName":"TDM","SQL":"SELECT distinct * FROM @TDMDB_SCHEMA@.tdm_seq_mapping","ColumnsList":[{"ID":"queryCol_0","Name":"task_execution_id","DataType":"Integer","Index":0,"IsInputArgument":true},{"ID":"queryCol_1","Name":"lu_type","DataType":"Text","Index":1,"IsInputArgument":true},{"ID":"queryCol_2","Name":"source_env","DataType":"Text","Index":2,"IsInputArgument":true},{"ID":"queryCol_3","Name":"entity_target_id","DataType":"Text","Index":3,"IsInputArgument":true},{"ID":"queryCol_4","Name":"seq_name","DataType":"Text","Index":4,"IsInputArgument":true},{"ID":"queryCol_5","Name":"table_name","DataType":"Text","Index":5,"IsInputArgument":true},{"ID":"queryCol_6","Name":"column_name","DataType":"Text","Index":6,"IsInputArgument":true},{"ID":"queryCol_7","Name":"source_id","DataType":"Text","Index":7,"IsInputArgument":true},{"ID":"queryCol_8","Name":"target_id","DataType":"Text","Index":8,"IsInputArgument":true},{"ID":"queryCol_9","Name":"is_instance_id","DataType":"Text","Index":9,"IsInputArgument":true},{"ID":"queryCol_10","Name":"entity_sequence","DataType":"Integer","Index":10,"IsInputArgument":true}]}</DBQuery>
       </DBQueryNode>
-      <Link partID="278" from="0" to="1" pointsArr="397 66.03646 407 66.03646 546.659241 47.63542 556.659241 47.63542" fromNodePartID="266" fromNodeColumnName="task_execution_id" toNodePartID="0" toNodeColumnName="task_execution_id" />
-      <Link partID="279" from="2" to="3" pointsArr="397 78.109375 407 78.109375 546.659241 59.7083359 556.659241 59.7083359" fromNodePartID="266" fromNodeColumnName="lu_type" toNodePartID="0" toNodeColumnName="lu_type" />
-      <Link partID="280" from="4" to="5" pointsArr="397 90.18228 407 90.18228 546.659241 71.78125 556.659241 71.78125" fromNodePartID="266" fromNodeColumnName="source_env" toNodePartID="0" toNodeColumnName="source_env" />
-      <Link partID="281" from="6" to="7" pointsArr="397 102.2552 407 102.2552 546.659241 83.85417 556.659241 83.85417" fromNodePartID="266" fromNodeColumnName="entity_target_id" toNodePartID="0" toNodeColumnName="entity_target_id" />
-      <Link partID="282" from="8" to="9" pointsArr="397 114.328125 407 114.328125 546.659241 95.92708 556.659241 95.92708" fromNodePartID="266" fromNodeColumnName="seq_name" toNodePartID="0" toNodeColumnName="seq_name" />
-      <Link partID="283" from="10" to="11" pointsArr="397 126.401031 407 126.401031 546.659241 108 556.659241 108" fromNodePartID="266" fromNodeColumnName="table_name" toNodePartID="0" toNodeColumnName="table_name" />
-      <Link partID="284" from="12" to="13" pointsArr="397 138.473953 407 138.473953 546.659241 120.072922 556.659241 120.072922" fromNodePartID="266" fromNodeColumnName="column_name" toNodePartID="0" toNodeColumnName="column_name" />
-      <Link partID="285" from="14" to="15" pointsArr="397 150.546875 407 150.546875 546.659241 132.145844 556.659241 132.145844" fromNodePartID="266" fromNodeColumnName="source_id" toNodePartID="0" toNodeColumnName="source_id" />
-      <Link partID="286" from="16" to="17" pointsArr="397 162.6198 407 162.6198 546.659241 144.218765 556.659241 144.218765" fromNodePartID="266" fromNodeColumnName="target_id" toNodePartID="0" toNodeColumnName="target_id" />
-      <Link partID="287" from="18" to="19" pointsArr="397 174.692719 407 174.692719 546.659241 156.291687 556.659241 156.291687" fromNodePartID="266" fromNodeColumnName="is_instance_id" toNodePartID="0" toNodeColumnName="is_instance_id" />
+      <Link partID="278" from="0" to="1" pointsArr="392 68.03645 402 68.03645 547.896 47.63542 557.896 47.63542" fromNodePartID="266" fromNodeColumnName="task_execution_id" toNodePartID="0" toNodeColumnName="task_execution_id" />
+      <Link partID="279" from="2" to="3" pointsArr="392 80.109375 402 80.109375 547.896 59.7083359 557.896 59.7083359" fromNodePartID="266" fromNodeColumnName="lu_type" toNodePartID="0" toNodeColumnName="lu_type" />
+      <Link partID="280" from="4" to="5" pointsArr="392 92.18229 402 92.18229 547.896 71.78125 557.896 71.78125" fromNodePartID="266" fromNodeColumnName="source_env" toNodePartID="0" toNodeColumnName="source_env" />
+      <Link partID="281" from="6" to="7" pointsArr="392 104.2552 402 104.2552 547.896 83.85417 557.896 83.85417" fromNodePartID="266" fromNodeColumnName="entity_target_id" toNodePartID="0" toNodeColumnName="entity_target_id" />
+      <Link partID="282" from="8" to="9" pointsArr="392 116.328117 402 116.328117 547.896 95.92708 557.896 95.92708" fromNodePartID="266" fromNodeColumnName="seq_name" toNodePartID="0" toNodeColumnName="seq_name" />
+      <Link partID="283" from="10" to="11" pointsArr="392 128.401031 402 128.401031 547.896 108 557.896 108" fromNodePartID="266" fromNodeColumnName="table_name" toNodePartID="0" toNodeColumnName="table_name" />
+      <Link partID="284" from="12" to="13" pointsArr="392 140.473953 402 140.473953 547.896 120.072922 557.896 120.072922" fromNodePartID="266" fromNodeColumnName="column_name" toNodePartID="0" toNodeColumnName="column_name" />
+      <Link partID="285" from="14" to="15" pointsArr="392 152.546875 402 152.546875 547.896 132.145844 557.896 132.145844" fromNodePartID="266" fromNodeColumnName="source_id" toNodePartID="0" toNodeColumnName="source_id" />
+      <Link partID="286" from="16" to="17" pointsArr="392 164.6198 402 164.6198 547.896 144.218765 557.896 144.218765" fromNodePartID="266" fromNodeColumnName="target_id" toNodePartID="0" toNodeColumnName="target_id" />
+      <Link partID="287" from="18" to="19" pointsArr="392 176.692719 402 176.692719 547.896 156.291687 557.896 156.291687" fromNodePartID="266" fromNodeColumnName="is_instance_id" toNodePartID="0" toNodeColumnName="is_instance_id" />
     </Graph>
   </DiagramGraph>
 </TablePopulationObject>

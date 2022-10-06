@@ -107,16 +107,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
@@ -174,16 +165,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_VERSION_NAME"
                                     }
                                 ],
@@ -196,16 +178,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_VERSION_DATETIME"
                                     }
                                 ],
@@ -265,6 +238,20 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -288,7 +275,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "INSERT INTO PUBLIC.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_NAME, VERSION_DATETIME, FABRIC_GET_TIME, TOTAL_PROCESSING_TIME, CLONE_NO) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime}, ${entityEndTime}, COALESCE(${tdmVersionName}, '') AS VERSION_NAME, \r\nTO_TIMESTAMP(${tdmVersionDateTime}, 'YYYYMMDDHH24MISS') as VERSION_DATETIME, ${fabticTime}, ${totalTime}, ${cloneNo}\r\nFROM TASK_EXECUTION_LIST L, TASKS T, ENViRONMENTS E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
+                                        "const": "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_NAME, VERSION_DATETIME, FABRIC_GET_TIME, TOTAL_PROCESSING_TIME, CLONE_NO) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime}, ${entityEndTime}, COALESCE(${tdmVersionName}, '') AS VERSION_NAME, \r\nTO_TIMESTAMP(${tdmVersionDateTime}, 'YYYYMMDDHH24MISS') as VERSION_DATETIME, ${fabticTime}, ${totalTime}, ${cloneNo}\r\nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
                                     },
                                     {
                                         "name": "luName",
@@ -371,6 +358,13 @@
                                     {
                                         "name": "cloneNo",
                                         "schema": {}
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -631,6 +625,16 @@
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
                 "name": "entityEndTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Add Entity to Entities Table",
+                "name": "schema"
             }
         },
         {

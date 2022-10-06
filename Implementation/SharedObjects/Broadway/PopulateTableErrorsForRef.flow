@@ -195,6 +195,20 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Build string from input parameters",
                             "minHeight": 79,
                             "actorType": {
@@ -239,7 +253,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": "public"
+                                        "const": null
                                     },
                                     {
                                         "name": "table",
@@ -620,6 +634,16 @@
             "rightPort": {
                 "actor": "Format the current date",
                 "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "schema"
             }
         },
         {

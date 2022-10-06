@@ -3,6 +3,31 @@
         {
             "stages": [
                 {
+                    "name": "TDMDB Schema",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get IID Separator",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -18,7 +43,14 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select param_value from tdm_general_parameters where \r\nparam_name ='iid_separator'"
+                                        "const": "select param_value from ${@schema}.tdm_general_parameters where \r\nparam_name ='iid_separator'"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -130,7 +162,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Get IID  Open Separator From TDMDB__1",
+                            "name": "Get IID  Open Separator From TDMDB",
                             "actorType": {
                                 "parentType": "DbFetchField",
                                 "inputs": [
@@ -140,7 +172,14 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select param_value from tdm_general_parameters where \r\nparam_name ='IID_OPEN_SEPARATOR'"
+                                        "const": "select param_value from ${@schema}.tdm_general_parameters where \r\nparam_name ='IID_OPEN_SEPARATOR'"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -252,7 +291,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Get IID  Close Separator From TDMDB__2",
+                            "name": "Get IID  Close Separator From TDMDB",
                             "actorType": {
                                 "parentType": "DbFetchField",
                                 "inputs": [
@@ -262,7 +301,14 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select param_value from tdm_general_parameters where \r\nparam_name ='IID_CLOSE_SEPARATOR'"
+                                        "const": "select param_value from ${@schema}.tdm_general_parameters where \r\nparam_name ='IID_CLOSE_SEPARATOR'"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -369,6 +415,36 @@
     "connections": [
         {
             "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get IID Separator From TDMDB",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get IID  Open Separator From TDMDB",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get IID  Close Separator From TDMDB",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get IID Separator From TDMDB",
                 "name": "result"
             },
@@ -389,7 +465,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get IID  Open Separator From TDMDB__1",
+                "actor": "Get IID  Open Separator From TDMDB",
                 "name": "result"
             },
             "rightPort": {
@@ -399,7 +475,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get IID  Open Separator From TDMDB__1",
+                "actor": "Get IID  Open Separator From TDMDB",
                 "name": "result"
             },
             "rightPort": {
@@ -409,7 +485,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get IID  Close Separator From TDMDB__2",
+                "actor": "Get IID  Close Separator From TDMDB",
                 "name": "result"
             },
             "rightPort": {
@@ -419,7 +495,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get IID  Close Separator From TDMDB__2",
+                "actor": "Get IID  Close Separator From TDMDB",
                 "name": "result"
             },
             "rightPort": {

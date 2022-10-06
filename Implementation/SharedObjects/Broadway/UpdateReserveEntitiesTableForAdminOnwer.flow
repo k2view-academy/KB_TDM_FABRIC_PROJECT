@@ -168,6 +168,34 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get Reserve Note",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "RESERVE_NOTE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -190,28 +218,6 @@
                                         "schema": {
                                             "type": "string"
                                         }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Logger2",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "NOW: ${now}"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "now",
-                                        "schema": {},
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -257,14 +263,7 @@
                             "name": "GetNewEndDate1",
                             "actorType": {
                                 "parentType": "GetNewEndDate",
-                                "inputs": [
-                                    {
-                                        "name": "retentionPeriodValue",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -323,28 +322,6 @@
                                 "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Logger3",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "After retention: ${now} "
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "now",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 },
@@ -401,7 +378,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT TDM_RESERVED_ENTITIES.reserve_owner, TDM_RESERVED_ENTITIES.start_datetime, TDM_RESERVED_ENTITIES.end_datetime\r\nFROM TDM_RESERVED_ENTITIES\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId} AND\r\nTDM_RESERVED_ENTITIES.start_datetime <= timezone('UTC', now()) AND\r\n(TDM_RESERVED_ENTITIES.end_datetime IS NULL OR TDM_RESERVED_ENTITIES.end_datetime >= timezone('UTC', now()))\r\nUNION SELECT null as reserve_owner, null as start_datetime, null as end_datetime\r\nLIMIT 1"
+                                        "const": "SELECT TDM_RESERVED_ENTITIES.reserve_owner, TDM_RESERVED_ENTITIES.start_datetime, TDM_RESERVED_ENTITIES.end_datetime\r\nFROM ${@schema}.TDM_RESERVED_ENTITIES\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId} AND\r\nTDM_RESERVED_ENTITIES.start_datetime <= timezone('UTC', now()) AND\r\n(TDM_RESERVED_ENTITIES.end_datetime IS NULL OR TDM_RESERVED_ENTITIES.end_datetime >= timezone('UTC', now()))\r\nUNION SELECT null as reserve_owner, null as start_datetime, null as end_datetime\r\nLIMIT 1"
                                     },
                                     {
                                         "name": "entityId",
@@ -421,6 +398,13 @@
                                         "name": "envId",
                                         "schema": {
                                             "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -444,28 +428,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "After date format: ${date}"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "date",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
                             }
                         }
                     ]
@@ -522,14 +484,7 @@
                             "name": "GetNewEndDate2",
                             "actorType": {
                                 "parentType": "GetNewEndDate",
-                                "inputs": [
-                                    {
-                                        "name": "retentionPeriodValue",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -609,7 +564,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "INSERT INTO TDM_RESERVED_ENTITIES (entity_id, be_id, env_id, task_id, task_execution_id, start_datetime, end_datetime, reserve_owner) \r\n(SELECT ${entityId}, ${beId}, ${envId}, ${taskId}, ${taskExecutionId}, timezone('UTC', now()), \r\n(CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END), ${userName})\r\nON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime = timezone('UTC', now()), end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END), reserve_owner = ${userName}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId}"
+                                        "const": "INSERT INTO ${@schema}.TDM_RESERVED_ENTITIES (entity_id, be_id, env_id, task_id, task_execution_id, start_datetime, end_datetime, reserve_owner, reserve_notes) \r\n(SELECT ${entityId}, ${beId}, ${envId}, ${taskId}, ${taskExecutionId}, timezone('UTC', now()), \r\n(CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END), ${userName}, ${reserveNote})\r\nON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime = timezone('UTC', now()), end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END), \r\n    reserve_owner = ${userName}, reserve_notes = ${reserveNote}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId}"
                                     },
                                     {
                                         "name": "entityId",
@@ -655,6 +610,20 @@
                                     },
                                     {
                                         "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserveNote",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -721,7 +690,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TDM_RESERVED_ENTITIES set task_id = ${taskID}, task_execution_id = ${taskExecID}, end_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END)\r\nWHERE entity_id = ${entityID} AND be_id = ${beID} AND env_id = ${envID}"
+                                        "const": "UPDATE ${@schema}.TDM_RESERVED_ENTITIES set task_id = ${taskID}, task_execution_id = ${taskExecID}, \r\nend_datetime = (CASE WHEN ${newEndDate} = 'infinity' THEN NULL ELSE to_timestamp(${newEndDate}, 'YYYY-MM-DD HH24:MI:SS.MS') END),\r\nreserve_notes = ${reserveNote}\r\nWHERE entity_id = ${entityID} AND be_id = ${beID} AND env_id = ${envID}"
                                     },
                                     {
                                         "name": "taskID",
@@ -762,6 +731,20 @@
                                         "name": "envID",
                                         "schema": {
                                             "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserveNote",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -861,16 +844,6 @@
             "rightPort": {
                 "actor": "GetNewEndDate1",
                 "name": "nowDate"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Now",
-                "name": "date"
-            },
-            "rightPort": {
-                "actor": "Logger2",
-                "name": "now"
             }
         },
         {
@@ -1055,6 +1028,56 @@
         },
         {
             "leftPort": {
+                "actor": "Get Reserve Note",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
+                "name": "reserveNote"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Reserve Note",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update the End date",
+                "name": "reserveNote"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update the End date",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "ToNumber1",
                 "name": "number"
             },
@@ -1095,16 +1118,6 @@
         },
         {
             "leftPort": {
-                "actor": "GetNewEndDate1",
-                "name": "newEndDate"
-            },
-            "rightPort": {
-                "actor": "Logger3",
-                "name": "now"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "infinity Date",
                 "name": "value"
             },
@@ -1121,16 +1134,6 @@
             "rightPort": {
                 "actor": "Const1",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Date Format",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "date"
             }
         },
         {

@@ -39,7 +39,8 @@ import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserEnvs;
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 
-	static final String schema = "public";
+	public static final String TDM = "TDM";
+	static final String schema = TDMDB_SCHEMA;
 	static final String admin = "admin";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	static final String adi_only = "false";
@@ -96,7 +97,7 @@ public class Logic extends WebServiceUserCode {
 					" FROM \"" + schema + "\".environments " +
 					"LEFT JOIN \"" + schema + "\".environment_owners ON ( " +
 					"\"" + schema + "\".environments.environment_id = \"" + schema + "\".environment_owners.environment_id )";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 
 			List<Map<String, Object>> result = new ArrayList<>();
 			Map<String, Object> environment;
@@ -217,7 +218,7 @@ public class Logic extends WebServiceUserCode {
 					"allow_read=(?) ," +
 					"sync_mode=(?) " +
 					"WHERE environment_id = " + envId;
-			db("TDM").execute(sql,
+			db(TDM).execute(sql,
 					environment_name, environment_description, environment_point_of_contact_first_name,
 					environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2,
 					environment_point_of_contact_email, now,
@@ -244,7 +245,7 @@ public class Logic extends WebServiceUserCode {
 		
 			if ("admin".equals(permissionGroup)) {
 				String updateEnvironmentOwners = "DELETE FROM \"" + schema + "\".environment_owners WHERE environment_id = (?)";
-				db("TDM").execute(updateEnvironmentOwners, envId);
+				db(TDM).execute(updateEnvironmentOwners, envId);
 		
 				String userNameSubQuery = "";
 				String ownersTemp = "";
@@ -258,11 +259,11 @@ public class Logic extends WebServiceUserCode {
 		
 				if (ownersTemp.length() > 0) {
 					userNameSubQuery = " AND username IN (" + ownersTemp + ")";
-					db("TDM").execute("DELETE FROM \"" + schema + "\".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, envId);
+					db(TDM).execute("DELETE FROM \"" + schema + "\".environment_role_users WHERE environment_id = (?)" + userNameSubQuery, envId);
 				}
 		
 				for (Map<String, String> owner : owners) {
-					db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
+					db(TDM).execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
 							envId, owner.get("user_id"), owner.get("username") != null ? owner.get("username") : owner.get("user_name"),
 							owner.get("user_type"));
 				}
@@ -299,25 +300,25 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "UPDATE \"" + schema + "\".environments SET " +
 					"environment_status=(?) " + "WHERE environment_id = " + envId;
-			db("TDM").execute(sql, "Inactive");
+			db(TDM).execute(sql, "Inactive");
 		
 			{
 				String updateTasks = "UPDATE \"" + schema + "\".tasks " +
 						"SET task_status = \'Inactive\'" +
 						"WHERE environment_id = " + envId;
-				db("TDM").execute(updateTasks);
+				db(TDM).execute(updateTasks);
 			}
 			{
 				String updateEnvironmentProducts = "UPDATE \"" + schema + "\".environment_products " +
 						"SET status = \'Inactive\'" +
 						"WHERE environment_id = \'" + envId + "\'";
-				db("TDM").execute(updateEnvironmentProducts);
+				db(TDM).execute(updateEnvironmentProducts);
 			}
 			{
 				String updateEnvironmentRoles = "UPDATE \"" + schema + "\".environment_roles " +
 						"SET role_status = \'Inactive\'" +
 						"WHERE environment_id = \'" + envId + "\'";
-				db("TDM").execute(updateEnvironmentRoles);
+				db(TDM).execute(updateEnvironmentRoles);
 			}
 		
 			String activityDesc = "'Environment " + envName + " was deleted";
@@ -378,7 +379,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			//getEnv
 			String getEnvironmentSql = "SELECT * FROM \"" + schema + "\".environments WHERE environment_id = " + envId;
-			Db.Row env = db("TDM").fetch(getEnvironmentSql).firstRow();
+			Db.Row env = db(TDM).fetch(getEnvironmentSql).firstRow();
 		
 			if(env.isEmpty()){ //envId doesn't exist
 				response.put("errorCode", "SUCCESS");
@@ -388,7 +389,7 @@ public class Logic extends WebServiceUserCode {
 		
 			//getEnvProduct
 			String sql = "SELECT * , " +
-					"( SELECT COUNT(*) FROM tasks " +
+					"( SELECT COUNT(*) FROM " + schema + ".tasks " +
 					"INNER JOIN \"" + schema + "\".tasks_logical_units " +
 					"ON (\"" + schema + "\".tasks_logical_units.task_id = \"" + schema + "\".tasks.task_id) " +
 					"INNER JOIN \"" + schema + "\".product_logical_units " +
@@ -398,7 +399,7 @@ public class Logic extends WebServiceUserCode {
 					"INNER JOIN \"" + schema + "\".products " +
 					"ON (\"" + schema + "\".environment_products.product_id = \"" + schema + "\".products.product_id) " +
 					"WHERE \"" + schema + "\".environment_products.environment_id = " + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			//updateEnvProductInterfaces
 			List<HashMap<String, Object>> products = new ArrayList<>();
@@ -457,12 +458,12 @@ public class Logic extends WebServiceUserCode {
 		
 			//end updateEnvProductInterfaces
 		
-			sql = "SELECT * FROM environment_products " +
+			sql = "SELECT * FROM " + schema + ".environment_products " +
 					"INNER JOIN \"" + schema + "\".products " +
-					"ON (\"" + schema + "\".environment_products.product_id = \"" + schema + "\".products.product_id) " +
+					"ON (environment_products.product_id = products.product_id) " +
 					"WHERE environment_id = " + envId;
 		
-			Db.Rows otherProducts = db("TDM").fetch(sql);
+			Db.Rows otherProducts = db(TDM).fetch(sql);
 		
 			List<HashMap<String, Object>> otherProductsList = new ArrayList<>();
 			otherProducts: for (Db.Row row : otherProducts) {
@@ -541,7 +542,7 @@ public class Logic extends WebServiceUserCode {
 			String sql = "INSERT INTO \"" + schema + "\".tdm_be_env_exclusion_list " +
 					"(be_id, environment_id, exclusion_list, requested_by, update_date, created_by, updated_by, creation_date) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING be_env_exclusion_list_id";
-			Db.Row row = db("TDM").fetch(sql,be_id, envId, exclusion_list, requested_by, now, username,
+			Db.Row row = db(TDM).fetch(sql,be_id, envId, exclusion_list, requested_by, now, username,
 					username, now).firstRow();
 			result.put("id", Long.parseLong(row.get("be_env_exclusion_list_id").toString()));
 			errorCode = "SUCCESS";
@@ -593,9 +594,9 @@ public class Logic extends WebServiceUserCode {
 			List<Map<String, Object>> result = new ArrayList<>();
 			String sql = "SELECT el.be_id, el.environment_id, el.exclusion_list, el.requested_by, el.update_date," +
 					" el.created_by, el.updated_by, el.be_env_exclusion_list_id, el.creation_date, be.be_name " +
-					"FROM public.tdm_be_env_exclusion_list el " +
-					"INNER JOIN business_entities be ON el.be_id = be.be_id WHERE el.environment_id = " + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+					"FROM " + schema + ".tdm_be_env_exclusion_list el " +
+					"INNER JOIN " + schema + ".business_entities be ON el.be_id = be.be_id WHERE el.environment_id = " + envId;
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -650,7 +651,7 @@ public class Logic extends WebServiceUserCode {
 			}
 			String sql = "INSERT INTO \"" + schema + "\".tdm_env_globals (environment_id, global_name, global_value, update_date, updated_by) VALUES (?, ?, ?, ?, ?)";
 			String username=sessionUser().name();
-			db("TDM").execute(sql, envId, global_name, global_value, now, username);
+			db(TDM).execute(sql, envId, global_name, global_value, now, username);
 		
 			String activityDesc = "'Global " + global_name + " was added to environment " + envName;
 			try {
@@ -708,7 +709,7 @@ public class Logic extends WebServiceUserCode {
 					" allowed_number_of_entities_to_read, allow_read, allow_write, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?) RETURNING role_id";
 			String username=sessionUser().name();
-			Db.Row row = db("TDM").fetch(sql,
+			Db.Row row = db(TDM).fetch(sql,
 					envId,
 					role_name,
 					role_description,
@@ -807,7 +808,7 @@ public class Logic extends WebServiceUserCode {
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
 				String username=sessionUser().name();
-				Db.Row row = db("TDM").fetch(sql, environment_name,
+				Db.Row row = db(TDM).fetch(sql, environment_name,
 						environment_description,
 						environment_point_of_contact_fist_name,
 						environment_point_of_contact_last_name,
@@ -827,7 +828,7 @@ public class Logic extends WebServiceUserCode {
 				result.put("id", environmentId);
 				try {
 					for (Map owner : owners) {
-						db("TDM").execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
+						db(TDM).execute("INSERT INTO \"" + schema + "\".environment_owners (environment_id, user_id, user_name, user_type) VALUES (?, ?, ?, ?)",
 								environmentId,
 								owner.get("user_id"),
 								owner.get("username") != null ? owner.get("username") : owner.get("user_name"), 
@@ -872,7 +873,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "SELECT COUNT (environment_id) as cnt FROM \"" + schema + "\".tasks " +
 					"WHERE \"" + schema + "\".tasks.environment_id = " + envId;
-			Db.Row row = db("TDM").fetch(sql).firstRow();
+			Db.Row row = db(TDM).fetch(sql).firstRow();
 			if (!row.isEmpty()) {
 				response.put("result", row.get("cnt"));
 			}
@@ -912,7 +913,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "SELECT user_id, user_name, user_type " +
 					"FROM \"" + schema + "\".environment_owners WHERE environment_id = " + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			errorCode = "SUCCESS";
 			HashMap<String, Object> owner;
 			for (Db.Row row : rows) {
@@ -1002,7 +1003,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "SELECT * FROM \"" + schema + "\".environment_roles " +
 					"WHERE environment_id = " + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			HashMap<String, Object> role;
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -1068,9 +1069,9 @@ public class Logic extends WebServiceUserCode {
 		String message = null;
 		String errorCode = "";
 		try {
-			String sql = "SELECT * FROM tdm_env_globals " +
+			String sql = "SELECT * FROM " + schema + ".tdm_env_globals " +
 					"WHERE environment_id = ?";
-			Db.Rows rows = db("TDM").fetch(sql, envId);
+			Db.Rows rows = db(TDM).fetch(sql, envId);
 		
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -1152,7 +1153,7 @@ public class Logic extends WebServiceUserCode {
 			"allowed_number_of_reserved_entities=(?) " +
 			"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
 		String username=sessionUser().name();
-		db("TDM").execute(sql,
+		db(TDM).execute(sql,
 			role_name,
 			role_description,
 			allowed_delete_before_load,
@@ -1215,13 +1216,13 @@ public class Logic extends WebServiceUserCode {
 			String sql = "UPDATE \"" + schema + "\".environment_roles SET " +
 					"role_status=(?),role_expiration_date=(?) " +
 					"WHERE environment_id = " + envId + " AND role_id = \'" + roleId + "\'";
-			db("TDM").execute(sql,
+			db(TDM).execute(sql,
 					"Inactive",DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 							.withZone(ZoneOffset.UTC)
 							.format(Instant.now()));
 		
 			// cleanup environment_role_users table
-			db("TDM").execute("DELETE from \"" + schema + "\".environment_role_users WHERE environment_id=" + envId + " AND role_id=" + roleId);
+			db(TDM).execute("DELETE from \"" + schema + "\".environment_role_users WHERE environment_id=" + envId + " AND role_id=" + roleId);
 		
 			String activityDesc = "Role " + roleName + " of environment " + envName + " was deleted";
 			try {
@@ -1266,7 +1267,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "SELECT * FROM \"" + schema + "\".environment_role_users " +
 					"WHERE environment_id = " + envId + " AND role_id = " + roleId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -1317,11 +1318,11 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 			String sql = "DELETE FROM \"" + schema + "\".environment_role_users WHERE environment_id = " + envId + " AND role_id = " + roleId;
-			db("TDM").execute(sql);
+			db(TDM).execute(sql);
 		
 			for (Map<String, Object> user : users) {
 				sql = "INSERT INTO \"" + schema + "\".environment_role_users (environment_id, role_id, user_id, username, user_type) VALUES (?, ?, ?, ?, ?)";
-				db("TDM").execute(sql,
+				db(TDM).execute(sql,
 						envId, roleId,
 						user.get("user_id"), user.get("username"), user.get("user_type"));
 			}
@@ -1461,19 +1462,19 @@ public class Logic extends WebServiceUserCode {
 				String queryString = "UPDATE \"" + schema + "\".environment_products SET " +
 						"status=(?) " +
 						"WHERE environment_id = " + envId + " AND product_id = " + prodId;
-				db("TDM").execute(queryString, "Inactive");
+				db(TDM).execute(queryString, "Inactive");
 			}
 			{
 				// 28-Jul-21- fix the query to check if the task's environment id or the source_environment_id in the where condition
-				String queryString = "UPDATE \"public\".tasks SET task_status = \'Inactive\' " +
-						"FROM ( SELECT \"public\".tasks_logical_units.task_id " +
-						"FROM \"public\".tasks_logical_units " +
-						"INNER JOIN \"public\".product_logical_units " +
-						"ON (\"public\".product_logical_units.lu_id = \"public\".tasks_logical_units.lu_id) " +
-						"WHERE \"public\".product_logical_units.product_id = " + prodId + " ) AS sq  " +
-						"WHERE \"public\".tasks.task_id = sq.task_id AND \"public\".tasks.task_status = \'Active\' " + 
+				String queryString = "UPDATE " + schema + ".tasks SET task_status = \'Inactive\' " +
+						"FROM ( SELECT " + schema + ".tasks_logical_units.task_id " +
+						"FROM " + schema + ".tasks_logical_units " +
+						"INNER JOIN " + schema + ".product_logical_units " +
+						"ON (product_logical_units.lu_id = tasks_logical_units.lu_id) " +
+						"WHERE product_logical_units.product_id = " + prodId + " ) AS sq  " +
+						"WHERE tasks.task_id = sq.task_id AND tasks.task_status = \'Active\' " + 
 						"AND (environment_id = ? or source_environment_id = ?) ";
-				db("TDM").execute(queryString, envId, envId);
+				db(TDM).execute(queryString, envId, envId);
 			}
 		
 			String activityDesc = "Products of environment " + envName + " were updated";
@@ -1577,7 +1578,7 @@ public class Logic extends WebServiceUserCode {
 			
 			//log.info("wsGetRoleForUserInEnv - sqlUser: " + sqlUser);
 			
-			Db.Rows rows = db("TDM").fetch(sqlUser, envId, userId);
+			Db.Rows rows = db(TDM).fetch(sqlUser, envId, userId);
 			Db.Row row = rows.firstRow();
 			
 			if (row == null || row.isEmpty()) {
@@ -1591,7 +1592,7 @@ public class Logic extends WebServiceUserCode {
 				//log.info("wsGetRoleForUserInEnv - sqlUserGRoup: " + sqlUserGRoup);
 		
 				
-				Db.Rows rows2 = db("TDM").fetch(sqlUserGRoup, envId, fabricRoles);
+				Db.Rows rows2 = db(TDM).fetch(sqlUserGRoup, envId, fabricRoles);
 				row = rows2.firstRow();
 				if (row == null || row.isEmpty()) {
 					String sqlAll = "SELECT * FROM \"" + schema + "\".environment_role_users u INNER JOIN \"" + schema + "\".environment_roles r " +
@@ -1601,7 +1602,7 @@ public class Logic extends WebServiceUserCode {
 					
 					//log.info("wsGetRoleForUserInEnv - sqlAll: " + sqlAll);
 					
-					Db.Rows rows3 = db("TDM").fetch(sqlAll, envId);
+					Db.Rows rows3 = db(TDM).fetch(sqlAll, envId);
 					row = rows3.firstRow();
 				}
 			}
@@ -1996,7 +1997,7 @@ public class Logic extends WebServiceUserCode {
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-			db("TDM").execute(updateQuery, environment_id, global_name, global_value, now, username, environment_id,global_name);
+			db(TDM).execute(updateQuery, environment_id, global_name, global_value, now, username, environment_id,global_name);
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
 			try {
@@ -2043,8 +2044,8 @@ public class Logic extends WebServiceUserCode {
 			if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
 				globalName = luName + "." + globalName;
 			}
-			String sql= "DELETE FROM tdm_env_globals WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
-			db("TDM").execute(sql);
+			String sql= "DELETE FROM " + schema + ".tdm_env_globals WHERE environment_id = " + envId + " AND global_name = \'" + globalName +"\'";
+			db(TDM).execute(sql);
 		
 			String activityDesc = "Globals of environment " + envName + " were updated";
 			try {
@@ -2093,7 +2094,7 @@ public class Logic extends WebServiceUserCode {
 			String sql= "SELECT * FROM   \"" + schema + "\".tdm_be_env_exclusion_list " +
 					"WHERE environment_id = " + envId + " AND be_id = " + be_id +
 					"AND requested_by = " + "\'" + requested_by + "\'";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -2147,8 +2148,8 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql = "select unnest(string_to_array(replace('" + exclusion_list + "', ' ', ''), ',')) " +
 					"INTERSECT select unnest(string_to_array(replace(string_agg(exclusion_list, ','), ' ', ''), ',')) " +
-					"from TDM_BE_ENV_EXCLUSION_LIST where be_id=" + be_id + " and environment_id=" + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+					"from " + schema + ".TDM_BE_ENV_EXCLUSION_LIST where be_id=" + be_id + " and environment_id=" + envId;
+			Db.Rows rows = db(TDM).fetch(sql);
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -2193,9 +2194,9 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String sql= "select unnest(string_to_array(replace('" + exclusion_list + "', ' ', ''), ',')) " +
 					"INTERSECT select unnest(string_to_array(replace(string_agg(exclusion_list, ','), ' ', ''), ',')) " +
-					"from TDM_BE_ENV_EXCLUSION_LIST where be_id=" + be_id + " and environment_id=" +  envId
+					"from " + schema + ".TDM_BE_ENV_EXCLUSION_LIST where be_id=" + be_id + " and environment_id=" +  envId
 					+ "and be_env_exclusion_list_id != " +  be_env_exclusion_list_id;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> result=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -2243,13 +2244,13 @@ public class Logic extends WebServiceUserCode {
 		EnvironmentUtils.fnUpdateEnvironmentDate(envId);
 		
 		try {
-			String sql= "UPDATE tdm_be_env_exclusion_list SET be_id=(?), exclusion_list=(?), requested_by=(?), update_date=(?), updated_by=(?) " +
+			String sql= "UPDATE " + schema + ".tdm_be_env_exclusion_list SET be_id=(?), exclusion_list=(?), requested_by=(?), update_date=(?), updated_by=(?) " +
 					"WHERE be_env_exclusion_list_id = " + elId;
 			String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-			db("TDM").execute(sql,be_id, exclusion_list,
+			db(TDM).execute(sql,be_id, exclusion_list,
 					requested_by, now, username);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was updated.";
 			try {
@@ -2294,7 +2295,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 			String sql = "DELETE FROM \"" + schema + "\".tdm_be_env_exclusion_list WHERE be_env_exclusion_list_id = " + elId;
-			db("TDM").execute(sql);
+			db(TDM).execute(sql);
 			String activityDesc = "Exclusion list " + elId + " of environment " + envId + " was deleted.";
 			try {
 				EnvironmentUtils.fnInsertActivity("Update", "Environments", activityDesc);
@@ -2349,7 +2350,7 @@ public class Logic extends WebServiceUserCode {
 					"ON (u.role_id = r.role_id) " +
 					"WHERE r.role_status = 'Active' " +
 					"AND u.user_type = 'ID'";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> testersRows=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
@@ -2496,7 +2497,7 @@ public class Logic extends WebServiceUserCode {
 					"INNER JOIN \"" + schema + "\".environment_roles " +
 					"ON (\"" + schema + "\".environment_role_users.role_id = \"" + schema + "\".environment_roles.role_id) " +
 					"WHERE \"" + schema + "\".environment_roles.role_status = \'Active\'";
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> testersRows=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -2577,7 +2578,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 			String sql = "SELECT * FROM \"" + schema + "\".environments WHERE environment_id = " + envId;
-			Db.Rows rows = db("TDM").fetch(sql);
+			Db.Rows rows = db(TDM).fetch(sql);
 			errorCode = "SUCCESS";
 			List<Map<String, Object>> result = new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -2651,7 +2652,7 @@ public class Logic extends WebServiceUserCode {
 						"WHERE r.role_status = 'Active' and r.environment_id = ? " + 
 						"and u.user_type = 'ID'";
 				String index = "numberOfTesters";
-				Db.Row row = db("TDM").fetch(numberOfTestersQuery, envId).firstRow();
+				Db.Row row = db(TDM).fetch(numberOfTestersQuery, envId).firstRow();
 				data.put(index, row);
 			}
 		
@@ -2661,7 +2662,7 @@ public class Logic extends WebServiceUserCode {
 						"WHERE r.role_status = 'Active' and r.environment_id = ? " + 
 						"and u.user_type = 'GROUP'";
 				String index = "numberOfGroups";
-				Db.Row row = db("TDM").fetch(numberOfUserGroupQuery, envId).firstRow();
+				Db.Row row = db(TDM).fetch(numberOfUserGroupQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			
@@ -2671,7 +2672,7 @@ public class Logic extends WebServiceUserCode {
 						" WHERE r.role_status = 'Active' and " +
 						"r.environment_id = ? AND u.user_id = '-1'";
 				String index = "numberOfALLTesters";
-				Db.Row row = db("TDM").fetch(numberOfALLTestersQuery, envId).firstRow();
+				Db.Row row = db(TDM).fetch(numberOfALLTestersQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			{
@@ -2680,7 +2681,7 @@ public class Logic extends WebServiceUserCode {
 						" FROM \"" + schema + "\".tasks t " +
 						" where t.environment_id = ? AND t.task_status = 'Active'";
 				String index = "tasks";
-				Db.Row row = db("TDM").fetch(tasksQuery, envId).firstRow();
+				Db.Row row = db(TDM).fetch(tasksQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			{
@@ -2688,7 +2689,7 @@ public class Logic extends WebServiceUserCode {
 				String taskExecutionStatusQuery = "SELECT l.task_execution_id, l.execution_status FROM \"" + schema + "\".task_execution_list l " +
 						" WHERE l.environment_id= ? AND  (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\')  <= l.creation_date";
 				String index = "taskExecutionStatus";
-				Db.Rows rows = db("TDM").fetch(taskExecutionStatusQuery, envId);
+				Db.Rows rows = db(TDM).fetch(taskExecutionStatusQuery, envId);
 		
 				List<Map<String, Object>> rowsList = new ArrayList<>();
 				List<String> columnNames = rows.getColumnNames();
@@ -2729,7 +2730,7 @@ public class Logic extends WebServiceUserCode {
 						"Where p.lu_id = l.lu_id And l.environment_id = ? " +
 						"And  l.creation_date >= (select now() - interval \'" + EnvironmentUtils.fnGetInterval(interval) + "\') ) t";
 				String index = "processedEntities";
-				Db.Row row = db("TDM").fetch(processedEntitiesQuery, envId).firstRow();
+				Db.Row row = db(TDM).fetch(processedEntitiesQuery, envId).firstRow();
 				data.put(index, row);
 			}
 			errorCode="SUCCESS";
@@ -2888,9 +2889,9 @@ public class Logic extends WebServiceUserCode {
 								"  End As environment_type,\n" +
 								"  'admin' As role_id,\n" +
 								"  'admin' As assignment_type\n" +
-								"From environments env\n" +
+								"From " + schema + ".environments env\n" +
 								"Where env.environment_status = 'Active'";
-						Db.Rows rows= db("TDM").fetch(allEnvs);
+						Db.Rows rows= db(TDM).fetch(allEnvs);
 						List<String> columnNames = rows.getColumnNames();
 						for (Db.Row row : rows) {
 							ResultSet resultSet = row.resultSet();
@@ -2908,11 +2909,12 @@ public class Logic extends WebServiceUserCode {
 			for (Map<String, Object> env : userEnvs) {
 				String envID = "" + env.get("environment_id");
 				//log.info("Checking env: "  + envID);
-				String sql = "SELECT environment_id FROM environment_products ep, product_logical_units plu, business_entities be " +
+				String sql = "SELECT environment_id FROM " + schema + ".environment_products ep, " + 
+						schema + ".product_logical_units plu, " + schema + ".business_entities be " +
 						"WHERE ep.environment_id = ? AND be.be_name = ? AND be.be_id = plu.be_id AND plu.lu_parent_id is null " +
 						"AND ep.product_id = plu.product_id AND be.be_status = 'Active'";
 				
-				Object res = db("TDM").fetch(sql, envID, be_name).firstValue();
+				Object res = db(TDM).fetch(sql, envID, be_name).firstValue();
 				//log.info("res: " + res);
 				if (res != null) {
 					//log.info("Found env: "  + envID);

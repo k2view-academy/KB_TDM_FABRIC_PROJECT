@@ -168,6 +168,34 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get Reserve Note",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "RESERVE_NOTE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -235,14 +263,7 @@
                             "name": "GetNewEndDate1",
                             "actorType": {
                                 "parentType": "GetNewEndDate",
-                                "inputs": [
-                                    {
-                                        "name": "retentionPeriodValue",
-                                        "schema": {
-                                            "type": "number"
-                                        }
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -357,7 +378,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT TDM_RESERVED_ENTITIES.reserve_owner, TDM_RESERVED_ENTITIES.start_datetime, TDM_RESERVED_ENTITIES.end_datetime\r\nFROM TDM_RESERVED_ENTITIES\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId} AND\r\nTDM_RESERVED_ENTITIES.start_datetime <= timezone('UTC', now()) AND\r\n(TDM_RESERVED_ENTITIES.end_datetime IS NULL OR TDM_RESERVED_ENTITIES.end_datetime >= timezone('UTC', now()))\r\nUNION SELECT null as reserve_owner, null as start_datetime, null as end_datetime\r\nLIMIT 1"
+                                        "const": "SELECT TDM_RESERVED_ENTITIES.reserve_owner, TDM_RESERVED_ENTITIES.start_datetime, TDM_RESERVED_ENTITIES.end_datetime\r\nFROM ${@schema}.TDM_RESERVED_ENTITIES\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId} AND\r\nTDM_RESERVED_ENTITIES.start_datetime <= timezone('UTC', now()) AND\r\n(TDM_RESERVED_ENTITIES.end_datetime IS NULL OR TDM_RESERVED_ENTITIES.end_datetime >= timezone('UTC', now()))\r\nUNION SELECT null as reserve_owner, null as start_datetime, null as end_datetime\r\nLIMIT 1"
                                     },
                                     {
                                         "name": "entityId",
@@ -377,6 +398,13 @@
                                         "name": "envId",
                                         "schema": {
                                             "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -563,7 +591,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "INSERT INTO TDM_RESERVED_ENTITIES (entity_id, be_id, env_id, task_id, task_execution_id, start_datetime, end_datetime, reserve_owner) \r\nVALUES (${entityId}, ${beId}, ${envId}, ${taskId}, ${taskExecutionId}, timezone('UTC', now()), ${newEndDate}, ${userName})\r\nON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime = timezone('UTC', now()), end_datetime = ${newEndDate}, reserve_owner = ${userName}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId}"
+                                        "const": "INSERT INTO ${@schema}.TDM_RESERVED_ENTITIES (entity_id, be_id, env_id, task_id, task_execution_id, start_datetime, end_datetime, reserve_owner, reserve_notes) \r\nVALUES (${entityId}, ${beId}, ${envId}, ${taskId}, ${taskExecutionId}, timezone('UTC', now()), ${newEndDate}, ${userName}, ${reserveNote})\r\nON CONFLICT ON CONSTRAINT TDM_RESERVED_ENTITIES_PKEY DO UPDATE SET task_id = ${taskId}, task_execution_id = ${taskExecutionId}, \r\n    start_datetime = timezone('UTC', now()), end_datetime = ${newEndDate}, reserve_owner = ${userName}, reserve_notes = ${reserveNote}\r\nWHERE TDM_RESERVED_ENTITIES.entity_id = ${entityId} AND \r\nTDM_RESERVED_ENTITIES.be_id = ${beId} AND\r\nTDM_RESERVED_ENTITIES.env_id = ${envId}"
                                     },
                                     {
                                         "name": "entityId",
@@ -609,6 +637,20 @@
                                     },
                                     {
                                         "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserveNote",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -842,7 +884,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": "public"
+                                        "const": null
                                     },
                                     {
                                         "name": "table",
@@ -853,7 +895,8 @@
                                         "const": [
                                             "task_id",
                                             "task_execution_id",
-                                            "end_datetime"
+                                            "end_datetime",
+                                            "reserve_notes"
                                         ]
                                     },
                                     {
@@ -905,6 +948,13 @@
                                     },
                                     {
                                         "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserve_notes",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -1215,6 +1265,56 @@
             "rightPort": {
                 "actor": "StringFormat2",
                 "name": "userName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Reserve Note",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
+                "name": "reserveNote"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Reserve Note",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update the End date",
+                "name": "reserve_notes"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update the End date",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Record Into TDM_RESERVED_ENTITIES",
+                "name": "schema"
             }
         },
         {

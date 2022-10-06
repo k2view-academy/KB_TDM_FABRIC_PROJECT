@@ -89,16 +89,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
@@ -262,6 +253,20 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Build string from input parameters",
                             "actorType": {
                                 "parentType": "CsvBuilder",
@@ -317,7 +322,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": "public"
+                                        "const": null
                                     },
                                     {
                                         "name": "table",
@@ -606,6 +611,16 @@
             "rightPort": {
                 "actor": "Load Data To Error Table",
                 "name": "creation_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "schema"
             }
         },
         {

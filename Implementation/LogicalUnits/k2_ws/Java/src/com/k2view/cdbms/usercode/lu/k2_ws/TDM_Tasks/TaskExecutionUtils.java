@@ -17,18 +17,20 @@ import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.user.WebServiceUserCode.graphit;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TaskExecutionUtils {
+	public static final String TDM = "TDM";
     private static final String DB_FABRIC = "fabric";
-    private static String schema = "public";
+    private static String schema = TDMDB_SCHEMA;
 
     static void fnAddTaskPostExecutionProcess(List<Map<String, Object>> postExecutionProcesses, Long taskId) throws Exception {
         String sql = "DELETE FROM \"" + schema + "\".TASKS_POST_EXE_PROCESS WHERE \"" + schema + "\".TASKS_POST_EXE_PROCESS.task_id = " + taskId;
-        db("TDM").execute(sql);
+        db(TDM).execute(sql);
         if (postExecutionProcesses == null) return;
         for (Map<String, Object> postExecutionProcess : postExecutionProcesses) {
-            db("TDM").execute("INSERT INTO \"" + schema + "\".TASKS_POST_EXE_PROCESS (task_id, process_id,process_name, execution_order) VALUES (?,?,?,?)",
+            db(TDM).execute("INSERT INTO \"" + schema + "\".TASKS_POST_EXE_PROCESS (task_id, process_id,process_name, execution_order) VALUES (?,?,?,?)",
                     taskId,
                     postExecutionProcess.get("process_id"),
                     postExecutionProcess.get("process_name"),
@@ -69,8 +71,8 @@ public class TaskExecutionUtils {
     }
 
     static Object fnGetNextTaskExecution(Long taskId) throws Exception {
-        String query = "SELECT nextval('tasks_task_execution_id_seq')";
-        Db.Rows rows = db("TDM").fetch(query);
+        String query = "SELECT nextval('" + schema + ".tasks_task_execution_id_seq')";
+        Db.Rows rows = db(TDM).fetch(query);
         List<String> columnNames = rows.getColumnNames();
         Db.Row row = rows.firstRow();
         if (!row.isEmpty()) {
@@ -83,22 +85,22 @@ public class TaskExecutionUtils {
         Db.Rows batchIdList = null;
         try {
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            batchIdList = db("TDM").fetch("select fabric_execution_id, execution_status, l.lu_id, lu_name, task_type " +
-                    "from task_execution_list l, tasks_logical_units u where task_execution_id = ? " +
+            batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, l.lu_id, lu_name, task_type " +
+                    "from " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units u where task_execution_id = ? " +
                     "and fabric_execution_id is not null and UPPER(execution_status) IN " +
                     "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
                     "and l.task_id = u.task_id and l.lu_id = u.lu_id", task_execution_id);
 
-            db("TDM").execute("UPDATE task_execution_list SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
                     task_execution_id);
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
             // The cancellation of the jobs for the tables will be handled by the new fabric listener user job for the reference copy.
 
-            db("TDM").execute("UPDATE task_ref_exe_stats set execution_status='stopped', number_of_processed_records = 0 where task_execution_id = ? " +
+            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='stopped', number_of_processed_records = 0 where task_execution_id = ? " +
                     "and execution_status not in ('completed', 'failed')", task_execution_id);
 
             // TDM 7, set the execution summary to stopped also
-            db("TDM").execute("UPDATE task_execution_summary SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
                     task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
@@ -133,7 +135,7 @@ public class TaskExecutionUtils {
 
     static List<Map<String, Object>> fnGetTaskPostExecutionProcesses(Long taskId) throws Exception {
         String query = "SELECT * FROM \"" + schema + "\".TASKS_POST_EXE_PROCESS  WHERE task_id =" + taskId;
-        Db.Rows rows = db("TDM").fetch(query);
+        Db.Rows rows = db(TDM).fetch(query);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -161,7 +163,7 @@ public class TaskExecutionUtils {
 
             String query = "INSERT INTO \"" + schema + "\".task_ref_exe_stats (task_id,task_execution_id,task_ref_table_id, ref_table_name, update_date, execution_status) " +
                     "VALUES (?, ?, ?, ?, ?, ?)";
-            db("TDM").execute(query,
+            db(TDM).execute(query,
                     task_id,
                     taskExecutionId,
                     ref.get("task_ref_table_id"),
@@ -174,7 +176,7 @@ public class TaskExecutionUtils {
 
     static Object fnGetTaskReferenceTable(Long task_id) throws Exception {
         String query = "SELECT * FROM \"" + schema + "\".task_ref_tables where task_id = " + task_id;
-        Db.Rows rows = db("TDM").fetch(query);
+        Db.Rows rows = db(TDM).fetch(query);
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
         for (Db.Row row : rows) {
@@ -204,37 +206,38 @@ public class TaskExecutionUtils {
         try {
             //log.info("fnResumeTaskExecution - Starting");
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            batchIdList = db("TDM").fetch("select fabric_execution_id, execution_status, selection_method, l.task_type from task_execution_list l, tasks t " +
+            batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, selection_method, l.task_type from " + 
+					schema + ".task_execution_list l, " + schema + ".tasks t " +
                     "where task_execution_id = ? and l.task_id = t.task_id and selection_method <> 'REF'" +
                     "and fabric_execution_id is not null", task_execution_id);
 
-            db("TDM").execute("UPDATE task_execution_list SET execution_status='running' where fabric_execution_id is not null " +
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running' where fabric_execution_id is not null " +
                             "and lower(execution_status) = 'stopped' and task_execution_id = ?",
                     task_execution_id);
 
             // TDM 7, set the status in execution summary to running
-            db("TDM").execute("UPDATE task_execution_summary SET execution_status='running' where task_execution_id = ? and execution_status = 'stopped'",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running' where task_execution_id = ? and execution_status = 'stopped'",
                     task_execution_id);
-            db("TDM").execute("UPDATE task_execution_list SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
                             "and lower(execution_status) = 'stopped' and task_id in (select task_id from tasks where lower(selection_method) <>'ref')",
                     task_execution_id);
 
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
             // The resume of the jobs for the tables will be handled by the new fabric listener user job for the reference copy.
 
-            db("TDM").execute("UPDATE task_execution_list l SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list l SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
                             "and (task_execution_id, lu_id) in (select task_execution_id, lu_id from task_ref_exe_stats r,  tasks_logical_units u, task_ref_tables s " +
                             "where l.task_execution_id = r.task_execution_id and l.lu_id = u.lu_id " +
                             "and l.task_id = u.task_id and u.lu_name = s.lu_name and s.task_ref_table_id = r.task_ref_table_id and s.task_id = l.task_id " +
                             "and lower(r.execution_status) = 'stopped')",
                     task_execution_id);
-            db("TDM").execute("UPDATE task_ref_exe_stats set execution_status= 'resume' where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
+            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume' where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
             for (Db.Row batchInfo : batchIdList) {
                 fabric().execute("delete instance TDM.?", task_execution_id);
-                db("TDM").execute("UPDATE task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
+                db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
                 fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") + "'");
                 // TDM 7.1 Fix, resume execution of reference tables.
                 //log.info("fnResumeTaskExecution - Resume Reference");
@@ -265,7 +268,10 @@ public class TaskExecutionUtils {
                     "data_center_name ,execution_status,parent_lu_id,source_env_name, task_executed_by, task_type, version_datetime, source_environment_id, process_id, execution_note) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             String username = sessionUser().name();
-            db("TDM").execute(query,
+			String userRoles = String.join(",", sessionUser().roles());
+			String executedBy = new StringBuilder().append(username).append("##").append(userRoles).toString();
+			//log.info("fnStartTaskExecutions - executedBy: " + executedBy);
+            db(TDM).execute(query,
                     entry.get("task_id"),
                     taskExecutionId,
                     now,
@@ -278,7 +284,7 @@ public class TaskExecutionUtils {
                     "Pending",
                     entry.get("lu_parent_id"),
                     srcEnvName != null ? srcEnvName : entry.get("source_env_name"),
-                    username,
+                    executedBy,
                     entry.get("task_type"),
                     now,
                     srcEnvId != null ? srcEnvId : entry.get("source_environment_id"),
@@ -291,7 +297,7 @@ public class TaskExecutionUtils {
     static Object fnGetNumberOfMatchingEntities(String whereStmt, String sourceEnvName, Long beID) throws Exception {
         String sourceEnv = !Util.isEmpty(sourceEnvName) ? sourceEnvName : "_dev";
         String getEntitiesSql = TdmSharedUtils.generateListOfMatchingEntitiesQuery(beID, whereStmt, sourceEnv);
-        Db tdmDB = db("TDM");
+        Db tdmDB = db(TDM);
         Db.Rows rows = tdmDB.fetch("SELECT COUNT(entity_id) FROM (" + getEntitiesSql + " ) AS final_count");
         return wrapWebServiceResults("SUCCESS", null, rows.firstValue());
     }
@@ -482,7 +488,7 @@ public class TaskExecutionUtils {
                         "AND (\"" + schema + "\".environment_products.environment_id =" + (envId != null ? envId + ")) " : "\"" + schema + "\".tasks.source_environment_id )) ") :
                         "AND (\"" + schema + "\".environment_products.environment_id =" + (envId != null ? envId + ")) " : "\"" + schema + "\".tasks.environment_id )) ")) +
                 "WHERE tasks.task_id = " + task_id;
-        Db.Rows rows = db("TDM").fetch(sql);
+        Db.Rows rows = db(TDM).fetch(sql);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -575,7 +581,7 @@ public class TaskExecutionUtils {
 
         String query = "SELECT * FROM \"" + schema + "\".task_globals " +
                 "WHERE task_globals.task_id = " + task_id;
-        Db.Rows rows = db("TDM").fetch(query);
+        Db.Rows rows = db(TDM).fetch(query);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -598,7 +604,7 @@ public class TaskExecutionUtils {
         query = "SELECT * FROM \"" + schema + "\".tdm_env_globals " +
                 "WHERE tdm_env_globals.environment_id = " + env_id;
 
-        Db.Rows envGlobalsrows = db("TDM").fetch(query);
+        Db.Rows envGlobalsrows = db(TDM).fetch(query);
 
         List<Map<String, Object>> envResult = new ArrayList<>();
         columnNames = envGlobalsrows.getColumnNames();
@@ -625,7 +631,7 @@ public class TaskExecutionUtils {
                 "WHERE task_id = " + taskId + " AND " +
                 "(lower(execution_status) <> \'failed\' AND lower(execution_status) <> \'completed\' AND " +
                 "lower(execution_status) <> \'stopped\' AND lower(execution_status) <> \'killed\')";
-        Db.Rows rows = db("TDM").fetch(sql);
+        Db.Rows rows = db(TDM).fetch(sql);
         return rows.firstRow().cell(0);
     }
 
@@ -633,7 +639,7 @@ public class TaskExecutionUtils {
         String query = "SELECT * FROM \"" + schema + "\".tasks " +
                 "WHERE task_id = " + taskId + " AND " +
                 "task_status = \'Active\'";
-        Db.Rows rows = db("TDM").fetch(query);
+        Db.Rows rows = db(TDM).fetch(query);
         if (!rows.firstRow().isEmpty()) {
             return true;
         } else {
@@ -643,13 +649,13 @@ public class TaskExecutionUtils {
 
     static List<Map<String, Object>> fnGetActiveTaskForActivation(Long taskId) throws Exception {
         String clientQuery = "SELECT *, " +
-                "( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount " +
-                "FROM tasks " +
-                "INNER JOIN tasks_logical_units " +
+                "( SELECT COUNT(*) FROM " + schema + ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount " +
+                "FROM " + schema + ".tasks " +
+                "INNER JOIN " + schema + ".tasks_logical_units " +
                 "ON (tasks.task_id = tasks_logical_units.task_id) " +
-                "INNER JOIN product_logical_units " +
+                "INNER JOIN " + schema + ".product_logical_units " +
                 "ON (product_logical_units.lu_id = tasks_logical_units.lu_id ) " +
-                "INNER JOIN environment_products " +
+                "INNER JOIN " + schema + ".environment_products " +
                 "ON (environment_products.status = \'Active\' " +
                 "AND environment_products.product_id = product_logical_units.product_id " +
                 "AND (environment_products.environment_id = tasks.environment_id " +
@@ -657,7 +663,7 @@ public class TaskExecutionUtils {
                 "AND environment_products.environment_id = tasks.source_environment_id ))) " +
                 "WHERE tasks.task_id = " + taskId;
         //log.info(clientQuery);
-        Db.Rows rows = db("TDM").fetch(clientQuery);
+        Db.Rows rows = db(TDM).fetch(clientQuery);
 
         List<Map<String, Object>> executions = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -704,7 +710,7 @@ public class TaskExecutionUtils {
                 " tot_num_of_processed_root_entities, tot_num_of_copied_root_entities, tot_num_of_failed_root_entities, tot_num_of_processed_ref_tables, tot_num_of_copied_ref_tables," +
                 " tot_num_of_failed_ref_tables, source_env_name, source_environment_id, fabric_environment_name, task_executed_by, version_datetime, version_expiration_date, update_date) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        db("TDM").execute(query,
+        db(TDM).execute(query,
                 taskExecutionId,
                 entry.get("task_id"),
                 entry.get("task_type"),
@@ -738,15 +744,15 @@ public class TaskExecutionUtils {
         String sql = "INSERT INTO \"" + schema + "\".activities " +
                 "(date, action, entity, user_id, username, description) " +
                 "VALUES (?, ?, ?, ?, ?, ?)";
-        db("TDM").execute(sql, now, action, entity, userId, username, description);
+        db(TDM).execute(sql, now, action, entity, userId, username, description);
     }
 
     static void fnPostTaskLogicalUnits(Long taskId, List<Map<String, Object>> logicalUnits) throws Exception {
         String sql = "DELETE FROM \"" + schema + "\".tasks_logical_units WHERE \"" + schema + "\".tasks_logical_units.task_id = " + taskId;
-        db("TDM").execute(sql);
+        db(TDM).execute(sql);
         if (logicalUnits != null) {
             for (Map<String, Object> logicalUnit : logicalUnits) {
-                db("TDM").execute("INSERT INTO \"" + schema + "\".tasks_logical_units (task_id, lu_id,lu_name) VALUES ( ?, ?, ?)",
+                db(TDM).execute("INSERT INTO \"" + schema + "\".tasks_logical_units (task_id, lu_id,lu_name) VALUES ( ?, ?, ?)",
                         taskId, logicalUnit.get("lu_id"), logicalUnit.get("lu_name"));
             }
         }
@@ -756,7 +762,7 @@ public class TaskExecutionUtils {
         try {
             for (Map<String, Object> ref : refList) {
                 String sql = "INSERT INTO \"" + schema + "\".task_ref_tables (task_id, ref_table_name,lu_name, schema_name, interface_name, update_date) VALUES (?, ?, ?, ?, ?, ?)";
-                db("TDM").execute(sql,
+                db(TDM).execute(sql,
                         taskId, ref.get("reference_table_name") != null ? ref.get("reference_table_name") : ref.get("ref_table_name"),
                         ref.get("logical_unit_name") != null ? ref.get("logical_unit_name") : ref.get("lu_name"),
                         ref.get("schema_name"),
@@ -775,14 +781,14 @@ public class TaskExecutionUtils {
         for (String lu : logicalUnits) lus += "'" + lu + "',";
         lus = lus.substring(0, lus.length() - 1);
         String sql = "Select distinct ref.lu_name, ref.ref_table_name, ref.schema_name, ref.interface_name " +
-                "from TASK_REF_TABLES ref, TASK_REF_EXE_STATS exe, task_execution_list l " +
+                "from " + schema + ".TASK_REF_TABLES ref, " + schema + ".TASK_REF_EXE_STATS exe, " + schema + ".task_execution_list l " +
                 "Where ref.task_ref_table_id  = exe.task_ref_table_id " +
                 "And ref.lu_name in (" + lus + ") " +
                 "And exe.execution_status = \'completed\' " +
                 "and exe.task_execution_id = l.task_execution_id " +
                 "and lower(l.execution_status) = \'completed\' " +
                 "and l.version_expiration_date is null;";
-        Db.Rows rows = db("TDM").fetch(sql);
+        Db.Rows rows = db(TDM).fetch(sql);
         return rows;
     }
 
@@ -791,14 +797,14 @@ public class TaskExecutionUtils {
         for (String lu : logicalUnits) lus += "'" + lu + "',";
         lus = lus.substring(0, lus.length() - 1);
         String sql = "Select distinct ref.lu_name, ref.ref_table_name, ref.schema_name, ref.interface_name , exe.execution_status , exe.task_execution_id " +
-                "from task_ref_tables ref, task_ref_exe_stats exe , task_execution_list l " +
+                "from " + schema + ".task_ref_tables ref, " + schema + ".task_ref_exe_stats exe , " + schema + ".task_execution_list l " +
                 "Where ref.ref_table_name  = exe.ref_table_name " +
                 "And ref.lu_name in (" + lus + ") " +
                 "And exe.execution_status = \'completed\' " +
                 "and exe.task_execution_id = l.task_execution_id " +
                 "and lower(l.execution_status) = \'completed\' " +
                 "and l.version_expiration_date > CURRENT_TIMESTAMP AT TIME ZONE \'UTC\'";
-        Db.Rows rows = db("TDM").fetch(sql);
+        Db.Rows rows = db(TDM).fetch(sql);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -843,9 +849,9 @@ public class TaskExecutionUtils {
                 "when t.selection_method= \'REF\' then \'REF\' " +
                 "else \'Selected Entities\' END version_Type, " +
                 "l.version_datetime, lu.lu_name, l.num_of_copied_entities as num_of_succeeded_entities, l.num_of_failed_entities, l.execution_note " +
-                "FROM tasks t, task_execution_list l, tasks_logical_units lu, " +
+                "FROM " + schema + ".tasks t, " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units lu, " +
                 "(select  array_agg(lower(e.ref_table_name)) ref_list, array_agg(distinct lower(t.lu_name))  lu_list, task_execution_id " +
-                "from task_ref_exe_stats e, task_ref_tables t where e.task_ref_table_id = t.task_ref_table_id and e.execution_status = \'completed\' " +
+                "from " + schema + ".task_ref_exe_stats e, " + schema + ".task_ref_tables t where e.task_ref_table_id = t.task_ref_table_id and e.execution_status = \'completed\' " +
                 "group by task_execution_id) ref " +
                 "where lower(t.task_Type) = \'extract\'  " +
                 "and t.task_id = l.task_id " +
@@ -859,7 +865,7 @@ public class TaskExecutionUtils {
         for (String ref : refList) {
             query = query + "and lower(\'" + ref.toLowerCase() + "\') = ANY(ref_list) ";
         }
-        Db.Rows rows = db("TDM").fetch(query);
+        Db.Rows rows = db(TDM).fetch(query);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -884,7 +890,7 @@ public class TaskExecutionUtils {
                 "INNER JOIN \"" + schema + "\".environment_products " +
                 "ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".environment_products.product_id AND \"" + schema + "\".environment_products.status = \'Active\') " +
                 "WHERE environment_id = " + srcEnvId + " OR environment_id = " + targetEnvId;
-        Db.Rows rows = db("TDM").fetch(query);
+        Db.Rows rows = db(TDM).fetch(query);
 
         List<String> columnNames = rows.getColumnNames();
         for (Db.Row row : rows) {
@@ -939,7 +945,7 @@ public class TaskExecutionUtils {
 		}
 
         clientQuery = "with lu_list as (select l.task_execution_id, array_agg(lower(lu.lu_name)) lu_list " +
-                "from task_execution_list l, product_logical_units lu where l.lu_id = lu.lu_id and lower(l.execution_status) = 'completed'  " +
+                "from " + schema + ".task_execution_list l, " + schema + ".product_logical_units lu where l.lu_id = lu.lu_id and lower(l.execution_status) = 'completed'  " +
                 "group by task_execution_id) " +
                 "select distinct t1.task_title version_name, t1.task_id, l1.task_execution_id, t1.task_last_updated_by, " +
                 "CASE when t1.selection_method='ALL' then  'ALL' else  'Selected Entities' END version_Type, " +
@@ -947,15 +953,16 @@ public class TaskExecutionUtils {
                 "CASE when plu.lu_parent_id is null then 'Y' else 'N' END root_indicator, " +
 				"l1.num_of_copied_entities as num_of_succeeded_entities, l1.num_of_failed_entities, l1.execution_note, " +
 				"ROW_NUMBER () OVER (PARTITION BY t1.task_title, l1.lu_id ORDER BY l1.task_execution_id) version_no " +
-                "from task_execution_list l1, tasks t1, tasks_logical_units tlu, product_logical_units plu where  " +
+                "from " + schema + ".task_execution_list l1, " + schema + ".tasks t1, " + schema + ".tasks_logical_units tlu, " + schema + ".product_logical_units plu where  " +
                 "(t1.task_title, t1.task_id, l1.version_datetime, l1.task_execution_id, l1.lu_id) in  " +
-                "(SELECT distinct t.task_title as version_name, t.task_id, l.version_datetime , l.task_execution_id, l.lu_id FROM tasks t, task_execution_list l, lu_list  " +
+                "(SELECT distinct t.task_title as version_name, t.task_id, l.version_datetime , l.task_execution_id, l.lu_id " +
+				"from " + schema + ".tasks t, " + schema + ".task_execution_list l, lu_list  " +
                 " where lower(t.task_Type) = 'extract' and t.task_id = l.task_id " +
                 "and t.source_env_name = '" + source_env_name + "' " +
                 "and lower(l.execution_status) = 'completed' " +
                 versionDatesCond +
                 "and l.version_expiration_date > CURRENT_TIMESTAMP AT TIME ZONE 'UTC' " +
-                "and l.lu_id in (select lu_id from tasks_logical_units u " +
+                "and l.lu_id in (select lu_id from " + schema + ".tasks_logical_units u " +
                 "where l.task_id = u.task_id and u.lu_name in " +
                 "(" + logicalUnitList + "))" +
                 "and l.task_execution_id = lu_list.task_execution_id" +
@@ -988,7 +995,7 @@ public class TaskExecutionUtils {
 			int  numOfEntities = StringUtils.countMatches(entitiesList, ",") + 1;
 			clientQuery +=
 					" and (" + be_id + " != plu.be_id or (";
-			clientQuery += numOfEntities + " = (select count(1) from task_execution_entities te " +
+			clientQuery += numOfEntities + " = (select count(1) from " + schema + ".task_execution_entities te " +
 					"where te.task_execution_id = cast (l1.task_execution_id as text) and te.lu_name = plu.lu_name and plu.lu_parent_id is null " +
 					"and te.iid = ANY(string_to_array('" + entitiesList + "', ',')) and execution_status = 'completed'))) ) ";
         } else {
@@ -998,7 +1005,7 @@ public class TaskExecutionUtils {
 		
         clientQuery += " order by task_id, task_execution_id;";
 		//log.info("fnGetVersionsForLoad - clientQuery: " + clientQuery);
-        Db.Rows rows = db("TDM").fetch(clientQuery);
+        Db.Rows rows = db(TDM).fetch(clientQuery);
 
 		//TDM7.4 - 26/1/2022 - Check for each entity if it is reserved by other user.
 		
@@ -1006,7 +1013,7 @@ public class TaskExecutionUtils {
 		Map<String, Object> validation = new HashMap<>();
 		if (entitiesList != null && entitiesList.length() > 0) {
 			//log.info("target_env_name: " + target_env_name);
-			String envID = "" + db("TDM").fetch("SELECT environment_id from environments where environment_name = ? and environment_status = 'Active'",
+			String envID = "" + db(TDM).fetch("SELECT environment_id from " + schema + ".environments where environment_name = ? and environment_status = 'Active'",
 				target_env_name).firstValue();
 			String[] strings = entitiesList.split(",");
 			ArrayList<String> entities = new ArrayList<>();
@@ -1023,14 +1030,14 @@ public class TaskExecutionUtils {
 
     static List<Map<String, Object>> fnGetRootLUs(String taskExecutionId) throws Exception {
         String sql = "select t.task_execution_id, lu_name ,l.lu_id, " +
-                "(select count(*) from task_Execution_list t " +
+                "(select count(*) from " + schema + ".task_Execution_list t " +
                 "where parent_lu_id = l.lu_id and t.task_execution_id = \'" + taskExecutionId + "\')," +
                 "case when (num_of_failed_entities>0 or num_of_failed_ref_tables> 0) " +
-                "then \'failed\' else \'completed\' end lu_status from task_Execution_list t, " +
-                "(select lu_id, lu_name from product_logical_units) l " +
+                "then \'failed\' else \'completed\' end lu_status from " + schema + ".task_Execution_list t, " +
+                "(select lu_id, lu_name from " + schema + ".product_logical_units) l " +
                 "where t.task_execution_id =\'" + taskExecutionId + "\' and " +
                 "t.parent_lu_id is null and t.lu_id = l.lu_id";
-        Db.Rows rows = db("TDM").fetch(sql);
+        Db.Rows rows = db(TDM).fetch(sql);
 
         List<Map<String, Object>> result = new ArrayList<>();
         List<String> columnNames = rows.getColumnNames();
@@ -1209,9 +1216,9 @@ public class TaskExecutionUtils {
                     "  End As environment_type,\n" +
                     "  'admin' As role_id,\n" +
                     "  'admin' As assignment_type\n" +
-                    "From environments env\n" +
+                    "From " + schema + ".environments env\n" +
                     "Where env.environment_status = 'Active' and env.environment_name=(?)";
-            Db.Rows rows = db("TDM").fetch(allEnvs, envName);
+            Db.Rows rows = db(TDM).fetch(allEnvs, envName);
             List<String> columnNames = rows.getColumnNames();
             for (Db.Row row : rows) {
                 ResultSet resultSet = row.resultSet();
@@ -1226,16 +1233,16 @@ public class TaskExecutionUtils {
             String sql = "select env.environment_id, env.environment_name, " +
 					"CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, " +
 					"r.role_id, 'user' as assignment_type " +
-                    "from environments env, environment_roles r, environment_role_users u " +
+                    "from " + schema + ".environments env, " + schema + ".environment_roles r, " + schema + ".environment_role_users u " +
                     "where env.environment_id = r.environment_id " +
                     "and lower(r.role_status) = 'active' " +
                     "and r.role_id = u.role_id " +
                     "and ( (u.user_id = (?) and u.user_type = 'ID' or (lower(u.username) = 'all' and u.environment_id not in " + 
-					"(select u1.environment_id from environment_role_users u1 where u1.user_id= (?) and u.user_type = 'ID' ))) " +
+					"(select u1.environment_id from " + schema + ".environment_role_users u1 where u1.user_id= (?) and u.user_type = 'ID' ))) " +
 					"or (u.user_id = ANY (string_to_array(?, ',')) and u.user_type = 'GROUP' or (lower(u.username) = 'all' and u.environment_id not in " + 
-					"(select u1.environment_id from environment_role_users u1 where u1.user_id = ANY (string_to_array(?, ',')) and u.user_type = 'GROUP' ))) ) " +
+					"(select u1.environment_id from " + schema + ".environment_role_users u1 where u1.user_id = ANY (string_to_array(?, ',')) and u.user_type = 'GROUP' ))) ) " +
                     "and env.environment_status = 'Active' and env.environment_name=(?)";
-            Db.Rows rows = db("TDM").fetch(sql, userId, userId, fabricRoles, fabricRoles, envName);
+            Db.Rows rows = db(TDM).fetch(sql, userId, userId, fabricRoles, fabricRoles, envName);
 
             List<String> columnNames = rows.getColumnNames();
             for (Db.Row row : rows) {
@@ -1250,12 +1257,12 @@ public class TaskExecutionUtils {
             String query1 = "select env.environment_id, env.environment_name, " +
 					"CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, " + 
 					"'owner' as role_id, 'owner' as assignment_type " +
-                    "from environments env, environment_owners o " +
+                    "from " + schema + ".environments env, " + schema + ".environment_owners o " +
                     "where env.environment_id = o.environment_id " +
                     "and ( (o.user_id = (?) and o.user_type ='ID') " + 
 					"or (o.user_id = ANY (string_to_array(?, ',')) and o.user_type ='GROUP') ) " +
                     "and env.environment_status = 'Active' and env.environment_name=(?)";
-            rows = db("TDM").fetch(query1, userId, fabricRoles, envName);
+            rows = db(TDM).fetch(query1, userId, fabricRoles, envName);
             columnNames = rows.getColumnNames();
             for (Db.Row row : rows) {
                 ResultSet resultSet = row.resultSet();
@@ -1270,9 +1277,9 @@ public class TaskExecutionUtils {
     }
 
     static void fnSaveTaskOverrideParameters(Long taskId, Map<String, Object> overrideParameters, Long taskExecutionId) throws Exception {
-        String sql = "INSERT INTO task_execution_override_attrs (task_id,override_parameters,task_execution_id) VALUES (?,?,?)";
+        String sql = "INSERT INTO " + schema + ".task_execution_override_attrs (task_id,override_parameters,task_execution_id) VALUES (?,?,?)";
         String params_str = new JSONObject(overrideParameters).toString();
-        db("TDM").execute(sql, taskId, params_str, taskExecutionId);
+        db(TDM).execute(sql, taskId, params_str, taskExecutionId);
     }
 
 	public static Map<String, Object> fnValidateReservedEntities(String beID, String envID, ArrayList<String> entitiesList) throws Exception {
@@ -1301,13 +1308,13 @@ public class TaskExecutionUtils {
         entities_list_for_qry = entities_list_for_qry.substring(0, entities_list_for_qry.length() - 1);
 
 		//log.info("fnSaveTaskOverrideParameters - beID: " + beID + ", envID: " + envID);
-		String query = "SELECT * FROM TDM_RESERVED_ENTITIES WHERE " +
+		String query = "SELECT * FROM " + schema + ".TDM_RESERVED_ENTITIES WHERE " +
 				"be_id =? AND env_id =? AND entity_id in (" + entities_list_for_qry + ") And  reserve_owner != ? " +
 				"AND CURRENT_TIMESTAMP >= start_datetime AND (end_datetime IS NULL OR CURRENT_TIMESTAMP < end_datetime)";
 		
 		//log.info("-------- query: " + query);
 		try {
-			Db.Rows reservedEntities = db("TDM").fetch(query, beID, envID, userName);
+			Db.Rows reservedEntities = db(TDM).fetch(query, beID, envID, userName);
 		
 			for (Db.Row row : reservedEntities) {
 				String entityID = "" + row.get("entity_id");
@@ -1354,29 +1361,29 @@ public class TaskExecutionUtils {
 		if (luName != null && !"".equals(luName) && !"ALL".equals(luName)) {
 			globalName = luName + "." + globalName;
 		}
-		String sql = "INSERT INTO task_globals (task_id, global_name, global_value) VALUES (?, ?, ?)";
-		db("TDM").execute(sql, taskId, globalName, globalValue);
+		String sql = "INSERT INTO " + schema + ".task_globals (task_id, global_name, global_value) VALUES (?, ?, ?)";
+		db(TDM).execute(sql, taskId, globalName, globalValue);
 	}
 
 	public static Db.Rows fnGetTasks(String task_ids) throws Exception {
 		String sql= "SELECT tasks.*,environments.*,business_entities.*,environment_owners.user_name as owner,environment_owners.user_type as owner_type,environment_role_users.username as tester,environment_role_users.user_type as tester_type,environment_role_users.role_id  as role_id_orig, tasks.sync_mode," +
-			"( SELECT COUNT(*) FROM task_execution_list WHERE task_execution_list.task_id = tasks.task_id AND" +
+			"( SELECT COUNT(*) FROM " + schema + ".task_execution_list WHERE task_execution_list.task_id = tasks.task_id AND" +
 			" ( UPPER(task_execution_list.execution_status)" +
 			"  IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED'))) AS executioncount, " +
-			" ( SELECT COUNT(*) FROM task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount,  " +
-			" ( SELECT string_agg(process_name::text, ',') FROM TASKS_POST_EXE_PROCESS WHERE TASKS_POST_EXE_PROCESS.task_id = tasks.task_id ) AS processnames " +
-			" FROM tasks LEFT JOIN environments" +
-			" ON (tasks.environment_id = environments.environment_id) LEFT JOIN business_entities ON" +
-			" (tasks.be_id = business_entities.be_id) LEFT JOIN environment_owners ON" +
+			" ( SELECT COUNT(*) FROM " + schema + ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount,  " +
+			" ( SELECT string_agg(process_name::text, ',') FROM " + schema + ".TASKS_POST_EXE_PROCESS WHERE TASKS_POST_EXE_PROCESS.task_id = tasks.task_id ) AS processnames " +
+			" FROM " + schema + ".tasks LEFT JOIN " + schema + ".environments" +
+			" ON (tasks.environment_id = environments.environment_id) LEFT JOIN " + schema + ".business_entities ON" +
+			" (tasks.be_id = business_entities.be_id) LEFT JOIN " + schema + ".environment_owners ON" +
 			" (tasks.environment_id = environment_owners.environment_id) " +
-			" LEFT JOIN environment_role_users ON" +
+			" LEFT JOIN " + schema + ".environment_role_users ON" +
 			" (tasks.environment_id = environment_role_users.environment_id)";
 		
 		if(task_ids!=null&&task_ids.length()>0) {
 			sql+= " WHERE tasks.task_id in (" + task_ids + ")";
 		}
-	
-		Db.Rows result = db("TDM").fetch(sql);
+		sql+= " ORDER BY task_id DESC";
+		Db.Rows result = db(TDM).fetch(sql);
 		return result;
 	}
 	

@@ -199,7 +199,14 @@
                                         "const": "DB_CASSANDRA"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -216,7 +223,14 @@
                                         "const": "DB_CASSANDRA"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -233,7 +247,14 @@
                                         "const": "DB_CASSANDRA"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -330,19 +351,27 @@
                                     },
                                     {
                                         "name": "customer_id",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "ssn",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "first_name",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "last_name",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -374,7 +403,48 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]

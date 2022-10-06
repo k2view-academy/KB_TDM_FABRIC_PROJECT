@@ -177,6 +177,16 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
+        </Global>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
+        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
+        <Global name="TDMDB_SCHEMA" luName="">
+          <Value>public</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -193,13 +203,6 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -475,6 +478,16 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
+        </Global>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
+        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
+        <Global name="TDMDB_SCHEMA" luName="">
+          <Value>public</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -491,13 +504,6 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -773,6 +779,16 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
+        </Global>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
+        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
+        <Global name="TDMDB_SCHEMA" luName="">
+          <Value>public</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -789,13 +805,6 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1071,6 +1080,16 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
+        </Global>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
+        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
+        <Global name="TDMDB_SCHEMA" luName="">
+          <Value>public</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -1087,13 +1106,6 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1369,6 +1381,16 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
+        </Global>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
+        </Global>
+        <Global name="MAIL_ADDRESS" luName="" />
+        <Global name="TDMDB_SCHEMA" luName="">
+          <Value>public</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -1385,13 +1407,6 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>

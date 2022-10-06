@@ -27,13 +27,14 @@
     <Column name="task_executed_by" id="tblCol_baa8c030df354ee59d9ae005a7c5aa0e" index="21" datatype="text" />
     <Column name="process_id" id="tblCol_29bb00d7855341c68d690ebe4e601ae1" index="22" datatype="integer" mandatory="true" />
     <Column name="process_name" id="tblCol_a2dd2e6b036c4913a654d08f377ffa45" index="23" datatype="text" />
+    <Column name="product_name" id="product_name" index="24" datatype="integer" />
+    <Column name="source_product_version" id="source_product_version" index="25" datatype="text" />
+    <Column name="target_product_version" id="target_product_version" index="26" datatype="text" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_2f6a4593ef4142ffa559426939cabdc0,tblCol_516f51bbc0ec4c7eafca8ee74b48578e,tblCol_8266e9c91a8f4631aeb957b787fee2a5,tblCol_29bb00d7855341c68d690ebe4e601ae1" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
   <TriggersList />
 </TableObject>

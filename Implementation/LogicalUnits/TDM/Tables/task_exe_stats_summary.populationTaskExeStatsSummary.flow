@@ -22,6 +22,20 @@
                             }
                         },
                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Now1",
                             "actorType": {
                                 "parentType": "Now",
@@ -51,13 +65,20 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select lu_name,\r\n  table_name,\r\n  Sum(CAST (target_count AS INTEGER)) as target_count,\r\n  Sum(CAST (source_count AS INTEGER)) as source_count,\r\n  Sum(CAST (diff AS INTEGER)) as diff\r\n From task_exe_stats_detailed\r\n Where task_execution_id = ${iid}\r\n group by lu_name, table_name"
+                                        "const": "Select lu_name,\r\n  table_name,\r\n  Sum(CAST (target_count AS INTEGER)) as target_count,\r\n  Sum(CAST (source_count AS INTEGER)) as source_count,\r\n  Sum(CAST (diff AS INTEGER)) as diff\r\n From ${@schema}.task_exe_stats_detailed\r\n Where task_execution_id = ${iid}\r\n group by lu_name, table_name"
                                     },
                                     {
                                         "name": "iid",
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -280,6 +301,16 @@
             "rightPort": {
                 "actor": "task_exe_stats_summary",
                 "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "schema"
             }
         },
         {

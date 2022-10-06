@@ -268,6 +268,20 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -311,7 +325,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT reserve_owner\r\nFROM public.tdm_reserved_entities\r\nWHERE entity_id = ${entityId}\r\nAND be_id = ${beId}\r\nAND env_id = ${envId}\r\nAND (reserve_owner != ${userName} \r\n  AND reserve_owner NOT IN (${userFabricRoles}))\r\n\r\n"
+                                        "const": "SELECT reserve_owner\r\nFROM ${@schema}.tdm_reserved_entities\r\nWHERE entity_id = ${entityId}\r\nAND be_id = ${beId}\r\nAND env_id = ${envId}\r\nAND (reserve_owner != ${userName} \r\n  AND reserve_owner NOT IN (${userFabricRoles}))\r\n\r\n"
                                     },
                                     {
                                         "name": "entityId",
@@ -343,6 +357,13 @@
                                     },
                                     {
                                         "name": "userFabricRoles",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -614,6 +635,16 @@
             "rightPort": {
                 "actor": "Get Owner Of Entity",
                 "name": "userFabricRoles"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Owner Of Entity",
+                "name": "schema"
             }
         },
         {

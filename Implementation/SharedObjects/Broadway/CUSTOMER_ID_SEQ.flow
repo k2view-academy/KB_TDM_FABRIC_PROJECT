@@ -88,12 +88,26 @@
                                         "name": "value",
                                         "schema": {
                                             "type": "string"
-										}
-									}
-								]
-							}
-                        }						 
-					]
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -129,6 +143,19 @@
                                     {
                                         "name": "seq_name",
                                         "const": "CUSTOMER_ID_SEQ"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "enable_sequences:${0}"
                                     }
                                 ],
                                 "outputs": []
@@ -179,6 +206,17 @@
                 "actor": "Populate TDM_SEQ_MAPPING",
                 "name": "target_value"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {

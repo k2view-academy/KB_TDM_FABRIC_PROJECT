@@ -20,6 +20,20 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -43,7 +57,14 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from task_execution_override_attrs"
+                                        "const": "select * from ${@schema}.task_execution_override_attrs"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -146,6 +167,16 @@
             "rightPort": {
                 "actor": "Query",
                 "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "schema"
             }
         },
         {

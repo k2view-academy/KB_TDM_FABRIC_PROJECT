@@ -64,15 +64,18 @@
                                         "const": "getLuTablesMappedByOrder"
                                     },
                                     {
-                                        "name": "luType",
-                                        "schema": {}
-                                    },
-                                    {
                                         "const": false,
                                         "name": "reverseInd",
                                         "schema": {
                                             "type": "boolean"
                                         }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -132,7 +135,9 @@
                                     },
                                     {
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "templateContent",
@@ -267,7 +272,7 @@
             },
             "rightPort": {
                 "actor": "LuFunction1",
-                "name": "luType"
+                "name": "luName"
             }
         },
         {

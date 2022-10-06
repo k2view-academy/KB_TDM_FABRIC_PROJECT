@@ -42,7 +42,9 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
-
+	
+	public static final String TDM = "TDM";
+	
 	@desc("Get DB TimeZone")
 	@webService(path = "dbtimezone", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -57,7 +59,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		String message=null;
 		try{
-			Db.Row row = db("TDM").fetch("SELECT  current_setting(\'TIMEZONE\')").firstRow();
+			Db.Row row = db(TDM).fetch("SELECT  current_setting(\'TIMEZONE\')").firstRow();
 			errorCode="SUCCESS";
 			response.put("result",row);
 		} catch(Exception e){
@@ -128,8 +130,8 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object getTdmGuiParams() throws Exception {
 		try {
-			String sql = "select * from \"public\".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
-			Object params = db("TDM").fetch(sql).firstRow().get("param_value");
+			String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+			Object params = db(TDM).fetch(sql).firstRow().get("param_value");
 			Map result = Json.get().fromJson((String) params, Map.class);
 			return TdmSharedUtils.wrapWebServiceResults("SUCCESS", "", result);
 		} catch (Throwable t) {
@@ -151,7 +153,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetTDMVersion() throws Exception {
-		Object tdmVersion =  db("TDM").fetch("select param_value from tdm_general_parameters where param_name = 'TDM_VERSION'").firstValue();
+		Object tdmVersion =  db(TDM).fetch("select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'TDM_VERSION'").firstValue();
 		
 		return wrapWebServiceResults("SUCCESS", null, tdmVersion);
 	}
@@ -202,9 +204,9 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetRetentionPeriodInfo() throws Exception {
 		try {
-			String sql = "select * from tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+			String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
 			
-			Object params = db("TDM").fetch(sql).firstRow().get("param_value");
+			Object params = db(TDM).fetch(sql).firstRow().get("param_value");
 			Map result = Json.get().fromJson((String) params, Map.class);
 			
 			Map<String, Object> retentionMap = new HashMap<>();
@@ -229,8 +231,8 @@ public class Logic extends WebServiceUserCode {
 				retentionMap.put("retentionPeriodTypes", retentionPeriodTypes);
 			}
 			
-			sql = "SELECT param_value from tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
-			String maxReserveDays = "" + db("TDM").fetch(sql).firstValue();
+			sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
+			String maxReserveDays = "" + db(TDM).fetch(sql).firstValue();
 			if (maxReserveDays != null) {
 				Map<String, Object> map = new HashMap<>();
 		

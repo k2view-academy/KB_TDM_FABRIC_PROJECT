@@ -33,8 +33,8 @@ import com.k2view.fabric.events.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends UserCode {
-
-
+	public static final String TDM = "TDM";
+	
 	@type(RootFunction)
 	@out(name = "TASK_EXECUTION_ID", type = void.class, desc = "")
 	public static void funRootExecID(String TASK_EXECUTION_ID) throws Exception {
@@ -47,13 +47,13 @@ public class Logic extends UserCode {
 		}
 		
 		// TALI- TDM 5.5- 25-Sep-19- add a validation to verify that the task is completed
-		
-		String sql = "SELECT count(*) FROM task_execution_list out " + 
-		"where task_execution_id = ? and exists (select 1 from task_execution_list tbl " +
+
+		String sql = "SELECT count(*) FROM " + TDMDB_SCHEMA + ".task_execution_list out " + 
+		"where task_execution_id = ? and exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_list tbl " +
 		"where tbl.task_execution_id = out.task_execution_id " +
 		"and tbl.execution_status not in ('stopped','completed','failed','killed'))";
-		
-		String cnt= db("TDM").fetch(sql, TASK_EXECUTION_ID).firstValue().toString();
+
+		String cnt= db(TDM).fetch(sql, TASK_EXECUTION_ID).firstValue().toString();
 		
 		if(cnt != null)
 		{
@@ -63,7 +63,7 @@ public class Logic extends UserCode {
 				}
 		}
 		
-		yield(new Object[]{TASK_EXECUTION_ID});
+		UserCode.yield(new Object[]{TASK_EXECUTION_ID});
 	}
 
 	@desc("Tali- 4-Dec-18- add target_entity_id as input to support clone\r\n" +
@@ -84,18 +84,10 @@ public class Logic extends UserCode {
 	@out(name = "VERSION_DATETIME", type = String.class, desc = "")
 	public static void fnPopTaskExecutionLinkEntities(String LU_NAME, String ENTITY_ID, String EXECUTION_STATUS, String target_entity_id, String id_type) throws Exception {
 		if (1==2) {
-		yield(new Object[]{null});
+		UserCode.yield(new Object[]{null});
 		}
 	}
 
-
-	@out(name = "countParent", type = Integer.class, desc = "")
-	public static Integer fnGetCount(String sql, String parentLuName, String beID) throws Exception {
-		//Long countParent = (Long) DBSelectValue("TDM", sql, new Object[]{parentLuName, beID});
-		Long countParent = (Long) db("TDM").fetch(sql, parentLuName, beID).firstValue();
-		Integer count = countParent.intValue();
-		return count;
-	}
 
 
 	@type(RootFunction)
@@ -109,7 +101,7 @@ public class Logic extends UserCode {
 	@out(name = "version_datetime", type = String.class, desc = "")
 	public static void fnPop_tdm_lu_type_relation_eid(String LU_NAME, String LU_EID, String SOURCE_ENV_NAME) throws Exception {
 		if (1==2) {
-			yield (null);
+			UserCode.yield (null);
 		}
 	}
 
@@ -120,7 +112,7 @@ public class Logic extends UserCode {
 	@out(name = "LU_LIST", type = String.class, desc = "")
 	public static void fnRootPopTaskLuList(String TASK_EXECUTION_ID) throws Exception {
 		// Tali- 2-Dec-12- get the list of LUs, related to the task execution
-		String taskLuNamesSql = "SELECT DISTINCT LU_NAME FROM TASK_EXECUTION_ENTITIES";
+		String taskLuNamesSql = "SELECT DISTINCT LU_NAME FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES";
 		Db.Rows rows = ludb().fetch(taskLuNamesSql);
 		StringBuilder luList = new StringBuilder();
 		String prefix = "";
@@ -137,7 +129,7 @@ public class Logic extends UserCode {
 		if (rows != null) {
 			rows.close();
 		}
-		yield(new Object[]{TASK_EXECUTION_ID, luListStr});
+		UserCode.yield(new Object[]{TASK_EXECUTION_ID, luListStr});
 	}
 
 
@@ -184,26 +176,28 @@ public class Logic extends UserCode {
 			
 			if ("".equals(versionName)) {	
 				String sql2 = "SELECT rel.* " +
-						"FROM tdm_lu_type_rel_tar_eid rel, task_Execution_entities parent,  task_Execution_entities child, environments e " +
+						"FROM " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid rel, " + TDMDB_SCHEMA + ".task_Execution_entities parent, " + 
+						TDMDB_SCHEMA + ".task_Execution_entities child, " + TDMDB_SCHEMA + ".environments e " +
 						"WHERE parent.task_Execution_id = ? AND parent.task_Execution_id = child.task_Execution_id " +
 						"AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.environment_name " +
 						"AND rel.lu_Type_1 = parent.lu_name " +
 						"AND rel.lu_Type1_eid= parent.target_entity_id AND rel.lu_type_2 = child.lu_name " +
 						"AND rel.lu_type2_eid = child.target_entity_id AND parent.version_name = '' ";
-				rows2 = db("TDM").fetch(sql2, taskExecutionID);
+				rows2 = db(TDM).fetch(sql2, taskExecutionID);
 			} else {
 				String sql2 = "SELECT rel.* " +
-						"FROM tdm_lu_type_rel_tar_eid rel, task_Execution_entities parent,  task_Execution_entities child, environments e " +
+						"FROM " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid rel, " + TDMDB_SCHEMA + ".task_Execution_entities parent,  " + 
+						TDMDB_SCHEMA + ".task_Execution_entities child, " + TDMDB_SCHEMA + ".environments e " +
 						"WHERE parent.task_Execution_id = ? AND parent.task_Execution_id = child.task_Execution_id " +
 						"AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.environment_name " +
 						"AND rel.lu_Type_1 = parent.lu_name " +
 						"AND rel.lu_Type1_eid= parent.target_entity_id AND rel.lu_type_2 = child.lu_name " +
 						"AND rel.lu_type2_eid = child.target_entity_id AND parent.version_name=? " +
 						"AND to_char(parent.version_datetime, 'YYYYMMDDHH24MISS')=?";
-				rows2 = db("TDM").fetch(sql2, taskExecutionID, versionName, versionDateTime);
+				rows2 = db(TDM).fetch(sql2, taskExecutionID, versionName, versionDateTime);
 			}
 			for (Db.Row row : rows2) {
-				yield(row.cells());
+				UserCode.yield(row.cells());
 			}
 			if (rows2 != null) {
 				rows2.close();
@@ -238,6 +232,9 @@ public class Logic extends UserCode {
 	@out(name = "task_executed_by", type = String.class, desc = "")
 	@out(name = "process_id", type = String.class, desc = "")
 	@out(name = "process_name", type = String.class, desc = "")
+	@out(name = "product_name", type = String.class, desc = "")
+	@out(name = "source_product_version", type = String.class, desc = "")
+	@out(name = "target_product_version", type = String.class, desc = "")
 	public static void fnPopTaskExecutionList(String task_execution_id) throws Exception {
 		String lu_id = "";
 		String parent_lu_id = "";
@@ -264,9 +261,14 @@ public class Logic extends UserCode {
 		String task_executed_by = "";
 		String process_id = "";
 		String process_name = "";
+		String product_name = "";
+		String source_product_version = "";
+		String target_product_version = "";
+		String product_id = "";
+		String env_id = "";
 		
-		Db ciTDM = db("TDM");
-		Db.Rows tdmTaslExecList = ciTDM.fetch("SELECT * FROM task_execution_list where task_execution_id = ?", task_execution_id);
+		Db ciTDM = db(TDM);
+		Db.Rows tdmTaslExecList = ciTDM.fetch("SELECT * FROM " + TDMDB_SCHEMA + ".task_execution_list where task_execution_id = ?", task_execution_id);
 		
 		for (Db.Row tdmTaskExecRec: tdmTaslExecList) {
 			lu_id = "" + tdmTaskExecRec.get("lu_id");
@@ -278,15 +280,17 @@ public class Logic extends UserCode {
 			
 			// LU Name and Parent LU Name will be populated only if the LU_ID is not zero, otherwise the Process Name will be populated
 			if (!"0".equals(lu_id)) {
-				Db.Row luNames = ciTDM.fetch("SELECT lu_name, lu_parent_name from product_logical_units where lu_id = ?", Integer.valueOf(lu_id)).firstRow();
+				Db.Row luNames = ciTDM.fetch("SELECT lu_name, lu_parent_name, product_name from " + TDMDB_SCHEMA + ".product_logical_units where lu_id = ?", 
+					Integer.valueOf(lu_id)).firstRow();
 				lu_name = "" + luNames.get("lu_name");
 				parent_lu_name = "" + luNames.get("lu_parent_name");
+				product_name = "" +  luNames.get("product_name");
 			} else {
-				 process_name = "" + ciTDM.fetch("SELECT process_name from tasks_post_exe_process where task_id = ? and process_id = ?", 
+				 process_name = "" + ciTDM.fetch("SELECT process_name from " + TDMDB_SCHEMA + ".tasks_post_exe_process where task_id = ? and process_id = ?", 
 					Integer.valueOf(task_id), Integer.valueOf(process_id)).firstValue();
 			}
 			
-			Db.Row taskInfo = ciTDM.fetch("SELECT version_ind, task_title from tasks where task_id = ?", task_id).firstRow();
+			Db.Row taskInfo = ciTDM.fetch("SELECT version_ind, task_title from " + TDMDB_SCHEMA + ".tasks where task_id = ?", task_id).firstRow();
 			version_ind = "" + taskInfo.get("version_ind");
 			if ("true".equalsIgnoreCase(version_ind)) {
 				version_name = "" + taskInfo.get("task_title");
@@ -309,12 +313,30 @@ public class Logic extends UserCode {
 			num_of_copied_ref_tables = "" + tdmTaskExecRec.get("num_of_copied_ref_tables");
 			num_of_failed_ref_tables = "" + tdmTaskExecRec.get("num_of_failed_ref_tables");
 			fabric_execution_id = "" + tdmTaskExecRec.get("fabric_execution_id");
-			task_executed_by = "" + tdmTaskExecRec.get("task_executed_by");
 			
-			yield(new Object[]{task_execution_id,task_id,lu_id,lu_name, parent_lu_id, parent_lu_name, version_ind,version_name,version_datetime,
+			
+			String task_type = "" + tdmTaskExecRec.get("task_type");
+			
+			product_id = "" + tdmTaskExecRec.get("product_id");
+			env_id = "" + tdmTaskExecRec.get("source_environment_id");
+			
+			source_product_version = "" + ciTDM.fetch("select product_version from " + TDMDB_SCHEMA + ".environment_products " + 
+										"where status = 'Active' and product_id = ? and environment_id = ?", product_id, env_id).firstValue();
+			
+			if ("load".equalsIgnoreCase(task_type)) {
+				env_id = "" + tdmTaskExecRec.get("environment_id");
+				target_product_version = "" + ciTDM.fetch("select product_version from " + TDMDB_SCHEMA + ".environment_products " + 
+										"where status = 'Active' and product_id = ? and environment_id = ?", product_id, env_id).firstValue();
+			}
+			String[] userData = tdmTaskExecRec.get("task_executed_by").toString().split("##");
+			
+			task_executed_by = userData[0];
+			
+			UserCode.yield(new Object[]{task_execution_id,task_id,lu_id,lu_name, parent_lu_id, parent_lu_name, version_ind,version_name,version_datetime,
 				version_expiration_date,execution_status,start_execution_time,end_execution_time,num_of_processed_entities,
 				num_of_copied_entities,num_of_failed_entities,data_center_name,num_of_processed_ref_tables,num_of_copied_ref_tables,
-				num_of_failed_ref_tables,fabric_execution_id, task_executed_by,process_id,process_name});
+				num_of_failed_ref_tables,fabric_execution_id, task_executed_by,process_id,process_name,
+				product_name,source_product_version,target_product_version});
 		
 		}
 		
@@ -346,13 +368,13 @@ public class Logic extends UserCode {
 	public static void fnPopTaskExeErrDetailed(String task_execution_id) throws Exception {
 		String taskType = "" + fabric().fetch("select task_type from tasks where task_execution_id = ?", task_execution_id).firstValue();
 		
-		Db.Rows errTableData = db("TDM").fetch("select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id, error_category, error_code, " +
+		Db.Rows errTableData = db(TDM).fetch("select distinct task_execution_id,lu_name,entity_id,iid,target_entity_id, error_category, error_code, " +
 			"error_message, creation_date, flow_name, stage_name, actor_name, actor_parameters " +
-			"from TASK_EXE_ERROR_DETAILED where TASK_EXECUTION_ID = ?", task_execution_id);
+			"from " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED where TASK_EXECUTION_ID = ?", task_execution_id);
 		
 		if ("extract".equalsIgnoreCase(taskType)) {
 			for (Db.Row errRec : errTableData) {
-				yield(errRec.cells());	
+				UserCode.yield(errRec.cells());	
 			}
 		
 		// In case of Load tasks and the instance is not a reference table, the target_entity_id and iid should be set correctly,
@@ -386,7 +408,7 @@ public class Logic extends UserCode {
 					targetEntId = "" + entityRec.get("TARGET_ENTITY_ID");
 				}
 				
-				yield(new Object[]{task_execution_id,luName,entityId,iid,targetEntId,errorCat,errorCode,errorMsg,createDate,flowName,stageName,actorName,actorParams});
+				UserCode.yield(new Object[]{task_execution_id,luName,entityId,iid,targetEntId,errorCat,errorCode,errorMsg,createDate,flowName,stageName,actorName,actorParams});
 			}
 		
 		}

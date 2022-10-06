@@ -125,15 +125,14 @@ public class SharedLogic {
 	@out(name = "task_name", type = String.class, desc = "")
 	@out(name = "timestamp", type = String.class, desc = "")
 	public static void fnRtK2TDMRoot(String TDM_INSTANCE_ID) throws Exception {
-		yield(fnValidateNdGetInstance());
+		UserCode.yield(fnValidateNdGetInstance());
 	}
 
 
     @type(RootFunction)
-    @out(name = "ENTITY_ID", type = String.class, desc = "")
+    @out(name = "ENTITY_ID", type = void.class, desc = "")
     public static void fnRootLuParams(String ENTITY_ID) throws Exception {
-        if (1 == 2) yield(new Object[]{null});
-
+        if (1 == 2) UserCode.yield(new Object[]{null});
     }
 
 
@@ -148,7 +147,7 @@ public class SharedLogic {
 		//                                                     //
 		//*****************************************************//
 		
-		Db ciTDM = db("TDM");
+		Db ciTDM = db(TDM);
 		//ResultSetWrapper rs = null;
 		Set<String> pgColsList = new HashSet<>();
 		Set<String> luColsList = new HashSet<>();
@@ -156,9 +155,9 @@ public class SharedLogic {
 		String tblNameFabric = getLuType().luName + ".LU_PARAMS";
 		String tblInfoSql = "select column_name from INFORMATION_SCHEMA.COLUMNS where table_name = ?";
 		String luParamTblSql = "DESCRIBE TABLE " + tblNameFabric;
-		StringBuilder sbCreStmt = new StringBuilder().append("CREATE TABLE IF NOT EXISTS " + tblName + "(");
-		StringBuilder sbAltStmtAdd = new StringBuilder().append("ALTER TABLE " + tblName + " ADD COLUMN IF NOT EXISTS ");
-		StringBuilder sbAltStmtRem = new StringBuilder().append("ALTER TABLE " + tblName + " DROP COLUMN IF EXISTS ");
+		StringBuilder sbCreStmt = new StringBuilder().append("CREATE TABLE IF NOT EXISTS " + TDMDB_SCHEMA + "." + tblName + "(");
+		StringBuilder sbAltStmtAdd = new StringBuilder().append("ALTER TABLE " + TDMDB_SCHEMA + "." + tblName + " ADD COLUMN IF NOT EXISTS ");
+		StringBuilder sbAltStmtRem = new StringBuilder().append("ALTER TABLE " + TDMDB_SCHEMA + "." + tblName + " DROP COLUMN IF EXISTS ");
 		String LuName = ("" + getLuType().luName).toUpperCase();
 		String prefix = "";
 		
@@ -288,7 +287,7 @@ public class SharedLogic {
 		if(tdmLuParamAltered)
 		{
 		    // Get the related BEs of the logical unit
-		    String sql_be_list = "SELECT be.be_name FROM product_logical_units lu, business_entities be " +
+		    String sql_be_list = "SELECT be.be_name FROM " + TDMDB_SCHEMA + ".product_logical_units lu, " + TDMDB_SCHEMA + ".business_entities be " +
 		            "WHERE lower(lu.lu_name) = ? and lu.be_id = be.be_id and be.be_status = 'Active'";
 		
 		    if (!inDebugMode()) {
@@ -298,7 +297,7 @@ public class SharedLogic {
 				for (Db.Row beRow : rsBeList) {
 		            // DROP the view for the BE if exists
 					String viewName = "lu_relations_" + beRow.get("be_name") + "_" + env_name;
-					ciTDM.execute("DROP MATERIALIZED VIEW IF EXISTS \"" + viewName + "\"");
+					ciTDM.execute("DROP MATERIALIZED VIEW IF EXISTS " + TDMDB_SCHEMA + ".\"" + viewName + "\"");
 		        }
 			
 				if (rsBeList != null) rsBeList.close();
@@ -313,7 +312,7 @@ public class SharedLogic {
 			// Reading the translation data and gettig th queries
 			Map<String,Map<String,String>> data = getTranslationsData("trnLuParams");
 			StringBuilder sqlUpdateTDM = new StringBuilder().append(" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey Do update set ");
-			StringBuilder sqlInsertTDM = new StringBuilder().append("insert into " + tblName + "(");
+			StringBuilder sqlInsertTDM = new StringBuilder().append("insert into " + TDMDB_SCHEMA + "." + tblName + "(");
 			StringBuilder sqlInsertTDMBind = new StringBuilder().append(" values (");
 			
 			// Tali- 29-Nov-18- add a stringInsertFabricLuParam to insert the columns without the concatenation of the lu name
@@ -431,7 +430,8 @@ public class SharedLogic {
 			
 			    // TALI- fix- 2-Dec-18- add on conflit on constraint do nothing to avoid a violation of a PK if the entity already exists in the params table
 			    if(!inDebugMode()){
-					ciTDM.execute("insert into " + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT) values (?,?)" + " ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
+					ciTDM.execute("insert into " + TDMDB_SCHEMA + "." + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT) values (?,?)" + 
+							" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
 			    }
 				
 				// Tali- TDM 5.5- fix- add concatenate the lu_name to the table name
@@ -466,7 +466,7 @@ public class SharedLogic {
 		*/
 		//trnChildLink translation will include the child LU Name and the sql query which will return the child entities
 		Map<String, Map<String, String>> trnChildLinkVals = getTranslationsData("trnChildLink");
-		Db ciTDM = db("TDM");
+		Db ciTDM = db(TDM);
 		String uid = getInstanceID();
 		//log.info("Running - fnEnrichmentChildLink for instance: " + uid);
 		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -526,12 +526,12 @@ public class SharedLogic {
 		// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
 		//String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
 		String verAddition = verName.equals("") ? "and version_name = ''" : "and version_name = ? and version_datetime = ?";
-		String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?" + 
+		String DELETE_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?" + 
 					verAddition;
 		
 		//TDM 7 - Handle TDM_LU_TYPE_REL_TAR_EID table 
 			// Fix the query- add the child LU to the condition
-		String DELETE_TAR_SQL = "delete from tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
+		String DELETE_TAR_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
 		String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
 		
 		String currDate = sdf.format(new java.util.Date());
@@ -542,7 +542,8 @@ public class SharedLogic {
 			// TDM 7.3 - 17/01/22 - Check if the child LU is part of the task, if it is not part of the task no need to populate its data
 			
 			String validateLuSql = "SELECT count(1) " +
-						"FROM task_execution_list t, product_logical_units parent, product_logical_units child " + 
+						"FROM " + TDMDB_SCHEMA + ".task_execution_list t, " + 
+							TDMDB_SCHEMA + ".product_logical_units parent, " + TDMDB_SCHEMA + ".product_logical_units child " + 
 		                "WHERE t.task_Execution_id = ? and t.be_id  = parent.be_id and parent.lu_id = t.parent_lu_id " +
 		                "and parent.lu_name = ? and t.be_id = child.be_id and child.lu_id = t.lu_id and child.lu_name = ?";
 		
@@ -608,10 +609,10 @@ public class SharedLogic {
 						// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 						if (verName.equals("")) {
 							//log.info("Inserting into TDM - tdm_lu_type_relation_eid table for lu type: " + key);
-							ciTDM.execute("insert into tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
+							ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
 						} else {
 							//log.info("Inserting into TDM - tdm_lu_type_relation_eid table with version Data for lu type: " + key);
-							ciTDM.execute("insert into tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) " +
+							ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) " +
 								"values(?,?,?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
 						}
 					}
@@ -631,7 +632,7 @@ public class SharedLogic {
 					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
 		
 					if (!inDebugMode()) {
-						ciTDM.execute("insert into tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
+						ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
 					}
 				}
 			}
@@ -660,7 +661,7 @@ public class SharedLogic {
 		String versionName = "";
 		String versionDateTime = "";
 				
-		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+		String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
         //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
 		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
 			separator = iidSeparator;
@@ -737,58 +738,17 @@ public class SharedLogic {
 		return new Object[]{instanceId, envName, versionName, versionDateTime};
 	}
 
-	public static void fnPopINSTANCE_TABLE_COUNT() throws Exception {
-		String tableName = getLuType().luName + "._k2_objects_info";
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-		String currDate = sdf.format(new Date());
-		String countTable = getLuType().luName + ".INSTANCE_TABLE_COUNT";
-		
-		// Fetching all LU tables
-		Db.Rows luTableList = null;
-		try {
-			luTableList = fabric().fetch("SELECT distinct table_name FROM " + tableName + " where table_name != ? and table_name != ?",
-					"INSTANCE_TABLE_COUNT", "LU_PARAMS");
-		
-			for (Db.Row row : luTableList) {
-		        // Get table's count
-				Integer luTableCnt = (Integer) fabric().fetch("select count(*) from " + row.get("table_name")).firstValue();
-		
-				fabric().execute("insert or replace into " + countTable + " values (?, ?, ?)", getInstanceID(), row.get("table_name"), luTableCnt);
-		        if (!inDebugMode()) {
-		
-					db("TDM").execute("insert into instance_table_count values (?, ?, ?, ?, ?) ON CONFLICT ON CONSTRAINT instance_table_count_pkey DO " +
-						"update set sys_update_date = ? , table_count = ? ",
-						getLuType().luName, getInstanceID(), currDate, row.get("table_name"), luTableCnt, currDate, luTableCnt);
-				}
-		    }
-		} finally {
-		
-			if (luTableList != null) luTableList.close();
-		}
-	}
-
-
-    @type(RootFunction)
-    @out(name = "output", type = String.class, desc = "")
-    public static void fnRootINSTANCE_TABLE_COUNT(String input) throws Exception {
-        if (1 == 2) {
-            yield(new Object[]{null});
-        }
-
-    }
-
-
 	@type(RootFunction)
-	@out(name = "dummy_output", type = String.class, desc = "")
+	@out(name = "dummy_output", type = void.class, desc = "")
 	public static void fnPop_TDM_LU_TYPE_RELATION_EID(String dummy_input) throws Exception {
-		if(1 == 2)yield(new Object[] {null});
+		if(1 == 2)UserCode.yield(new Object[] {null});
 	}
 
 
 	@out(name = "refSummaryStats", type = Map.class, desc = "")
 	public static Map<String,Object> fnGetReferenceSummaryData(String refTaskExecutionId) throws Exception {
 		String selectRefTablesStats = "Select count(*), to_char(min(start_time), 'YYYY-MM-DD HH24:MI:SS'), to_char(max(end_time), 'YYYY-MM-DD HH24:MI:SS'), " +
-			"execution_status, lu_name from TASK_REF_EXE_STATS es, TASK_REF_TABLES rt where task_execution_id = ? " + 
+			"execution_status, lu_name from " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".TASK_REF_TABLES rt where task_execution_id = ? " + 
 			"and es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id group by execution_status, lu_name order by lu_name";
 		
 		//ResultSetWrapper taskExecutionRefTables = null;
@@ -803,7 +763,7 @@ public class SharedLogic {
 		
 		Map <String, Object> refSummaryStatsBuf = new LinkedHashMap<>();
 		
-		Db.Rows rows = db("TDM").fetch(selectRefTablesStats, refTaskExecutionId);
+		Db.Rows rows = db(TDM).fetch(selectRefTablesStats, refTaskExecutionId);
 		
 		
 		Date calcMinDate = null;
@@ -1044,11 +1004,11 @@ public class SharedLogic {
 			"(number_of_records_to_process - number_of_processed_records), 'HH24:MI:SS') " + 
 			"ELSE '0' END estimated_remaining_duration, number_of_records_to_process, " +
 			"coalesce(number_of_processed_records, 0) as number_of_processed_records, coalesce(error_msg, '') as error_msg " +
-			"FROM TASK_REF_EXE_STATS es, task_ref_tables rt where task_execution_id = ? and es.task_id = rt.task_id " +
+			"FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".task_ref_tables rt where task_execution_id = ? and es.task_id = rt.task_id " +
 			"and es.task_ref_table_id = rt.task_ref_table_id"; 
 			
 			//rs = DBQuery("TDM", selectDetailedRefTablesStats, new Object[]{refTaskExecutionId});
-			rows = db("TDM").fetch(selectDetailedRefTablesStats, refTaskExecutionId);
+			rows = db(TDM).fetch(selectDetailedRefTablesStats, refTaskExecutionId);
 		
 		return rows;
 	}
@@ -1062,8 +1022,8 @@ public class SharedLogic {
 		// TDM 5.1- get open and close separators for the instanceId. If they exist- get the instanceId according the open and close separators
 		//Set the SQL parameter
 		
-		String sql = "SELECT UPPER(param_name) as param_name, param_value FROM public.tdm_general_parameters where UPPER(param_name) in ('IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
-		Db.Rows rows = db("TDM").fetch(sql);
+		String sql = "SELECT UPPER(param_name) as param_name, param_value FROM " + TDMDB_SCHEMA + ".tdm_general_parameters where UPPER(param_name) in ('IID_OPEN_SEPARATOR', 'IID_CLOSE_SEPARATOR')";
+		Db.Rows rows = db(TDM).fetch(sql);
 		for (Db.Row row:rows){
 			if(row.cells()[0].toString().equals("IID_OPEN_SEPARATOR")&& row.cells()[1]!= null && !row.cells()[1].toString().isEmpty() )
 			{
@@ -1098,7 +1058,7 @@ public class SharedLogic {
 		String versionName = "";
 		String versionDateTime = "";
 		
-		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+		String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
         //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
 		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
 			separator = iidSeparator;
@@ -1259,12 +1219,12 @@ public class SharedLogic {
 		//		", targetSchemaName: " + targetSchemaName + ", targetInterfaceName: " + targetInterfaceName);
 		return new Object[]{targetRefTableName, schemaName, interfaceName, targetSchemaName, targetInterfaceName, targetTablePK};
 	}
-	
+
 	@desc("Dummy Root function")
 	@type(RootFunction)
 	@out(name = "dummy_output", type = void.class, desc = "")
 	public static void fnDummyPop(String dummy_input) throws Exception {
-		if(1 == 2)yield(new Object[] {null});
+		if(1 == 2) UserCode.yield(new Object[] {null});
 	}
 
 
@@ -1276,15 +1236,15 @@ public class SharedLogic {
 	public static void fnCheckInsFound() throws Exception {
 		// Fix- TDM 7.0.1 - Check the main source LU tables only if the TDM_INSERT_TO_TARGET is true
 		String luName = getLuType().luName;
-
+		
 		if (("" + ludb().fetch("SET " + luName + ".TDM_INSERT_TO_TARGET").firstValue()).equals("true")) {
-
+		
 			// Get the list of root tables from the Global
 			String[] rootTables = ("" + ludb().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue()).split(",");
-
+		
 			// Indicates if any of the root tables have values in it
 			boolean instanceExists = false;
-
+		
 			// For every possible root table
 			for (String rootTable : rootTables) {
 				// If that table has data
@@ -1292,8 +1252,8 @@ public class SharedLogic {
 					// Indicate the LU is found
 					instanceExists = true;
 			}
-
-
+		
+		
 			if (!instanceExists) {
 				LogEntry lg = new LogEntry("INSTANCE NOT FOUND!", MsgId.INSTANCE_MISSING);
 				lg.luInstance = SharedLogic.fnValidateNdGetInstance()[0] + "";
@@ -1348,9 +1308,6 @@ public class SharedLogic {
 		return retention_in_seconds;
 	}
 
-
-
-
 	@out(name = "result", type = HashMap.class, desc = "")
 	public static HashMap<String,Object> fnReleaseReservedEntity(String entityID, String envID, String beID, String userName) throws Exception {
 		HashMap<String, Object> result = new HashMap<>();
@@ -1363,7 +1320,7 @@ public class SharedLogic {
 		}
 		String permissionGroup = fnGetUserPermissionGroup(userName);
 		
-		String deleteSql = "DELETE FROM TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
+		String deleteSql = "DELETE FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =? ";
 		
 		//Sort input list based on Environment
 		//log.info("listOfEntities: " + listOfEntities);
@@ -1398,17 +1355,17 @@ public class SharedLogic {
 		//Delete record
 		String deleteEntityID = "";
 		if (isTester) {
-			deleteEntityID = "" + db("TDM").fetch(deleteSql + returnClause, entityID, beID, envID, userName).firstValue();
+			deleteEntityID = "" + db(TDM).fetch(deleteSql + returnClause, entityID, beID, envID, userName).firstValue();
 		} else {
-			deleteEntityID = "" + db("TDM").fetch(deleteSql + returnClause, entityID, beID, envID).firstValue();
+			deleteEntityID = "" + db(TDM).fetch(deleteSql + returnClause, entityID, beID, envID).firstValue();
 		}
 		
 		//if record was not deleted
 		if(!entityID.equals(deleteEntityID)) {
 			//log.info("fnReleaseReservedEntity - entity is not deleted");
 			//In case of a tester, check if the entity is reserved for a different user
-			String reserveOwner = "" + db("TDM").fetch(
-				"SELECT reserve_owner FROM TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =?",
+			String reserveOwner = "" + db(TDM).fetch(
+				"SELECT reserve_owner FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES WHERE entity_id=? AND be_id =? AND env_id =?",
 				entityID, beID, envID).firstValue();
 			if (reserveOwner == null || "".equals(reserveOwner) ||"null".equals(reserveOwner) ) {
 				ErrorMessage = "Entity already Released";

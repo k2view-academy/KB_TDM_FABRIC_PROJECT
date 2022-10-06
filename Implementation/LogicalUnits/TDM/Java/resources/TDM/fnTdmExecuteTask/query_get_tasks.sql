@@ -17,21 +17,22 @@ SELECT DISTINCT
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
-  , tt.task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
 FROM
-    TASK_EXECUTION_LIST tt
-  , environments         e
-  , environments         e2
-  , environment_products ep
+    @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
+  , @TDMDB_SCHEMA@.environments         e
+  , @TDMDB_SCHEMA@.environments         e2
+  , @TDMDB_SCHEMA@.environment_products ep
 WHERE
     UPPER(ep.status)                 = 'ACTIVE'
     AND UPPER(tt.execution_status)   = 'PENDING'
     AND (
         tt.parent_lu_id is null
         or not exists(
-            select 1 from TASK_EXECUTION_LIST par where par.task_execution_id = tt.task_execution_id and par.lu_id = tt.parent_lu_id
+            select 1 from @TDMDB_SCHEMA@.TASK_EXECUTION_LIST par where par.task_execution_id = tt.task_execution_id and par.lu_id = tt.parent_lu_id
         ) or exists(
-            select 1 from TASKS t where tt.task_id = t.task_id and t.selection_method = 'REF'
+            select 1 from @TDMDB_SCHEMA@.TASKS t where tt.task_id = t.task_id and t.selection_method = 'REF'
         )
     )
     AND tt.source_environment_id = e.environment_id
@@ -59,13 +60,14 @@ SELECT DISTINCT
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , e.environment_name as source_environment_name
   , e2.environment_name as target_environment_name
-  , tt.task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
 FROM
-    TASK_EXECUTION_LIST tt
-  , TASK_EXECUTION_LIST p
-  , environments         e
-  , environments         e2
-  , environment_products ep
+    @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
+  , @TDMDB_SCHEMA@.TASK_EXECUTION_LIST p
+  , @TDMDB_SCHEMA@.environments         e
+  , @TDMDB_SCHEMA@.environments         e2
+  , @TDMDB_SCHEMA@.environment_products ep
 WHERE
     UPPER(tt.execution_status)       = 'PENDING'
     AND tt.task_execution_id         = p.task_execution_id
@@ -97,10 +99,11 @@ SELECT DISTINCT
   , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
   , tt.source_env_name as source_environment_name
   , e.environment_name as target_environment_name
-  , tt.task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
 FROM
-      TASK_EXECUTION_LIST tt
-    , environments         e
+      @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
+    , @TDMDB_SCHEMA@.environments         e
 WHERE
     UPPER(tt.execution_status)   = 'PENDING'
     AND tt.environment_id            = e.environment_id

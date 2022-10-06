@@ -20,6 +20,38 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "DbCommand1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "CRM_DB"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select distinct public.customer.first_name\r\nFrom public.customer"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -43,7 +75,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select customer_id, ssn\r\nFrom customer"
+                                        "const": "Select * \r\nFrom customer"
                                     }
                                 ],
                                 "outputs": [
@@ -59,12 +91,26 @@
                                                     },
                                                     "SSN": {
                                                         "type": "string"
+                                                    },
+                                                    "FIRST_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "LAST_NAME": {
+                                                        "type": "string"
                                                     }
                                                 }
                                             }
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "CsvBuilder1",
+                            "actorType": {
+                                "parentType": "CsvBuilder",
+                                "inputs": [],
+                                "outputs": []
                             }
                         }
                     ]
@@ -108,6 +154,102 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "MaskingEmail1",
+                            "actorType": {
+                                "parentType": "MaskingEmail",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "mail"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "xxx@kuku.com"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MaskingCreditCard1",
+                            "actorType": {
+                                "parentType": "MaskingCreditCard",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "cc"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "1234 - 567"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MaskingWithCollection1",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "name"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -167,6 +309,29 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -196,6 +361,19 @@
         },
         {
             "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "collection"
+            },
+            "path": [
+                "first_name"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Query",
                 "name": "result"
             },
@@ -221,12 +399,35 @@
         },
         {
             "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "value"
+            },
+            "path": [
+                "FIRST_NAME"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "MaskingSSN1",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "CUSTOMER",
                 "name": "SSN"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
             }
         },
         {

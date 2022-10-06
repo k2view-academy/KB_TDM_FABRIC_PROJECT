@@ -68,21 +68,21 @@ public class Logic extends UserCode {
 
 	private static final int BATCH_SIZE = 10;
 	public static final String REF = "REF";
-	public static final String TASKS = "TASKS";
+	public static final String TASKS = TDMDB_SCHEMA + ".TASKS";
 	public static final String TDM = "TDM";
 	public static final String DBCASSANDRA = "DB_CASSANDRA";
 	//Fabric 5.3 feature, USER_JOB runs on FABRIC DB - "fabric"
 	// public static final String DB_FABRIC = "dbFabric";
 	public static final String DB_FABRIC = "fabric";
-	public static final String TASK_REF_TABLES = "TASK_REF_TABLES";
-	public static final String PRODUCT_LOGICAL_UNITS = "product_logical_units";
-	public static final String TASK_REF_EXE_STATS = "TASK_REF_EXE_STATS";
-	public static final String TASKS_LOGICAL_UNITS = "tasks_logical_units";
+	public static final String TASK_REF_TABLES = TDMDB_SCHEMA + ".TASK_REF_TABLES";
+	public static final String PRODUCT_LOGICAL_UNITS = TDMDB_SCHEMA + ".product_logical_units";
+	public static final String TASK_REF_EXE_STATS = TDMDB_SCHEMA + ".TASK_REF_EXE_STATS";
+	public static final String TASKS_LOGICAL_UNITS = TDMDB_SCHEMA + ".tasks_logical_units";
 	public static final String RUNNING = "running";
 	public static final String WAITING = "waiting";
 	public static final String STOPPED = "stopped";
 	public static final String RESUME = "resume";
-	public static final String TASK_EXECUTION_LIST = "task_execution_list";
+	public static final String TASK_EXECUTION_LIST = TDMDB_SCHEMA + ".task_execution_list";
     public static final String FAILED = "failed";
     public  static final String COMPLETED = "completed";
 	public static final String PAUSED = "paused";
@@ -113,9 +113,9 @@ public class Logic extends UserCode {
 	public static void fnCheckMigrateAndUpdateTDMDB() throws Exception {
 		// TDM 5.1- fix the query- check the task_type instead of the fabric_execution_id, since a reference only task does not have the fabric_execution_id (= migrate id)
 		String selectFromTaskExecutionListSql = "Select tel.fabric_execution_id, tel.task_id, tel.lu_id, tlu.lu_name, task_type," +
-				"tel.process_id, tpost.process_name, tel.task_execution_id, tel.parent_lu_id from public.task_execution_list tel\n" +
-				"left join public.tasks_logical_units tlu on tel.task_id = tlu.task_id And tel.lu_id = tlu.lu_id " +
-				"left join public.tasks_post_exe_process tpost On tel.task_id = tpost.task_id " +
+				"tel.process_id, tpost.process_name, tel.task_execution_id, tel.parent_lu_id from " + TDMDB_SCHEMA + ".task_execution_list tel\n" +
+				"left join " + TDMDB_SCHEMA + ".tasks_logical_units tlu on tel.task_id = tlu.task_id And tel.lu_id = tlu.lu_id " +
+				"left join " + TDMDB_SCHEMA + ".tasks_post_exe_process tpost On tel.task_id = tpost.task_id " +
 				"and tel.process_id = tpost.process_id Where Lower(tel.execution_status) = 'running'";
 		//"Select fabric_execution_id, task_id, task_execution_id from task_execution_list where lower(execution_status) = 'running' and fabric_execution_id is not null";
 		
@@ -128,7 +128,7 @@ public class Logic extends UserCode {
 		
 		try {
 			//log.info("fnCheckMigrateAndUpdateTDMDB- get running extract tasks");
-			taskExecutionList = db("TDM").fetch(selectFromTaskExecutionListSql);
+			taskExecutionList = db(TDM).fetch(selectFromTaskExecutionListSql);
 		
 			for (Db.Row row : taskExecutionList) {
 				//5.1 - Add Try - catch inside the loop to allow handling each iteration seprately
@@ -141,7 +141,7 @@ public class Logic extends UserCode {
 				Integer num_of_incomplete_ref_tables = 0;
 				String taskID = "";
 				String taskExecutionID = "";
-				String updateTaskExecutionListSql = "UPDATE task_execution_list SET execution_status = ?, num_of_processed_entities = ?, " +
+				String updateTaskExecutionListSql = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status = ?, num_of_processed_entities = ?, " +
 					"num_of_copied_entities = ?, num_of_failed_entities = ?, start_execution_time = ?, end_execution_time = ?, " +
 					"num_of_processed_ref_tables = ?, num_of_copied_ref_tables = ?, num_of_failed_ref_tables = ? " +
 					"WHERE task_id = ? AND task_execution_id = ? and ((lu_id > 0 and lu_id = ?) or (process_id > 0 and process_id = ?) )";
@@ -178,7 +178,7 @@ public class Logic extends UserCode {
 					// TDM 5.1- Tali- Fix- get the selection_method from TASKS. If this selection_method is REF- do not call the migrate_summary command, 
 					//but check the reference status instead
 		
-					String selectionMethod = "" + db("TDM").fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstValue();
+					String selectionMethod = "" + db(TDM).fetch("Select selection_method from " + TASKS + " where task_id=?", taskID).firstValue();
 					
 					Integer totNoOfRefTables = 0;
 					// TDM 5.1- add the update of the reference tables fields
@@ -221,7 +221,7 @@ public class Logic extends UserCode {
 		
 									// TDM 5.1- change the start and end date parameters and add the parameters for the reference tables
 									//log.info("Updating task status to failed as no reference table was copied");
-									db("TDM").execute(updateTaskExecutionListSql, status, 0, 0, 0, refMinDate.toString(), 
+									db(TDM).execute(updateTaskExecutionListSql, status, 0, 0, 0, refMinDate.toString(), 
 										refMaxDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, 
 										num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID);
 								}
@@ -234,7 +234,7 @@ public class Logic extends UserCode {
 						}else if(processID != null && processID > 0){
 							String finalTaskExecutionID = taskExecutionID;
 							Long finalProcessID = processID;
-							Util.rte(()-> db(TDM).execute("UPDATE public.task_execution_list SET execution_status=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "completed", finalTaskExecutionID, finalProcessID));
+							Util.rte(()-> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "completed", finalTaskExecutionID, finalProcessID));
 						}
 					}// if(selectionMethod != null && selectionMethod.equals(REF))
 					else // the task contains entities (but can still have reference tables in addition to the entities)
@@ -252,12 +252,12 @@ public class Logic extends UserCode {
 		
 							//log.info("fnCheckMigrateAndUpdateTDMDB- migration status for task execution id " + taskExecutionID + " is: " + status);
 							// In case there are reference table to be handled, if the refernece job has finished
-							String sqlrefSts = "select distinct lu_name from task_ref_exe_stats es, task_ref_tables rt where " +
+							String sqlrefSts = "select distinct lu_name from " + TDMDB_SCHEMA + ".task_ref_exe_stats es, " + TDMDB_SCHEMA + ".task_ref_tables rt where " +
 								"lower(execution_status) in ('waiting', 'running', 'pending') and " +
 								"task_Execution_id = ? and es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id " +
 								"group by lu_name";
 							
-							refRunningLus = db("TDM").fetch(sqlrefSts, taskExecutionID);
+							refRunningLus = db(TDM).fetch(sqlrefSts, taskExecutionID);
 							
 							Boolean refStillRunning = false;
 							for (Db.Row refRunningLu : refRunningLus) {
@@ -288,7 +288,7 @@ public class Logic extends UserCode {
 								if (Long.parseLong(total) == 0 && parentLuID == 0) {
 									status = FAILED;
 									log.error("No Instances were handled by Task");
-									String insertSql = "insert into TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+									String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
 										"ERROR_CATEGORY, ERROR_MESSAGE) " +
 										"VALUES (?, ?, ?, ?, ?, ?, ?)";
 									db(TDM).execute(insertSql, taskExecutionID, luName, " ", " ", " ", "No Instances were handled by Task", "No Instances");
@@ -393,7 +393,7 @@ public class Logic extends UserCode {
 								//log.info("numOfCopiedRefTables: " + num_of_copied_ref_tables + ", numOfFailedRefTables: " + num_of_failed_ref_tables);
 								
 								
-								db("TDM").execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, taskStartDate.toString(), 
+								db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, taskStartDate.toString(), 
 										taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, 
 										taskID, taskExecutionID, luID, processID});
 								//log.info("fnCheckMigrateAndUpdateTDMDB - Updated the status");
@@ -404,7 +404,7 @@ public class Logic extends UserCode {
 					log.error("Task Failed");
 					log.error(e.getMessage(),e);
 					status = FAILED;
-					db("TDM").execute(updateTaskExecutionListSql, new Object[]{status, "0", "0", "0", taskStartDate.toString(), taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID});
+					db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, "0", "0", "0", taskStartDate.toString(), taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID});
 					throw e;
 				}
 			} // end of for loop on the task_execution_list
@@ -416,18 +416,19 @@ public class Logic extends UserCode {
 		
 		// Tali- 15-Oct-19- add the get into TDM for all completed tasks
 		// In case of extract task with multi LUs, if it was stopped, the TDM LU will be updated only when all LUs are completed.
-		String sqlCompletedTasks= "select distinct task_execution_id, upper(task_type) as task_type, clean_redis from task_execution_list out where  " + 
-		"synced_to_fabric = FALSE "+ 
-		"and not exists (select 1 from task_execution_list tbl, tasks t where tbl.task_execution_id = out.task_execution_id " +  
+		String sqlCompletedTasks= "select distinct task_execution_id, upper(out.task_type) as task_type, selection_method from " + TDMDB_SCHEMA + ".task_execution_list out, " + TDMDB_SCHEMA + ".tasks t1 where  " + 
+		"out.task_id = t1.task_id and out.synced_to_fabric = FALSE "+ 
+		"and not exists (select 1 from " + TDMDB_SCHEMA + ".task_execution_list tbl, " + TDMDB_SCHEMA + ".tasks t where tbl.task_execution_id = out.task_execution_id " +  
 		"and t.task_id = tbl.task_id " +
 		"and tbl.execution_status not in ('completed','failed','killed') )";
 		
 		String taskExecutionId= "";
 		String taskType="";
+		String selectionMethod = "";
 		
 		try
 		{
-			rows = db("TDM").fetch(sqlCompletedTasks);
+			rows = db(TDM).fetch(sqlCompletedTasks);
 		
 			for (Db.Row row:rows){
 				// TALi- 25-Sep-19- TDM 5.5- add the clean of redis for completed load tasks
@@ -435,6 +436,7 @@ public class Logic extends UserCode {
 				{
 					taskExecutionId = "" + row.get("task_execution_id");
 					taskType = "" + row.get("task_type");
+					selectionMethod = "" + row.get("selection_method");
 					
 					//log.info("fnCheckMigrateAndUpdateTDMDB - Loading task: " + taskExecutionId + " to TDM");
 					int count = 0;
@@ -444,14 +446,14 @@ public class Logic extends UserCode {
 						{
 							// Get the task into the TDM LU
 							fabric().execute("get TDM." + taskExecutionId);
-							db("TDM").execute("update task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
+							db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
 							break;
 						}catch(Exception e){
 							if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
 								throw e;
 							}
 							if (++count >= retries) {
-								db("TDM").execute("update task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
+								db(TDM).execute("update " + TDMDB_SCHEMA + ".task_execution_list set synced_to_fabric=TRUE where task_execution_id = ?", taskExecutionId );
 								log.error("Failed to get task execution id: " + taskExecutionId + " into TDM LU. Updating the synced_to_fabric indicator of TDM DB. Error message: " + e.getMessage(),e);
 								retries = 0;
 								break;
@@ -460,27 +462,27 @@ public class Logic extends UserCode {
 								Thread.sleep(5000);
 							}
 						}
-
+		
 					}
-
-					if (taskType.equalsIgnoreCase("EXTRACT")) {
+		
+					if (taskType.equalsIgnoreCase("EXTRACT") && !selectionMethod.equals(REF)) {
 						// Refresh the LU Params Materialized View
 						// For each LU Param view asssociated with this LU...
-						db("TDM").fetch("" +
+						db(TDM).fetch("" +
 								"WITH business_entities AS ( " +
 								"   SELECT DISTINCT 'lu_relations_' || be.be_name || '_' || tel.source_env_name as view_name  " +
-								"   FROM            public.task_execution_list tel  " +
-								"              JOIN public.tasks_logical_units tlu   ON (tel.task_id = tlu.task_id) " +
-								"              JOIN public.product_logical_units plu ON (tlu.lu_name = plu.lu_name) " +
-								"              JOIN public.business_entities be      ON (plu.be_id = be.be_id)  " +
+								"   FROM            " + TDMDB_SCHEMA + ".task_execution_list tel  " +
+								"              JOIN " + TDMDB_SCHEMA + ".tasks_logical_units tlu   ON (tel.task_id = tlu.task_id) " +
+								"              JOIN " + TDMDB_SCHEMA + ".product_logical_units plu ON (tlu.lu_name = plu.lu_name) " +
+								"              JOIN " + TDMDB_SCHEMA + ".business_entities be      ON (plu.be_id = be.be_id)  " +
 								"   WHERE           tel.task_execution_id=? " +
 								") " +
 								"SELECT bes.view_name   " +
-								"FROM   business_entities bes   " +
+								"FROM business_entities bes   " +
 								"  JOIN pg_matviews ON (bes.view_name = pg_matviews.matviewname)",taskExecutionId).each(r-> {
 		
 							// Refresh the view
-							db("TDM").execute(String.format("REFRESH MATERIALIZED VIEW public.\"%s\"",r.get("view_name")));
+							db(TDM).execute(String.format("REFRESH MATERIALIZED VIEW " + TDMDB_SCHEMA + ".\"%s\"",r.get("view_name")));
 						});
 					}
 				}
@@ -517,7 +519,7 @@ public class Logic extends UserCode {
 		String errorCategory = "Rejected Reference Table Extract";
 		
 		//TDM 6.1.1 - sql to insert data into TDMDB error table
-		String insertSql = "insert into TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, ERROR_MESSAGE, ERROR_CATEGORY) " +
+		String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, ERROR_MESSAGE, ERROR_CATEGORY) " +
 			"VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
 		
@@ -697,7 +699,7 @@ public class Logic extends UserCode {
 		int tdm_rec_id = 1;
 		while (refTableRS.next()) {
 			if (failed.get()) {
-				db("TDM").execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, updated_by = ? " +
+				db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, updated_by = ? " +
 					"where task_execution_id = ? and task_ref_table_id = ?; ", FAILED, " failed to insert " , TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
 
 				throw new RuntimeException("failed to insert... ");
@@ -744,7 +746,7 @@ public class Logic extends UserCode {
                 loader.submit(insertStmt.toString(), row);
             }
             catch(Exception e) {
-				db("TDM").execute("Update " + TASK_REF_EXE_STATS + " set execution_status = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, " +
+				db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set execution_status = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, " +
 						"number_of_records_to_process=?, number_of_processed_records=?, updated_by = ? " +
 						"where task_execution_id = ? and task_ref_table_id = ?; ", 
 						FAILED, e.getMessage(), null, null, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
@@ -753,14 +755,14 @@ public class Logic extends UserCode {
             }
 			processedCounter++;
 			if(processedCounter%updateStatsSize == 0) {
-				db("TDM").execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
+				db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
 						"where task_execution_id = ? and task_ref_table_id = ?; ", processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
 			}
 		}
 		loader.join();
 		loader.close();
 
-		db("TDM").execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  number_of_processed_records = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
+		db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  number_of_processed_records = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
 				"where task_execution_id = ? and task_ref_table_id = ? and execution_status != ?; ", COMPLETED, processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, null, taskExecID, taskRefTableID, FAILED);
 	}
 
@@ -931,7 +933,7 @@ public class Logic extends UserCode {
 		//log.info("Setting Dates - start_execution_time: " + startExecTime + ". end_execution_time: " + endExecTime +
 		//		 ", version_datetime: <" + versionDateTime + ">, version_expiration_date: <" + versionExpDate + ">, update_date: " + updateDate);
 		
-		String sqlUpdateTaskSummaryTable = "update task_execution_summary set execution_status = ?, " +
+		String sqlUpdateTaskSummaryTable = "update " + TDMDB_SCHEMA + ".task_execution_summary set execution_status = ?, " +
 				"tot_num_of_processed_root_entities = ?, tot_num_of_copied_root_entities = ?, tot_num_of_failed_root_entities = ?, " +
 				"tot_num_of_processed_ref_tables = ?, tot_num_of_copied_ref_tables = ?, tot_num_of_failed_ref_tables = ?, " +
 				"tot_num_of_processed_post_executions = ?, tot_num_of_succeeded_post_executions = ?, tot_num_of_failed_post_executions = ?, update_date = ?";
@@ -979,7 +981,7 @@ public class Logic extends UserCode {
 
 		String taskExeListSql = "SELECT L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
 						"L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, L.VERSION_DATETIME, T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
-						"FROM TASK_EXECUTION_LIST L, TASKS T " +
+						"FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS T " +
 						"WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
 		
 		String fabricExecID = "";
@@ -1001,7 +1003,7 @@ public class Logic extends UserCode {
 		
 		final String UIDLIST = "UIDList";
 		
-		String insertSql = "INSERT INTO TASK_EXECUTION_ENTITIES(" +
+		String insertSql = "INSERT INTO " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES(" +
 				"TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, " +
 				"FABRIC_EXECUTION_ID, IID, SOURCE_ENV";
 		String insertBinding = "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
@@ -1163,7 +1165,7 @@ public class Logic extends UserCode {
 			}
 			
 			//Add reference Entities to TASK_EXECUTION_ENTITIES table
-			String refListSql = "SELECT REF_TABLE_NAME, EXECUTION_STATUS FROM TASK_REF_EXE_STATS ES WHERE " +
+			String refListSql = "SELECT REF_TABLE_NAME, EXECUTION_STATUS FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS ES WHERE " +
 					"TASK_EXECUTION_ID = ? AND TASK_REF_TABLE_ID IN (SELECT TASK_REF_TABLE_ID FROM TASK_REF_TABLES RT " +
 						"WHERE RT.TASK_ID = ES.TASK_ID AND RT.TASK_REF_TABLE_ID = ES.TASK_REF_TABLE_ID AND RT.LU_NAME = ?)";
 			
@@ -1252,7 +1254,7 @@ public class Logic extends UserCode {
 	@desc("This function will load the errors of the migrate command to the error table task_exe_error_detailed")
 	public static void fnUpdateTaskErrorsDetails(String i_taskExecId, String i_luName, String i_migrateId) throws Exception {
 		//TDM 6.1.1 - New function to populate table task_exe_error_detailed with the errors from migrate command
-		String insertSql = "insert into TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
+		String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, " +
 			"ERROR_CATEGORY, ERROR_MESSAGE) " +
 			"VALUES (?, ?, ?, ?, ?, ?, ?)";
 		
@@ -1412,7 +1414,7 @@ public class Logic extends UserCode {
 	private static Loader buildLoader(AtomicInteger counter, AtomicBoolean failed, String tableName) {
 		return Loader.to("TDM").withOnFailure(t -> {
 			failed.set(true);
-			//log.error("String.format("Failed on table [%s] with error message", tableName"), t);
+			log.error("Failed on table" + tableName + " with error message: " +  t.getMessage());
 			System.out.println(String.format("Failed on table [%s] with error message", tableName, t.getMessage()));// DBExecute(save failure)
 		})
 				.withOnSuccess(() -> {

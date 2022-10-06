@@ -17,6 +17,7 @@ import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.getLuType;
 import static com.k2view.cdbms.shared.user.UserCode.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 public class TdmTaskScheduler {
 
@@ -45,12 +46,12 @@ public class TdmTaskScheduler {
             String versionInd = Util.rte(() -> resultSet.getString("version_ind"));
             //Long numOfProcessedEntities = Util.rte(() -> resultSet.getLong("num_of_entities"));
             Timestamp schedulingEndDate = Util.rte(() -> resultSet.getTimestamp("scheduling_end_date"));
-            Timestamp localTime = (Timestamp) Util.rte(() -> db("TDM").fetch("SELECT localtimestamp").firstValue());
+            Timestamp localTime = (Timestamp) Util.rte(() -> db(TDM).fetch("SELECT localtimestamp").firstValue());
 			String taskCreatedBy = Util.rte(() -> resultSet.getString("task_created_by"));
             //log.info("task with id: " + taskID + " beid: " + beID + " tasktype: " + taskType + " cronexpression: " + cronExpression);
             if(schedulingEndDate != null && localTime.compareTo(schedulingEndDate) > 0){
                 //log.info(" updating task to immediate.....");
-                Util.rte(() ->db(TDM).execute("UPDATE TASKS SET scheduler = ?, scheduling_end_date = ?, task_last_updated_by = ? WHERE  task_id = ?", "immediate", null, "TDM scheduler", taskID));
+                Util.rte(() ->db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".TASKS SET scheduler = ?, scheduling_end_date = ?, task_last_updated_by = ? WHERE  task_id = ?", "immediate", null, "TDM scheduler", taskID));
                 return;
             }
 
@@ -62,7 +63,7 @@ public class TdmTaskScheduler {
             if(executionTime.isMatch(now) || (timeToNextExecution.toMinutes() == 0 && timeToNextExecution.getSeconds() <= 10)){
                 log.info(" ----------------- adding task to task_execution_list table ----------------- ");
 
-                Long taskExecutionID = (Long) Util.rte(() -> db(TDM).fetch("SELECT NEXTVAL('tasks_task_execution_id_seq')").firstValue());
+                Long taskExecutionID = (Long) Util.rte(() -> db(TDM).fetch("SELECT NEXTVAL('" + TDMDB_SCHEMA + ".tasks_task_execution_id_seq')").firstValue());
                 //log.info("running product query with: taskID: " + taskID + " envID: "  + environmentID + "sourseEnvName: " + sourceEnvName);
                 Util.rte(() -> db(TDM).fetch(productQuery, taskID, environmentID).forEach(r ->
                 {
@@ -73,7 +74,7 @@ public class TdmTaskScheduler {
                     String luName   = Util.rte(() -> luRow.getString("lu_name"));
                     Long productID   = Util.rte(() -> luRow.getLong("product_id"));
 
-                    Long parentLuID = (Long) Util.rte(() -> db(TDM).fetch("SELECT lu_parent_id FROM product_logical_units WHERE be_id=? AND lu_id=?", beID, luID)).firstValue();
+                    Long parentLuID = (Long) Util.rte(() -> db(TDM).fetch("SELECT lu_parent_id FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id=? AND lu_id=?", beID, luID)).firstValue();
                     log.info(" ----------------- adding task  ----------------- " + taskExecutionID + " luID: " + luID);
                     String insertQuery = versionInd.equals("t") ? insertToTaskExecutionDFQuery : insertToTaskExecutionQuery;
 
@@ -95,7 +96,7 @@ public class TdmTaskScheduler {
 									taskCreatedBy));
 
                     //post execution
-                    Util.rte(() -> db(TDM).fetch("select * from tasks_post_exe_process where task_id = ?", taskID).forEach( s -> {
+                    Util.rte(() -> db(TDM).fetch("select * from " + TDMDB_SCHEMA + ".tasks_post_exe_process where task_id = ?", taskID).forEach( s -> {
                         log.info(" ----------------- adding post execution task to task_execution_list table ----------------- ");
                         ResultSet res = s.resultSet();
                         String processID = Util.rte(() -> res.getString("process_id"));

@@ -21,16 +21,17 @@ import com.google.gson.reflect.TypeToken;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TdmSharedUtils {
     private static final String TDM = "TDM";
     private static final String REF = "REF";
-    private static final String TASK_EXECUTION_LIST = "task_execution_list";
-    private static final String TASK_REF_TABLES = "TASK_REF_TABLES";
-    private static final String PRODUCT_LOGICAL_UNITS = "product_logical_units";
-    private static final String TASK_REF_EXE_STATS = "TASK_REF_EXE_STATS";
-    private static final String TASKS_LOGICAL_UNITS = "tasks_logical_units";
+    private static final String TASK_EXECUTION_LIST = TDMDB_SCHEMA + ".task_execution_list";
+    private static final String TASK_REF_TABLES = TDMDB_SCHEMA + ".TASK_REF_TABLES";
+    private static final String PRODUCT_LOGICAL_UNITS = TDMDB_SCHEMA + ".product_logical_units";
+    private static final String TASK_REF_EXE_STATS = TDMDB_SCHEMA + ".TASK_REF_EXE_STATS";
+    private static final String TASKS_LOGICAL_UNITS = TDMDB_SCHEMA + ".tasks_logical_units";
     private static final String TDM_COPY_REFERENCE = "fnTdmCopyReference";
     private static final String PENDING = "pending";
     private static final String RUNNING = "running";
@@ -39,11 +40,11 @@ public class TdmSharedUtils {
     private static final String RESUME = "resume";
     private static final String FAILED = "failed";
     private static final String COMPLETED = "completed";
-    private static final String PARENTS_SQL = "SELECT lu_name  FROM product_logical_units WHERE be_id=? AND lu_parent_id is null";
+    private static final String PARENTS_SQL = "SELECT lu_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id=? AND lu_parent_id is null";
     private static final String GET_CHILDREN_SQL = "WITH RECURSIVE children AS ( " +
-            "SELECT lu_name,lu_id,lu_parent_id,lu_parent_name FROM product_logical_units WHERE lu_name=? and be_id=? " +
+            "SELECT lu_name,lu_id,lu_parent_id,lu_parent_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE lu_name=? and be_id=? " +
             "UNION ALL SELECT a.lu_name, a.lu_id, a.lu_parent_id,a.lu_parent_name " +
-            "FROM product_logical_units a " +
+            "FROM " + TDMDB_SCHEMA + ".product_logical_units a " +
             "INNER JOIN children b ON a.lu_parent_id = b.lu_id) " +
             "SELECT  string_agg('''' ||  unnest || '''' , ',') FROM children ,unnest(string_to_array(children.lu_name, ',')); ";
 
@@ -113,8 +114,8 @@ public class TdmSharedUtils {
     public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws SQLException {
 
         final String where = !Util.isEmpty(whereStmt) ? "where " + whereStmt : "";
-        Db tdmDB = db("TDM");
-        Db.Rows rows = tdmDB.fetch("SELECT be_name FROM public.business_entities WHERE be_id=?;", beID);
+        Db tdmDB = db(TDM);
+        Db.Rows rows = tdmDB.fetch("SELECT be_name FROM " + TDMDB_SCHEMA + ".business_entities WHERE be_id=?;", beID);
         String beName = (String) rows.firstValue();
         if (Util.isEmpty(beName)) {
             throw new RuntimeException("business entity does not exist");
@@ -145,7 +146,7 @@ public class TdmSharedUtils {
             String paramsSql = getParamsSql(sourceEnv, rootLu, rootLuStrL, jsonTypeName, childrenList, beID);
 
             getParamsSqlMap.put(rootLu, paramsSql);
-            getEntitiesSqlList.add(" SELECT DISTINCT " + rootLuStrL + "_root_id as entity_id FROM \"" + luRelationsView + "\" " + where);
+            getEntitiesSqlList.add(" SELECT DISTINCT " + rootLuStrL + "_root_id as entity_id FROM " + TDMDB_SCHEMA + ".\"" + luRelationsView + "\" " + where);
         }
 
         String getParamsSql = "";
@@ -177,7 +178,7 @@ public class TdmSharedUtils {
                 "BEGIN " +
                 "IF NOT EXISTS (SELECT 1 FROM pg_matviews WHERE matviewname =  '" + luRelationsView + "'" +
                 ") THEN " + setTypesQuery +
-                "CREATE MATERIALIZED VIEW \"" + luRelationsView + "\" AS SELECT * FROM  ( " + getParamsSql + " ) AS mergedTables;" +
+                "CREATE MATERIALIZED VIEW " + TDMDB_SCHEMA + ".\"" + luRelationsView + "\" AS SELECT * FROM  ( " + getParamsSql + " ) AS mergedTables;" +
                 "END IF; " +
                 "END $$ ";
     }
@@ -188,41 +189,41 @@ public class TdmSharedUtils {
 		// TDM 7.5.1 - Fix the query to support hierarchy with more than 2 levels
         return "WITH RECURSIVE relations AS(" +
             "SELECT lu_type_1, lu_type_2, entity_id as lu_type1_eid, lu_type2_eid, entity_id as root_id," +
-            " param_values('" + rootLu +"',entity_id,lower(base.lu_type_1) || '_params','" + sourceEnv + "'," +
-            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid', '-1')::text as p1," +
-            " param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
+            TDMDB_SCHEMA + ".param_values('" + rootLu +"',entity_id,lower(base.lu_type_1) || '_params','" + sourceEnv + "'," +
+            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'),'" + str + "', 'lu_type1_eid', '-1', '" + TDMDB_SCHEMA + "')::text as p1," +
+            TDMDB_SCHEMA + ".param_values('" + rootLu + "',entity_id,lower(base.lu_type_2) || '_params','" + sourceEnv + "'," +
             " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(base.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
             "'" + str + "', 'lu_type2_eid'" +
-            ",base.lu_type_2)::text as p2 " +
+            ",base.lu_type_2, '" + TDMDB_SCHEMA + "')::text as p2 " +
             "FROM ( " +
             "SELECT entity_id, '" + rootLu + "'::text as lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid " +
-            "FROM " + rootLu + "_params " +
-            " LEFT JOIN (SELECT * FROM tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv +
+            "FROM " + TDMDB_SCHEMA + "." + rootLu + "_params " +
+            " LEFT JOIN (SELECT * FROM " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid WHERE lu_type_1= '" + rootLu + "' AND source_env='" + sourceEnv +
             "' AND lu_type_2 IN(" + childrenList + ") AND version_name='' " +
 			" AND (EXISTS (SELECT 1 FROM information_schema.columns WHERE " +
             "columns.table_name::name = (lower(tdm_lu_type_relation_eid.lu_type_2::text) || '_params'::text) " +
             "AND columns.column_name::name <> 'entity_id'::name AND columns.column_name::name <> 'source_environment'::name LIMIT 1)) " +
-            " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = lu_type_2 AND lu_parent_name = lu_type_1)) )" +
+            " AND (EXISTS (SELECT 1 FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beID + " AND lu_name = lu_type_2 AND lu_parent_name = lu_type_1)) )" +
             " AS rel_base ON " + rootLu + "_params.entity_id=rel_base.lu_type1_eid" +
             " WHERE source_environment='" + sourceEnv + "') AS base " +
             " UNION ALL" +
             " SELECT a.lu_type_1, a.lu_type_2, a.lu_type1_eid, a.lu_type2_eid, root_id," +
-            " param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
-            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid', '-1')::text as p1," +
-            " param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
+            TDMDB_SCHEMA + ".param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_1) || '_params','" + sourceEnv +"'," +
+            " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_1) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment'), '" + str + "', 'lu_type1_eid', '-1', '" + TDMDB_SCHEMA + "')::text as p1," +
+            TDMDB_SCHEMA + ".param_values(a.lu_type_1,a.lu_type1_eid,lower(a.lu_type_2) || '_params','" + sourceEnv + "'," +
             " (select string_agg('replace(string_agg(\"' || column_name || '\", '',''), ''},{'', '','') as \"' || column_name, '\" , ') || '\"' as coln FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = lower(a.lu_type_2) || '_params' and column_name <> 'entity_id' and column_name <> 'source_environment')," +
             "'" + str + "', 'lu_type2_eid'" +
-            ",a.lu_type_2)::text as p2 " +
-            "FROM tdm_lu_type_relation_eid a " +
+            ",a.lu_type_2, '" + TDMDB_SCHEMA + "')::text as p2 " +
+            "FROM " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid a " +
             "INNER JOIN relations b ON b.lu_type2_eid = a.lu_type1_eid  AND b.lu_type_2 = a.lu_type_1 AND source_env='" + sourceEnv +
             "' AND a.lu_type_2 IN("+ childrenList +")  AND b.lu_type_2 IN(" + childrenList + ") AND a.lu_type_1 IN(" + childrenList +
             ") AND b.lu_type_1 IN("+ childrenList +") " +
-             " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = a.lu_type_2 AND lu_parent_name = a.lu_type_1)) " +
-            " AND (EXISTS (SELECT 1 FROM product_logical_units WHERE be_id = " + beID + " AND lu_name = b.lu_type_2 AND lu_parent_name = b.lu_type_1)) ) " +
+             " AND (EXISTS (SELECT 1 FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beID + " AND lu_name = a.lu_type_2 AND lu_parent_name = a.lu_type_1)) " +
+            " AND (EXISTS (SELECT 1 FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id = " + beID + " AND lu_name = b.lu_type_2 AND lu_parent_name = b.lu_type_1)) ) " +
 			" SELECT * FROM ( " +
-            " SELECT root_id AS " + rootLuStrL + "_root_id, (json_populate_recordset(null::\"" + jsonTypeName +"\", json_agg(path))).*" +
+            " SELECT root_id AS " + rootLuStrL + "_root_id, (json_populate_recordset(null::" + TDMDB_SCHEMA + ".\"" + jsonTypeName +"\", json_agg(path))).*" +
             " FROM (" +
-            " SELECT root_id, json_append((replace(string_agg(p1, ', '), '}, {', ','))::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path " + 
+            " SELECT root_id, "+ TDMDB_SCHEMA + ".json_append((replace(string_agg(p1, ', '), '}, {', ','))::json, (replace(string_agg(p2, ', '), '}, {', ','))::json, '{}') AS path " + 
 			" from relations GROUP BY root_id) colsMerged GROUP BY root_id) AS final";
     }
 
@@ -236,12 +237,12 @@ public class TdmSharedUtils {
         }
 		String paramTablesList = String.join(",", paramTablesArray);
         return " " +
-                "DROP TYPE IF EXISTS \"" + json_type_name + "\";" +
-	            "select ' CREATE type \"" + json_type_name + "\" AS (' || string_agg(concat('\"' || column_name || '\"', ' TEXT[]'), ',')  || ');' into type_var " +
+                "DROP TYPE IF EXISTS " + TDMDB_SCHEMA + ".\"" + json_type_name + "\";" +
+	            "select ' CREATE type " + TDMDB_SCHEMA + ".\"" + json_type_name + "\" AS (' || string_agg(concat('\"' || column_name || '\"', ' TEXT[]'), ',')  || ');' into type_var " +
                 "from information_schema.columns where table_name in (" + paramTablesList + ") AND column_name <> 'source_environment' AND column_name <> 'entity_id' ; " +
                 "IF type_var IS NOT NULL " +
                 "THEN EXECUTE type_var;" +
-                "ELSE EXECUTE ' CREATE type \"" + json_type_name + "\" AS (" + rootLu + "_dummy text);';" +
+                "ELSE EXECUTE ' CREATE type " + TDMDB_SCHEMA + ".\"" + json_type_name + "\" AS (" + rootLu + "_dummy text);';" +
                 "END IF; ";
     }
 
@@ -257,7 +258,7 @@ public class TdmSharedUtils {
         String taskExeListSql = "SELECT L.SOURCE_ENV_NAME, L.CREATION_DATE, L.START_EXECUTION_TIME, " +
                 "L.END_EXECUTION_TIME, L.ENVIRONMENT_ID, T.VERSION_IND, T.TASK_TITLE, to_char(L.VERSION_DATETIME,'YYYY-MM-DD HH24:MI:SS') AS VERSION_DATETIME, " +
                 "T.SELECTION_METHOD, COALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID " +
-                "FROM TASK_EXECUTION_LIST L, TASKS T " +
+                "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST L, " + TDMDB_SCHEMA + ".TASKS T " +
                 "WHERE TASK_EXECUTION_ID = ? AND LU_ID = ? AND L.TASK_ID = T.TASK_ID";
 
         String fabricExecID = "";
@@ -279,12 +280,12 @@ public class TdmSharedUtils {
 
         final String UIDLIST = "UIDList";
 
-        String insertSql = "INSERT INTO TASK_EXECUTION_ENTITIES(" +
+        String insertSql = "INSERT INTO " + TDMDB_SCHEMA + ".TASK_EXECUTION_ENTITIES(" +
                 "TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, " +
                 "FABRIC_EXECUTION_ID, IID, SOURCE_ENV";
         String insertBinding = "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
 
-        Db.Row taskData = db("TDM").fetch(taskExeListSql, taskExecutionId, luId).firstRow();
+        Db.Row taskData = db(TDM).fetch(taskExeListSql, taskExecutionId, luId).firstRow();
 
 
         //log.info("tdmUpdateTaskExecutionEntities: TASK_EXECUTION_ID: " + taskExecutionId + ", LU_ID: " + luId + ", LU_NAME: " + luName);
@@ -386,7 +387,7 @@ public class TdmSharedUtils {
                             Object[] params = paramList.toArray();
 
                             //log.info ("insertSql - Copied Entities: " + insertSql);
-                            db("TDM").execute(insertSql, params);
+                            db(TDM).execute(insertSql, params);
                         }
 
                     }
@@ -435,7 +436,7 @@ public class TdmSharedUtils {
                             Object[] params = paramList.toArray();
 
                             //log.info ("insertSql - Failed Entities: " + insertSql);
-                            db("TDM").execute(insertSql, params);
+                            db(TDM).execute(insertSql, params);
                         }
 
                     }
@@ -443,13 +444,13 @@ public class TdmSharedUtils {
             }
 
             //Add reference Entities to TASK_EXECUTION_ENTITIES table
-            String refListSql = "SELECT REF_TABLE_NAME, EXECUTION_STATUS FROM TASK_REF_EXE_STATS ES WHERE " +
-                    "TASK_EXECUTION_ID = ? AND TASK_REF_TABLE_ID IN (SELECT TASK_REF_TABLE_ID FROM TASK_REF_TABLES RT " +
+            String refListSql = "SELECT REF_TABLE_NAME, EXECUTION_STATUS FROM " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS ES WHERE " +
+                    "TASK_EXECUTION_ID = ? AND TASK_REF_TABLE_ID IN (SELECT TASK_REF_TABLE_ID FROM " + TDMDB_SCHEMA + ".TASK_REF_TABLES RT " +
                     "WHERE RT.TASK_ID = ES.TASK_ID AND RT.TASK_REF_TABLE_ID = ES.TASK_REF_TABLE_ID AND RT.LU_NAME = ?)";
 
             idType = "REFERENCE";
 
-            Db.Rows refList = db("TDM").fetch(refListSql, taskExecutionId, luName);
+            Db.Rows refList = db(TDM).fetch(refListSql, taskExecutionId, luName);
 
             for (Db.Row refTable : refList) {
                 entityID = "" + refTable.get("ref_table_name");
@@ -483,7 +484,7 @@ public class TdmSharedUtils {
 
                 Object[] params = paramList.toArray();
 
-                db("TDM").execute(insertSql, params);
+                db(TDM).execute(insertSql, params);
             }
 
             if (refList != null) {
@@ -516,7 +517,7 @@ public class TdmSharedUtils {
 
         Db.Rows refTabLst = null;
 
-        String refQuery = "Select ES.* from TASK_REF_EXE_STATS ES, TASKS T where execution_status  in ('" + WAITING + "', '" + PENDING + "', '" + RESUME + "', '" + STOPPED + "') " +
+        String refQuery = "Select ES.* from " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS ES, " + TDMDB_SCHEMA + ".TASKS T where execution_status  in ('" + WAITING + "', '" + PENDING + "', '" + RESUME + "', '" + STOPPED + "') " +
                 "and ES.TASK_ID = T.TASK_ID and lower(T.TASK_TYPE) = ? and ES.TASK_EXECUTION_ID = ? order by task_execution_id, task_id";
 
         refTabLst = db(TDM).fetch(refQuery, taskType, taskExecutionID);
@@ -542,7 +543,7 @@ public class TdmSharedUtils {
                 Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name, t.version_ind, " +
                                 "t.retention_period_type, t.retention_period_value, t.selection_method, t.selected_ref_version_task_name, " +
                                 "t.selected_ref_version_datetime, t.selected_ref_version_task_exe_id " +
-                                "from TASKS t, TASK_EXECUTION_LIST l, ENVIRONMENTS e " +
+                                "from " + TDMDB_SCHEMA + ".TASKS t, " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST l, " + TDMDB_SCHEMA + ".ENVIRONMENTS e " +
                                 "where task_execution_id = ? and l.task_id = ? and t.task_id = l.task_id and l.environment_id = e.environment_id",
                         taskExecutionID, taskID).firstRow();
 
@@ -725,14 +726,16 @@ public class TdmSharedUtils {
         }
         //log.info("fnTdmCopyReference - After the loop on ref tables, refCount: " + refCount);
         //In case the task type was REF, but included LUs that do not have reference,or none of their reference were chosen, update the status to COMPLETE
-        String lusWithoutRefSql = "select l.task_id, l.task_execution_id, l.lu_id from task_execution_list l, tasks t, tasks_logical_units lu " +
+        String lusWithoutRefSql = "select l.task_id, l.task_execution_id, l.lu_id " +
+				"from " + TDMDB_SCHEMA + ".task_execution_list l, " + TDMDB_SCHEMA + ".tasks t, " + TDMDB_SCHEMA + ".tasks_logical_units lu " +
                 "where l.task_id = t.task_id and t.selection_method = 'REF' and l.task_id = lu.task_id and l.lu_id = lu.lu_id and " +
                 "lower(l.execution_status) in ('pending', 'stopped') and " +
-                "not exists (select 1 from task_ref_tables r, task_ref_exe_stats s where r.task_id = lu.task_id and r.lu_name = lu.lu_name " +
+                "not exists (select 1 from " + TDMDB_SCHEMA + ".task_ref_tables r, " + TDMDB_SCHEMA + ".task_ref_exe_stats s " +
+				"where r.task_id = lu.task_id and r.lu_name = lu.lu_name " +
                 "and r.task_ref_table_id = s.task_ref_table_id and s.task_execution_id = l.task_execution_id " +
                 "and lower(s.execution_status) not in ('completed', 'failed'))";
 
-        String updateLuWithoutRefSql = "UPDATE task_execution_list SET execution_status = ?, num_of_processed_entities = 0, " +
+        String updateLuWithoutRefSql = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status = ?, num_of_processed_entities = 0, " +
                 "start_execution_time = current_timestamp at time zone 'utc', " +
                 "end_execution_time = current_timestamp at time zone 'utc', num_of_copied_entities = 0, num_of_failed_entities = 0, " +
                 "num_of_processed_ref_tables = 0, num_of_copied_ref_tables = 0, num_of_failed_ref_tables = 0 " +
@@ -759,8 +762,8 @@ public class TdmSharedUtils {
 	
 	public static Map<String, Object> fnGetRetentionPeriod() {
 		try {
-			String sql = "select * from \"public\".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
-			Object params = db("TDM").fetch(sql).firstRow().get("param_value");
+			String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+			Object params = db(TDM).fetch(sql).firstRow().get("param_value");
 			Map result = Json.get().fromJson((String) params, Map.class);
 			
 			Map<String, Object> retentionMap = new HashMap<>();
@@ -775,8 +778,8 @@ public class TdmSharedUtils {
 				retentionMap.put("retentionPeriodTypes", retentionPeriodTypes);
 			}
 			
-			sql = "SELECT param_value from tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
-			String maxReserveDays = "" + db("TDM").fetch(sql).firstValue();
+			sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
+			String maxReserveDays = "" + db(TDM).fetch(sql).firstValue();
 			if (maxReserveDays != null) {
 				retentionMap.put("maxReserveDays", maxReserveDays);
 			}
@@ -811,8 +814,8 @@ public class TdmSharedUtils {
 			}};
 
 			Integer[] weight = {0};
-			String SELECT_PERMISSION_GROUP = "select permission_group from public.permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
-			db("TDM").fetch(SELECT_PERMISSION_GROUP, fabricRoles).forEach(row -> {
+			String SELECT_PERMISSION_GROUP = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
+			db(TDM).fetch(SELECT_PERMISSION_GROUP, fabricRoles).forEach(row -> {
 				Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
 				if (nextWeight != null && nextWeight > weight[0]) {
 					weight[0] = nextWeight;
@@ -893,9 +896,9 @@ public class TdmSharedUtils {
 				"  End As environment_type,\n" +
 				"  'admin' As role_id,\n" +
 				"  'admin' As assignment_type\n" +
-				"From environments env\n" +
+				"From " + TDMDB_SCHEMA + ".environments env\n" +
 				"Where env.environment_status = 'Active'";
-			Db.Rows rows = Util.rte(() -> db("TDM").fetch(allEnvs));
+			Db.Rows rows = Util.rte(() -> db(TDM).fetch(allEnvs));
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();
@@ -954,13 +957,13 @@ public class TdmSharedUtils {
         //get the environments where the user is the owner
         String query1 = "select *, " +
                 "CASE when env.allow_read = true and env.allow_write = true THEN 'BOTH' when env.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, 'owner' as role_id, 'owner' as assignment_type " +
-                "from environments env, environment_owners o " +
+                "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_owners o " +
                 "where env.environment_id = o.environment_id " +
                 "and (o.user_id = (?) or o.user_id = ANY(string_to_array(?, ',')))" +
                 "and env.environment_status = 'Active'";
 
         //log.info("fnGetEnvsByuser - query 1 for user Name " + userName + "is: " + query1);
-        Db.Rows rows = db("TDM").fetch(query1, userName, fabricRoles);
+        Db.Rows rows = db(TDM).fetch(query1, userName, fabricRoles);
 
         List<String> columnNames = rows.getColumnNames();
         for (Db.Row row : rows) {
@@ -982,7 +985,7 @@ public class TdmSharedUtils {
         //get the environments where the user is assigned to a role by their username
         String query2 = "select *, " +
                 "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-                "from environments env, environment_roles r, environment_role_users u " +
+                "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
                 "where env.environment_id = r.environment_id " +
                 "and lower(r.role_status) = 'active' " +
                 "and r.role_id = u.role_id " +
@@ -991,7 +994,7 @@ public class TdmSharedUtils {
                 "and env.environment_status = 'Active'";
         // remove the list of environments returned by query 1;
         query2 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
-        rows = db("TDM").fetch(query2, userName);
+        rows = db(TDM).fetch(query2, userName);
 
         //log.info("fnGetEnvsByuser - query 2 for user Name " + userName + "is: " + query2);
 
@@ -1015,7 +1018,7 @@ public class TdmSharedUtils {
         //get the environments where the user id is one of the Fabric Roles
         String query3 = "select *, " +
                 "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type, r.role_id, 'user' as assignment_type " +
-                "from environments env, environment_roles r, environment_role_users u " +
+                "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
                 "where env.environment_id = r.environment_id " +
                 "and lower(r.role_status) = 'active' " +
                 "and r.role_id = u.role_id " +
@@ -1024,7 +1027,7 @@ public class TdmSharedUtils {
                 "and env.environment_status = 'Active'";
         // remove the list of environments returned by query 1+2;
         query3 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
-        rows = db("TDM").fetch(query3, fabricRoles);
+        rows = db(TDM).fetch(query3, fabricRoles);
 
         //log.info("fnGetEnvsByuser - query 3 for Fabric Roles < " + fabricRoles + "> is: " + query3);
 
@@ -1049,7 +1052,7 @@ public class TdmSharedUtils {
         String query4 = "select *, " +
                 "CASE when r.allow_read = true and r.allow_write = true THEN 'BOTH' when r.allow_write = true THEN 'TARGET' ELSE 'SOURCE' END environment_type " +
                 ", r.role_id, 'all' as assignment_type " +
-                "from environments env, environment_roles r, environment_role_users u " +
+                "from " + TDMDB_SCHEMA + ".environments env, " + TDMDB_SCHEMA + ".environment_roles r, " + TDMDB_SCHEMA + ".environment_role_users u " +
                 "where env.environment_id = r.environment_id " +
                 "and lower(r.role_status) = 'active' " +
                 "and r.role_id = u.role_id " +
@@ -1057,7 +1060,7 @@ public class TdmSharedUtils {
                 "and env.environment_status = 'Active'";
         // remove the list of environments returned by queries 1+2+3;
         query4 += "()".equals(envIds) ? "" : "and env.environment_id not in " + envIds;
-        rows = db("TDM").fetch(query4);
+        rows = db(TDM).fetch(query4);
 
         //log.info(" fnGetEnvsByuser - query 4 (get ALL roles) is: " + query4);
 
@@ -1077,7 +1080,7 @@ public class TdmSharedUtils {
 	public static Map<String, Object> fnGetTaskExecOverrideAttrs(Long taskId, Long taskExecutionId) {
 		
 		Map<String, Object> overrideAttrubtes = new HashMap<>();
-		String sql = "SELECT override_parameters FROM task_execution_override_attrs WHERE task_id = ? and task_execution_id = ?";
+		String sql = "SELECT override_parameters FROM " + TDMDB_SCHEMA + ".task_execution_override_attrs WHERE task_id = ? and task_execution_id = ?";
 		//log.info("getTaskExecOverrideAttrs - Starting");
 		try {
 			Object overrideAttrVal = db(TDM).fetch(sql, taskId, taskExecutionId).firstValue();
@@ -1117,9 +1120,9 @@ public class TdmSharedUtils {
 					"  End As environment_type,\n" +
 					"  'admin' As role_id,\n" +
 					"  'admin' As assignment_type\n" +
-					"From environments env\n" +
+					"From " + TDMDB_SCHEMA + ".environments env\n" +
 					"Where env.environment_status = 'Active'";
-			Db.Rows rows= db("TDM").fetch(allEnvs);
+			Db.Rows rows= db(TDM).fetch(allEnvs);
 			List<String> columnNames = rows.getColumnNames();
 			for (Db.Row row : rows) {
 				ResultSet resultSet = row.resultSet();

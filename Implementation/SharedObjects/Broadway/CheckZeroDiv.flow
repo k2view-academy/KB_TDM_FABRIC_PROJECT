@@ -72,6 +72,38 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "MaskingEmail1",
+                            "actorType": {
+                                "parentType": "MaskingEmail",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "email"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    },
+                                    {
+                                        "name": "firstName",
+                                        "const": "tali"
+                                    },
+                                    {
+                                        "name": "lastName",
+                                        "const": "einhorn"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -114,6 +146,29 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Const3",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -142,6 +197,16 @@
                 "name": "input"
             },
             "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingEmail1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Const3",
+                "name": "value"
+            }
         },
         {
             "leftPort": {

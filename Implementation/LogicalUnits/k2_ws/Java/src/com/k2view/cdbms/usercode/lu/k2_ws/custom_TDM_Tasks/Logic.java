@@ -33,7 +33,8 @@ import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
-
+	public static final String TDM = "TDM";
+	
 	@desc("Gets the list of regular active tasks (version_ind is 'false', task_status and task_execution_status columns are 'Active') for a user based on the user's permission group (admin, owner, or tester) and based on the user's TDM environment permissions:\r\n" +
 			"\r\n" +
 			"Admin Users:\r\n" +
@@ -121,8 +122,8 @@ public class Logic extends WebServiceUserCode {
 		try {
 			String permissionGroup = fnGetUserPermissionGroup("");
 			
-			String sql = "select * from tasks where lower(task_status) = 'active' and lower(task_execution_status) = 'active' and version_ind = ?";
-			Db.Rows rows = db("TDM").fetch(sql, versionInd);
+			String sql = "select * from " + TDMDB_SCHEMA + ".tasks where lower(task_status) = 'active' and lower(task_execution_status) = 'active' and version_ind = ?";
+			Db.Rows rows = db(TDM).fetch(sql, versionInd);
 			List<String> columnNames = rows.getColumnNames();
 			
 			for (Db.Row row : rows) {
@@ -143,9 +144,9 @@ public class Logic extends WebServiceUserCode {
 					String taskID = "" + row.get("task_id");
 					String taskTitle = "" + row.get("task_title");
 					String beID = "" + row.get("be_id");
-					String luList = "" + db("TDM").fetch("select string_agg( distinct lu_id::text, ',') from tasks_logical_units where task_id = ?", taskID).firstValue();
+					String luList = "" + db(TDM).fetch("select string_agg( distinct lu_id::text, ',') from " + TDMDB_SCHEMA + ".tasks_logical_units where task_id = ?", taskID).firstValue();
 					//log.info("wsRegularTasksByUser - luList: " + luList); 	
-					String refCnt = "" + db("TDM").fetch("select count(1) as cnt from task_ref_tables where task_id = ?", taskID).firstValue();
+					String refCnt = "" + db(TDM).fetch("select count(1) as cnt from " + TDMDB_SCHEMA + ".task_ref_tables where task_id = ?", taskID).firstValue();
 					String selectionMethod = "" + row.get("selection_method");
 					String syncMode = "" + row.get("sync_mode");
 					Boolean replaceSequences = (Boolean)row.get("replace_sequences");

@@ -81,7 +81,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select count(1) from system_schema.tables where keyspace_name = ${schema_name} and table_name = ${tableName}"
+                                        "const": "select table_name from system_schema.tables where keyspace_name = ${schema_name} and table_name = ${tableName}"
                                     },
                                     {
                                         "name": "tableName",
@@ -101,7 +101,7 @@
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "integer"
+                                            "type": "string"
                                         }
                                     }
                                 ]
@@ -167,23 +167,22 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "NotEquals1",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "Equals",
+                                "parentType": "NotEquals",
                                 "inputs": [
                                     {
                                         "name": "a",
                                         "schema": {
-                                            "type": "integer"
+                                            "type": "string"
                                         }
                                     },
                                     {
                                         "name": "b",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -332,11 +331,21 @@
         },
         {
             "leftPort": {
+                "actor": "Format the Table Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Check if Table already Exists",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Equals1",
+                "actor": "NotEquals1",
                 "name": "a"
             }
         },

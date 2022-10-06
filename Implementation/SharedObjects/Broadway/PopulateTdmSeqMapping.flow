@@ -125,16 +125,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_TASK_EXE_ID"
                                     }
                                 ],
@@ -147,16 +138,7 @@
                                 "parentType": "getLUVariable_Actor",
                                 "inputs": [
                                     {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "variableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "TDM_SOURCE_ENVIRONMENT_NAME"
                                     }
                                 ],
@@ -241,6 +223,20 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -379,7 +375,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": "public"
+                                        "const": null
                                     },
                                     {
                                         "name": "table",
@@ -604,6 +600,16 @@
             "path": [
                 "column_name"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbLoad1",
+                "name": "schema"
+            }
         },
         {
             "leftPort": {

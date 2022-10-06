@@ -103,12 +103,15 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object buildTemplateData(String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName) throws Exception {
-		String luName = getLuType().luName;
-		if(luName == null)
-			return null;
+	public static Object buildTemplateData(String luName, String luTable, String targetDbInterface, String targetDbSchema, String targetDbTable, String tableIidFieldName, String sequenceName) throws Exception {
+		//String luName = getLuType().luName;
 		
-		List<String> luTableColumns = getLuTableColumns(luTable);
+		if (luName == null || Util.isEmpty(luName)) {
+			luName = getLuType().luName;
+		}
+
+		
+		List<String> luTableColumns = getLuTableColumns(luName, luTable);
 		Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
 		String seqIID;
 		String seqName;
@@ -157,10 +160,14 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = List.class, desc = "")
-	public static List<String> getLuTableColumns(String table) throws Exception {
+	public static List<String> getLuTableColumns(String luName, String table) throws Exception {
 		List<String> al = null;// = new ArrayList<>();
-		LUType luType = getLuType();
-		
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
 		if(luType == null || !luType.ludbObjects.containsKey(table)) 
 			return al;
 			
@@ -170,9 +177,15 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = List.class, desc = "")
-	public static List<String> getLuTables() throws Exception {
+	public static List<String> getLuTables(String luName) throws Exception {
 		List<String> al = new ArrayList<>();
-		LUType luType = getLuType();
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+		
 		if(luType == null)
 			return al;
 		luType.ludbTables.forEach((s, s2) -> al.add(s));
@@ -180,11 +193,18 @@ public class SharedLogic {
 	}
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object getLuTablesMappedByOrder(Boolean reverseInd) throws Exception {
+	public static Object getLuTablesMappedByOrder(String luName, Boolean reverseInd) throws Exception {
 		List<List<String>> buckets = new ArrayList<>();
-		LUType luType = getLuType();
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+		
 		if(luType == null)
 			return "";
+
 		List<TablePopulation> populations = luType.getPopulationCollection();
 		// populations already ordered
 		Set<String> tables = new HashSet<>();
@@ -201,17 +221,20 @@ public class SharedLogic {
 		
 			//The table name in TablePopulation is kept in Upper case, to get the original name, loop over luType.ludbTables
 			String originalTableName = p.getLudbObjectName();
-			//log.info("handling Population Table: " + p.getLudbObjectName());
 			for (String tableName : luType.ludbTables.keySet()) {
 				if (tableName.equalsIgnoreCase(p.getLudbObjectName())) {
 					originalTableName = tableName;
 					break;
 				}
 			}
-			//log.info("handling  Table: " + originalTableName);
-			String tableFiltered = "" + fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
-					originalTableName + "', luName=" + luType.luName).firstValue();
-			if( !tables.contains(originalTableName) && !"null".equals(tableFiltered) && !Util.isEmpty(tableFiltered)) {
+			Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+					originalTableName + "', luName=" + luType.luName);
+			String tableFiltered = "";
+			if (checkTable != null && !checkTable.getColumnNames().isEmpty()) {
+				tableFiltered = "" + checkTable.firstValue();
+			}
+			
+			if( !tables.contains(originalTableName)  && !Util.isEmpty(tableFiltered)) {
 				tmpBucket.add(originalTableName);
 				tables.add(originalTableName);
 			}

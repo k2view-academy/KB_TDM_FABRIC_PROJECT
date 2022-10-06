@@ -36,7 +36,8 @@ import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIdSeparator
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends UserCode {
-
+		public static final String TDM = "TDM";
+	
 		@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,String> fnMExtractEntities(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode, String selectionMethod, Long luId) throws Exception {
 		if (!"ON".equalsIgnoreCase(syncMode)) {
@@ -51,7 +52,7 @@ public class Logic extends UserCode {
 		String versionName = "";
 		
 		//setGlobals(globals);
-		String iidSeparator = "" + db("TDM").fetch("Select param_value from tdm_general_parameters where param_name = 'iid_separator'").firstValue();
+		String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
 		String separator = "";
 		if (!Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator)) {
 			separator = iidSeparator;
@@ -133,11 +134,12 @@ public class Logic extends UserCode {
 			// and the list of entities for migration will be created based on the Parent LU
 			if (parentLuName != null && !parentLuName.equals("")) {
 				//Get the timestamp from the parent record in task_execution_list
-				String sqlGetVersionDateTime = "select to_char(version_datetime, 'yyyyMMddHH24miss') from task_execution_list tel, tasks_logical_units tlu " +
+				String sqlGetVersionDateTime = "select to_char(version_datetime, 'yyyyMMddHH24miss') " +
+						"from " + TDMDB_SCHEMA + ".task_execution_list tel, " + TDMDB_SCHEMA + ".tasks_logical_units tlu " +
 						"where tel.task_execution_id = ? and tel.lu_id = tlu.lu_id and tlu.lu_name = ? limit 1";
 				
 				//log.info("fnMExtractEntities - taskExecutionId: " + taskExecutionId + ", parentLuName: " + parentLuName);
-				timeStamp = "" + db("TDM").fetch(sqlGetVersionDateTime, taskExecutionId, parentLuName).firstValue();
+				timeStamp = "" + db(TDM).fetch(sqlGetVersionDateTime, taskExecutionId, parentLuName).firstValue();
 		
 				String entityIdSelectChildID = "rel.source_env||''" + separator + "''||rel.lu_type2_eid";
 		
@@ -160,16 +162,16 @@ public class Logic extends UserCode {
 		
 				if (versionInd.equals("true")) {
 		
-					selSql = "SELECT ''''||" + entityIdSelectChildID + "||'''' child_entity_id FROM task_execution_entities t, " +
-							"tdm_lu_type_relation_eid rel where t.task_execution_id = ''" + taskExecutionId +
+					selSql = "SELECT ''''||" + entityIdSelectChildID + "||'''' child_entity_id FROM " + TDMDB_SCHEMA + ".task_execution_entities t, " +
+							TDMDB_SCHEMA + ".tdm_lu_type_relation_eid rel where t.task_execution_id = ''" + taskExecutionId +
 							"'' and t.execution_status = ''completed'' and t.lu_name = ''" + parentLuName +
 							"'' and t.lu_name = rel.lu_type_1 and rel.lu_type_2 = ''" + luName +
 							"'' and rel.version_name = ''" + versionName +
 							"'' and to_char(rel.version_datetime, ''yyyyMMddHH24miss'') = ''" + versionDateTime +
 							"'' and t.source_env = rel.source_env and t.iid = rel.lu_type1_eid";
 				} else {
-					selSql = "SELECT ''''||" + entityIdSelectChildID + "||'''' child_entity_id FROM task_execution_entities t, " +
-							"tdm_lu_type_relation_eid rel where t.task_execution_id = ''" + taskExecutionId +
+					selSql = "SELECT ''''||" + entityIdSelectChildID + "||'''' child_entity_id FROM " + TDMDB_SCHEMA + ".task_execution_entities t, " +
+							TDMDB_SCHEMA + ".tdm_lu_type_relation_eid rel where t.task_execution_id = ''" + taskExecutionId +
 							"'' and t.execution_status = ''completed'' and t.lu_name = ''" + parentLuName +
 							"'' and t.lu_name = rel.lu_type_1 and rel.lu_type_2 = ''" + luName +
 							"'' and rel.version_name = '''' and t.source_env = rel.source_env and t.iid = rel.lu_type1_eid";
@@ -344,10 +346,10 @@ public class Logic extends UserCode {
 			String broadwayCommand = "broadway " + luName + "."  +  externalTableFlow +  " iid=?, LU_NAME='" + luName + "'";
 			//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
 			String batchId = "" + fabric().fetch(batchCommand, broadwayCommand).firstValue();
-			db("TDM").execute("UPDATE task_execution_list set execution_status = 'STARTEXECUTIONREQUESTED', fabric_execution_id = ? " + 
+			db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list set execution_status = 'STARTEXECUTIONREQUESTED', fabric_execution_id = ? " + 
 				"WHERE task_execution_id=? and lu_id = ?", batchId, taskExecutionId, luId);
 
-			String waitForBatch = "broadway " + luName + ".WaitForCustomLogicFlow luName = " + luName + ", batchId = '" + batchId + "'";
+			String waitForBatch = "broadway " + luName + ".WaitForCustomLogicFlow luName = " + luName + ", batchId = '" + batchId + "', RESULT_STRUCTURE=ROW";
 			//log.info("Custom Logic waitForBatch: " + waitForBatch);
 			Db.Row entityListTableRec = fabric().fetch(waitForBatch).firstRow();
 			String entityListTable = "" + entityListTableRec.get("value");

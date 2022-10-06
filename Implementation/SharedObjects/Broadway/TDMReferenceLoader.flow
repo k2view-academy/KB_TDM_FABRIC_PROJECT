@@ -291,6 +291,21 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "minHeight": 359,
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -316,7 +331,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET number_of_processed_records = 0,\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET number_of_processed_records = 0,\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -335,6 +350,13 @@
                                         "schema": {
                                             "type": "integer"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -552,7 +574,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = 0,\r\nnumber_of_records_to_process = 0\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = 0,\r\nnumber_of_records_to_process = 0\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -565,6 +587,13 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -942,7 +971,7 @@
                         },
                         {
                             "name": "Update TDMDB table during loop",
-                            "minHeight": 326,
+                            "minHeight": 482,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -952,7 +981,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET number_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET number_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -977,6 +1006,13 @@
                                         "schema": {
                                             "type": "integer"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -1082,7 +1118,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -1107,6 +1143,13 @@
                                         "schema": {
                                             "type": "integer"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -1481,6 +1524,46 @@
             "rightPort": {
                 "actor": "Update TDMDB table Before loading",
                 "name": "recsToBeLoaded"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table Before loading",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table__1",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table during loop",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "schema"
             }
         },
         {
