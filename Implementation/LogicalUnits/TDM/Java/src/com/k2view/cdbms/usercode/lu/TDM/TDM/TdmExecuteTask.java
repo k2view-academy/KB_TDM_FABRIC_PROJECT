@@ -508,10 +508,12 @@ public class TdmExecuteTask {
             case "L": // In case the task lists the entities to run
                String versionParams = VERSION_IND.get(taskProperties).equals("true") ? 
 					separator + SELECTED_VERSION_TASK_NAME.get(taskProperties) + separator + SELECTED_VERSION_DATETIME.get(taskProperties) : "";
-					entitiesList = entitiesList.replaceAll("\\s+","");
+				//entitiesList = entitiesList.replaceAll("\\s+","");
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
 				
 				for (String entityID : entitiesListArray) {
+					//Remove leading and trailing spaces
+					entityID = entityID.trim();
 					entityInclusion +=  "'" + env + separator + entityID + versionParams + "',";
 				}
 	
@@ -704,6 +706,8 @@ public class TdmExecuteTask {
         globals.put("TDM_TAR_ENV_NAME", TARGET_ENVIRONMENT_NAME.get(taskProperties));
         globals.put("TDM_TASK_ID",  "" + TASK_ID.get(taskProperties));
         globals.put("TDM_TASK_EXE_ID", "" + TASK_EXECUTION_ID.get(taskProperties));
+		globals.put("execution_id", "" + TASK_EXECUTION_ID.get(taskProperties));
+		globals.put("clone_id", "NO_CLONE_ID");
         globals.put("TDM_REPLACE_SEQUENCES", selectionMethod.equals("S") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
 		globals.put("enable_sequences", selectionMethod.equals("S") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
 		globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());
@@ -864,6 +868,7 @@ public class TdmExecuteTask {
 			//log.info("setSyncMode - SYNC_MODE: " + SYNC_MODE.get(taskProperties));
 		}
 	}
+	
 	private static String getSyncModeForLoad(Map<String, Object> taskProperties) {
 		String syncMode = SYNC_MODE.get(taskProperties);
 		// In case of Load and sync mode is set to OFF and the deleteBeforeLoad is set to TRUE or it is dataflux load task (therefore requires delete before load), 
@@ -922,8 +927,20 @@ public class TdmExecuteTask {
 		for (Db.Row row : rows) {
 			//log.info("syncInstanceForCloning - entity_id: " + row.cell(0));
 			String intsanceID = "" + row.cell(0);
-			Object[] splitCloneId = intsanceID.split("#params#");
-			intsanceID = "" + splitCloneId[0];
+			//Object[] splitCloneId = intsanceID.split("#params#");
+			
+			Db.Rows instanceSplitted = fabric().fetch("broadway " + luName + ".SplitIIDAndCloneNumber iid='" + intsanceID + "'");
+
+			for (Db.Row instanceField : instanceSplitted) {
+				if ("UID".equals(instanceField.get("column"))) {
+					intsanceID = "" + instanceField.get("value");
+				}
+				
+				if ("cloneNo".equals(instanceField.get("column"))) {
+					fabric().execute("set clone_id " + instanceField.get("value"));
+				}
+			}
+			
 			if (!entityList.contains(intsanceID)) {
 				//log.info("syncInstanceForCloning - intsanceID: " + intsanceID);
 				entityList.add(intsanceID);

@@ -24,7 +24,28 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "load_COLLECTION"
+                                        "const": "load_collection"
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []

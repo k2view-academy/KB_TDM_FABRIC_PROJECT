@@ -112,6 +112,8 @@ public class SharedGlobals {
 
 	@category("TDM")
 	public static String TDMDB_SCHEMA = "public";
+	@category("TDM")
+	public static String clone_id = "0";
 
 	@desc("The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB")
 	@category("TDM")
@@ -125,5 +127,4 @@ public class SharedGlobals {
 	@desc("Prefix of delete tables")
 	@category("TDM")
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";
-
 }

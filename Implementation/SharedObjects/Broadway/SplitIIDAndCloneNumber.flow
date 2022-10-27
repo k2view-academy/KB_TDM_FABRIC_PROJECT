@@ -8,7 +8,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript1",
+                            "name": "Check If Cloning",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -51,7 +51,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript2",
+                            "name": "Return UID",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -80,7 +80,7 @@
                             }
                         },
                         {
-                            "name": "JavaScript3",
+                            "name": "Set Clone No",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -128,12 +128,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "fnSplitUID2"
+                                    },
+                                    {
+                                        "const": "TDM",
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "uid",
@@ -171,20 +172,23 @@
                             }
                         },
                         {
-                            "name": "JsonParser1",
+                            "name": "UID Value",
                             "actorType": {
-                                "parentType": "JsonParser",
-                                "inputs": [],
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
                                 "outputs": [
                                     {
-                                        "name": "object",
+                                        "name": "value",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "clone_no": {
-                                                    "type": "integer"
-                                                }
-                                            }
+                                            "type": "string"
                                         }
                                     }
                                 ]
@@ -200,41 +204,7 @@
                     "name": "Stage 3",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Const2",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         }
@@ -242,27 +212,27 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "JavaScript1",
+                "actor": "Check If Cloning",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript2",
+                "actor": "Return UID",
                 "name": "IidArray"
             }
         },
         {
             "leftPort": {
-                "actor": "JavaScript1",
+                "actor": "Check If Cloning",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript3",
+                "actor": "Set Clone No",
                 "name": "IidArray"
             }
         },
         {
             "leftPort": {
-                "actor": "JavaScript2",
+                "actor": "Return UID",
                 "name": "result"
             },
             "rightPort": {
@@ -272,36 +242,13 @@
         },
         {
             "leftPort": {
-                "actor": "JavaScript2",
+                "actor": "Return UID",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Const2",
+                "actor": "UID Value",
                 "name": "value"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "JavaScript3",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "JsonParser1",
-                "name": "stream"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "path": [
-                "clone_no"
-            ]
         },
         {
             "leftPort": {
@@ -309,13 +256,13 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Check If Cloning",
                 "name": "IID"
             }
         },
         {
             "leftPort": {
-                "actor": "JavaScript3",
+                "actor": "Set Clone No",
                 "name": "result"
             },
             "rightPort": {
@@ -365,17 +312,7 @@
         },
         {
             "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "cloneNo"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const2",
+                "actor": "UID Value",
                 "name": "value"
             },
             "rightPort": {

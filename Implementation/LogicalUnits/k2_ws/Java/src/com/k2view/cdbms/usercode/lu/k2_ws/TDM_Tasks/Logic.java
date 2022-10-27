@@ -913,9 +913,12 @@ public class Logic extends WebServiceUserCode {
 			}
 		}
 		
+		/* Keep the entity list as is, the leading and trailing spaces will be trimmed when the entities are processed,
+			we should keep internal spaces
 		if (selection_param_value != null && !"".equals(selection_param_value) && "L".equals(selection_method)) {
 			selection_param_value = selection_param_value.replaceAll("\\s+","");
 		}
+		*/
 		
 		if (reference!=null&&reference.equals("refernceOnly")) {
 			if (refList!=null ) {
@@ -1239,9 +1242,12 @@ public class Logic extends WebServiceUserCode {
 			db(TDM).execute("UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
 		
+		/* Keep the entity list as is, the leading and trailing spaces will be trimmed when the entities are processed,
+			we should keep internal spaces
 		if (selection_param_value != null && !"".equals(selection_param_value) && "L".equals(selection_method)) {
 			selection_param_value = selection_param_value.replaceAll("\\s+","");
 		}
+			*/
 		
 			if(refList!=null) {
 				Iterator<Map<String, Object>> iter = refList.iterator();

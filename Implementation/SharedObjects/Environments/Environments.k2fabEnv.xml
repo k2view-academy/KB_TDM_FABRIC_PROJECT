@@ -187,6 +187,9 @@
         <Global name="TDMDB_SCHEMA" luName="">
           <Value>public</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -303,7 +306,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="SRC_local_debug">
+    <Environment enabled="true" name="SRCLocalDebug">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -487,6 +490,9 @@
         <Global name="MAIL_ADDRESS" luName="" />
         <Global name="TDMDB_SCHEMA" luName="">
           <Value>public</Value>
+        </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
         </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
@@ -789,6 +795,9 @@
         <Global name="TDMDB_SCHEMA" luName="">
           <Value>public</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
           <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
@@ -905,7 +914,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="TAR_local_debug">
+    <Environment enabled="true" name="TARLocaDebug">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -1089,6 +1098,9 @@
         <Global name="MAIL_ADDRESS" luName="" />
         <Global name="TDMDB_SCHEMA" luName="">
           <Value>public</Value>
+        </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
         </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>
@@ -1390,6 +1402,9 @@
         <Global name="MAIL_ADDRESS" luName="" />
         <Global name="TDMDB_SCHEMA" luName="">
           <Value>public</Value>
+        </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
         </Global>
         <Global name="ORACLE8_DB_TYPE" luName="">
           <Value>Oracle8</Value>

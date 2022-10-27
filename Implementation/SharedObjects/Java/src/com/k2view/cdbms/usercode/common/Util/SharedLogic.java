@@ -204,7 +204,7 @@ public class SharedLogic {
 		
 		if(luType == null)
 			return "";
-
+		
 		List<TablePopulation> populations = luType.getPopulationCollection();
 		// populations already ordered
 		Set<String> tables = new HashSet<>();
@@ -230,7 +230,7 @@ public class SharedLogic {
 			Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
 					originalTableName + "', luName=" + luType.luName);
 			String tableFiltered = "";
-			if (checkTable != null && !checkTable.getColumnNames().isEmpty()) {
+			if (checkTable != null && checkTable.firstValue() != null) {
 				tableFiltered = "" + checkTable.firstValue();
 			}
 			
