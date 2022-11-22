@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(activity_id) + 1 As init_activity_id\r\nFrom activity"
+                                        "const": "Select max(activity_id) + 1000 As init_activity_id\r\nFrom activity"
                                     }
                                 ],
                                 "outputs": []

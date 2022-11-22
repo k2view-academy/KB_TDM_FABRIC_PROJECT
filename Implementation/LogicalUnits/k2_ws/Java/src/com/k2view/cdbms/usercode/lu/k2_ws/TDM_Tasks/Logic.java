@@ -4992,7 +4992,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Returns active task ID by its name.")
-	@webService(path = "wsGetTaskId/{taskName}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "wsGetTaskId/{taskName}", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\r\n" +
 			"\t<result>5</result>\r\n" +
 			"\t<errorCode>SUCCESS</errorCode>\r\n" +
@@ -5005,7 +5005,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetTaskId(@param(required=true) String taskName) throws Exception {
 		Object response = db(TDM).
-				fetch("select t.task_id from " + TDMDB_SCHEMA + ".tasks where t.task_title= ? and t.task_status='Active'", taskName).firstValue();
+				fetch("select t.task_id from " + TDMDB_SCHEMA + ".tasks t where t.task_title= ? and t.task_status='Active'", taskName).firstValue();
 		if (response == null) {
 			return TdmSharedUtils.wrapWebServiceResults("FAILED", "No active task found for task name '" + taskName + "'.", response);
 		} else {

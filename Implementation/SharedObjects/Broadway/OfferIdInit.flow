@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select Max(offer_id) + 1 As init_offer_id\r\nFrom offer"
+                                        "const": "Select Max(offer_id) + 1000 As init_offer_id\r\nFrom offer"
                                     }
                                 ],
                                 "outputs": []

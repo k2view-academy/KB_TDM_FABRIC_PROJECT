@@ -18,7 +18,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select Max(case_id) + 1 As init_case_id\r\nFrom cases"
+                                        "const": "Select Max(case_id) + 1000 As init_case_id\r\nFrom cases"
                                     }
                                 ],
                                 "outputs": []
