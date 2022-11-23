@@ -10,13 +10,14 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Load Tables Level 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
+						
                         {
                             "name": "load_orders",
                             "actorType": {
@@ -24,7 +25,7 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "load_ORDERS"
+                                        "const": "load_orders"
                                     }
                                 ],
                                 "outputs": []
@@ -59,5 +60,7 @@
             ]
         }
     ],
-    "connections": []
+    "connections": [
+		
+	]
 }

@@ -10,13 +10,14 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Load Tables Level 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
+						
                         {
                             "name": "load_collection",
                             "actorType": {
@@ -25,27 +26,6 @@
                                     {
                                         "name": "flowName",
                                         "const": "load_collection"
-                                    },
-                                    {
-                                        "name": "syncMode",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -80,5 +60,7 @@
             ]
         }
     ],
-    "connections": []
+    "connections": [
+		
+	]
 }

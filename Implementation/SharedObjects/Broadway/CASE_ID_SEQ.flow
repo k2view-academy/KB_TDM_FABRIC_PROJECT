@@ -81,6 +81,10 @@
                                     {
                                         "name": "initialValue",
                                         "const": "CaseIdInit"
+                                    },
+									{
+                                        "name": "TTL",
+                                        "const": 0
                                     }
                                 ],
                                 "outputs": [

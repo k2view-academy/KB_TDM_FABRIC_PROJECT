@@ -7,7 +7,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
-                    "remark": "This flow demonstrates the following:\n1. A table flow with field transformations:\n  a. Changing the sequential value of a field\n2. Supporting sequence replacement:\n  a. Regular sequence replacement\n  b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache. In this example, the PATIENT_ID was already replaced in PATIENT table actor, and here the value will be retrieved from sequence cache.",
+                    "remark": "This flow demonstrates the following:\n1. A table flow with field transformations:\n  a. Changing the sequential value of a field\n2. Supporting sequence replacement:\n  a. Regular sequence replacement\n  b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache.",
                     "actors": []
                 }
             ]
@@ -86,7 +86,7 @@
                             }
                         },
                         {
-                            "name": "Delete COLLECTION Table",
+                            "name": "Delete collection Table",
                             "actorType": {
                                 "parentType": "DbDelete",
                                 "inputs": [
@@ -95,18 +95,23 @@
                                         "const": "COLLECTION_DB"
                                     },
                                     {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
                                         "name": "table",
-                                        "const": "COLLECTION"
+                                        "const": "collection"
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "CUSTOMER_ID"
+                                            "customer_id"
                                         ]
                                     },
                                     {
-                                        "name": "CUSTOMER_ID",
-                                        "schema": {}
+                                        "name": "customer_id",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -124,7 +129,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Delete COLLECTION Table",
+                "actor": "Delete collection Table",
                 "name": "params"
             },
             "iterate": "Iterate"

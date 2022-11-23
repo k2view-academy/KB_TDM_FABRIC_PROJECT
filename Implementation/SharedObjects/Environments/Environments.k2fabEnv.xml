@@ -104,10 +104,10 @@
           <Value>1</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>SRC_local_debug</Value>
+          <Value>SRC</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>TAR_local_debug</Value>
+          <Value>TAR</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -282,7 +282,7 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.4">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
@@ -402,16 +402,16 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>23</Value>
+          <Value>133</Value>
         </Global>
         <Global name="MASK_FLAG" luName="">
           <Value>1</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>SRC_local_debug</Value>
+          <Value>SRCLocalDebug</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>TAR_local_debug</Value>
+          <Value>TARLocalDebug</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -890,7 +890,7 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="true" version="1.4">
+        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
@@ -914,7 +914,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="TARLocaDebug">
+    <Environment enabled="true" name="TARLocalDebug">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -1016,10 +1016,10 @@
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>SRC_local_debug</Value>
+          <Value>SRCLocalDebug</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>TAR_local_debug</Value>
+          <Value>TARLocalDebug</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>

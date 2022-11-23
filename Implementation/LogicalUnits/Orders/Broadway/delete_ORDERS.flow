@@ -31,7 +31,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select ORDERS.ORDER_ID\r\nFrom Orders.ORDERS"
+                                        "const": "Select TAR_ORDERS.ORDER_ID\r\nFrom Orders.TAR_ORDERS"
                                     }
                                 ],
                                 "outputs": [
@@ -105,11 +105,11 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "order_id"
+                                            "ORDER_ID"
                                         ]
                                     },
                                     {
-                                        "name": "order_id",
+                                        "name": "ORDER_ID",
                                         "schema": {},
                                         "mandatory": false
                                     }

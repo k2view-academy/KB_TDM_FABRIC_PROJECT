@@ -81,6 +81,10 @@
                                     {
                                         "name": "initialValue",
                                         "const": "PaymentIdInit"
+                                    },
+									{
+                                        "name": "TTL",
+                                        "const": 0
                                     }
                                 ],
                                 "outputs": [

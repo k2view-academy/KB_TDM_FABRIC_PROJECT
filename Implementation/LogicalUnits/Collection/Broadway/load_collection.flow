@@ -7,7 +7,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
-                    "remark": "This flow demonstrates the following:\n1. A table flow with field transformations:\n  a. Changing the sequential value of a field\n2. Supporting sequence replacement:\n  a. Regular sequence replacement\n  b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache. In this example, the PATIENT_ID was already replaced in PATIENT table actor, and here the value will be retrieved from sequence cache.",
+                    "remark": "This flow demonstrates the following:\n1. A table flow with field transformations:\n  a. Changing the sequential value of a field\n2. Supporting sequence replacement:\n  a. Regular sequence replacement\n  b. Sequence Caching - when a value was already replaced at a previous stage/actor, the new value will be taken from cache.",
                     "actors": []
                 }
             ]
@@ -21,7 +21,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "InitiateTDMLoad_Actor1",
+                            "name": "Initiate TDM Load",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [],
@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select *\r\nFrom Collection.COLLECTION"
+                                        "const": "select * from Collection.collection"
                                     }
                                 ],
                                 "outputs": [
@@ -62,18 +62,11 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {
-                                                        "type": "string"
-                                                    },
-                                                    "COLLECTION_ID": {
-                                                        "type": "string"
-                                                    },
-                                                    "LAST_UPDATE": {
-                                                        "type": "string"
-                                                    },
-                                                    "COLLECTION_STATUS": {
-                                                        "type": "string"
-                                                    }
+                                                    "CUSTOMER_ID": {"type": "Any"},
+													"COLLECTION_ID": {"type": "Any"},
+													"LAST_UPDATE": {"type": "Any"},
+													"COLLECTION_STATUS": {"type": "Any"}
+													
                                                 }
                                             }
                                         }
@@ -99,46 +92,92 @@
         {
             "stages": [
                 {
+					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
+					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
                     "actors": [
+						
                         {
-                            "name": "CUSTOMER_ID_SEQ_Actor1",
+                            "name": "Transformation Error Handler",
+                            "onError": "result",
                             "actorType": {
-                                "parentType": "CUSTOMER_ID_SEQ_Actor",
+                                "parentType": "ErrorHandler",
                                 "inputs": [
                                     {
-                                        "name": "tableName",
-                                        "const": "COLLECTION"
-                                    },
-                                    {
-                                        "name": "columName",
-                                        "const": "CUSTOMER_ID"
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": false,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
-                        {
-                            "name": "COLLECTION_ID_SEQ_Actor1",
+						{
+                            "name": "Get Sequence for customer_id",
+                            "actorType": {
+                                "parentType": "CUSTOMER_ID_SEQ_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "collection"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "customer_id"
+                                    }
+                                ],
+                                "outputs": []
+							}
+                         }, 
+						{
+                            "name": "Get Sequence for collection_id",
                             "actorType": {
                                 "parentType": "COLLECTION_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "COLLECTION"
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "collection"
                                     },
                                     {
                                         "name": "columName",
-                                        "const": "COLLECTION_ID"
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "collection_id"
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
+
                 }
+				
             ]
         },
         {
@@ -184,8 +223,29 @@
                                 "outputs": []
                             }
                         },
+						
                         {
-                            "name": "Load COLLECTION Table",
+                            "name": "Set Target Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+						
+                        {
+                            "name": "Load collection Table",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -193,58 +253,48 @@
                                         "name": "interface",
                                         "const": "COLLECTION_DB"
                                     },
-                                    {
+									{
                                         "name": "schema",
                                         "const": "public"
                                     },
                                     {
                                         "name": "table",
-                                        "const": "COLLECTION"
+                                        "const": "collection"
                                     },
                                     {
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-                                            "collection_id",
-                                            "last_update",
-                                            "collection_status"
+											"collection_id",
+											"last_update",
+											"collection_status"
+											
                                         ]
                                     },
-                                    {
+									{
                                         "name": "keys",
                                         "const": [
                                             "collection_id"
+											
                                         ]
                                     },
-                                    {
-                                        "name": "dialect",
-                                        "const": "oracle"
-                                    },
-                                    {
+									{
                                         "name": "customer_id",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "collection_id",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "last_update",
                                         "schema": {}
                                     },
-                                    {
+									{
                                         "name": "collection_status",
                                         "schema": {}
                                     }
                                 ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "setTargetEntityId_Actor1",
-                            "actorType": {
-                                "parentType": "setTargetEntityId_Actor",
-                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -323,18 +373,18 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Load COLLECTION Table",
+                "actor": "Load collection Table",
                 "name": "params"
             },
             "iterate": "Iterate"
         },
-        {
+		{
             "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "actor": "Get Sequence for customer_id",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
@@ -344,11 +394,21 @@
         },
         {
             "leftPort": {
+                "actor": "Get Sequence for customer_id",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load collection Table",
+                "name": "customer_id"
+            }
+        },
+		{
+            "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "COLLECTION_ID_SEQ_Actor1",
+                "actor": "Get Sequence for collection_id",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
@@ -358,37 +418,30 @@
         },
         {
             "leftPort": {
-                "actor": "CUSTOMER_ID_SEQ_Actor1",
+                "actor": "Get Sequence for collection_id",
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load COLLECTION Table",
-                "name": "customer_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "COLLECTION_ID_SEQ_Actor1",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load COLLECTION Table",
+                "actor": "Load collection Table",
                 "name": "collection_id"
             }
         },
+		
+		
         {
             "leftPort": {
-                "actor": "COLLECTION_ID_SEQ_Actor1",
+                "actor": "Get Sequence for collection_id",
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "setTargetEntityId_Actor1",
-                "name": "target_entity_id"
+                "actor": "Set Target Entity ID",
+                "name": "value"
             }
         },
+		
         {
             "leftPort": {
-                "actor": "Read Stats",
+               "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -399,11 +452,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "syncMode"
+                "name": "luName"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "syncMode"
+                "actor": "Initiate TDM Load",
+                "name": "luName"
             }
         },
         {
@@ -412,18 +465,18 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "Initiate TDM Load",
                 "name": "iid"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
+                "actor": "flowArgs",							 
+                "name": "syncMode"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
-                "name": "luName"
+                "actor": "Initiate TDM Load",
+                "name": "syncMode"
             }
         }
     ]
