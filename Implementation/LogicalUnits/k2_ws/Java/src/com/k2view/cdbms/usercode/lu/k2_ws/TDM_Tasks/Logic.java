@@ -351,6 +351,17 @@ public class Logic extends WebServiceUserCode {
 		
 			String q = "SELECT * FROM " + TDMDB_SCHEMA + ".ENVIRONMENT_ROLES";
 			Db.Rows rolesResult = db(TDM).fetch(q);
+			
+			List<Map<String, Object>> envsRoles = new ArrayList<>();
+			for (Db.Row role : rolesResult) {
+				ResultSet roleResultSet = role.resultSet();
+				HashMap<String, Object> map = new HashMap<>();
+				map.put("environment_id", roleResultSet.getInt("environment_id"));
+				map.put("role_id", roleResultSet.getInt("role_id"));
+				map.put("allowed_test_conn_failure", roleResultSet.getBoolean("allowed_test_conn_failure"));
+				
+				envsRoles.add(map);
+			}
 		
 			Map<String, List<String>> usersRoles = new HashMap<>();
 			fabric().fetch("list users;").forEach(r -> {
@@ -358,14 +369,14 @@ public class Logic extends WebServiceUserCode {
 				roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
 				usersRoles.put("" + r.get("user"), roles);
 			});
-
+		
 						//modified newRow will be added to newResult list
 			List<Map<String,Object>> newResult=new ArrayList<>();
 		
 			Integer prevTaskId = 0;
 			HashMap<String, Object> prevRow = new HashMap<>();
-
-					for (Db.Row row:result) {
+		
+			for (Db.Row row:result) {
 				HashMap<String, Object> newRow = new HashMap<>();
 						
 				ResultSet resultSet = row.resultSet();
@@ -456,13 +467,15 @@ public class Logic extends WebServiceUserCode {
 				}
 		
 				List<Map<String, Object>> roleArr = new ArrayList<>();
-		
-				for (Db.Row role : rolesResult) {
-					ResultSet roleResultSet = role.resultSet();
-					if (roleResultSet.getInt("environment_id") == resultSet.getInt("environment_id")) {
-						HashMap<String, Object> roleMap = new HashMap<>();
-						roleMap.put("role_id", roleResultSet.getInt("role_id"));
-						roleMap.put("allowed_test_conn_failure", roleResultSet.getBoolean("allowed_test_conn_failure"));
+				//for (Db.Row role : rolesResult) {
+				for (Map<String, Object> envsRole: envsRoles)
+				{
+					HashMap<String, Object> roleMap = new HashMap<>();
+					String envId = (envsRole.get("environment_id")).toString();
+					String taskEnvId = "" + resultSet.getInt("environment_id");
+					if (envId.equals(taskEnvId)) {
+						roleMap.put("role_id", Integer.valueOf(envsRole.get("role_id").toString()));
+						roleMap.put("allowed_test_conn_failure", Boolean.valueOf(envsRole.get("allowed_test_conn_failure").toString()));
 						roleArr.add(roleMap);
 					}
 				}
@@ -536,11 +549,11 @@ public class Logic extends WebServiceUserCode {
 					}
 		
 					List<List<Map<String, Object>>> roles = new ArrayList<>();
-					newRow.put("roles", roles);
+					
 					if (roleArr != null && roleArr.size() > 0) {
 						roles.add(roleArr);
 					}
-		
+					newRow.put("roles", roles);
 					newResult.add(newRow);
 				}
 		

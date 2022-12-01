@@ -206,6 +206,10 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
+        <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
+          <Value>false</Value>
+          <Comment>true/false. If true - generate a synthetic entity.</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -473,7 +477,7 @@
           <Value>EXTRACT</Value>
         </Global>
         <Global name="enable_masking" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
         </Global>
         <Global name="enable_sequences" luName="">
           <Value>false</Value>
@@ -509,6 +513,10 @@
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
+        </Global>
+        <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
+          <Value>true</Value>
+          <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -814,6 +822,10 @@
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
         </Global>
+        <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
+          <Value>false</Value>
+          <Comment>true/false. If true - generate a synthetic entity.</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1081,7 +1093,7 @@
           <Value>EXTRACT</Value>
         </Global>
         <Global name="enable_masking" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
         </Global>
         <Global name="enable_sequences" luName="">
           <Value>false</Value>
@@ -1117,6 +1129,10 @@
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
+        </Global>
+        <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
+          <Value>false</Value>
+          <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -1421,6 +1437,10 @@
         <Global name="TDM_DEL_TABLE_PREFIX" luName="">
           <Value>TAR</Value>
           <Comment>Prefix of delete tables</Comment>
+        </Global>
+        <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
+          <Value>false</Value>
+          <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>

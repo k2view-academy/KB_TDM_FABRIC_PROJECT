@@ -127,4 +127,8 @@ public class SharedGlobals {
 	@desc("Prefix of delete tables")
 	@category("TDM")
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";
+
+	@desc("true/false. If true - generate a synthetic entity.")
+	@category("FREE TRIAL")
+	public static String CREATE_SYNTHETIC_ENTITY = "false";
 }

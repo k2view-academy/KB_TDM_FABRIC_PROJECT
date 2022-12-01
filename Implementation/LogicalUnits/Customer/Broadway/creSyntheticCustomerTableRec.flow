@@ -1,0 +1,378 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FirstNames1",
+                            "actorType": {
+                                "parentType": "FirstNames",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LastNames1",
+                            "actorType": {
+                                "parentType": "LastNames",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MaskingSSN1",
+                            "actorType": {
+                                "parentType": "MaskingSSN",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "ssn"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "CustomerID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Mask First Name",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "first_name"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Mask Last Name",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "last_name"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder1",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayToMap1",
+                            "actorType": {
+                                "parentType": "ArrayToMap",
+                                "inputs": [
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "customer_id",
+                                            "ssn",
+                                            "first_name",
+                                            "last_name"
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add the map to array",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder2",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "ssn": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "FirstNames1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Mask First Name",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LastNames1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Mask Last Name",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingSSN1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder1",
+                "name": "input"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "CustomerID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder1",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Mask First Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder1",
+                "name": "input"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Mask Last Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder1",
+                "name": "input"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder1",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "ArrayToMap1",
+                "name": "values"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder2",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_id"
+            },
+            "rightPort": {
+                "actor": "CustomerID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder2",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "customerRecord"
+            }
+        }
+    ]
+}
