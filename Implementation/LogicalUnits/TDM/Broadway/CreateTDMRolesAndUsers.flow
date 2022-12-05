@@ -8,7 +8,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get  SQL Resource File To Create TDMDB Schema And User",
+                            "name": "Get  SQL Resource File To Create TDMDB Schema And User__1",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -63,10 +63,10 @@
                 {
                     "name": "Stage 2",
                     "dependsOnList": [],
-                    "isLast": 0,
+                    "isLast": 1,
                     "actors": [
                         {
-                            "name": "Create TDMDB User and Schema",
+                            "name": "Add Tester Role And Users to Fabric",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -92,7 +92,64 @@
                     "name": "Stage 4",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "Get  SQL Resource File To Create TDM Tester Permission Group",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/CreateTDMTesterRoleAndUsers/CreateTesterPermissionGroup.sql",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Permission Group For Tester",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -100,7 +157,7 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
+                "actor": "Get  SQL Resource File To Create TDMDB Schema And User__1",
                 "name": "result"
             },
             "rightPort": {
@@ -114,19 +171,19 @@
                 "name": "object"
             },
             "rightPort": {
-                "actor": "Create TDMDB User and Schema",
+                "actor": "Add Tester Role And Users to Fabric",
                 "name": "sql"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
+                "actor": "Get  SQL Resource File To Create TDM Tester Permission Group",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
+                "actor": "Add Permission Group For Tester",
+                "name": "sql"
             }
         }
     ]
