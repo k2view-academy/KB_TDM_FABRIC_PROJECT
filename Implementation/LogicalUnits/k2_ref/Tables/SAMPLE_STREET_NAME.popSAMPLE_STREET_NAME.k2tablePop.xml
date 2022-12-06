@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>popSAMPLE_STREET_NAME</ID>
+  <PopulationObjectName>popSAMPLE_STREET_NAME</PopulationObjectName>
+  <TableName>SAMPLE_STREET_NAME</TableName>
+  <RootItemID>f_4</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments />
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_4" name="getSampleStreetNames" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="getSampleStreetNames.k2function.xml">
+      <InputsList />
+      <OutputsList>
+        <Output id="fo_4.0" name="STREET_NAME" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="6" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.0" toItemID="tbl_SAMPLE_STREET_NAME" toColID="tblCol_c1b6eeb6947546e0b40874bacd9bfd77" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="SAMPLE_STREET_NAME.popSAMPLE_STREET_NAME.k2tablePop.xml" lastPartID="6">
+      <TableNode partID="0" name="SAMPLE_STREET_NAME" pos="404 30" width="253" />
+      <FunctionMapNode id="0" R0="1" partID="4" topLabel="getSampleStreetNames (4)" pos="27 49.5091133" size="203 45.0911446" isRoot="true">
+        <KFunction>{"Name":"getSampleStreetNames","ID":"f_4","Category":"Masking","Version":"6.1.1.5","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"Retrieves the list of sample street names from the trnSAMPLE_STREET_NAME","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[],"outputParams":[{"Name":"STREET_NAME","ID":"fo_4.0","Index":0,"DataType":"void","Comment":""}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="6" from="1" to="2" pointsArr="230 74.60026 240 74.60026 394 61.0364571 404 61.0364571" fromNodePartID="4" fromNodeColumnName="STREET_NAME" toNodePartID="0" toNodeColumnName="STREET_NAME" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

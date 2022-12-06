@@ -129,6 +129,6 @@ public class SharedGlobals {
 	public static String TDM_DEL_TABLE_PREFIX = "TAR";
 
 	@desc("true/false. If true - generate a synthetic entity.")
-	@category("FREE TRIAL")
+	@category("DATA MANUFACTURING")
 	public static String CREATE_SYNTHETIC_ENTITY = "false";
 }

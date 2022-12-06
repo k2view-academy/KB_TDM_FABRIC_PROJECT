@@ -3,6 +3,16 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
+      <NodeName>ref-masking-create-cache-table.flow</NodeName>
+      <RelativePath>Implementation\LogicalUnits\k2_ref\Broadway\ref-masking-create-cache-table.flow</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\k2_ref\Broadway@MASKING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>deploy.flow</NodeName>
+      <RelativePath>Implementation\LogicalUnits\k2_ref\Broadway\deploy.flow</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\k2_ref\Broadway@SYSTEM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>createLoadAllTablesFlow.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\createLoadAllTablesFlow.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -729,6 +739,18 @@
     </ProjectItemProp>
   </ProjectItemPropList>
   <ProjectItemsCategoryList>
+    <ProjectItemsCategory>
+      <Name>System</Name>
+      <Key>Implementation\LogicalUnits\k2_ref\Broadway@System</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>SYSTEM</Name>
+      <Key>Implementation\LogicalUnits\k2_ref\Broadway@SYSTEM</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>MASKING</Name>
+      <Key>Implementation\LogicalUnits\k2_ref\Broadway@MASKING</Key>
+    </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>ScriptsForTemplates</Name>
       <Key>Implementation\SharedObjects\Broadway@ScriptsForTemplates</Key>

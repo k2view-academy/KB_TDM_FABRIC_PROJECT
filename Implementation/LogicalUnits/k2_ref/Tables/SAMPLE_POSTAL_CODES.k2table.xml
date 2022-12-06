@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>SAMPLE_POSTAL_CODES</Name>
+  <ID>tbl_SAMPLE_POSTAL_CODES</ID>
+  <Columns>
+    <Column name="POSTAL_CODE" id="tblCol_85353a47841346f2a2c7e498b853a1dd" index="0" datatype="text" />
+    <Column name="CITY" id="tblCol_a7735553dbb64899b90f3f4cf6672c1b" index="1" datatype="text" />
+    <Column name="STATE" id="tblCol_bda2ae4447ef4496b81ac3e9ab3abaa6" index="2" datatype="text" />
+    <Column name="LATITUDE" id="tblCol_1d98d87e3643455fa57bb374dfcad26f" index="3" datatype="text" />
+    <Column name="LONGITUDE" id="tblCol_6b3c5532a10a43788a98920747ee17da" index="4" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

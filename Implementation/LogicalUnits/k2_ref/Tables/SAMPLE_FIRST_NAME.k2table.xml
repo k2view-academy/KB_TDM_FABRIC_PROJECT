@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>SAMPLE_FIRST_NAME</Name>
+  <ID>tbl_SAMPLE_FIRST_NAME</ID>
+  <Columns>
+    <Column name="FIRST_NAME" id="tblCol_0a3819c966504c6c9f0e2f9e2318c7b8" index="0" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

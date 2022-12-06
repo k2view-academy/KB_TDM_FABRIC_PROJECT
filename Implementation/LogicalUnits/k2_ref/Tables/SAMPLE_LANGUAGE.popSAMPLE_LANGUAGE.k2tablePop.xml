@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>popSAMPLE_LANGUAGE</ID>
+  <PopulationObjectName>popSAMPLE_LANGUAGE</PopulationObjectName>
+  <TableName>SAMPLE_LANGUAGE</TableName>
+  <RootItemID>f_5</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments />
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_5" name="getSampleLanguages" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="getSampleLanguages.k2function.xml">
+      <InputsList />
+      <OutputsList>
+        <Output id="fo_5.0" name="language_id" />
+        <Output id="fo_5.1" name="language" />
+        <Output id="fo_5.2" name="region" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="10" fromNodeOrder="0" fromItemID="f_5" fromColID="fo_5.0" toItemID="tbl_SAMPLE_LANGUAGE" toColID="tblCol_5f27c2db760d47f1ad760f9976cc092b" />
+    <Link partId="11" fromNodeOrder="0" fromItemID="f_5" fromColID="fo_5.1" toItemID="tbl_SAMPLE_LANGUAGE" toColID="tblCol_3c8363c02ed24703bb0540a8238d865a" />
+    <Link partId="12" fromNodeOrder="0" fromItemID="f_5" fromColID="fo_5.2" toItemID="tbl_SAMPLE_LANGUAGE" toColID="tblCol_c6bdabd9fc714ff09e6a7caf550c2a0b" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="SAMPLE_LANGUAGE.popSAMPLE_LANGUAGE.k2tablePop.xml" lastPartID="12">
+      <TableNode partID="0" name="SAMPLE_LANGUAGE" pos="404 30" width="253" />
+      <FunctionMapNode id="0" R0="1" R1="2" R2="3" partID="5" topLabel="getSampleLanguages (5)" pos="61 23.5091133" size="203 61.3098869" isRoot="true">
+        <KFunction>{"Name":"getSampleLanguages","ID":"f_5","Category":"Masking","Version":"6.5.1.15","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"Retrieves the list of Languages","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[],"outputParams":[{"Name":"language_id","ID":"fo_5.0","Index":0,"DataType":"String","Comment":""},{"Name":"language","ID":"fo_5.1","Index":1,"DataType":"String","Comment":""},{"Name":"region","ID":"fo_5.2","Index":2,"DataType":"String","Comment":""}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="10" from="1" to="4" pointsArr="264 44.6367149 274 44.6367149 394 61.0364571 404 61.0364571" fromNodePartID="5" fromNodeColumnName="language_id" toNodePartID="0" toNodeColumnName="LANGUAGE_ID" />
+      <Link partID="11" from="2" to="5" pointsArr="264 56.7096329 274 56.7096329 394 73.109375 404 73.109375" fromNodePartID="5" fromNodeColumnName="language" toNodePartID="0" toNodeColumnName="LANGUAGE" />
+      <Link partID="12" from="3" to="6" pointsArr="264 68.78255 274 68.78255 394 85.18229 404 85.18229" fromNodePartID="5" fromNodeColumnName="region" toNodePartID="0" toNodeColumnName="REGION" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

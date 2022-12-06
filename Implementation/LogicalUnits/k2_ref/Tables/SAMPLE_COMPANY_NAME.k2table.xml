@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>SAMPLE_COMPANY_NAME</Name>
+  <ID>tbl_SAMPLE_COMPANY_NAME</ID>
+  <Columns>
+    <Column name="COMPANY_NAME" id="tblCol_2a1fda08600a41fa91d0063662789bca" index="0" datatype="Text" />
+    <Column name="DESCRIPTION" id="tblCol_8e23fac7681e43fea5df38efdf23a6a5" index="1" datatype="Text" />
+    <Column name="TAGLINE" id="tblCol_38ea4ea366814fb79da139a1a9ddae29" index="2" datatype="Text" />
+    <Column name="COMPANY_EMAIL" id="tblCol_a28a77c294334eb1938e6aa0c97e836b" index="3" datatype="Text" />
+    <Column name="EIN" id="tblCol_03db62ab8b414876b96a3c17d9562234" index="4" datatype="Text" />
+    <Column name="EMPLOYER_NUMBER" id="tblCol_ee8987489c694706a774ff147098a592" index="5" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

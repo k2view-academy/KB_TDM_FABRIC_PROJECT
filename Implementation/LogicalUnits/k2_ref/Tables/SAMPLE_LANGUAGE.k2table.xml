@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>SAMPLE_LANGUAGE</Name>
+  <ID>tbl_SAMPLE_LANGUAGE</ID>
+  <Columns>
+    <Column name="LANGUAGE_ID" id="tblCol_5f27c2db760d47f1ad760f9976cc092b" index="0" datatype="text" />
+    <Column name="LANGUAGE" id="tblCol_3c8363c02ed24703bb0540a8238d865a" index="1" datatype="text" />
+    <Column name="REGION" id="tblCol_c6bdabd9fc714ff09e6a7caf550c2a0b" index="2" datatype="text" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncWaitTimeout="60">
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+</TableObject>

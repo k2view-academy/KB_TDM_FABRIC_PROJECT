@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>popSAMPLE_COMPANY_NAME</ID>
+  <PopulationObjectName>popSAMPLE_COMPANY_NAME</PopulationObjectName>
+  <TableName>SAMPLE_COMPANY_NAME</TableName>
+  <RootItemID>f_4</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments />
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_4" name="getSampleCompanyNames" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="getSampleCompanyNames.k2function.xml">
+      <InputsList />
+      <OutputsList>
+        <Output id="fo_4.0" name="COMPANY_NAME" />
+        <Output id="fo_4.1" name="DESCRIPTION" />
+        <Output id="fo_4.2" name="TAGLINE" />
+        <Output id="fo_4.3" name="COMPANY_EMAIL" />
+        <Output id="fo_4.4" name="EIN" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="15" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.0" toItemID="tbl_SAMPLE_COMPANY_NAME" toColID="tblCol_2a1fda08600a41fa91d0063662789bca" />
+    <Link partId="16" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.1" toItemID="tbl_SAMPLE_COMPANY_NAME" toColID="tblCol_8e23fac7681e43fea5df38efdf23a6a5" />
+    <Link partId="17" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.2" toItemID="tbl_SAMPLE_COMPANY_NAME" toColID="tblCol_38ea4ea366814fb79da139a1a9ddae29" />
+    <Link partId="18" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.3" toItemID="tbl_SAMPLE_COMPANY_NAME" toColID="tblCol_a28a77c294334eb1938e6aa0c97e836b" />
+    <Link partId="19" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.4" toItemID="tbl_SAMPLE_COMPANY_NAME" toColID="tblCol_03db62ab8b414876b96a3c17d9562234" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="SAMPLE_COMPANY_NAME.popSAMPLE_COMPANY_NAME.k2tablePop.xml" lastPartID="51">
+      <TableNode partID="0" name="SAMPLE_COMPANY_NAME" pos="619 57.0000038" width="253" />
+      <FunctionMapNode id="0" R0="1" R1="2" R2="3" R3="4" R4="5" partID="4" topLabel="getSampleCompanyNames (4)" pos="28 65.50912" size="203 85.45571" isRoot="true">
+        <KFunction>{"Name":"getSampleCompanyNames","ID":"f_4","Category":"Masking","Version":"6.1.1.5","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"Retrieves the list of sample company names from the  trnSAMPLE_COMPANY_NAME","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[],"outputParams":[{"Name":"COMPANY_NAME","ID":"fo_4.0","Index":0,"DataType":"String","Comment":""},{"Name":"DESCRIPTION","ID":"fo_4.1","Index":1,"DataType":"String"},{"Name":"TAGLINE","ID":"fo_4.2","Index":2,"DataType":"String"},{"Name":"COMPANY_EMAIL","ID":"fo_4.3","Index":3,"DataType":"String"},{"Name":"EIN","ID":"fo_4.4","Index":4,"DataType":"String"}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="15" from="1" to="6" pointsArr="231 86.63672 241 86.63672 609 88.03646 619 88.03646" fromNodePartID="4" fromNodeColumnName="COMPANY_NAME" toNodePartID="0" toNodeColumnName="COMPANY_NAME" />
+      <Link partID="16" from="2" to="7" pointsArr="231 98.70963 241 98.70963 609 100.109375 619 100.109375" fromNodePartID="4" fromNodeColumnName="DESCRIPTION" toNodePartID="0" toNodeColumnName="DESCRIPTION" />
+      <Link partID="17" from="3" to="8" pointsArr="231 110.782547 241 110.782547 609 112.182289 619 112.182289" fromNodePartID="4" fromNodeColumnName="TAGLINE" toNodePartID="0" toNodeColumnName="TAGLINE" />
+      <Link partID="18" from="4" to="9" pointsArr="231 122.855461 241 122.855461 609 124.2552 619 124.2552" fromNodePartID="4" fromNodeColumnName="COMPANY_EMAIL" toNodePartID="0" toNodeColumnName="COMPANY_EMAIL" />
+      <Link partID="19" from="5" to="10" pointsArr="231 134.928375 241 134.928375 609 136.328125 619 136.328125" fromNodePartID="4" fromNodeColumnName="EIN" toNodePartID="0" toNodeColumnName="EIN" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

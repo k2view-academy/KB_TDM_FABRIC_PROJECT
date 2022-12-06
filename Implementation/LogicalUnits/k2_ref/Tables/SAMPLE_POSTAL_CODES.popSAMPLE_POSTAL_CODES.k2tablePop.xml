@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>popSAMPLE_POSTAL_CODES</ID>
+  <PopulationObjectName>popSAMPLE_POSTAL_CODES</PopulationObjectName>
+  <TableName>SAMPLE_POSTAL_CODES</TableName>
+  <RootItemID>f_8</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments />
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_8" name="getSamplePostalCodes" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="getSamplePostalCodes.k2function.xml">
+      <InputsList />
+      <OutputsList>
+        <Output id="fo_8.0" name="zip" />
+        <Output id="fo_8.1" name="city" />
+        <Output id="fo_8.2" name="state" />
+        <Output id="fo_8.3" name="latitude" />
+        <Output id="fo_8.4" name="longitude" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="18" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.0" toItemID="tbl_SAMPLE_POSTAL_CODES" toColID="tblCol_85353a47841346f2a2c7e498b853a1dd" />
+    <Link partId="14" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.1" toItemID="tbl_SAMPLE_POSTAL_CODES" toColID="tblCol_a7735553dbb64899b90f3f4cf6672c1b" />
+    <Link partId="15" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.2" toItemID="tbl_SAMPLE_POSTAL_CODES" toColID="tblCol_bda2ae4447ef4496b81ac3e9ab3abaa6" />
+    <Link partId="16" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.3" toItemID="tbl_SAMPLE_POSTAL_CODES" toColID="tblCol_1d98d87e3643455fa57bb374dfcad26f" />
+    <Link partId="17" fromNodeOrder="0" fromItemID="f_8" fromColID="fo_8.4" toItemID="tbl_SAMPLE_POSTAL_CODES" toColID="tblCol_6b3c5532a10a43788a98920747ee17da" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="SAMPLE_POSTAL_CODES.popSAMPLE_POSTAL_CODES.k2tablePop.xml" lastPartID="18">
+      <TableNode partID="0" name="SAMPLE_POSTAL_CODES" pos="404 30" width="253" />
+      <FunctionMapNode id="0" R0="1" R1="2" R2="3" R3="4" R4="5" partID="8" topLabel="getSamplePostalCodes (8)" pos="37 57.5091133" size="203 85.45572" isRoot="true">
+        <KFunction>{"Name":"getSamplePostalCodes","ID":"f_8","Category":"Masking","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"Retrieves the list of Zip Codes","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[],"outputParams":[{"Name":"zip","ID":"fo_8.0","Index":0,"DataType":"String","Comment":""},{"Name":"city","ID":"fo_8.1","Index":1,"DataType":"String","Comment":""},{"Name":"state","ID":"fo_8.2","Index":2,"DataType":"String","Comment":""},{"Name":"latitude","ID":"fo_8.3","Index":3,"DataType":"String","Comment":""},{"Name":"longitude","ID":"fo_8.4","Index":4,"DataType":"String","Comment":""}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="14" from="2" to="6" pointsArr="240 90.70963 250 90.70963 394 73.109375 404 73.109375" fromNodePartID="8" fromNodeColumnName="city" toNodePartID="0" toNodeColumnName="CITY" />
+      <Link partID="15" from="3" to="7" pointsArr="240 102.782547 250 102.782547 394 85.18229 404 85.18229" fromNodePartID="8" fromNodeColumnName="state" toNodePartID="0" toNodeColumnName="STATE" />
+      <Link partID="16" from="4" to="8" pointsArr="240 114.855461 250 114.855461 394 97.2552 404 97.2552" fromNodePartID="8" fromNodeColumnName="latitude" toNodePartID="0" toNodeColumnName="LATITUDE" />
+      <Link partID="17" from="5" to="9" pointsArr="240 126.928375 250 126.928375 394 109.328117 404 109.328117" fromNodePartID="8" fromNodeColumnName="longitude" toNodePartID="0" toNodeColumnName="LONGITUDE" />
+      <Link partID="18" from="1" to="10" pointsArr="240 78.63672 250 78.63672 394 61.0364571 404 61.0364571" fromNodePartID="8" fromNodeColumnName="zip" toNodePartID="0" toNodeColumnName="POSTAL_CODE" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>

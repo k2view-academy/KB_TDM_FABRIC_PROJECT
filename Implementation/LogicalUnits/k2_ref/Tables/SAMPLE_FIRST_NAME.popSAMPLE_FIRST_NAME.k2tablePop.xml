@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TablePopulationObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ID>popSAMPLE_FIRST_NAME</ID>
+  <PopulationObjectName>popSAMPLE_FIRST_NAME</PopulationObjectName>
+  <TableName>SAMPLE_FIRST_NAME</TableName>
+  <RootItemID>f_4</RootItemID>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <TruncateBeforeSync>false</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <SimpleObject>false</SimpleObject>
+  <IidFinderProp />
+  <InputArguments />
+  <ItemsList>
+    <Item xsi:type="FunctionDiagramItemDataSave" id="f_4" name="getSampleFirstNames" nodeOrder="0" module="Function" mapObjectModule="Function" fileName="getSampleFirstNames.k2function.xml">
+      <InputsList />
+      <OutputsList>
+        <Output id="fo_4.0" name="FIRST_NAME" />
+      </OutputsList>
+    </Item>
+  </ItemsList>
+  <LinksList>
+    <Link partId="6" fromNodeOrder="0" fromItemID="f_4" fromColID="fo_4.0" toItemID="tbl_SAMPLE_FIRST_NAME" toColID="tblCol_0a3819c966504c6c9f0e2f9e2318c7b8" />
+  </LinksList>
+  <ModeKeyColumnIDs />
+  <DiagramGraph>
+    <Graph name="SAMPLE_FIRST_NAME.popSAMPLE_FIRST_NAME.k2tablePop.xml" lastPartID="6">
+      <TableNode partID="0" name="SAMPLE_FIRST_NAME" pos="404 30" width="253" />
+      <FunctionMapNode id="0" R0="1" partID="4" topLabel="getSampleFirstNames (4)" pos="81 55.5091171" size="203 45.09114" isRoot="true">
+        <KFunction>{"Name":"getSampleFirstNames","ID":"f_4","Category":"Masking","Version":"6.1.1.5","FunctionLevel":0,"FunctionType2":1,"ReturnType":"void","RegisterAsLuDbFunction":false,"DecisionFunction":false,"RequiresLuReference":false,"Desc":"Retrieves the list of sample first names from the trnSAMPLE_FIRST_NAME","Language":1,"FunctionBody":"","IsRootFunction":true,"inputParams":[],"outputParams":[{"Name":"FIRST_NAME","ID":"fo_4.0","Index":0,"DataType":"String"}],"HideMethodInUi":false}</KFunction>
+      </FunctionMapNode>
+      <Link partID="6" from="1" to="2" pointsArr="284 80.60026 294 80.60026 394 61.0364571 404 61.0364571" fromNodePartID="4" fromNodeColumnName="FIRST_NAME" toNodePartID="0" toNodeColumnName="FIRST_NAME" />
+    </Graph>
+  </DiagramGraph>
+</TablePopulationObject>
