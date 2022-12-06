@@ -1,0 +1,194 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Now1",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "From Date - Number of Days",
+                            "actorType": {
+                                "parentType": "MaskingRandomNumber",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "from_date"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": -1000
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": -500
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "To Date - Number of Days",
+                            "actorType": {
+                                "parentType": "MaskingRandomNumber",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "from_date"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": -500
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": -100
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "From Date",
+                            "actorType": {
+                                "parentType": "DateAdd",
+                                "inputs": [
+                                    {
+                                        "name": "days",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "To Date",
+                            "actorType": {
+                                "parentType": "DateAdd",
+                                "inputs": [
+                                    {
+                                        "name": "days",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Now1",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "From Date",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Now1",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "To Date",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "From Date - Number of Days",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "From Date",
+                "name": "days"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "To Date - Number of Days",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "To Date",
+                "name": "days"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "From Date",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "from_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "To Date",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "to_date"
+            }
+        }
+    ]
+}

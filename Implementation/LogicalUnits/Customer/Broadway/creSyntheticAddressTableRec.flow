@@ -236,19 +236,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "Reset enable_sequences",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "enable_sequences"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -400,6 +387,19 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Reset enable_sequences",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences"
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]

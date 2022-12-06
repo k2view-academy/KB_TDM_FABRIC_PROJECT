@@ -1,0 +1,113 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Random Number - 15 digits",
+                            "actorType": {
+                                "parentType": "MaskingRandomNumber",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "imsi"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "lruCacheSize",
+                                        "const": 100000000000000
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": 999999999999999
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": 999
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Random Number - 16 digits",
+                            "actorType": {
+                                "parentType": "MaskingRandomNumber",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "sim"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": 1000000000000000
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": 10000000000000000
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Random Number - 15 digits",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "imsi"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Random Number - 16 digits",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "sim"
+            }
+        }
+    ]
+}

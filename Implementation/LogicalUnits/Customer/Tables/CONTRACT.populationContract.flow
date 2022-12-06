@@ -177,7 +177,52 @@
                     ],
                     "isLast": 0,
                     "isTransactional": false,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "InnerFlow1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "creSyntheticContractTableRec"
+                                    },
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "customerRecord",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "ssn": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -320,6 +365,20 @@
         },
         {
             "leftPort": {
+                "actor": "Move the parent row to array",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "customer_id"
+            },
+            "iterate": "First",
+            "path": [
+                "customer_id"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "FabricSetRead1",
                 "name": "result"
             },
@@ -332,6 +391,17 @@
             "leftPort": {
                 "actor": "Query",
                 "name": "result"
+            },
+            "rightPort": {
+                "actor": "CONTRACT",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "customerRecord"
             },
             "rightPort": {
                 "actor": "CONTRACT",
