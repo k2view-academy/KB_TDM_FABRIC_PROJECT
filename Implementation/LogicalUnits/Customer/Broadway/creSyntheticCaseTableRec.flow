@@ -172,7 +172,7 @@
         {
             "stages": [
                 {
-                    "name": "Open a Loop for Number of Open Cases",
+                    "name": "Open a Loop for Open Cases",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -250,18 +250,7 @@
                                     }
                                 ]
                             }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Build Records",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
+                        },
                         {
                             "name": "Const1",
                             "actorType": {
@@ -281,7 +270,18 @@
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
                         {
                             "name": "ArrayConcat1",
                             "actorType": {
@@ -312,7 +312,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ArrayToMap1",
+                            "name": "ArrayToMap - Open Cases",
                             "actorType": {
                                 "parentType": "ArrayToMap",
                                 "inputs": [
@@ -363,7 +363,285 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "ArrayBuilder2",
+                            "name": "ArrayBuilder - open cases",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ACTIVITY_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "CASE_ID": {
+                                                        "type": "integer"
+                                                    },
+                                                    "CASE_DATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "CASE_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "STATUS": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Open a loop for close cases",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ForLoop2",
+                            "actorType": {
+                                "parentType": "ForLoop",
+                                "inputs": [
+                                    {
+                                        "name": "from",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Case ID__1",
+                            "actorType": {
+                                "parentType": "MaskingSequence",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "case_id"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "sequenceInterface",
+                                        "const": "IN-MEMORY"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Closed Status",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Closed"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayConcat2",
+                            "actorType": {
+                                "parentType": "ArrayConcat",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayToMap2 - Closed Cases",
+                            "actorType": {
+                                "parentType": "ArrayToMap",
+                                "inputs": [
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "ACTIVITY_ID",
+                                            "CASE_ID",
+                                            "CASE_DATE",
+                                            "CASE_TYPE",
+                                            "STATUS"
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Aggregate the map to array - closed cases",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder- closed cases",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ACTIVITY_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "CASE_ID": {
+                                                        "type": "integer"
+                                                    },
+                                                    "CASE_DATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "CASE_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "STATUS": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add the Maps to the Array ans Close the Activity Loop",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder- output results",
                             "actorType": {
                                 "parentType": "ArrayBuilder",
                                 "inputs": [],
@@ -395,16 +673,6 @@
                             }
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Close the Activity Loop",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": []
                 }
             ]
         },
@@ -446,6 +714,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get the Number of Records  - Close  Cases__1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ForLoop2",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Activity ID",
                 "name": "value"
             },
@@ -465,6 +743,17 @@
                 "name": "params"
             },
             "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Activity ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat2",
+                "name": "input"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -497,11 +786,37 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat2",
+                "name": "input"
+            },
+            "iterate": "First",
+            "path": [
+                "ACTIVITY_DATE"
+            ],
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
                 "actor": "InnerFlow1",
                 "name": "caseType"
             },
             "rightPort": {
                 "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "caseType"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat2",
                 "name": "input"
             },
             "arrayPosition": 3
@@ -545,20 +860,94 @@
                 "name": "array"
             },
             "rightPort": {
-                "actor": "ArrayToMap1",
+                "actor": "ArrayToMap - Open Cases",
                 "name": "values"
             }
         },
         {
             "leftPort": {
-                "actor": "ArrayToMap1",
+                "actor": "ArrayToMap - Open Cases",
                 "name": "map"
             },
             "rightPort": {
-                "actor": "ArrayBuilder2",
+                "actor": "ArrayBuilder - open cases",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder - open cases",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder- output results",
                 "name": "input"
             },
             "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "ForLoop2",
+                "name": "i"
+            },
+            "rightPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Case ID__1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat2",
+                "name": "input"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Closed Status",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat2",
+                "name": "input"
+            },
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayConcat2",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "ArrayToMap2 - Closed Cases",
+                "name": "values"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap2 - Closed Cases",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder- closed cases",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder- closed cases",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder- output results",
+                "name": "input"
+            },
+            "arrayPosition": 1
         },
         {
             "leftPort": {
@@ -572,7 +961,7 @@
         },
         {
             "leftPort": {
-                "actor": "ArrayBuilder2",
+                "actor": "ArrayBuilder- output results",
                 "name": "array"
             },
             "rightPort": {

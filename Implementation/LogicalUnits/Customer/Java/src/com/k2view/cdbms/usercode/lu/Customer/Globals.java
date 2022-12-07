@@ -23,9 +23,9 @@ public class Globals extends SharedGlobals {
 
 
 	@category("DATA MANUFACTURING")
-	public static String NUM_OF_OPEN_CASES_PER_ACTIVITY = "1";
+	public static String NUM_OF_OPEN_CASES_PER_ACTIVITY = "2";
 	@category("DATA MANUFACTURING")
-	public static String NUM_OF_CLOSED_CASES_PER_ACTIVITY = "1";
+	public static String NUM_OF_CLOSED_CASES_PER_ACTIVITY = "3";
 
 	
 
