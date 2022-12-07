@@ -234,6 +234,9 @@
         <Global name="NUM_OF_ACTIVITIES" luName="Customer">
           <Value>2</Value>
         </Global>
+        <Global name="NUM_OF_CASES_PER_ACTIVITY" luName="Customer">
+          <Value>1</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
         </Global>
@@ -547,6 +550,9 @@
         </Global>
         <Global name="NUM_OF_ACTIVITIES" luName="Customer">
           <Value>2</Value>
+        </Global>
+        <Global name="NUM_OF_CASES_PER_ACTIVITY" luName="Customer">
+          <Value>1</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
@@ -862,6 +868,9 @@
         <Global name="NUM_OF_ACTIVITIES" luName="Customer">
           <Value>2</Value>
         </Global>
+        <Global name="NUM_OF_CASES_PER_ACTIVITY" luName="Customer">
+          <Value>1</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
         </Global>
@@ -1176,6 +1185,9 @@
         <Global name="NUM_OF_ACTIVITIES" luName="Customer">
           <Value>2</Value>
         </Global>
+        <Global name="NUM_OF_CASES_PER_ACTIVITY" luName="Customer">
+          <Value>1</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
         </Global>
@@ -1489,6 +1501,9 @@
         </Global>
         <Global name="NUM_OF_ACTIVITIES" luName="Customer">
           <Value>2</Value>
+        </Global>
+        <Global name="NUM_OF_CASES_PER_ACTIVITY" luName="Customer">
+          <Value>1</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Orders">
           <Value>orders</Value>
