@@ -31,7 +31,8 @@
   <TablesProperties>
     <TableProperties name="ACTIVITY">
       <Populations>
-        <Population name="query_main_ACTIVITY" order="4" disabled="false" populationType="Regular" />
+        <Population name="query_main_ACTIVITY" order="4" disabled="true" populationType="Regular" />
+        <Population name="populationActivity.flow" order="4" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="ADDRESS">
@@ -148,7 +149,7 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
@@ -160,11 +161,15 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="CONTRACT" populationObjectName="populationContract.flow" column="CUSTOMER_ID" columnId="tblCol_6bfceb1af6e247ee953ca5cdc79a498b" />
+      <To tableType="TableObject" table="ACTIVITY" populationObjectName="populationActivity.flow" column="CUSTOMER_ID" columnId="tblCol_1b54c13678294f9b80ec6fbc4e415392" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="ADDRESS" populationObjectName="populationAddress.flow" column="CUSTOMER_ID" columnId="tblCol_201fcee2200d46c4b7364e709e43868b" />
+      <To tableType="TableObject" table="CONTRACT" populationObjectName="populationContract.flow" column="customer_id" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="ADDRESS" populationObjectName="populationAddress.flow" column="customer_id" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CASES" column="CASE_ID" columnId="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
@@ -229,7 +234,7 @@
         <Node name="CASES" pos="1245 293.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="orders" pos="1245 61.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="CONTRACT" pos="943 36.545578" size="257 152" listGroupSize="250 100" viewType="Table" />
-        <Node name="ACTIVITY" pos="943 236.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="ACTIVITY" pos="943 236.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
         <Node name="CUSTOMER" pos="641 259.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Node name="collection" pos="1305 433" size="257 136" listGroupSize="250 100" viewType="Table" />

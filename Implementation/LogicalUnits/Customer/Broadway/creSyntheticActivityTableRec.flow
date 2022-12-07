@@ -1,0 +1,617 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get the Number of Records",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "NUM_OF_ACTIVITIES"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set enable_sequence to true",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Customer ID",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Customer ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get the latest contract to_date",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Max Contract End Date",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select max(to_date) max_to_date\r\nFrom Customer.CONTRACT"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Open a Loop for Number of Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ForLoop1",
+                            "actorType": {
+                                "parentType": "ForLoop",
+                                "inputs": [
+                                    {
+                                        "name": "from",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Activity Text",
+                            "actorType": {
+                                "parentType": "ConstTable",
+                                "inputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Activity_Text": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "Activity_Text": "The customer asked to check the latest invoice"
+                                            },
+                                            {
+                                                "Activity_Text": "The customer complained about poor internet speed"
+                                            },
+                                            {
+                                                "Activity_Text": "Upgrade request"
+                                            },
+                                            {
+                                                "Activity_Text": "The customer asked to change their family plan"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Activity_Text": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MaskingRandomNumber1",
+                            "actorType": {
+                                "parentType": "MaskingRandomNumber",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "days"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": -200
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": -2
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Synthetic Values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Activity ID",
+                            "actorType": {
+                                "parentType": "MaskingSequence",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "activity_id"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "sequenceInterface",
+                                        "const": "IN-MEMORY"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "DateAdd1",
+                            "actorType": {
+                                "parentType": "DateAdd",
+                                "inputs": [
+                                    {
+                                        "name": "days",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MaskingWithCollection1",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "activity_note"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "ArrayConcat1",
+                            "actorType": {
+                                "parentType": "ArrayConcat",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Array to Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayToMap1",
+                            "actorType": {
+                                "parentType": "ArrayToMap",
+                                "inputs": [
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "customer_id",
+                                            "activity_id",
+                                            "activity_date",
+                                            "activity_note"
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add the map to array",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder2",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "ssn": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Reset enable_sequence",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get the Number of Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ForLoop1",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Customer ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Get Max Contract End Date",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DateAdd1",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ForLoop1",
+                "name": "i"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Activity Text",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "collection"
+            },
+            "path": [
+                "Activity_Text"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingRandomNumber1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DateAdd1",
+                "name": "days"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Activity ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "DateAdd1",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayConcat1",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "ArrayToMap1",
+                "name": "values"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder2",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_id"
+            },
+            "rightPort": {
+                "actor": "Customer ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder2",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "customerRecord"
+            }
+        }
+    ]
+}

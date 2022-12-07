@@ -18,6 +18,9 @@ public class Globals extends SharedGlobals {
 	@category("DATA MANUFACTURING")
 	public static String NUM_OF_CONTRACTS = "3";
 
+	@category("DATA MANUFACTURING")
+	public static String NUM_OF_ACTIVITIES = "2";
+
 	
 
 
