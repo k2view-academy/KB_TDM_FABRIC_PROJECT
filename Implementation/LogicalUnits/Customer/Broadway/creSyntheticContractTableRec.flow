@@ -297,7 +297,8 @@
                                             "contract_ref_id",
                                             "associated_line",
                                             "contract_description",
-                                            "from_date, to_date",
+                                            "from_date",
+                                            "to_date",
                                             "associated_line_fmt"
                                         ]
                                     }

@@ -59,8 +59,8 @@
     </TableProperties>
     <TableProperties name="CONTRACT">
       <Populations>
-        <Population name="query_CONTRACT" order="4" disabled="false" populationType="Regular" />
-        <Population name="populationContract.flow" order="4" disabled="true" populationType="Flow" />
+        <Population name="query_CONTRACT" order="4" disabled="true" populationType="Regular" />
+        <Population name="populationContract.flow" order="4" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="CUSTOMER">

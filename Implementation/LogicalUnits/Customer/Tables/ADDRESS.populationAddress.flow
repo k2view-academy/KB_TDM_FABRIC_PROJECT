@@ -74,7 +74,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {
+                                                    "customer_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -395,7 +395,7 @@
             },
             "iterate": "First",
             "path": [
-                "CUSTOMER_ID"
+                "customer_id"
             ]
         },
         {
