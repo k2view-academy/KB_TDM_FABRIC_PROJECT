@@ -63,7 +63,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {
+                                                    "customer_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -197,7 +197,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "customerRecord",
+                                        "name": "activityRecord",
                                         "schema": {
                                             "type": "array",
                                             "items": {
@@ -350,7 +350,7 @@
             },
             "iterate": "First",
             "path": [
-                "CUSTOMER_ID"
+                "customer_id"
             ]
         },
         {
@@ -377,7 +377,7 @@
         {
             "leftPort": {
                 "actor": "InnerFlow1",
-                "name": "customerRecord"
+                "name": "activityRecord"
             },
             "rightPort": {
                 "actor": "ACTIVITY",

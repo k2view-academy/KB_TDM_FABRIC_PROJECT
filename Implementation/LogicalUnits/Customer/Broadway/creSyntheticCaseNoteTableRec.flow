@@ -3,23 +3,10 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Init",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "Get the Number of Records",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "NUM_OF_ACTIVITIES"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Set enable_sequence to true",
                             "actorType": {
@@ -36,20 +23,9 @@
                                 ],
                                 "outputs": []
                             }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Set Customer ID",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
+                        },
                         {
-                            "name": "Customer ID",
+                            "name": "Case ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -78,14 +54,14 @@
         {
             "stages": [
                 {
-                    "name": "Get the latest contract to_date",
+                    "name": "Get Related Activity of the Parent Case",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Max Contract End Date",
+                            "name": "DbFetchFirstRow1",
                             "actorType": {
-                                "parentType": "DbFetchField",
+                                "parentType": "DbFetchFirstRow",
                                 "inputs": [
                                     {
                                         "name": "interface",
@@ -93,106 +69,27 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(CONTRACT.TO_DATE) As max_to_date\r\nFrom Customer.CONTRACT"
+                                        "const": "Select act.ACTIVITY_DATE,\r\n  act.ACTIVITY_NOTE\r\nFrom ACTIVITY act,\r\n  CASES ca\r\nWhere ca.ACTIVITY_ID = act.ACTIVITY_ID And ca.CASE_ID = ?"
                                     }
                                 ],
                                 "outputs": [
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "object",
+                                            "properties": {
+                                                "ACTIVITY_DATE": {
+                                                    "type": "string"
+                                                },
+                                                "ACTIVITY_NOTE": {
+                                                    "type": "string"
+                                                }
+                                            }
                                         }
                                     }
                                 ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Open a Loop for Number of Records",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ForLoop1",
-                            "actorType": {
-                                "parentType": "ForLoop",
-                                "inputs": [
-                                    {
-                                        "name": "from",
-                                        "const": 0
-                                    }
-                                ],
-                                "outputs": []
                             }
                         },
-                        {
-                            "name": "Activity Text",
-                            "actorType": {
-                                "parentType": "ConstTable",
-                                "inputs": [
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "Activity_Text": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        "const": [
-                                            {
-                                                "Activity_Text": "The customer asked to check the latest invoice"
-                                            },
-                                            {
-                                                "Activity_Text": "The customer complained about poor internet speed"
-                                            },
-                                            {
-                                                "Activity_Text": "Upgrade request"
-                                            },
-                                            {
-                                                "Activity_Text": "The customer asked to change their family plan"
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "table",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "Activity_Text": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
                         {
                             "name": "MaskingRandomNumber1",
                             "actorType": {
@@ -211,12 +108,8 @@
                                         "const": "MASK_NO_CACHE"
                                     },
                                     {
-                                        "name": "minimum",
-                                        "const": -200
-                                    },
-                                    {
                                         "name": "maximum",
-                                        "const": -2
+                                        "const": 30
                                     }
                                 ],
                                 "outputs": [
@@ -236,18 +129,144 @@
         {
             "stages": [
                 {
-                    "name": "Build Synthetic Values",
+                    "name": "Check Activity Note",
+                    "dependsOnList": [
+                        "Get Related Activity of the Parent Case"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Last Invoice Data",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "The customer asked to check the latest invoice"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Get Related Activity of the Parent Case"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Change Family Plan",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "The customer asked to change their family plan"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Check Activity Note"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Case Note - Refund",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "The customer got a refund of 50$"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Case Note - Change Plan",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "I've offered a new plan for the customer"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Activity ID",
+                            "name": "Note ID",
                             "actorType": {
                                 "parentType": "MaskingSequence",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
-                                        "const": "activity_id"
+                                        "const": "note_id"
                                     },
                                     {
                                         "name": "interface",
@@ -280,34 +299,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "MaskingWithCollection1",
-                            "actorType": {
-                                "parentType": "MaskingWithCollection",
-                                "inputs": [
-                                    {
-                                        "name": "maskingId",
-                                        "const": "activity_note"
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "NONE"
-                                    },
-                                    {
-                                        "name": "onEmpty",
-                                        "const": "MASK_NO_CACHE"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -316,30 +307,10 @@
         {
             "stages": [
                 {
-                    "name": "Build Records",
+                    "name": "Build Record",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
                         {
                             "name": "ArrayConcat1",
                             "actorType": {
@@ -365,7 +336,7 @@
         {
             "stages": [
                 {
-                    "name": "Array to Map",
+                    "name": "Move Record to Map",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -377,10 +348,10 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "customer_id",
-                                            "activity_id",
-                                            "activity_date",
-                                            "activity_note"
+                                            "CASE_ID",
+                                            "NOTE_ID",
+                                            "NOTE_DATE",
+                                            "NOTE_TEXT"
                                         ]
                                     }
                                 ],
@@ -415,7 +386,7 @@
         {
             "stages": [
                 {
-                    "name": "Add the map to array",
+                    "name": "Build Output",
                     "dependsOnList": [],
                     "isLast": 1,
                     "actors": [
@@ -458,7 +429,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Reset Enable Sequences",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -483,57 +454,67 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get the Number of Records",
-                "name": "result"
+                "actor": "Case ID",
+                "name": "value"
             },
             "rightPort": {
-                "actor": "ForLoop1",
-                "name": "to"
-            }
+                "actor": "DbFetchFirstRow1",
+                "name": "params"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "Customer ID",
+                "actor": "Case ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "ArrayConcat1",
                 "name": "input"
             },
+            "iterate": "Iterate",
             "arrayPosition": 0
         },
         {
             "leftPort": {
-                "actor": "Get Max Contract End Date",
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Last Invoice Data",
+                "name": "a"
+            },
+            "iterate": "First",
+            "path": [
+                "ACTIVITY_NOTE"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "DateAdd1",
                 "name": "date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ForLoop1",
-                "name": "i"
             },
-            "rightPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Activity Text",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "MaskingWithCollection1",
-                "name": "collection"
-            },
+            "iterate": "First",
             "path": [
-                "Activity_Text"
+                "ACTIVITY_DATE"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Change Family Plan",
+                "name": "a"
+            },
+            "iterate": "First",
+            "path": [
+                "ACTIVITY_NOTE"
             ]
         },
         {
@@ -548,7 +529,29 @@
         },
         {
             "leftPort": {
-                "actor": "Activity ID",
+                "actor": "Case Note - Refund",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "Case Note - Change Plan",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayConcat1",
+                "name": "input"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "Note ID",
                 "name": "value"
             },
             "rightPort": {
@@ -567,17 +570,6 @@
                 "name": "input"
             },
             "arrayPosition": 2
-        },
-        {
-            "leftPort": {
-                "actor": "MaskingWithCollection1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "ArrayConcat1",
-                "name": "input"
-            },
-            "arrayPosition": 3
         },
         {
             "leftPort": {
@@ -603,10 +595,10 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "customer_id"
+                "name": "case_id"
             },
             "rightPort": {
-                "actor": "Customer ID",
+                "actor": "Case ID",
                 "name": "value"
             }
         },
@@ -617,7 +609,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "activityRecord"
+                "name": "CaseNoteRecord"
             }
         }
     ]

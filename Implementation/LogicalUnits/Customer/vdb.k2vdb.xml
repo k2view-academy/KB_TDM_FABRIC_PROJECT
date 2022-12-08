@@ -49,7 +49,8 @@
     </TableProperties>
     <TableProperties name="CASE_NOTE">
       <Populations>
-        <Population name="query_main_CASE_NOTE" order="6" disabled="false" populationType="Regular" />
+        <Population name="query_main_CASE_NOTE" order="6" disabled="true" populationType="Regular" />
+        <Population name="populationCaseNote.flow" order="6" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="collection">
@@ -161,12 +162,16 @@
       <To tableType="TableObject" table="CUSTOMER" populationObjectName="popCustomer.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
+      <From tableType="TableObject" table="CASES" column="CASE_ID" columnId="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
+      <To tableType="TableObject" table="CASE_NOTE" populationObjectName="populationCaseNote.flow" column="CASE_ID" columnId="tblCol_40efc583e6d84e158a9d962682903819" />
+    </Relation>
+    <Relation>
       <From tableType="TableObject" table="ACTIVITY" column="ACTIVITY_ID" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
-      <To tableType="TableObject" table="CASES" populationObjectName="populationCase.flow" column="ACTIVITY_ID" columnId="tblCol_daa1771ac711418c831f703d1ef5775f" />
+      <To tableType="TableObject" table="CASES" populationObjectName="populationCase.flow" column="activity_id" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-      <To tableType="TableObject" table="ACTIVITY" populationObjectName="populationActivity.flow" column="CUSTOMER_ID" columnId="tblCol_1b54c13678294f9b80ec6fbc4e415392" />
+      <To tableType="TableObject" table="ACTIVITY" populationObjectName="populationActivity.flow" column="customer_id" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="CUSTOMER" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
@@ -233,16 +238,16 @@
         <Node name="TDM_LU_TYPE_RELATION_EID" pos="349 236.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="LU_PARAMS" pos="349 636.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="637 17.4544334" size="1171 575.0912" wasexpanded="false" expanded="true">
+      <Group name="Source Tables" pos="637 17.4544334" size="1155 575.0912" wasexpanded="false" expanded="true">
         <Node name="ADDRESS" pos="943 436.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
-        <Node name="CASE_NOTE" pos="1547 286.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CASE_NOTE" pos="1531 278.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
         <Node name="CASES" pos="1245 277.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
         <Node name="orders" pos="1245 61.545578" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="CONTRACT" pos="943 36.545578" size="257 152" listGroupSize="250 100" viewType="Table" />
         <Node name="ACTIVITY" pos="943 236.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
         <Node name="CUSTOMER" pos="641 259.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Node name="collection" pos="1305 433" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="collection" pos="1246 442" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="Target Tables for Delete " pos="642 629.9544" size="869 530.0911" wasexpanded="false" expanded="true">
         <Node name="tar_collection" pos="989 1020.04553" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CONTRACT" pos="948 649.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
