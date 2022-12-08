@@ -189,10 +189,12 @@
                                     },
                                     {
                                         "name": "activity_id",
+                                        "const": "",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "mandatory": false
+                                        "mandatory": false,
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [

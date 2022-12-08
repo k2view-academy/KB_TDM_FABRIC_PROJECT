@@ -582,6 +582,46 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "ArrayToMap - Open Cases__1",
+                            "actorType": {
+                                "parentType": "ArrayToMap",
+                                "inputs": [
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "ACTIVITY_ID",
+                                            "CASE_ID",
+                                            "CASE_DATE",
+                                            "CASE_TYPE",
+                                            "STATUS"
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -636,43 +676,10 @@
         {
             "stages": [
                 {
-                    "name": "Add the Maps to the Array ans Close the Activity Loop",
+                    "name": "Close the Activity Loop",
                     "dependsOnList": [],
                     "isLast": 1,
-                    "actors": [
-                        {
-                            "name": "ArrayBuilder- output results",
-                            "actorType": {
-                                "parentType": "ArrayBuilder",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "array",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "ssn": {
-                                                        "type": "string"
-                                                    },
-                                                    "first_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "last_name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -694,6 +701,41 @@
                                     }
                                 ],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Build Output Results",
+                            "actorType": {
+                                "parentType": "ArrayConcat",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ACTIVITY_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "CASE_ID": {
+                                                        "type": "integer"
+                                                    },
+                                                    "CASE_DATE": {
+                                                        "type": "string"
+                                                    },
+                                                    "CASE_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "STATUS": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -808,6 +850,7 @@
                 "actor": "ArrayConcat1",
                 "name": "input"
             },
+            "iterate": "Iterate",
             "arrayPosition": 3
         },
         {
@@ -819,6 +862,7 @@
                 "actor": "ArrayConcat2",
                 "name": "input"
             },
+            "iterate": "Iterate",
             "arrayPosition": 3
         },
         {
@@ -880,10 +924,10 @@
                 "name": "array"
             },
             "rightPort": {
-                "actor": "ArrayBuilder- output results",
+                "actor": "Build Output Results",
                 "name": "input"
             },
-            "arrayPosition": 0
+            "arrayPosition": 1
         },
         {
             "leftPort": {
@@ -944,10 +988,10 @@
                 "name": "array"
             },
             "rightPort": {
-                "actor": "ArrayBuilder- output results",
+                "actor": "Build Output Results",
                 "name": "input"
             },
-            "arrayPosition": 1
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -961,7 +1005,7 @@
         },
         {
             "leftPort": {
-                "actor": "ArrayBuilder- output results",
+                "actor": "Build Output Results",
                 "name": "array"
             },
             "rightPort": {
