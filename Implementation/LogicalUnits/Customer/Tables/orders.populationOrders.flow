@@ -42,7 +42,7 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "customer_id",
+                                        "name": "contract_id",
                                         "schema": {},
                                         "mandatory": false
                                     }
@@ -74,7 +74,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {
+                                                    "contract_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -169,50 +169,14 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "CRM_DB"
+                                        "const": "ORDERS_DB"
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select *\r\nFrom public.address"
+                                        "const": "Select *\r\nFrom public.orders"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "address_id": {
-                                                        "type": "integer"
-                                                    },
-                                                    "street_address_1": {
-                                                        "type": "string"
-                                                    },
-                                                    "street_address_2": {
-                                                        "type": "string"
-                                                    },
-                                                    "city": {
-                                                        "type": "string"
-                                                    },
-                                                    "zip": {
-                                                        "type": "string"
-                                                    },
-                                                    "state": {
-                                                        "type": "string"
-                                                    },
-                                                    "country": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -232,10 +196,10 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "creSyntheticAddressTableRec"
+                                        "const": "creSyntheticOrderIDs"
                                     },
                                     {
-                                        "name": "customer_id",
+                                        "name": "contract_id",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -244,7 +208,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "addressRecord",
+                                        "name": "ordersRecord",
                                         "schema": {
                                             "type": "array",
                                             "items": {
@@ -253,31 +217,13 @@
                                                     "customer_id": {
                                                         "type": "string"
                                                     },
-                                                    "address_id": {
+                                                    "ssn": {
                                                         "type": "string"
                                                     },
-                                                    "street_address_1": {
+                                                    "first_name": {
                                                         "type": "string"
                                                     },
-                                                    "city": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "zip": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "state": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "string"
-                                                        }
-                                                    },
-                                                    "country": {
+                                                    "last_name": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -309,7 +255,7 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "ADDRESS",
+                            "name": "orders",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -328,14 +274,11 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "CUSTOMER_ID",
-                                            "ADDRESS_ID",
-                                            "STREET_ADDRESS_1",
-                                            "STREET_ADDRESS_2",
-                                            "CITY",
-                                            "ZIP",
-                                            "STATE",
-                                            "COUNTRY"
+                                            "contract_id",
+                                            "order_id",
+                                            "order_type",
+                                            "order_date",
+                                            "order_status"
                                         ]
                                     },
                                     {
@@ -349,36 +292,29 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "CUSTOMER_ID",
-                                        "schema": {}
+                                        "name": "contract_id",
+                                        "schema": {},
+                                        "mandatory": false
                                     },
                                     {
-                                        "name": "ADDRESS_ID",
-                                        "schema": {}
+                                        "name": "order_id",
+                                        "schema": {},
+                                        "mandatory": false
                                     },
                                     {
-                                        "name": "STREET_ADDRESS_1",
-                                        "schema": {}
+                                        "name": "order_type",
+                                        "schema": {},
+                                        "mandatory": false
                                     },
                                     {
-                                        "name": "STREET_ADDRESS_2",
-                                        "schema": {}
+                                        "name": "order_date",
+                                        "schema": {},
+                                        "mandatory": false
                                     },
                                     {
-                                        "name": "CITY",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "ZIP",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "STATE",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "COUNTRY",
-                                        "schema": {}
+                                        "name": "order_status",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -427,11 +363,10 @@
             },
             "rightPort": {
                 "actor": "InnerFlow1",
-                "name": "customer_id"
+                "name": "contract_id"
             },
-            "iterate": "First",
             "path": [
-                "customer_id"
+                "contract_id"
             ]
         },
         {
@@ -450,7 +385,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "ADDRESS",
+                "actor": "orders",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -458,10 +393,10 @@
         {
             "leftPort": {
                 "actor": "InnerFlow1",
-                "name": "addressRecord"
+                "name": "ordersRecord"
             },
             "rightPort": {
-                "actor": "ADDRESS",
+                "actor": "orders",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -479,11 +414,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "customer_id"
+                "name": "contract_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "customer_id"
+                "name": "contract_id"
             }
         },
         {
@@ -492,7 +427,7 @@
                 "name": "schema"
             },
             "rightPort": {
-                "actor": "ADDRESS",
+                "actor": "orders",
                 "name": "schema"
             }
         },
@@ -502,7 +437,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "ADDRESS",
+                "actor": "orders",
                 "name": "table"
             }
         }

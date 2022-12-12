@@ -14,9 +14,24 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
                                         "name": "case_id",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "status",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -46,7 +61,7 @@
         {
             "stages": [
                 {
-                    "name": "Move the Parent Rows to Array",
+                    "name": "Stage 2",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -63,7 +78,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CASE_ID": {
+                                                    "customer_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -80,75 +95,8 @@
         {
             "stages": [
                 {
-                    "name": "Get the Synthetic Mode",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FabricSetRead1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "CREATE_SYNTHETIC_ENTITY",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check the Synthetic Mode ",
-                    "dependsOnList": [
-                        "Get the Synthetic Mode"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "NotEquals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "NotEquals",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "true"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Data Manufacturing",
-                    "dependsOnList": [
-                        "Get the Synthetic Mode"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Source",
-                    "dependsOnList": [
-                        "Check the Synthetic Mode "
-                    ],
+                    "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
@@ -162,59 +110,29 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select *\r\nFrom public.contract"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Data Manufacturing"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
-                        {
-                            "name": "InnerFlow2",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "creSyntheticCaseNoteTableRec"
-                                    },
-                                    {
-                                        "name": "case_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "const": "SELECT * FROM public.cases"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "CaseNoteRecord",
+                                        "name": "result",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "ssn": {
-                                                        "type": "string"
-                                                    },
-                                                    "first_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "last_name": {
-                                                        "type": "string"
-                                                    }
+                                            "type": "object",
+                                            "properties": {
+                                                "activity_id": {
+                                                    "type": {}
+                                                },
+                                                "case_id": {
+                                                    "type": {}
+                                                },
+                                                "case_date": {
+                                                    "type": {}
+                                                },
+                                                "case_type": {
+                                                    "type": {}
+                                                },
+                                                "status": {
+                                                    "type": {}
                                                 }
                                             }
                                         }
@@ -244,7 +162,7 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "CASE_NOTE",
+                            "name": "cases",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -263,16 +181,17 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "CASE_ID",
-                                            "NOTE_ID",
-                                            "NOTE_DATE",
-                                            "NOTE_TEXT"
+                                            "activity_id",
+                                            "case_id",
+                                            "case_date",
+                                            "case_type",
+                                            "status"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "NOTE_ID"
+                                            "case_id"
                                         ]
                                     },
                                     {
@@ -280,24 +199,24 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "CASE_ID",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "activity_id",
+                                        "schema": {}
                                     },
                                     {
-                                        "name": "NOTE_ID",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "case_id",
+                                        "schema": {}
                                     },
                                     {
-                                        "name": "NOTE_DATE",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "case_date",
+                                        "schema": {}
                                     },
                                     {
-                                        "name": "NOTE_TEXT",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "case_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "status",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -341,48 +260,24 @@
         },
         {
             "leftPort": {
-                "actor": "Move the parent row to array",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "InnerFlow2",
-                "name": "case_id"
-            },
-            "path": [
-                "CASE_ID"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "NotEquals1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Query",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CASE_NOTE",
+                "actor": "cases",
                 "name": "params"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "InnerFlow2",
-                "name": "CaseNoteRecord"
+                "actor": "flowArgs",
+                "name": "activity_id"
             },
             "rightPort": {
-                "actor": "CASE_NOTE",
-                "name": "params"
-            },
-            "iterate": "Iterate"
+                "actor": "PopulationArgs",
+                "name": "activity_id"
+            }
         },
         {
             "leftPort": {
@@ -392,6 +287,36 @@
             "rightPort": {
                 "actor": "PopulationArgs",
                 "name": "case_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "case_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "case_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "case_type"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "case_type"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "status"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "status"
             }
         },
         {
@@ -410,7 +335,7 @@
                 "name": "schema"
             },
             "rightPort": {
-                "actor": "CASE_NOTE",
+                "actor": "cases",
                 "name": "schema"
             }
         },
@@ -420,7 +345,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "CASE_NOTE",
+                "actor": "cases",
                 "name": "table"
             }
         }

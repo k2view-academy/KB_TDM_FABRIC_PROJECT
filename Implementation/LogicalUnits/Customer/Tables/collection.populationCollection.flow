@@ -8,21 +8,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "activity_id",
-                                        "schema": {},
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
@@ -34,6 +19,32 @@
                                     {
                                         "name": "table",
                                         "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -63,7 +74,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "activity_id": {
+                                                    "customer_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -158,11 +169,11 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "CRM_DB"
+                                        "const": "COLLECTION_DB"
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select *\r\nFrom public.contract"
+                                        "const": "Select *\r\nFrom public.collection"
                                     }
                                 ],
                                 "outputs": []
@@ -171,7 +182,7 @@
                     ]
                 },
                 {
-                    "name": "Stage 2",
+                    "name": "Synthetic Creation Flow",
                     "dependsOnList": [
                         "Data Manufacturing"
                     ],
@@ -185,21 +196,19 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "creSyntheticCaseTableRec"
+                                        "const": "creSyntheticCollectionID"
                                     },
                                     {
-                                        "name": "activity_id",
-                                        "const": "",
+                                        "name": "customer_id",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "mandatory": false,
-                                        "isDefault": true
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "CaseRecord",
+                                        "name": "collectionRecord",
                                         "schema": {
                                             "type": "array",
                                             "items": {
@@ -246,7 +255,7 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "CASES",
+                            "name": "collection",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -265,17 +274,16 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "ACTIVITY_ID",
-                                            "CASE_ID",
-                                            "CASE_DATE",
-                                            "CASE_TYPE",
-                                            "STATUS"
+                                            "customer_id",
+                                            "collection_id",
+                                            "last_update",
+                                            "collection_status"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "CASE_ID"
+                                            "ADDRESS_ID"
                                         ]
                                     },
                                     {
@@ -283,27 +291,22 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "ACTIVITY_ID",
+                                        "name": "customer_id",
                                         "schema": {},
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "CASE_ID",
+                                        "name": "collection_id",
                                         "schema": {},
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "CASE_DATE",
+                                        "name": "last_update",
                                         "schema": {},
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "CASE_TYPE",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "STATUS",
+                                        "name": "collection_status",
                                         "schema": {},
                                         "mandatory": false
                                     }
@@ -354,10 +357,11 @@
             },
             "rightPort": {
                 "actor": "InnerFlow1",
-                "name": "activity_id"
+                "name": "customer_id"
             },
+            "iterate": "First",
             "path": [
-                "activity_id"
+                "customer_id"
             ]
         },
         {
@@ -376,7 +380,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CASES",
+                "actor": "collection",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -384,23 +388,13 @@
         {
             "leftPort": {
                 "actor": "InnerFlow1",
-                "name": "CaseRecord"
+                "name": "collectionRecord"
             },
             "rightPort": {
-                "actor": "CASES",
+                "actor": "collection",
                 "name": "params"
             },
             "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "activity_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "activity_id"
-            }
         },
         {
             "leftPort": {
@@ -415,10 +409,20 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "customer_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "customer_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "schema"
             },
             "rightPort": {
-                "actor": "CASES",
+                "actor": "collection",
                 "name": "schema"
             }
         },
@@ -428,7 +432,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "CASES",
+                "actor": "collection",
                 "name": "table"
             }
         }

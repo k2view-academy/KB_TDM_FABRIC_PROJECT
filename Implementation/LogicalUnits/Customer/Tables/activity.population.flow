@@ -15,8 +15,19 @@
                                 "inputs": [
                                     {
                                         "name": "customer_id",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_note",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -46,7 +57,7 @@
         {
             "stages": [
                 {
-                    "name": "Move the Parent Rows to Array",
+                    "name": "Stage 2",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -105,7 +116,7 @@
         {
             "stages": [
                 {
-                    "name": "Check the Synthetic Mode ",
+                    "name": "Stage 3",
                     "dependsOnList": [
                         "Get the Synthetic Mode"
                     ],
@@ -147,7 +158,7 @@
                 {
                     "name": "Source",
                     "dependsOnList": [
-                        "Check the Synthetic Mode "
+                        "Stage 3"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -162,16 +173,37 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select *\r\nFrom public.contract"
+                                        "const": "SELECT * FROM public.activity"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": {}
+                                                },
+                                                "activity_id": {
+                                                    "type": {}
+                                                },
+                                                "activity_date": {
+                                                    "type": {}
+                                                },
+                                                "activity_note": {
+                                                    "type": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
                 },
                 {
-                    "name": "Stage 2",
+                    "name": "Stage 4",
                     "dependsOnList": [
                         "Data Manufacturing"
                     ],
@@ -244,7 +276,7 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "ACTIVITY",
+                            "name": "activity",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -263,16 +295,16 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "CUSTOMER_ID",
-                                            "ACTIVITY_ID",
-                                            "ACTIVITY_DATE",
-                                            "ACTIVITY_NOTE"
+                                            "customer_id",
+                                            "activity_id",
+                                            "activity_date",
+                                            "activity_note"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "ACTIVITY_ID"
+                                            "activity_id"
                                         ]
                                     },
                                     {
@@ -280,24 +312,20 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "CUSTOMER_ID",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "customer_id",
+                                        "schema": {}
                                     },
                                     {
-                                        "name": "ACTIVITY_ID",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "activity_id",
+                                        "schema": {}
                                     },
                                     {
-                                        "name": "ACTIVITY_DATE",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "activity_date",
+                                        "schema": {}
                                     },
                                     {
-                                        "name": "ACTIVITY_NOTE",
-                                        "schema": {},
-                                        "mandatory": false
+                                        "name": "activity_note",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -369,7 +397,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "ACTIVITY",
+                "actor": "activity",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -380,7 +408,7 @@
                 "name": "activityRecord"
             },
             "rightPort": {
-                "actor": "ACTIVITY",
+                "actor": "activity",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -393,6 +421,36 @@
             "rightPort": {
                 "actor": "PopulationArgs",
                 "name": "customer_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "activity_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "activity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "activity_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "activity_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "activity_note"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "activity_note"
             }
         },
         {
@@ -411,7 +469,7 @@
                 "name": "schema"
             },
             "rightPort": {
-                "actor": "ACTIVITY",
+                "actor": "activity",
                 "name": "schema"
             }
         },
@@ -421,7 +479,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "ACTIVITY",
+                "actor": "activity",
                 "name": "table"
             }
         }

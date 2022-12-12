@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name>CASES</Name>
-  <ID>tbl_CASES</ID>
+  <Name>cases</Name>
+  <ID>tbl_cases</ID>
   <Columns>
-    <Column name="ACTIVITY_ID" id="tblCol_daa1771ac711418c831f703d1ef5775f" index="0" datatype="text" />
-    <Column name="CASE_ID" id="tblCol_716636d23e2945169513b5b2c3d5dd0f" index="1" datatype="text" mandatory="true" />
-    <Column name="CASE_DATE" id="tblCol_3b924f9331044dee86b660ba8b8fdadb" index="2" datatype="Text" />
-    <Column name="CASE_TYPE" id="tblCol_fd0c5b1c8b7f4d858634535b31c41834" index="3" datatype="Text" />
-    <Column name="STATUS" id="tblCol_7cda9cf8513946db95e2aabecc96c3a3" index="4" datatype="Text" />
+    <Column name="activity_id" id="activity_id" index="0" datatype="Integer" />
+    <Column name="case_id" id="case_id" index="1" datatype="Integer" mandatory="true" />
+    <Column name="case_date" id="case_date" index="2" datatype="Text" />
+    <Column name="case_type" id="case_type" index="3" datatype="Text" />
+    <Column name="status" id="status" index="4" datatype="Text" />
   </Columns>
   <IndexesList>
-    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="case_id" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
   <TriggersList />
 </TableObject>

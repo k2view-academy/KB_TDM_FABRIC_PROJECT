@@ -210,6 +210,22 @@
           <Value>false</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
+        <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="GENERATE_COLLECTION_INFO" luName="">
+          <Value>false</Value>
+          <Comment>true/false</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -529,6 +545,22 @@
         <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
           <Value>true</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="GENERATE_COLLECTION_INFO" luName="">
+          <Value>true</Value>
+          <Comment>true/false</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -850,6 +882,22 @@
           <Value>false</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
+        <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="GENERATE_COLLECTION_INFO" luName="">
+          <Value>false</Value>
+          <Comment>true/false</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1170,6 +1218,22 @@
           <Value>false</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
+        <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="GENERATE_COLLECTION_INFO" luName="">
+          <Value>false</Value>
+          <Comment>true/false</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1489,6 +1553,22 @@
         <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
           <Value>false</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_BILLING_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_OPEN_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="NUMBER_OF_CLOSED_DEVICE_ORDERS" luName="">
+          <Value>1</Value>
+        </Global>
+        <Global name="GENERATE_COLLECTION_INFO" luName="">
+          <Value>false</Value>
+          <Comment>true/false</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>

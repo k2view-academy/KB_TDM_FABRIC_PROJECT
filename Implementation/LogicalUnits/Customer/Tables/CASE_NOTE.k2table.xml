@@ -1,19 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name>CASE_NOTE</Name>
-  <ID>tbl_CASE_NOTE</ID>
+  <Name>case_note</Name>
+  <ID>tbl_case_note</ID>
   <Columns>
-    <Column name="CASE_ID" id="tblCol_40efc583e6d84e158a9d962682903819" index="0" datatype="text" />
-    <Column name="NOTE_ID" id="tblCol_d90f13f839d548d7acb9d1a9ed87128a" index="1" datatype="text" mandatory="true" />
-    <Column name="NOTE_DATE" id="tblCol_e3903fa1fa204b9ebedaec1aab4701f7" index="2" datatype="Text" />
-    <Column name="NOTE_TEXT" id="tblCol_a5163849d9d74d97b5bf15ba5f0058a4" index="3" datatype="Text" />
+    <Column name="case_id" id="case_id" index="0" datatype="Integer" />
+    <Column name="note_id" id="note_id" index="1" datatype="Integer" mandatory="true" />
+    <Column name="note_date" id="note_date" index="2" datatype="Text" />
+    <Column name="note_text" id="note_text" index="3" datatype="Text" />
   </Columns>
   <IndexesList>
-    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_d90f13f839d548d7acb9d1a9ed87128a" />
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="note_id" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
   <TriggersList />
 </TableObject>

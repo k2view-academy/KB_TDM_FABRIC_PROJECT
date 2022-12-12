@@ -131,4 +131,17 @@ public class SharedGlobals {
 	@desc("true/false. If true - generate a synthetic entity.")
 	@category("DATA MANUFACTURING")
 	public static String CREATE_SYNTHETIC_ENTITY = "false";
+
+	@category("DATA MANUFACTURING")
+	public static String NUMBER_OF_OPEN_BILLING_ORDERS = "1";
+	@category("DATA MANUFACTURING")
+	public static String NUMBER_OF_CLOSED_BILLING_ORDERS = "1";
+	@category("DATA MANUFACTURING")
+	public static String NUMBER_OF_OPEN_DEVICE_ORDERS = "1";
+	@category("DATA MANUFACTURING")
+	public static String NUMBER_OF_CLOSED_DEVICE_ORDERS = "1";
+
+	@desc("true/false")
+	@category("DATA MANUFACTURING")
+	public static String GENERATE_COLLECTION_INFO = "true";
 }
