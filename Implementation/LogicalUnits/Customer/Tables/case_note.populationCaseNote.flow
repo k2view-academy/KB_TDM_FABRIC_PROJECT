@@ -14,23 +14,19 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "activity_id",
-                                        "schema": {}
-                                    },
-                                    {
                                         "name": "case_id",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "case_date",
+                                        "name": "note_id",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "case_type",
+                                        "name": "note_date",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "status",
+                                        "name": "note_text",
                                         "schema": {}
                                     }
                                 ],
@@ -78,7 +74,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {
+                                                    "case_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -95,8 +91,75 @@
         {
             "stages": [
                 {
-                    "name": "Source",
+                    "name": "Get the Synthetic Mode",
                     "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "CREATE_SYNTHETIC_ENTITY",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Get the Synthetic Mode"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Data Manufacturing",
+                    "dependsOnList": [
+                        "Get the Synthetic Mode"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -110,7 +173,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * FROM public.cases"
+                                        "const": "SELECT * FROM public.case_note"
                                     }
                                 ],
                                 "outputs": [
@@ -119,22 +182,59 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "activity_id": {
-                                                    "type": {}
-                                                },
                                                 "case_id": {
                                                     "type": {}
                                                 },
-                                                "case_date": {
+                                                "note_id": {
                                                     "type": {}
                                                 },
-                                                "case_type": {
+                                                "note_date": {
                                                     "type": {}
                                                 },
-                                                "status": {
+                                                "note_text": {
                                                     "type": {}
                                                 }
                                             }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Data Manufacturing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "InnerFlow1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "creSyntheticCaseNoteTableRec"
+                                    },
+                                    {
+                                        "name": "case_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "CaseNoteRecord",
+                                        "schema": {
+                                            "items": {
+                                                "type": "object"
+                                            },
+                                            "type": "array"
                                         }
                                     }
                                 ]
@@ -162,7 +262,7 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "cases",
+                            "name": "case_note",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -181,17 +281,16 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "activity_id",
                                             "case_id",
-                                            "case_date",
-                                            "case_type",
-                                            "status"
+                                            "note_id",
+                                            "note_date",
+                                            "note_text"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "case_id"
+                                            "note_id"
                                         ]
                                     },
                                     {
@@ -199,23 +298,19 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "activity_id",
-                                        "schema": {}
-                                    },
-                                    {
                                         "name": "case_id",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "case_date",
+                                        "name": "note_id",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "case_type",
+                                        "name": "note_date",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "status",
+                                        "name": "note_text",
                                         "schema": {}
                                     }
                                 ],
@@ -255,7 +350,30 @@
             },
             "rightPort": {
                 "actor": "Query",
-                "name": "parent_rows"
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Move the parent row to array",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "case_id"
+            },
+            "path": [
+                "case_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
             }
         },
         {
@@ -264,7 +382,18 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "cases",
+                "actor": "case_note",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "CaseNoteRecord"
+            },
+            "rightPort": {
+                "actor": "case_note",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -272,16 +401,6 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "activity_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "activity_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "case_id"
             },
             "rightPort": {
@@ -292,31 +411,31 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "case_date"
+                "name": "note_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "case_date"
+                "name": "note_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "case_type"
+                "name": "note_date"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "case_type"
+                "name": "note_date"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "status"
+                "name": "note_text"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "status"
+                "name": "note_text"
             }
         },
         {
@@ -335,7 +454,7 @@
                 "name": "schema"
             },
             "rightPort": {
-                "actor": "cases",
+                "actor": "case_note",
                 "name": "schema"
             }
         },
@@ -345,7 +464,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "cases",
+                "actor": "case_note",
                 "name": "table"
             }
         }

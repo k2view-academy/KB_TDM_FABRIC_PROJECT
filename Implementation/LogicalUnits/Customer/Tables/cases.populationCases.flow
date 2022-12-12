@@ -14,19 +14,23 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
                                         "name": "case_id",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "note_id",
+                                        "name": "case_date",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "note_date",
+                                        "name": "case_type",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "note_text",
+                                        "name": "status",
                                         "schema": {}
                                     }
                                 ],
@@ -74,7 +78,7 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "customer_id": {
+                                                    "activity_id": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -173,7 +177,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * FROM public.case_note"
+                                        "const": "SELECT * FROM public.cases"
                                     }
                                 ],
                                 "outputs": [
@@ -182,16 +186,19 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
+                                                "activity_id": {
+                                                    "type": {}
+                                                },
                                                 "case_id": {
                                                     "type": {}
                                                 },
-                                                "note_id": {
+                                                "case_date": {
                                                     "type": {}
                                                 },
-                                                "note_date": {
+                                                "case_type": {
                                                     "type": {}
                                                 },
-                                                "note_text": {
+                                                "status": {
                                                     "type": {}
                                                 }
                                             }
@@ -217,10 +224,10 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "creSyntheticActivityTableRec"
+                                        "const": "creSyntheticCaseTableRec"
                                     },
                                     {
-                                        "name": "customer_id",
+                                        "name": "activity_id",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -229,26 +236,12 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "activityRecord",
+                                        "name": "CaseRecord",
                                         "schema": {
-                                            "type": "array",
                                             "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "string"
-                                                    },
-                                                    "ssn": {
-                                                        "type": "string"
-                                                    },
-                                                    "first_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "last_name": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
+                                                "type": "object"
+                                            },
+                                            "type": "array"
                                         }
                                     }
                                 ]
@@ -276,7 +269,7 @@
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "case_note",
+                            "name": "cases",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -295,16 +288,17 @@
                                     {
                                         "name": "fields",
                                         "const": [
+                                            "activity_id",
                                             "case_id",
-                                            "note_id",
-                                            "note_date",
-                                            "note_text"
+                                            "case_date",
+                                            "case_type",
+                                            "status"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "note_id"
+                                            "case_id"
                                         ]
                                     },
                                     {
@@ -312,19 +306,23 @@
                                         "const": "sqlite"
                                     },
                                     {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
                                         "name": "case_id",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "note_id",
+                                        "name": "case_date",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "note_date",
+                                        "name": "case_type",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "note_text",
+                                        "name": "status",
                                         "schema": {}
                                     }
                                 ],
@@ -359,13 +357,26 @@
         },
         {
             "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
+                "actor": "Move the parent row to array",
+                "name": "array"
             },
             "rightPort": {
-                "actor": "NotEquals1",
-                "name": "a"
+                "actor": "Query",
+                "name": "parent_rows"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "Move the parent row to array",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "activity_id"
+            },
+            "path": [
+                "activity_id"
+            ]
         },
         {
             "leftPort": {
@@ -373,7 +384,18 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "case_note",
+                "actor": "cases",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "CaseRecord"
+            },
+            "rightPort": {
+                "actor": "cases",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -381,6 +403,16 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "activity_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "activity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "case_id"
             },
             "rightPort": {
@@ -391,31 +423,31 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "note_id"
+                "name": "case_date"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "note_id"
+                "name": "case_date"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "note_date"
+                "name": "case_type"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "note_date"
+                "name": "case_type"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "note_text"
+                "name": "status"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "note_text"
+                "name": "status"
             }
         },
         {
@@ -434,7 +466,7 @@
                 "name": "schema"
             },
             "rightPort": {
-                "actor": "case_note",
+                "actor": "cases",
                 "name": "schema"
             }
         },
@@ -444,7 +476,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "case_note",
+                "actor": "cases",
                 "name": "table"
             }
         }
