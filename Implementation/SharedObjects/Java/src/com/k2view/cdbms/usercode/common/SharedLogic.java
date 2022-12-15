@@ -25,9 +25,18 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class SharedLogic {
+
+
+	@category("Data_Manufacturing")
+	@out(name = "lui", type = String.class, desc = "")
+	public static String fnGetLUI() throws Exception {
+		return getInstanceID();
+	}
 
 
 

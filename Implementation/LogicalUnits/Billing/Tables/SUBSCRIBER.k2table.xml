@@ -12,13 +12,14 @@
     <Column name="LAST_NAME" id="tblCol_098fdc56afec4f5e9dd6db72af085769" index="5" datatype="Text" />
     <Column name="SUBSCRIBER_TYPE" id="tblCol_239bc5c8c8134d7ab7f6e79039e4e3b3" index="6" datatype="Text" />
     <Column name="VIP_STATUS" id="tblCol_ee733d4d5bdc4005a17e167f75e4cf19" index="7" datatype="Text" />
+    <Column name="crm_contract_ref_id" id="crm_contract_ref_id" index="8" datatype="text">
+      <Comment>Add the crm contract ref if to enable the population of the offer_ref_id on offer table</Comment>
+    </Column>
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>false</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" deleteMode="Off" />
   <TriggersList />
 </TableObject>

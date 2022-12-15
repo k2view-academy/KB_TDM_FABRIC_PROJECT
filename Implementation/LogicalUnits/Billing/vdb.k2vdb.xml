@@ -9,21 +9,21 @@
     <NumberOfJobs>50</NumberOfJobs>
   </IidFinderProp>
   <Tables>
-    <Table>BALANCE</Table>
+    <Table>balance</Table>
     <Table>FABRIC_TDM_ROOT</Table>
-    <Table>INVOICE</Table>
+    <Table>invoice</Table>
     <Table>LU_PARAMS</Table>
-    <Table>OFFER</Table>
-    <Table>PAYMENT</Table>
+    <Table>offer</Table>
+    <Table>payment</Table>
     <Table>SUBSCRIBER</Table>
     <Table>TAR_INVOICE</Table>
     <Table>TAR_PAYMENT</Table>
     <Table>TAR_SUBSCRIBER</Table>
   </Tables>
   <TablesProperties>
-    <TableProperties name="BALANCE">
+    <TableProperties name="balance">
       <Populations>
-        <Population name="query_main_BALANCE" order="3" disabled="false" populationType="Regular" />
+        <Population name="population.flow" order="3" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="FABRIC_TDM_ROOT">
@@ -31,9 +31,9 @@
         <Population name="popFABRIC_TDM_ROOT" order="1" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
-    <TableProperties name="INVOICE">
+    <TableProperties name="invoice">
       <Populations>
-        <Population name="query_main_INVOICE" order="3" disabled="false" populationType="Regular" />
+        <Population name="population.flow" order="3" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="LU_PARAMS">
@@ -41,15 +41,14 @@
         <Population name="populate_LU_PARAMS" order="2" disabled="false" populationType="Regular" />
       </Populations>
     </TableProperties>
-    <TableProperties name="OFFER">
+    <TableProperties name="offer">
       <Populations>
-        <Population name="query_main_OFFER" order="3" disabled="false" populationType="Regular" />
+        <Population name="population.flow" order="3" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
-    <TableProperties name="PAYMENT">
+    <TableProperties name="payment">
       <Populations>
-        <Population name="query_main_PAYMENT" order="4" disabled="false" populationType="Regular" />
-        <Population name="query_main_PAYMENT_Development" order="4" disabled="false" populationType="Regular" />
+        <Population name="population.flow" order="4" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="SUBSCRIBER">
@@ -92,24 +91,20 @@
       <To tableType="TableObject" table="SUBSCRIBER" populationObjectName="popSubscriber.flow" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
-      <To tableType="TableObject" table="PAYMENT" populationObjectName="query_main_PAYMENT_Development" column="invoice_id" columnId="queryCol_0" />
+      <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
+      <To tableType="TableObject" table="invoice" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
-      <To tableType="TableObject" table="BALANCE" populationObjectName="query_main_BALANCE" column="subscriber_id" columnId="queryCol_0" />
+      <To tableType="TableObject" table="offer" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
-      <To tableType="TableObject" table="INVOICE" populationObjectName="query_main_INVOICE" column="subscriber_id" columnId="queryCol_0" />
+      <To tableType="TableObject" table="balance" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
     </Relation>
     <Relation>
-      <From tableType="TableObject" table="SUBSCRIBER" column="subscriber_id" columnId="tblCol_c5d92c0d073b4dd39fa1676e8355cf6f" />
-      <To tableType="TableObject" table="OFFER" populationObjectName="query_main_OFFER" column="subscriber_id" columnId="queryCol_0" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
-      <To tableType="TableObject" table="PAYMENT" populationObjectName="query_main_PAYMENT" column="invoice_id" columnId="queryCol_0" />
+      <From tableType="TableObject" table="invoice" column="invoice_id" columnId="invoice_id" />
+      <To tableType="TableObject" table="payment" populationObjectName="population.flow" column="invoice_id" columnId="invoice_id" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="TAR_INVOICE" column="INVOICE_ID" columnId="tblCol_a48f99e18d024160814094e349b9e0fc" />
@@ -130,18 +125,16 @@
       <Group name="TDM Tables" pos="312 193.40892" size="265 159.091141" wasexpanded="false" expanded="true">
         <Node name="LU_PARAMS" pos="316 212.500061" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="677 181.454437" size="869 527.0912" wasexpanded="false" expanded="true">
-        <Node name="SUBSCRIBER" pos="681 327.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="OFFER" pos="983 568.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="INVOICE" pos="983 368.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="BALANCE" pos="983 200.545578" size="257 136.000015" listGroupSize="250 100" viewType="Table" />
-        <Node name="PAYMENT" pos="1285 393.5456" size="257 152" listGroupSize="250 100" viewType="Table" />
-      </Group>
       <Group name="Target Tables for Delete" pos="312 774.621033" size="855.666748 183.4245" wasexpanded="false" expanded="true">
         <Node name="TAR_PAYMENT" pos="906.6667 793.712158" size="257.000061 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_INVOICE" pos="618 802.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_SUBSCRIBER" pos="316 818.045532" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
+      <Node name="invoice" pos="989 353" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="offer" pos="983 513" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="SUBSCRIBER" pos="683 337.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="balance" pos="996 190.963562" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="payment" pos="1286 349.963562" size="257 136" listGroupSize="250 100" viewType="Table" />
     </Graph>
   </DiagramGraph>
 </VirtualDB>

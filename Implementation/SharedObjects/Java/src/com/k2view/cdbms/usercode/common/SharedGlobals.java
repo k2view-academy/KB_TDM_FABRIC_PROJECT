@@ -144,4 +144,8 @@ public class SharedGlobals {
 	@desc("true/false")
 	@category("DATA MANUFACTURING")
 	public static String GENERATE_COLLECTION_INFO = "true";
+
+	@desc("Can be Silver, Gold, Platinum, Bronze or empty")
+	@category("DATA MANUFACTURING")
+	public static String SUBSCRIBER_VIP_STATUS = "";
 }

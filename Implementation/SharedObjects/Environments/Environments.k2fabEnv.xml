@@ -98,7 +98,7 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>23</Value>
+          <Value>141</Value>
         </Global>
         <Global name="MASK_FLAG" luName="">
           <Value>1</Value>
@@ -434,7 +434,7 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>133</Value>
+          <Value>141</Value>
         </Global>
         <Global name="MASK_FLAG" luName="">
           <Value>1</Value>
@@ -543,7 +543,7 @@
           <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
-          <Value>true</Value>
+          <Value>false</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
         <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">

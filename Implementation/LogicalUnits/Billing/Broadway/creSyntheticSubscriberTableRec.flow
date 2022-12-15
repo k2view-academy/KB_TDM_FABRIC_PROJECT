@@ -1,0 +1,656 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Parent LU Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Customer"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Subscriber ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "LU Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Billing"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "LuFunction1",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetLUI"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "lui",
+                                        "schema": {}
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "test LUI",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "8518"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Subscriber VIP Status",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SUBSCRIBER_VIP_STATUS"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get the parent LUI",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "InnerFlow1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getParentLUI"
+                                    },
+                                    {
+                                        "name": "parentLU",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "childIID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "parentLUI",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get the parent LUI - cont.",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FabricGet1",
+                            "actorType": {
+                                "parentType": "FabricGet",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Contract from the parent Customer",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchFirstRow1",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select *\r\nFrom Customer.CONTRACT where contract_id = ? "
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CUSTOMER_ID": {
+                                                    "type": "string"
+                                                },
+                                                "CONTRACT_ID": {
+                                                    "type": "string"
+                                                },
+                                                "CONTRACT_REF_ID": {
+                                                    "type": "string"
+                                                },
+                                                "ASSOCIATED_LINE": {
+                                                    "type": "string"
+                                                },
+                                                "CONTRACT_DESCRIPTION": {
+                                                    "type": "string"
+                                                },
+                                                "FROM_DATE": {
+                                                    "type": "string"
+                                                },
+                                                "TO_DATE": {
+                                                    "type": "string"
+                                                },
+                                                "ASSOCIATED_LINE_FMT": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Customer Name from the parent customer",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchFirstRow2",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select CUSTOMER.FIRST_NAME,\r\n  CUSTOMER.LAST_NAME\r\nFrom Customer.CUSTOMER"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "FIRST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "LAST_NAME": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "The input vip status is not set",
+                    "dependsOnList": [
+                        "Get Customer Name from the parent customer"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Get the value from the Global",
+                    "dependsOnList": [
+                        "Get Customer Name from the parent customer"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "The input vip status is not set"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Activity Text",
+                            "actorType": {
+                                "parentType": "ConstTable",
+                                "inputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "VIP_STATUS": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "VIP_STATUS": "Silver"
+                                            },
+                                            {
+                                                "VIP_STATUS": "Gold"
+                                            },
+                                            {
+                                                "VIP_STATUS": "Bronze"
+                                            },
+                                            {
+                                                "VIP_STATUS": "Platinum"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Activity_Text": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Get the value from the Global"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MaskingWithCollection1",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "vip_status"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "NONE"
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set the vip_status",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "VIP Status",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Parent LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "parentLU"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Parent LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "FabricGet1",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Subscriber ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuFunction1",
+                "name": "lui"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "childIID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "test LUI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "childIID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Subscriber VIP Status",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Subscriber VIP Status",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "parentLUI"
+            },
+            "rightPort": {
+                "actor": "FabricGet1",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Activity Text",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "collection"
+            },
+            "path": [
+                "Activity_Text"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MaskingWithCollection1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "VIP Status",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "VIP Status",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "subscriber_id"
+            },
+            "rightPort": {
+                "actor": "Subscriber ID",
+                "name": "value"
+            }
+        }
+    ]
+}
