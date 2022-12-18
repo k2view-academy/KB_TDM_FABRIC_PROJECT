@@ -232,9 +232,116 @@
         {
             "stages": [
                 {
-                    "name": "Source",
+                    "name": "Check Synthetic Mode",
                     "dependsOnList": [
                         "Input"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Move the parent row to array",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "subscriber_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "CREATE_SYNTHETIC_ENTITY"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "if First Sync Throw Exception"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Synthetic Mode is not true",
+                    "dependsOnList": [
+                        "Check Synthetic Mode"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Check Synthetic Mode"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [
+                        "Synthetic Mode is not true"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -252,7 +359,43 @@
                                         "const": "select * from subscriber"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "subscriber_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "msisdn": {
+                                                        "type": "string"
+                                                    },
+                                                    "imsi": {
+                                                        "type": "string"
+                                                    },
+                                                    "sim": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "subscriber_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "vip_status": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -267,7 +410,9 @@
                                     {
                                         "const": "Billing",
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "const": "subscriber",
@@ -293,9 +438,63 @@
                     ]
                 },
                 {
+                    "name": "Synthetic Creation Flow",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "InnerFlow1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "creSyntheticSubscriberTableRec"
+                                    },
+                                    {
+                                        "name": "subscriber_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "subscriberRecord",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "ssn": {
+                                                        "type": "string"
+                                                    },
+                                                    "first_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "last_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
                     "name": "Do Nothing",
                     "dependsOnList": [
-                        "if First Sync Throw Exception"
+                        "Stage 3"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -308,7 +507,8 @@
                 {
                     "name": "Set instance As Found",
                     "dependsOnList": [
-                        "Source"
+                        "Source",
+                        "Synthetic Creation Flow"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -440,6 +640,15 @@
                     ]
                 },
                 {
+                    "name": "Stage 7",
+                    "dependsOnList": [
+                        "LU Table"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
                     "name": "Do Nothing 3",
                     "dependsOnList": [
                         "Do Nothing 2"
@@ -508,8 +717,42 @@
                 "name": "parent_rows"
             },
             "rightPort": {
+                "actor": "Move the parent row to array",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Move the parent row to array",
+                "name": "array"
+            },
+            "rightPort": {
                 "actor": "Query",
                 "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Move the parent row to array",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "subscriber_id"
+            },
+            "iterate": "First",
+            "path": [
+                "subscriber_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
             }
         },
         {
@@ -532,6 +775,17 @@
                 "actor": "Root Table",
                 "name": "fields"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "subscriberRecord"
+            },
+            "rightPort": {
+                "actor": "Root Table",
+                "name": "params"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

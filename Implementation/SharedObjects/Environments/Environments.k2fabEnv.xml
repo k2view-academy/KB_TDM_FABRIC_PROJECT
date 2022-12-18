@@ -226,6 +226,10 @@
           <Value>false</Value>
           <Comment>true/false</Comment>
         </Global>
+        <Global name="SUBSCRIBER_VIP_STATUS" luName="">
+          <Value />
+          <Comment>Can be Silver, Gold, Platinum, Bronze or empty</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -543,7 +547,7 @@
           <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="CREATE_SYNTHETIC_ENTITY" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
           <Comment>true/false. If true - generate a synthetic entity.</Comment>
         </Global>
         <Global name="NUMBER_OF_OPEN_BILLING_ORDERS" luName="">
@@ -561,6 +565,10 @@
         <Global name="GENERATE_COLLECTION_INFO" luName="">
           <Value>true</Value>
           <Comment>true/false</Comment>
+        </Global>
+        <Global name="SUBSCRIBER_VIP_STATUS" luName="">
+          <Value />
+          <Comment>Can be Silver, Gold, Platinum, Bronze or empty</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -898,6 +906,10 @@
           <Value>false</Value>
           <Comment>true/false</Comment>
         </Global>
+        <Global name="SUBSCRIBER_VIP_STATUS" luName="">
+          <Value />
+          <Comment>Can be Silver, Gold, Platinum, Bronze or empty</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1234,6 +1246,10 @@
           <Value>false</Value>
           <Comment>true/false</Comment>
         </Global>
+        <Global name="SUBSCRIBER_VIP_STATUS" luName="">
+          <Value />
+          <Comment>Can be Silver, Gold, Platinum, Bronze or empty</Comment>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1569,6 +1585,10 @@
         <Global name="GENERATE_COLLECTION_INFO" luName="">
           <Value>false</Value>
           <Comment>true/false</Comment>
+        </Global>
+        <Global name="SUBSCRIBER_VIP_STATUS" luName="">
+          <Value />
+          <Comment>Can be Silver, Gold, Platinum, Bronze or empty</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>

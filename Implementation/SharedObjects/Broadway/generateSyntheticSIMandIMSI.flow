@@ -21,20 +21,16 @@
                                         "const": "NONE"
                                     },
                                     {
-                                        "name": "lruCacheSize",
-                                        "const": 100000000000000
-                                    },
-                                    {
                                         "name": "onEmpty",
                                         "const": "MASK_NO_CACHE"
                                     },
                                     {
                                         "name": "minimum",
-                                        "const": 999999999999999
+                                        "const": 100000000000000
                                     },
                                     {
                                         "name": "maximum",
-                                        "const": 999
+                                        "const": 999999999999999
                                     }
                                 ],
                                 "outputs": [
