@@ -1,7 +1,7 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks;
 
 import com.k2view.cdbms.shared.Db;
-import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import org.json.JSONObject;
@@ -16,8 +16,10 @@ import java.util.*;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.user.WebServiceUserCode.graphit;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDMRef.SharedLogic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TaskExecutionUtils {
@@ -83,13 +85,14 @@ public class TaskExecutionUtils {
 
     static Object fnStopTaskExecution(Long task_execution_id) throws Exception {
         Db.Rows batchIdList = null;
+		//log.info("fnStopTaskExecution - task_execution_id: " + task_execution_id);
         try {
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
-            batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, l.lu_id, lu_name, task_type " +
-                    "from " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units u where task_execution_id = ? " +
-                    "and fabric_execution_id is not null and UPPER(execution_status) IN " +
+            batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, l.lu_id, lu_name, l.task_type " +
+                    "from " + schema + ".task_execution_list l, " + schema + ".tasks_logical_units u, " + schema + ".tasks t where task_execution_id = ? " +
+                    "and (fabric_execution_id is not null or selection_method = 'REF') and UPPER(execution_status) IN " +
                     "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
-                    "and l.task_id = u.task_id and l.lu_id = u.lu_id", task_execution_id);
+                    "and l.task_id = u.task_id and l.lu_id = u.lu_id and l.task_id = t.task_id", task_execution_id);
 
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
                     task_execution_id);
@@ -106,19 +109,21 @@ public class TaskExecutionUtils {
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
             for (Db.Row batchInfo : batchIdList) {
-                String fabricExecID = "" + batchInfo.get("fabric_execution_id");
                 String taskType = ("" + batchInfo.get("task_type")).toLowerCase();
                 Long luID = (Long) batchInfo.get("lu_id");
                 String luName = "" + batchInfo.get("lu_name");
                 String taskExecutionID = "" + task_execution_id;
-                ludb().execute("batch_pause '" + fabricExecID + "'");
+				//log.info("fabricExecID: <" + fabricExecID + ">");
+				if(batchInfo.get("fabric_execution_id") != null) {
+	                ludb().execute("batch_pause '" + batchInfo.get("fabric_execution_id") + "'");
+				}
                 // TDM 7.1 Fix, stop execution of reference tables.
                 //log.info("fnStopTaskExecution - Stopping the reference Handling for task_execution_id: " + task_execution_id + ", task_type: " + taskType);
-                TdmSharedUtils.fnTdmCopyReference(String.valueOf(task_execution_id), taskType);
+                fnTdmReference(String.valueOf(task_execution_id), taskType);
 
                 if (luID > 0 && ("extract".equals(taskType))) {
                     //log.info("wsStopTaskExecution - Updating task_execution_entities");
-                    TdmSharedUtils.fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
+                    fnTdmUpdateTaskExecutionEntities(taskExecutionID, luID, luName);
                 }
             }
             return wrapWebServiceResults("SUCCESS", null, null);
@@ -208,10 +213,11 @@ public class TaskExecutionUtils {
             //TDM 6.0 - Get the list of migration IDs based on task execution ID, instead of getting one migrate_id as input
             batchIdList = db(TDM).fetch("select fabric_execution_id, execution_status, selection_method, l.task_type from " + 
 					schema + ".task_execution_list l, " + schema + ".tasks t " +
-                    "where task_execution_id = ? and l.task_id = t.task_id and selection_method <> 'REF'" +
-                    "and fabric_execution_id is not null", task_execution_id);
+                    "where task_execution_id = ? and l.task_id = t.task_id " +
+                    "and (fabric_execution_id is not null or  selection_method = 'REF') and UPPER(execution_status)= 'STOPPED'", task_execution_id);
 
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running' where fabric_execution_id is not null " +
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running' where " + 
+							"(fabric_execution_id is not null or task_id in (select task_id from tasks where selection_method = 'REF')) " +
                             "and lower(execution_status) = 'stopped' and task_execution_id = ?",
                     task_execution_id);
 
@@ -223,14 +229,17 @@ public class TaskExecutionUtils {
                     task_execution_id);
 
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
+			
             // The resume of the jobs for the tables will be handled by the new fabric listener user job for the reference copy.
 
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list l SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
-                            "and (task_execution_id, lu_id) in (select task_execution_id, lu_id from task_ref_exe_stats r,  tasks_logical_units u, task_ref_tables s " +
-                            "where l.task_execution_id = r.task_execution_id and l.lu_id = u.lu_id " +
-                            "and l.task_id = u.task_id and u.lu_name = s.lu_name and s.task_ref_table_id = r.task_ref_table_id and s.task_id = l.task_id " +
-                            "and lower(r.execution_status) = 'stopped')",
-                    task_execution_id);
+//            db(TDM).execute("UPDATE " + schema + ".task_execution_list l SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
+//                            "and (task_execution_id, lu_id) in (select task_execution_id, lu_id from task_ref_exe_stats r,  tasks_logical_units u, task_ref_tables s " +
+//                            "where l.task_execution_id = r.task_execution_id and l.lu_id = u.lu_id " +
+//                            "and l.task_id = u.task_id and u.lu_name = s.lu_name and s.task_ref_table_id = r.task_ref_table_id and s.task_id = l.task_id " +
+//                            "and lower(r.execution_status) = 'stopped')",
+//                    task_execution_id);
+	
+			
             db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume' where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
@@ -238,15 +247,18 @@ public class TaskExecutionUtils {
             for (Db.Row batchInfo : batchIdList) {
                 fabric().execute("delete instance TDM.?", task_execution_id);
                 db(TDM).execute("UPDATE " + schema + ".task_execution_list SET synced_to_fabric = FALSE WHERE task_execution_id = ?", task_execution_id);
-                fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") + "'");
+				if(batchInfo.get("fabric_execution_id") != null) {
+	                fabric().execute("batch_retry '" + batchInfo.get("fabric_execution_id") + "'");
+				}
                 // TDM 7.1 Fix, resume execution of reference tables.
                 //log.info("fnResumeTaskExecution - Resume Reference");
                 String taskType = ("" + batchInfo.get("task_type")).toLowerCase();
-                TdmSharedUtils.fnTdmCopyReference(String.valueOf(task_execution_id), taskType);
+                fnTdmReference(String.valueOf(task_execution_id), taskType);
 
             }
         } catch (Exception e) {
             success_ind = false;
+			e.printStackTrace();
             log.error("wsResumeTaskExecution: " + e);
 
         } finally {
@@ -269,6 +281,11 @@ public class TaskExecutionUtils {
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             String username = sessionUser().name();
 			String userRoles = String.join(",", sessionUser().roles());
+            if("".equals(username)){
+                if(!(fnIsAdminByRole(userRoles))){
+                    throw new RuntimeException("Executing With Token Without Admin Privileges");
+                }
+            }
 			String executedBy = new StringBuilder().append(username).append("##").append(userRoles).toString();
 			//log.info("fnStartTaskExecutions - executedBy: " + executedBy);
             db(TDM).execute(query,
@@ -294,11 +311,34 @@ public class TaskExecutionUtils {
     }
 
 
-    static Object fnGetNumberOfMatchingEntities(String whereStmt, String sourceEnvName, Long beID) throws Exception {
+    static Object fnGetNumberOfMatchingEntities(String whereStmt, String sourceEnvName, String targetEnvName, Long beID, Boolean filteroutReserved) throws Exception {
         String sourceEnv = !Util.isEmpty(sourceEnvName) ? sourceEnvName : "_dev";
-        String getEntitiesSql = TdmSharedUtils.generateListOfMatchingEntitiesQuery(beID, whereStmt, sourceEnv);
-        Db tdmDB = db(TDM);
-        Db.Rows rows = tdmDB.fetch("SELECT COUNT(entity_id) FROM (" + getEntitiesSql + " ) AS final_count");
+        String getEntitiesSql = generateListOfMatchingEntitiesQuery(beID, whereStmt, sourceEnv);
+		String userID = sessionUser().name();
+		String srcEnvID = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and environment_status = 'Active'", sourceEnv).firstValue();
+		String tarEnvID = "" + db(TDM).fetch("select environment_id from environments where environment_name = ? and environment_status = 'Active'", targetEnvName).firstValue();
+	
+		Db.Rows rows =  null;
+		String query = "";
+		if (filteroutReserved) {
+			query = "SELECT COUNT(entity_id) FROM (" + getEntitiesSql 
+				+ " EXCEPT SELECT iid FROM "
+				+ TDMDB_SCHEMA + ".tdm_reserved_entities tr, " + TDMDB_SCHEMA + ".task_execution_entities te"
+			+ " WHERE tr.env_id = ? and tr.be_id = ? and tr.reserve_owner != ?"
+			+ " and (tr.end_datetime is null or tr.end_datetime > CURRENT_TIMESTAMP)"
+			+ " and te.target_entity_id = tr.entity_id and te.env_id = ? "
+			+ " and te.task_execution_id = cast (tr.task_execution_id as text) "
+			+ " and te.lu_name in (select lu_name from task_execution_list l, tasks_logical_units u "
+			+ " where l.task_execution_id = tr.task_execution_id and l.parent_lu_id is null and l.lu_id = u.lu_id and l.task_id = u.task_id)"
+			+ " ) AS final_count";
+			
+			rows =  db(TDM).fetch(query, tarEnvID, beID, userID, tarEnvID);
+			
+		} else {
+			query = "SELECT COUNT(entity_id) FROM (" + getEntitiesSql + " ) AS final_count";
+			rows =  db(TDM).fetch(query);
+		}
+
         return wrapWebServiceResults("SUCCESS", null, rows.firstValue());
     }
 
@@ -330,7 +370,7 @@ public class TaskExecutionUtils {
 
 
     private static Object fnGetBatchStats(String i_batchId, String i_runMode) throws Exception {
-        return wrapWebServiceResults("SUCCESS", null, TdmSharedUtils.fnBatchStats(i_batchId, i_runMode));
+        return wrapWebServiceResults("SUCCESS", null, fnBatchStatistics(i_batchId, i_runMode));
     }
 
     static Object fnExtractRefStats(String i_taskExecutionId, String i_runMode) throws Exception {

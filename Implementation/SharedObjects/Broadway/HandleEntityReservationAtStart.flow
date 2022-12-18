@@ -3,9 +3,77 @@
         {
             "stages": [
                 {
-                    "name": "Check If reservation to be handled",
+                    "name": "Check For Replace Sequence ",
                     "dependsOnList": [],
                     "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Replace Sequence Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Not A Sequence Task",
+                    "dependsOnList": [
+                        "Check For Replace Sequence "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "false",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Sequence Task",
+                    "dependsOnList": [
+                        "Check For Replace Sequence "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check If Reservation To Be Handled",
+                    "dependsOnList": [
+                        "Not A Sequence Task"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Check if Reservation is required",
@@ -31,15 +99,27 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 15",
+                    "dependsOnList": [
+                        "Sequence Task"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "Get Delete Only indicator",
-                    "dependsOnList": [],
+                    "name": "Check For Delete Only ",
+                    "dependsOnList": [
+                        "Check If Reservation To Be Handled"
+                    ],
                     "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Get Delete Only Task Indicator",
@@ -70,6 +150,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 16",
+                    "dependsOnList": [
+                        "Stage 15"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -78,9 +167,10 @@
                 {
                     "name": "If Not A Delete Only Task",
                     "dependsOnList": [
-                        "Get Delete Only indicator"
+                        "Check For Delete Only "
                     ],
                     "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Equals1",
@@ -104,27 +194,13 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Get Replace Sequence Indicator",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "enable_sequences",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 },
                 {
                     "name": "If A Delete Only Task",
                     "dependsOnList": [
-                        "Get Delete Only indicator"
+                        "Check For Delete Only "
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -139,6 +215,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 17",
+                    "dependsOnList": [
+                        "Stage 16"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -150,6 +235,7 @@
                         "If Not A Delete Only Task"
                     ],
                     "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Check if A Reservation Task",
@@ -286,9 +372,18 @@
                     ]
                 },
                 {
-                    "name": "Stage 8",
+                    "name": "Stage 5",
                     "dependsOnList": [
                         "If A Delete Only Task"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 18",
+                    "dependsOnList": [
+                        "Stage 17"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -304,10 +399,11 @@
                         "Check if Reserve Task"
                     ],
                     "isLast": 0,
+                    "isTransactional": false,
                     "actors": []
                 },
                 {
-                    "name": "Check if Reserved by Other",
+                    "name": "Owner Check",
                     "dependsOnList": [
                         "Not A Reserve Task"
                     ],
@@ -391,9 +487,18 @@
                     ]
                 },
                 {
-                    "name": "Stage 9",
+                    "name": "Stage 6",
                     "dependsOnList": [
-                        "Stage 8"
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 19",
+                    "dependsOnList": [
+                        "Stage 18"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -404,16 +509,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "Do nothing"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                },
-                {
-                    "name": "Reserve",
+                    "name": "Stage 10",
                     "dependsOnList": [
                         "Do nothing"
                     ],
@@ -480,9 +576,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 5",
+                    "name": "The Entities Are Saved ",
                     "dependsOnList": [
-                        "Check if Reserved by Other"
+                        "Owner Check"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -545,18 +641,57 @@
                     ]
                 },
                 {
-                    "name": "Stage 10",
+                    "name": "Stage 7",
                     "dependsOnList": [
-                        "Stage 9"
+                        "Stage 6"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 20",
+                    "dependsOnList": [
+                        "Stage 19"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": []
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Replace Sequence Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals2",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Replace Sequence Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "false",
+                "name": "a"
+            }
+        },
         {
             "leftPort": {
                 "actor": "Get Delete Only Task Indicator",
@@ -574,16 +709,6 @@
             },
             "rightPort": {
                 "actor": "Check if A Reservation Task",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Replace Sequence Indicator",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Equals2",
                 "name": "a"
             }
         },

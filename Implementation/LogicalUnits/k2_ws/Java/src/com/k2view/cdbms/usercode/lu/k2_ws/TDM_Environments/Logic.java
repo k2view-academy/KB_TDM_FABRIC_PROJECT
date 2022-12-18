@@ -8,7 +8,7 @@ import com.k2view.cdbms.lut.InterfacesManager;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
-import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 
 import java.sql.ResultSet;
@@ -17,7 +17,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 
 import java.sql.*;
 import java.math.*;
@@ -34,7 +34,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserEnvs;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -193,7 +193,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -526,7 +526,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -634,7 +634,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -688,7 +688,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1056,7 +1056,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"environment_id\": 1,\r\n" +
 			"      \"lu_name\": \"ALL\",\r\n" +
 			"      \"updated_by\": \"admin\",\r\n" +
-			"      \"global_value\": \"1\",\r\n" +
+			"      \"global_value\": \"true\",\r\n" +
 			"      \"update_date\": \"2022-01-27 15:57:19.384\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
@@ -1117,7 +1117,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1203,7 +1203,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1308,7 +1308,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1358,7 +1358,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1403,7 +1403,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1447,7 +1447,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -1728,7 +1728,6 @@ public class Logic extends WebServiceUserCode {
 		return response;
 	}
 
-
 	@desc("Gets the list of all Global variables defined in the Fabric project except the TDM product Globals. If the optional input \"lus\" parameter is populated, return only shared Globals or Globals defined in the input LUs.")
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
@@ -1748,7 +1747,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"luList\": [\r\n" +
 			"        {\r\n" +
 			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"1\"\r\n" +
+			"          \"defaultValue\": \"true\"\r\n" +
 			"        }\r\n" +
 			"      ]\r\n" +
 			"    },\r\n" +
@@ -1881,6 +1880,7 @@ public class Logic extends WebServiceUserCode {
 			// TDM 7.1 - Add the globals of k2_ws as they are the Shared globals, to allow user to add globals at shared level to impact all LUs
 			for (Map.Entry<String, Map<String, Object>> entry : globalsShared.entrySet()) {
 				Map<String,Object> value = entry.getValue();
+				//String varName = String.valueOf(value.keySet());
 				for (String varName : value.keySet()) {
 					HashMap<String,Object> global=new HashMap<>();
 					global.put("globalName",  varName);
@@ -1893,8 +1893,9 @@ public class Logic extends WebServiceUserCode {
 					global.put("Description", "");
 					globals.add(global);
 				}
-			}
 		
+		
+			}
 			List luNames = null;
 			if (lus != null && !lus.isEmpty()) {
 				luNames = new ArrayList();
@@ -1942,6 +1943,8 @@ public class Logic extends WebServiceUserCode {
 					}
 				}
 			}
+			globals.sort((Comparator.comparing(o -> ((String) o.get("globalName")).toLowerCase())));
+
 			errorCode = "SUCCESS";
 			response.put("result",globals);
 			//return globalsPerLu;
@@ -1970,7 +1973,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -2018,19 +2021,19 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Deletes Environment Global")
-	@webService(path = "environment/{envId}/envname/{envName}/global/{globalName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@webService(path = "environment/{envId}/envname/{envName}/luname/{luName}/global/{globalName}", verb = {MethodType.DELETE}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, String luName, @param(required=true) String globalName) throws Exception {
+	public static Object wsDeleteEnvironmentGlobal(@param(required=true) Long envId, @param(required=true) String envName, @param(required=true) String luName, @param(required=true) String globalName) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if(permissionGroup==null) return wrapWebServiceResults("FAILED", "Can't find a permission group for the user", null);
 		if (!"admin".equals(permissionGroup)) {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -2233,7 +2236,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		
@@ -2283,7 +2286,7 @@ public class Logic extends WebServiceUserCode {
 			if ("tester".equals(permissionGroup)) {
 				return wrapWebServiceResults("FAILED", "You have a Tester permission group and therefore cannot update the environment", null);
 			} else if("owner".equals(permissionGroup)){
-				if(!TdmSharedUtils.fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
+				if(!fnIsOwner(envId.toString())) return wrapWebServiceResults("FAILED", "You are not the owner of the environment and therefore is not allowed to update the environment", null);
 			}
 		}
 		

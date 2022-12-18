@@ -132,11 +132,6 @@
                                         "const": "fnSplitUID2"
                                     },
                                     {
-                                        "const": "TDM",
-                                        "name": "luType",
-                                        "schema": {}
-                                    },
-                                    {
                                         "name": "uid",
                                         "schema": {
                                             "type": "string"
@@ -184,27 +179,10 @@
                                         "const": null
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
                 }
             ]
         }

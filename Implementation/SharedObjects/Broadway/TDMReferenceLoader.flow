@@ -9,9 +9,9 @@
                     "remark": "This Flow is used to load each TDM Reference Table from Cassandra to Target.\nThis Flow follows the following:\n1. The tables were extracted from Source to Cassandra Interface DB_CASSANDRA\n2. The tables were loaded under keyspace k2view_tdm\n3. The task execution job, sets the value for field TDM_TASK_EXECUTION_ID based on dataflux indicator and job properties.\n4. The Reference tables in Cassandra will have 3 additional control fields:\n   a. source_env_name\n   b. tdm_task_execution_id\n   c. rec_id\n   This fields will not be loaded to target table.\n4. At the end the flow will update the TDMDB table TASK_REF_EXE_STATS\n\n\n\n",
                     "actors": [
                         {
-                            "name": "Initiate TDM Reference Load",
+                            "name": "InitiateTDMReference1",
                             "actorType": {
-                                "parentType": "InitiateTDMReferenceLoad",
+                                "parentType": "InitiateTDMReference",
                                 "inputs": [],
                                 "outputs": []
                             }
@@ -27,6 +27,100 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
+                        {
+                            "name": "DbFetchFirstRow1",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select b.sync_mode ,a.task_execution_id,a.source_env_name\r\nFrom public.task_execution_list AS a Join public.tasks AS b ON \r\na.task_id = b.task_id\r\nWhere a.task_execution_id=${taskExecutionID} AND b.source_env_name=${sourceEnvName}"
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Details of Reference Table",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetRefTableData"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "schemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetSchemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
                         {
                             "name": "Elvis1",
                             "actorType": {
@@ -57,75 +151,6 @@
                             }
                         },
                         {
-                            "name": "Get Details of Reference Table",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "fnGetRefTableData"
-                                    },
-                                    {
-                                        "const": "TDM",
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "refTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "refTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "schemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "interfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetSchemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetInterfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "refTablePK",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "Get TDM LU Key Space",
                             "actorType": {
                                 "parentType": "LuKeyspace",
@@ -145,13 +170,13 @@
         {
             "stages": [
                 {
-                    "name": "Delete Data From Target",
+                    "name": "Check If Needs Extract",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": false,
+                    "remark": "add error handler",
                     "actors": [
                         {
-                            "name": "Error Handler Of Deletion",
+                            "name": "Error Handler For Updating TDMDB To Failure__1",
                             "onError": "result",
                             "actorType": {
                                 "parentType": "ErrorHandler",
@@ -177,30 +202,77 @@
                             }
                         },
                         {
-                            "name": "Delete Target Table",
-                            "minHeight": 373,
+                            "name": "Extract Inner Flow",
+                            "minHeight": 510,
                             "actorType": {
-                                "parentType": "DbCommand",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
+                                        "name": "flowName",
+                                        "const": "CheckIfExtract"
+                                    },
+                                    {
+                                        "name": "SyncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
                                         "name": "interface",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "delete from ${@Schema}.${@refTableName}"
-                                    },
-                                    {
-                                        "name": "Schema",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     },
                                     {
-                                        "name": "refTableName",
+                                        "name": "schema",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "refKeySpace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "versionInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selectedRefVersionTaskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -230,15 +302,34 @@
                                             {
                                                 "exceptionKey": "java.lang.Exception",
                                                 "conditions": {
-                                                    "message": ""
+                                                    "message": "unconfigured table"
                                                 },
                                                 "actions": {
-                                                    "suppress": false,
+                                                    "suppress": true,
                                                     "log": true,
                                                     "flowName": "PopulateTableErrorsForRef"
                                                 }
                                             }
                                         ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Environment",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -291,21 +382,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "Get TDMDB Schema",
-                            "minHeight": 359,
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDMDB_SCHEMA",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -331,7 +407,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET number_of_processed_records = 0,\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET number_of_processed_records = 0,\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -350,13 +426,6 @@
                                         "schema": {
                                             "type": "integer"
                                         }
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -536,6 +605,7 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
+                    "remark": "Ask if this is necessary to have ",
                     "actors": [
                         {
                             "name": "Error Handler For Updating TDMDB To Failure",
@@ -553,7 +623,7 @@
                                                 },
                                                 "actions": {
                                                     "suppress": false,
-                                                    "log": false,
+                                                    "log": true,
                                                     "flowName": "PopulateTableErrorsForRef"
                                                 }
                                             }
@@ -574,7 +644,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = 0,\r\nnumber_of_records_to_process = 0\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = 0,\r\nnumber_of_records_to_process = 0\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -587,13 +657,6 @@
                                         "schema": {
                                             "type": "string"
                                         }
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -639,6 +702,74 @@
                                     {
                                         "name": "message",
                                         "const": "Empty Source Table in Cassandra"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Delete Data From Target",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Error Handler Of Deletion",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Delete Target Table",
+                            "remark": "why the delete ????????",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "delete from ${@Schema}.${@refTableName}"
+                                    },
+                                    {
+                                        "name": "Schema",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -886,17 +1017,6 @@
         {
             "stages": [
                 {
-                    "name": "Get Record Status",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Count Records in case of load succeeded ",
                     "dependsOnList": [],
                     "isLast": 1,
@@ -912,12 +1032,6 @@
                                         "const": {
                                             "userCode": "if (flowArgs.isNewTable == true) {\r\n    flowArgs.isNewTable = false;\r\n    flowArgs.count = 1;\r\n} else {\r\n    flowArgs.count += 1;\r\n}\r\nflowArgs.count;",
                                             "script": "if (flowArgs.isNewTable == true) {\n  flowArgs.isNewTable = false;\n  flowArgs.count = 1;\n} else {\n  flowArgs.count += 1;\n}\n\nflowArgs.count;"
-                                        }
-                                    },
-                                    {
-                                        "name": "affected",
-                                        "schema": {
-                                            "type": "integer"
                                         }
                                     }
                                 ],
@@ -971,7 +1085,7 @@
                         },
                         {
                             "name": "Update TDMDB table during loop",
-                            "minHeight": 482,
+                            "minHeight": 326,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -981,7 +1095,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET number_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET number_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -1006,13 +1120,6 @@
                                         "schema": {
                                             "type": "integer"
                                         }
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -1118,7 +1225,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'completed', \r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader',\r\nnumber_of_processed_records = ${loadedRecCnt},\r\nnumber_of_records_to_process = ${recsToBeLoaded}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -1143,13 +1250,6 @@
                                         "schema": {
                                             "type": "integer"
                                         }
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -1338,22 +1438,12 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Elvis1",
+                "actor": "DbFetchFirstRow1",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Get Data From Cassandra",
-                "name": "selectedRefVersionTaskExeId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Elvis1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Ref Table Count",
-                "name": "selectedRefVersionTaskExeId"
+                "actor": "Extract Inner Flow",
+                "name": "SyncMode"
             }
         },
         {
@@ -1448,6 +1538,66 @@
         },
         {
             "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "Extract Inner Flow",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Extract Inner Flow",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "Extract Inner Flow",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Elvis1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Data From Cassandra",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Elvis1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Elvis1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Extract Inner Flow",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get TDM LU Key Space",
                 "name": "keyspace"
             },
@@ -1463,6 +1613,16 @@
             },
             "rightPort": {
                 "actor": "Get Data From Cassandra",
+                "name": "refKeySpace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDM LU Key Space",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "Extract Inner Flow",
                 "name": "refKeySpace"
             }
         },
@@ -1524,46 +1684,6 @@
             "rightPort": {
                 "actor": "Update TDMDB table Before loading",
                 "name": "recsToBeLoaded"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update TDMDB table Before loading",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update TDMDB table for Reference Table__1",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update TDMDB table during loop",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Update TDMDB table for Reference Table",
-                "name": "schema"
             }
         },
         {
@@ -1684,7 +1804,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "Initiate TDM Reference Load",
+                "actor": "InitiateTDMReference1",
                 "name": "luName"
             }
         },
@@ -1694,7 +1814,7 @@
                 "name": "taskExecutionID"
             },
             "rightPort": {
-                "actor": "Initiate TDM Reference Load",
+                "actor": "InitiateTDMReference1",
                 "name": "taskExecutionID"
             }
         },
@@ -1704,7 +1824,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "Initiate TDM Reference Load",
+                "actor": "InitiateTDMReference1",
                 "name": "refTableName"
             }
         },
@@ -1714,7 +1834,7 @@
                 "name": "selectedRefVersionTaskName"
             },
             "rightPort": {
-                "actor": "Initiate TDM Reference Load",
+                "actor": "InitiateTDMReference1",
                 "name": "selectedRefVersionTaskName"
             }
         },
@@ -1724,18 +1844,58 @@
                 "name": "selectedRefVersionDateTime"
             },
             "rightPort": {
-                "actor": "Initiate TDM Reference Load",
+                "actor": "InitiateTDMReference1",
                 "name": "selectedRefVersionDateTime"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "targetEnvName"
+                "name": "sourceEnvName"
             },
             "rightPort": {
-                "actor": "Initiate TDM Reference Load",
-                "name": "targetEnvName"
+                "actor": "InitiateTDMReference1",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refTableName"
+            },
+            "rightPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "refTableName"
             }
         },
         {
@@ -1751,21 +1911,41 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "sourceEnvName"
             },
             "rightPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "luName"
+                "actor": "Extract Inner Flow",
+                "name": "sourceEnvName"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "refTableName"
+                "name": "selectedRefVselectedRefVersionTaskExeIdersionTaskExeId"
             },
             "rightPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "refTableName"
+                "actor": "Extract Inner Flow",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "versionInd"
+            },
+            "rightPort": {
+                "actor": "Extract Inner Flow",
+                "name": "versionInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnvName"
+            },
+            "rightPort": {
+                "actor": "Set Environment",
+                "name": "value"
             }
         },
         {

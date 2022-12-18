@@ -63,7 +63,7 @@ public class Logic extends UserCode {
 			Db.Rows rows = null;
 			try {	
 				
-				String insertSql = "insert into tdm_lu_type_relation_eid (source_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, creation_date, version_name, version_datetime)" +
+				String insertSql = "insert into TDM.tdm_lu_type_relation_eid (source_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, creation_date, version_name, version_datetime)" +
 							"values(?,?,?,?,?,?,?,?)";
 				
 				//TDM 7.0 - table tdm_lu_type_rel_tar_eid for replace sequence/Cloning will be populated in this function
@@ -75,7 +75,7 @@ public class Logic extends UserCode {
 				String replaceSequences = "" + taskRow.get("REPLACE_SEQUENCES");
 						boolean loadRelTar = false;
 				//log.info("fnEnrParentChildLink - selectionMethod: " + selectionMethod + ", loadEntity: " + loadEntity + ", taskType: " + taskType);
-				String insertSqlTar = "insert into tdm_lu_type_rel_tar_eid (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, creation_date) " +
+				String insertSqlTar = "insert into TDM.tdm_lu_type_rel_tar_eid (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, creation_date) " +
 							"values(?,?,?,?,?,?)";
 				if (loadEntity == 1 && "load".equalsIgnoreCase(taskType) && 
 					("S".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSequences)))

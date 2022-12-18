@@ -1,0 +1,55 @@
+{
+    "type": "InitiateTDMReference",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "luName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "taskExecutionID",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "refTableName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "selectedRefVersionTaskName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "selectedRefVersionDateTime",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "sourceEnvName",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "InitiateTDMReference",
+            "mandatory": true
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "tdm"
+    ]
+}

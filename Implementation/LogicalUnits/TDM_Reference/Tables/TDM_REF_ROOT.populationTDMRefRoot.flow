@@ -1,0 +1,770 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "TDM_REF_INSTANCE_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "TDM_REF_INSTANCE_ID": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ConstStrings1",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "lu_name",
+                                            "source_env_name",
+                                            "task_execution_id",
+                                            "table_name"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Split1",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "|"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ArrayToMap1",
+                            "minHeight": 202,
+                            "actorType": {
+                                "parentType": "ArrayToMap",
+                                "inputs": [
+                                    {
+                                        "name": "keys",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lu_name": {
+                                                    "type": "string"
+                                                },
+                                                "source_env_name": {
+                                                    "type": "string"
+                                                },
+                                                "task_execution_id": {
+                                                    "type": "string"
+                                                },
+                                                "table_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchFirstRow1",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select t.task_id, rt.task_ref_table_id, t.task_type, t.task_title as task_name, \r\n    t.version_ind, t.retention_period_type, t.retention_period_value\r\nfrom ${@schema}.task_ref_tables rt, ${@schema}.tasks t, ${@schema}.task_execution_list el, ${@schema}.tasks_logical_units lu\r\nwhere el.task_execution_id = ${taskExeId} \r\nand el.lu_id = lu.lu_id\r\nand el.task_id = t.task_id\r\nand t.task_id = rt.task_id\r\nand rt.ref_table_name = ${tableName}\r\nand t.task_id = lu.task_id\r\nand lu.lu_name = ${luName}"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "task_id": {
+                                                    "type": "integer"
+                                                },
+                                                "task_ref_table_id": {
+                                                    "type": "integer"
+                                                },
+                                                "task_type": {
+                                                    "type": "string"
+                                                },
+                                                "task_name": {
+                                                    "type": "string"
+                                                },
+                                                "version_ind": {
+                                                    "type": "boolean"
+                                                },
+                                                "retention_period_type": {},
+                                                "retention_period_value": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IsNull1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "LuFunction1",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getRetention"
+                                    },
+                                    {
+                                        "name": "retentionPeriodType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "retentionPeriodValue",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {}
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LU Table",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "TDM_REF_ROOT",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "command",
+                                        "const": "upsert"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "ref_table_uid",
+                                            "lu_name",
+                                            "task_execution_id",
+                                            "table_id",
+                                            "table_name",
+                                            "task_type",
+                                            "task_id",
+                                            "task_name",
+                                            "source_env_name",
+                                            "ttl",
+                                            "version_ind"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "ref_table_uid"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
+                                        "name": "ref_table_uid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "table_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "task_type",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "task_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "source_env_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "ttl",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "version_ind",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Split1",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "ref_table_uid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ConstStrings1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "ArrayToMap1",
+                "name": "keys"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "ArrayToMap1",
+                "name": "values"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "taskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "luName"
+            },
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "lu_name"
+            },
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "source_env_name"
+            },
+            "path": [
+                "source_env_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "tableName"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "table_name"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayToMap1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "task_execution_id"
+            },
+            "path": [
+                "task_execution_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "task_id"
+            },
+            "path": [
+                "task_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "task_type"
+            },
+            "path": [
+                "task_type"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "version_ind"
+            },
+            "path": [
+                "version_ind"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull1",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "retention_period_type"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LuFunction1",
+                "name": "retentionPeriodType"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "retention_period_type"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LuFunction1",
+                "name": "retentionPeriodValue"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "retention_period_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "task_name"
+            },
+            "path": [
+                "task_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "table_id"
+            },
+            "path": [
+                "task_ref_table_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LuFunction1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "ttl"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TDM_REF_INSTANCE_ID"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "TDM_REF_INSTANCE_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "TDM_REF_ROOT",
+                "name": "table"
+            }
+        }
+    ]
+}

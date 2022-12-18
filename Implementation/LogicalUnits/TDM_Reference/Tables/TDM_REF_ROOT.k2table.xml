@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>TDM_REF_ROOT</Name>
+  <ID>tbl_TDM_REF_ROOT</ID>
+  <EntityId>ref_table_uid</EntityId>
+  <Columns>
+    <Column name="ref_table_uid" id="ref_table_uid" index="0" datatype="text" mandatory="true" />
+    <Column name="lu_name" id="lu_name" index="1" datatype="text" mandatory="true" />
+    <Column name="source_env_name" id="source_env_name" index="2" datatype="text" mandatory="true" />
+    <Column name="task_execution_id" id="task_execution_id" index="3" datatype="text" mandatory="true" />
+    <Column name="table_name" id="table_name" index="4" datatype="text" mandatory="true" />
+    <Column name="table_id" id="table_id" index="5" datatype="integer" mandatory="true" />
+    <Column name="task_type" id="task_type" index="6" datatype="text" mandatory="true" />
+    <Column name="task_id" id="task_id" index="7" datatype="integer" mandatory="true" />
+    <Column name="task_name" id="task_name" index="8" datatype="text" mandatory="true" />
+    <Column name="ttl" id="ttl" index="9" datatype="text" />
+    <Column name="version_ind" id="version_ind" index="10" datatype="blob" mandatory="true" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="ref_table_uid" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="TimeInterval" performEvery="00:00:00" />
+  <TriggersList />
+</TableObject>

@@ -1,0 +1,88 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get A record from Reference Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchFirstRow1",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select table_fields from reference_table limit 1"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "TABLE_FIELDS": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Array of Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Split1",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Split1",
+                "name": "string"
+            },
+            "path": [
+                "TABLE_FIELDS"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Split1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "tableFields"
+            }
+        }
+    ]
+}

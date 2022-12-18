@@ -8,7 +8,7 @@ import com.k2view.cdbms.FabricEncryption.FabricEncryption;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
-import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.api.endpoint.Endpoint.MethodType;
 import com.k2view.fabric.api.endpoint.Endpoint.Produce;
 import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
@@ -19,7 +19,7 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.*;
 import java.util.*;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -89,7 +89,7 @@ public class Logic extends WebServiceUserCode {
 	//end tdm
 
 	@desc("This API provides configuration for TDM GUI")
-	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"maxRetentionPeriod\": 90,\r\n" +
@@ -133,9 +133,9 @@ public class Logic extends WebServiceUserCode {
 			String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
 			Object params = db(TDM).fetch(sql).firstRow().get("param_value");
 			Map result = Json.get().fromJson((String) params, Map.class);
-			return TdmSharedUtils.wrapWebServiceResults("SUCCESS", "", result);
+			return wrapWebServiceResults("SUCCESS", "", result);
 		} catch (Throwable t) {
-			return TdmSharedUtils.wrapWebServiceResults("FAILED", t.getMessage(), null);
+			return wrapWebServiceResults("FAILED", t.getMessage(), null);
 		}
 	}
 
@@ -241,9 +241,9 @@ public class Logic extends WebServiceUserCode {
 				
 				retentionMap.put("maxRetentionPeriodForReserve", map);
 			}
-			return TdmSharedUtils.wrapWebServiceResults("SUCCESS", "", retentionMap);
+			return wrapWebServiceResults("SUCCESS", "", retentionMap);
 		} catch (Throwable t) {
-			return TdmSharedUtils.wrapWebServiceResults("FAILED", t.getMessage(), null);
+			return wrapWebServiceResults("FAILED", t.getMessage(), null);
 		}
 	}
 

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.9.5">
+  <Name>vdb</Name>
+  <RootView>TDM_REF_ROOT</RootView>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
+  <EventsList />
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+  </IidFinderProp>
+  <Tables>
+    <Table>reference_table</Table>
+    <Table>TDM_REF_ROOT</Table>
+  </Tables>
+  <TablesProperties>
+    <TableProperties name="reference_table">
+      <Populations>
+        <Population name="populationRefTable.flow" order="2" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+    <TableProperties name="TDM_REF_ROOT">
+      <Populations>
+        <Population name="populationTDMRefRoot.flow" order="1" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList />
+  <ReferencesList />
+  <Relations />
+  <DatabaseRelations>
+    <Relation>
+      <From tableType="TableObject" table="TDM_REF_ROOT" column="table_name" columnId="table_name" />
+      <To tableType="TableObject" table="reference_table" populationObjectName="populationRefTable.flow" column="table_name" columnId="table_name" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TDM_REF_ROOT" column="source_env_name" columnId="source_env_name" />
+      <To tableType="TableObject" table="reference_table" populationObjectName="populationRefTable.flow" column="source_env_name" columnId="source_env_name" />
+    </Relation>
+    <Relation>
+      <From tableType="TableObject" table="TDM_REF_ROOT" column="task_execution_id" columnId="task_execution_id" />
+      <To tableType="TableObject" table="reference_table" populationObjectName="populationRefTable.flow" column="tdm_task_execution_id" columnId="tdm_task_execution_id" />
+    </Relation>
+  </DatabaseRelations>
+  <PreVCsSqlScript />
+  <PostVCsSqlScript />
+  <Indexes />
+  <LudbProperties />
+  <DiagramGraph>
+    <Graph version="6.5.9.5" name="vdb.k2vdb.xml">
+      <Node name="TDM_REF_ROOT" pos="135 134" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="reference_table" pos="640 170" size="257 136" listGroupSize="250 100" viewType="Table" />
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

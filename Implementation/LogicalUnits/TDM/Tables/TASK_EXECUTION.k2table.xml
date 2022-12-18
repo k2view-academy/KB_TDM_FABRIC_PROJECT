@@ -20,9 +20,11 @@
       <Name>fnUpdateTaskSummaryTable</Name>
       <Type>Function</Type>
     </Enrichment>
+    <Enrichment>
+      <Name>fnTDMJMXStats</Name>
+      <Type>Function</Type>
+    </Enrichment>
   </EnrichmentList>
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
   <TriggersList />
 </TableObject>

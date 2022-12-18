@@ -28,16 +28,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>TDMReferenceLoader.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMReferenceLoader.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>GetTableFieldsFromCassandra.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\GetTableFieldsFromCassandra.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>CheckMainTableAndSequentialIID.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckMainTableAndSequentialIID.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -45,6 +35,16 @@
     <ProjectItemProp>
       <NodeName>checkMainTableAndSequentialIID.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\checkMainTableAndSequentialIID.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMFilterOutTargetTables.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>filterOutTDMTables.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -136,6 +136,51 @@
       <NodeName>CheckIfSequenceFlowExists.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckIfSequenceFlowExists.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfFlowExists.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfFlowExists.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>checkIfFieldSequential.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CheckIfDeleteOnlyTask.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfDeleteOnlyTask.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>SetTargetTableName.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\SetTargetTableName.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>SetTargetTableName.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\SetTargetTableName.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMTargetTablesNames.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMTargetTablesNames.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMReferenceLoader.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMReferenceLoader.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>GetTableFieldsFromCassandra.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\GetTableFieldsFromCassandra.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>GetCustomLogicFlows.flow</NodeName>
@@ -243,16 +288,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reserve</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>CheckIfFlowExists.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CheckIfFlowExists.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfFlowExists.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>PopulateTableErrors.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\PopulateTableErrors.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDM_Tables</CategoryKey>
@@ -261,16 +296,6 @@
       <NodeName>CheckIfRootTableAndField.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\CheckIfRootTableAndField.flow</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>checkIfFieldSequential.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\checkIfFieldSequential.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CheckIfDeleteOnlyTask.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfDeleteOnlyTask.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>getTDMSeparators.actor</NodeName>
@@ -286,16 +311,6 @@
       <NodeName>InitiateTDMLoad_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMLoad_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>InitiateTDMReferenceLoad.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>InitiateTDMReferenceLoad.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>PopulateTableErrors.flow</NodeName>
@@ -428,19 +443,54 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@CustomLogic</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>SetTargetTableName.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\SetTargetTableName.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+      <NodeName>CheckIfExtract.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\CheckIfExtract.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>SetTargetTableName.flow</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\SetTargetTableName.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+      <NodeName>TDMReferenceExtractor.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMReferenceExtractor.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>TDMTargetTablesNames.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMTargetTablesNames.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</CategoryKey>
+      <NodeName>RefTableToTmpTable.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\RefTableToTmpTable.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>InitiateTDMReference.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReference.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ExtractRefTable.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\ExtractRefTable.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>InitiateTDMReference.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReference.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TmpTableToRefTable.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TmpTableToRefTable.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>UpgradeRefTables.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\UpgradeRefTables.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>InitiateTDMReferenceLoad.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>InitiateTDMReferenceLoad.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>CustomLogicFlows.actor</NodeName>
@@ -460,11 +510,6 @@
     <ProjectItemProp>
       <NodeName>TDMSeqSrc2TrgMapping.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\TDMSeqSrc2TrgMapping.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>filterOutTDMTables.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -516,11 +561,6 @@
       <NodeName>setSyncMode_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setSyncMode_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Init</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDMFilterOutTargetTables.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>deleteAndLoadTarRelTable_Actor.actor</NodeName>
@@ -723,9 +763,79 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>sharedUtilsTali.java&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;com\k2view\cdbms\usercode\common&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\SharedObjects\Java\src\com\k2view\cdbms\usercode\common\sharedUtilsTali</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Java\src@Test</CategoryKey>
+      <NodeName>BILLING_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_INSERT.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>COLLECTION_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_INSERT.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CRM_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_INSERT.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>DBS_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\DBS_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ORDERING_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_INSERT.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ROLES_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ROLES_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_BILLING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_COLLECTION_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_CRM_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_ORDERING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDM_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TDM_INSERT.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
     </ProjectItemProp>
   </ProjectItemPropList>
   <ProjectItemsCategoryList>
@@ -734,12 +844,12 @@
       <Key>Implementation\SharedObjects\Broadway@ScriptsForTemplates</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
-      <Name>Reference</Name>
-      <Key>Implementation\SharedObjects\Broadway@TDM@Reference</Key>
-    </ProjectItemsCategory>
-    <ProjectItemsCategory>
       <Name>TDMTemplates</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@TDMTemplates</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>Reference</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@Reference</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>ExternalEntityList</Name>
@@ -764,6 +874,10 @@
     <ProjectItemsCategory>
       <Name>General</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@General</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>Upgrade</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>TDM</Name>
@@ -792,6 +906,14 @@
     <ProjectItemsCategory>
       <Name>Test</Name>
       <Key>Implementation\SharedObjects\Java\src@Test</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>TDM_Training</Name>
+      <Key>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>TRAINING</Name>
+      <Key>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</Key>
     </ProjectItemsCategory>
   </ProjectItemsCategoryList>
 </ProjectItemsProperties>

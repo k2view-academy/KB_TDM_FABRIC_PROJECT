@@ -25,6 +25,7 @@ SELECT task_title,
        reserve_retention_period_type,
        reserve_retention_period_value,
        parameters,
-       reserve_note
+       reserve_note,
+       filterout_reserved
 FROM   @TDMDB_SCHEMA@.TASKS
 WHERE  task_id = ?

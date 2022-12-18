@@ -89,6 +89,14 @@ public class Logic extends UserCode {
 	}
 
 
+	@out(name = "countParent", type = Integer.class, desc = "")
+	public static Integer fnGetCount(String sql, String parentLuName, String beID) throws Exception {
+		//Long countParent = (Long) DBSelectValue("TDM", sql, new Object[]{parentLuName, beID});
+		Long countParent = (Long) db("TDM").fetch(sql, parentLuName, beID).firstValue();
+		Integer count = countParent.intValue();
+		return count;
+	}
+
 
 	@type(RootFunction)
 	@out(name = "source_env", type = String.class, desc = "")

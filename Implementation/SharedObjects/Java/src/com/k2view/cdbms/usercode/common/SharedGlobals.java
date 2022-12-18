@@ -41,8 +41,6 @@ public class SharedGlobals {
 	public static String TDM_TASK_EXE_ID = "0";
 
 	@category("TDM")
-	public static String MASK_FLAG = "0";
-	@category("TDM")
 	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
 	@category("TDM")
 	public static String TDM_TAR_ENV_NAME = "TAR";
@@ -104,27 +102,25 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_REF_UPD_SIZE = "10000";
 
-	@desc("Prefix of delete tables")
 	@category("TDM")
-	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
-	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
-	public static String MAIL_ADDRESS = "";
+	public static final String TDMDB_SCHEMA = "public";
 
-	@category("TDM")
-	public static String TDMDB_SCHEMA = "public";
 	@category("TDM")
 	public static String clone_id = "0";
 
-	@desc("The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB")
 	@category("TDM")
-	public static String ORACLE8_DB_TYPE = "Oracle8";
-	@desc("In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months")
+	public static String EXTRACT_MASKING_FLAG = "false";
 	@category("TDM")
-	public static String CLONE_CLEANUP_RETENTION_PERIOD_TYPE = "Days";
-	@desc("The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE")
+	public static String LOAD_MASKING_FLAG = "false";
+
 	@category("TDM")
-	public static String CLONE_CLEANUP_RETENTION_PERIOD_VALUE = "1";
-	@desc("Prefix of delete tables")
+	public static final String REFERENCE_LU = "TDM_Reference";
+
 	@category("TDM")
-	public static String TDM_DEL_TABLE_PREFIX = "TAR";
+	public static final String BUILD_TDMDB = "false";
+
+	@category("TDM_DEMO")
+	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
+	@category("TDM_DEMO")
+	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 }

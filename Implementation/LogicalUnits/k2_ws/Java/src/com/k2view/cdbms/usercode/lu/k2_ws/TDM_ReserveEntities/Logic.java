@@ -24,13 +24,13 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnIsOwner;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnIsOwner;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.fnInsertActivity;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.fnValidateReservedEntities;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserEnvs;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})

@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="POSTGRESQL_ADMIN" type="genericdb" version="6.5.9.9">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="POSTGRESQL_ADMIN" type="genericdb" version="7.0.0.23">
   <Active>true</Active>
   <DataSource>localhost</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>postgres</DataBase>
   <UserId>postgres</UserId>
-  <Password>FXsOMQ0IAdTfvXlvnG0QSfO2DHt+48WMlZ5B8rzPteE=:UFxZymuSXYvPkL4gW1TIKlhhDiK7H1bGgUxtuvivcrw=</Password>
+  <Password>Bqn08GfsygFQ/AN620awNjHrEXB9eL772TRdS4yfxnw=:sSjozBPAan0s3C/kLEaY2mpQyOBrMZYsKKk2zOK6fCk=</Password>
   <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/postgres?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>

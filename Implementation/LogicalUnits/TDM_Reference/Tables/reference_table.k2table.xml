@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>reference_table</Name>
+  <ID>tbl_reference_table</ID>
+  <EntityId>table_name</EntityId>
+  <Columns>
+    <Column name="table_name" id="table_name" index="0" datatype="text" mandatory="true" />
+    <Column name="tdm_task_execution_id" id="tdm_task_execution_id" index="1" datatype="text" mandatory="true" />
+    <Column name="source_env_name" id="source_env_name" index="2" datatype="text" mandatory="true" />
+    <Column name="table_data" id="table_data" index="3" datatype="blob" mandatory="true" />
+    <Column name="records_count" id="records_count" index="4" datatype="integer" mandatory="true" />
+    <Column name="table_fields" id="table_fields" index="5" datatype="text" mandatory="true" />
+  </Columns>
+  <IndexesList />
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
+  <TriggersList />
+</TableObject>

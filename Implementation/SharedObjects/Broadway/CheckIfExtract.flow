@@ -1,0 +1,1075 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Start Inner Flow",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "Inner flow that  check if we extract before load according to these conditions: \nI. The tasks.sync_mode != OFF && != Force and the Reference table does not exist in Cassandra.\n II. The tasks.sync_mode != OFF && != Force and the Reference table is empty in Cassandra.\n III. The tasks.sync_mode is FORCE\n\n",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "SyncMode is Force",
+                    "dependsOnList": [
+                        "Start Inner Flow"
+                    ],
+                    "isLast": 0,
+                    "remark": "IF SyncMode is Force Then call the Extract Flow ",
+                    "actors": [
+                        {
+                            "name": "Force",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "FORCE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Extract Flow Case A",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "ExtractRefTable"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": 0,
+                                        "name": "default_time_to_live",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "versionInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "SyncMode is Not Force",
+                    "dependsOnList": [
+                        "Start Inner Flow"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "remark": "EXISTS AND EMPTY +OFF ERROR ",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "SyncMode is Force"
+                    ],
+                    "isLast": 0,
+                    "actors": []
+                },
+                {
+                    "name": "SyncMode is ON",
+                    "dependsOnList": [
+                        "SyncMode is Not Force"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": false,
+                    "remark": "is SyncMode is Null check for Cassandra table:\n**table exists then count its records\n**tabke doesnt exists then extract it \n",
+                    "actors": [
+                        {
+                            "name": "ON",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "OFF"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Check Cassandra Table",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnCheckCassandraTableExists"
+                                    },
+                                    {
+                                        "name": "keyspace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "SyncMode is OFF",
+                    "dependsOnList": [
+                        "SyncMode is Not Force"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "remark": "if SyncMode is OFF check for Cassandra table :\n1) if table exists then extract then count records\n2)if table doesnt exists then error",
+                    "actors": [
+                        {
+                            "name": "Check Cassandra Table__1",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnCheckCassandraTableExists"
+                                    },
+                                    {
+                                        "name": "keyspace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "actors": []
+                },
+                {
+                    "name": "Cassandra Table exists",
+                    "dependsOnList": [
+                        "SyncMode is ON"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "remark": "Cassandra table does exits then count its records:\n1)if zero then extract\n2)if not zero then nothing ",
+                    "actors": [
+                        {
+                            "name": "True",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Ref Table Count__3",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select count(*) as recordsCount from ${@refKeySpace}.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refKeySpace",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "selectedRefVersionTaskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Does not exists ",
+                    "dependsOnList": [
+                        "SyncMode is ON"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Extract Flow Case B",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "ExtractRefTable"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": 0,
+                                        "name": "default_time_to_live",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "versionInd",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Cassandra Table Exists ",
+                    "dependsOnList": [
+                        "SyncMode is OFF"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "remark": "table records count: \n1) if zero then error\n2) if not zero then nothing",
+                    "actors": [
+                        {
+                            "name": "True_1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Error Handler For Updating TDMDB To Failure__1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Ref Table Count__1",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select count(*) as recordsCount from ${@refKeySpace}.${@refTableName} where  TDM_TASK_EXECUTION_ID = ${selectedRefVersionTaskExeId} And\r\n  source_env_name = ${sourceEnvName}"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "selectedRefVersionTaskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refKeySpace",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Not Exits ",
+                    "dependsOnList": [
+                        "SyncMode is OFF"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Fail Does Not Exits",
+                            "actorType": {
+                                "parentType": "Fail",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "SyncMode is OFF and Cassandra table does not Exists"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": false,
+                    "actors": []
+                },
+                {
+                    "name": "Zero Records",
+                    "dependsOnList": [
+                        "Cassandra Table exists"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": false,
+                    "actors": [
+                        {
+                            "name": "Zero",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Extract Flow Case C",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "ExtractRefTable"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": 0,
+                                        "name": "default_time_to_live",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnvName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "versionInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Table Not Empty",
+                    "dependsOnList": [
+                        "Cassandra Table exists"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 13",
+                    "dependsOnList": [
+                        "Does not exists "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Table Is Empty",
+                    "dependsOnList": [
+                        "Cassandra Table Exists "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Zero_1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Fail Table Is Empty",
+                            "actorType": {
+                                "parentType": "Fail",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Sync Mode is OFF and the Cassandra table is Empty\r\n "
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Not Empty",
+                    "dependsOnList": [
+                        "Cassandra Table Exists "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 23",
+                    "dependsOnList": [
+                        "Not Exits "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Check Cassandra Table",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "True",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check Cassandra Table__1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "True_1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Ref Table Count__3",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Zero",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Ref Table Count__1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Zero_1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SyncMode"
+            },
+            "rightPort": {
+                "actor": "Force",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case A",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case A",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case A",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case A",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case A",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "versionInd"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case A",
+                "name": "versionInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SyncMode"
+            },
+            "rightPort": {
+                "actor": "ON",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refKeySpace"
+            },
+            "rightPort": {
+                "actor": "Check Cassandra Table",
+                "name": "keyspace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Check Cassandra Table",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refKeySpace"
+            },
+            "rightPort": {
+                "actor": "Check Cassandra Table__1",
+                "name": "keyspace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Check Cassandra Table__1",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__3",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__3",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refKeySpace"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__3",
+                "name": "refKeySpace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "selectedRefVersionTaskExeId"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__3",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case B",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case B",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case B",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case B",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case B",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "versionInd"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case B",
+                "name": "versionInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__1",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "selectedRefVersionTaskExeId"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__1",
+                "name": "selectedRefVersionTaskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__1",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "refKeySpace"
+            },
+            "rightPort": {
+                "actor": "Get Ref Table Count__1",
+                "name": "refKeySpace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case C",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case C",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case C",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case C",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceEnvName"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case C",
+                "name": "sourceEnvName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "versionInd"
+            },
+            "rightPort": {
+                "actor": "Extract Flow Case C",
+                "name": "versionInd"
+            }
+        }
+    ]
+}

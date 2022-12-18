@@ -42,7 +42,7 @@ import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
@@ -747,11 +747,11 @@ public class SharedLogic {
 
 	@out(name = "refSummaryStats", type = Map.class, desc = "")
 	public static Map<String,Object> fnGetReferenceSummaryData(String refTaskExecutionId) throws Exception {
-		String selectRefTablesStats = "Select count(*), to_char(min(start_time), 'YYYY-MM-DD HH24:MI:SS'), to_char(max(end_time), 'YYYY-MM-DD HH24:MI:SS'), " +
-			"execution_status, lu_name from " + TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".TASK_REF_TABLES rt where task_execution_id = ? " + 
+		String selectRefTablesStats = "Select count(*) as cnt, to_char(min(start_time), 'YYYY-MM-DD HH24:MI:SS') as start_time, " + 
+			"to_char(max(end_time), 'YYYY-MM-DD HH24:MI:SS') as end_time, execution_status, lu_name from " + 
+			TDMDB_SCHEMA + ".TASK_REF_EXE_STATS es, " + TDMDB_SCHEMA + ".TASK_REF_TABLES rt where task_execution_id = ? " + 
 			"and es.task_id = rt.task_id and es.task_ref_table_id = rt.task_ref_table_id group by execution_status, lu_name order by lu_name";
 		
-		//ResultSetWrapper taskExecutionRefTables = null;
 		Integer tot_num_tables_to_process=0;
 		Integer num_of_processed_ref_tables= 0;
 		Integer num_of_copied_ref_tables = 0;
@@ -771,7 +771,7 @@ public class SharedLogic {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String luName = "";
 		String prevLuName = "";
-		//reportUserMessage("in fnGetReferenceSummaryData");
+		
 		for (Db.Row refRec : rows) {
 		
 			Map <String, Object> refSummaryStats = new LinkedHashMap<>();
@@ -782,18 +782,21 @@ public class SharedLogic {
 			calcMinDate = null;
 			calcMaxDate = null;
 		
-			if (refRec.cells()[3] != null)
-				refStatus = refRec.cells()[3].toString();
+			if (refRec.get("execution_status") != null)
+				refStatus = refRec.get("execution_status").toString();
 		
-			if (refRec.cells()[1] != null)
-				min_start_time = refRec.cells()[1].toString();
+			if (refRec.get("start_time") != null)
+				min_start_time = refRec.get("start_time").toString();
 		
-			if (refRec.cells()[2] != null)
-				max_end_time = refRec.cells()[2].toString();
+			if (refRec.get("end_time") != null)
+				max_end_time = refRec.get("end_time").toString();
 		
 		
-			luName = "" + refRec.cells()[4];
+			luName = "" + refRec.get("lu_name");
 			
+			noOfRecords = Integer.parseInt(refRec.get("cnt").toString());
+			
+			//log.info("fnGetReferenceSummaryData - refStatus: " + refStatus + ", noOfRecords: " + noOfRecords);
 			if (!prevLuName.equals(luName)) {
 				tot_num_tables_to_process=0;
 				num_of_processed_ref_tables= 0;
@@ -804,26 +807,21 @@ public class SharedLogic {
 				
 				prevLuName = luName;
 			}
-			//reportUserMessage("in fnGetReferenceSummaryData- in the loop2");
 		
 			Date minDate = null;
 			Date maxDate = null;
 		
 			if (!min_start_time.equals("")) {
 				minDate = formatter.parse(min_start_time);
-				//reportUserMessage("min start date: " + min_start_time + " minDate: " + minDate);
 			}
 		
 			if (!max_end_time.equals("")) {
 				maxDate = formatter.parse(max_end_time);
-				//log.info("max_end_time: " + max_end_time);
-				//log.info("maxDate: " + maxDate);
 			}
 			
 			if (calcMinDate == null || (minDate != null && calcMinDate.after(minDate))) // if the minimum date is null or is later the the minimum date of the record- get the minimum date of the record
 			{
 				calcMinDate = minDate;
-				//reportUserMessage("minDate " + minDate);
 			}
 			
 			if (calcMaxDate == null || (maxDate != null && calcMaxDate.before(maxDate))) // If the max date is null or earlier than the max date of the record- get the max date of the record
@@ -831,8 +829,6 @@ public class SharedLogic {
 				calcMaxDate = maxDate;
 			}
 			
-			//reportUserMessage("type of  refRec[0]: " + refRec[0].getClass() );
-			noOfRecords = Integer.parseInt(refRec.cells()[0].toString());
 			tot_num_tables_to_process += noOfRecords;
 			
 			switch (refStatus) {
@@ -1174,11 +1170,17 @@ public class SharedLogic {
 		return isFirstSync();
 	}
 
-	@out(name = "refTableName", type = String.class, desc = "")
+	@out(name = "trnLuName", type = String.class, desc = "")
+	@out(name = "trnTableName", type = String.class, desc = "")
 	@out(name = "schemaName", type = String.class, desc = "")
 	@out(name = "interfaceName", type = String.class, desc = "")
+	@out(name = "targetRefTableName", type = String.class, desc = "")
 	@out(name = "targetSchemaName", type = String.class, desc = "")
 	@out(name = "targetInterfaceName", type = String.class, desc = "")
+	@out(name = "targetTablePK", type = String.class, desc = "")
+	@out(name = "truncateOrdelete", type = Boolean.class, desc = "")
+	@out(name = "countIndicator", type = Boolean.class, desc = "")
+	@out(name = "countBF", type = String.class, desc = "")
 	public static Object fnGetRefTableData(String luName, String refTableName) throws Exception {
 		Map<String,Map<String, String>> trnRefListValues = getTranslationsData("trnRefList");
 		
@@ -1190,6 +1192,9 @@ public class SharedLogic {
 		String targetSchemaName = "";
 		String targetInterfaceName = "";
 		String targetTablePK = "";
+		Boolean truncateOrdelete = null;
+		Boolean countIndicator = null ; 
+		String  countBF = "";
 		//log.info("fnGetRefTableData - luName: " + luName + ", refTableName: " + refTableName);
 		
 		for(String index: trnRefListValues.keySet()){
@@ -1202,6 +1207,9 @@ public class SharedLogic {
 				//log.info("fnGetRefTableData - Found table in translation");
 				schemaName = valMap.get("schema_name");
 				interfaceName = valMap.get("interface_name");
+				truncateOrdelete = Boolean.valueOf(valMap.get("truncate_or_delete"));
+				countIndicator = Boolean.valueOf(valMap.get("count_indicator"));
+				countBF = valMap.get("count_bf");
 				if (valMap.get("target_ref_table_name") != null && !Util.isEmpty(valMap.get("target_ref_table_name"))) {
 					targetRefTableName =  valMap.get("target_ref_table_name");
 				} else {
@@ -1210,6 +1218,7 @@ public class SharedLogic {
 				targetSchemaName = valMap.get("target_schema_name");
 				targetInterfaceName = valMap.get("target_interface_name");
 				targetTablePK = valMap.get("table_pk_list");
+		
 				
 				break;
 			}
@@ -1217,7 +1226,7 @@ public class SharedLogic {
 		}
 		//log.info("fnGetRefTableData - Returning: targetRefTableName: " + targetRefTableName + ", schemaName: " + schemaName + ", interfaceName: " + interfaceName +
 		//		", targetSchemaName: " + targetSchemaName + ", targetInterfaceName: " + targetInterfaceName);
-		return new Object[]{targetRefTableName, schemaName, interfaceName, targetSchemaName, targetInterfaceName, targetTablePK};
+		return new Object[]{trnLuName, trnTableName, schemaName, interfaceName, targetRefTableName, targetSchemaName, targetInterfaceName, targetTablePK, truncateOrdelete, countIndicator, countBF};
 	}
 
 	@desc("Dummy Root function")
@@ -1275,7 +1284,7 @@ public class SharedLogic {
 						//log.info("setGlobals - setting "+key+"='"+value+ "'");
 						fabric().execute("set " + key + "='" + value + "'");
 						// TDM 7.1 - Handle Masking and Sequence Broadway Actors flags
-						TdmSharedUtils.setBroadwayActorFlags("" + key, "" + value);
+						setBroadwayActorFlags("" + key, "" + value);
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -1335,7 +1344,7 @@ public class SharedLogic {
 		if ("owner".equalsIgnoreCase(permissionGroup)) {
 			//log.info("The user is an owner");
 			//Check if the user is an owner of the environment, if not treat the user as tester
-			if(TdmSharedUtils.fnIsOwner(envID)) {
+			if(fnIsOwner(envID)) {
 				isOwner = true;
 			} else {
 				isOwner = false;

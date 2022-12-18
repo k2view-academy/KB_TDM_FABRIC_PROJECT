@@ -73,8 +73,32 @@
                                     },
                                     {
                                         "name": "value",
-                                        "const": "SRC",
+                                        "const": "\"Please set the environment for the Cassandra and Redis connections\"",
                                         "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create TDMDB if it does not exist",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create TDMDB",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "TDMDB"
                                     }
                                 ],
                                 "outputs": []

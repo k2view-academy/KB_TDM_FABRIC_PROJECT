@@ -12,6 +12,26 @@
                 }
             ]
         },
+	    {
+            "stages": [
+                {
+                    "name": "Initiate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Initiate TDM Delete",
+                            "actorType": {
+                                "parentType": "InitiateTDMLoad_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
 		{
             "stages": [
                 {
@@ -122,6 +142,36 @@
                 "name": "params"
             },
             "iterate": "Iterate"
+        },
+	    {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Delete",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Delete",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",							 
+                "name": "syncMode"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Delete",
+                "name": "syncMode"
+            }
         }
     ]
 }

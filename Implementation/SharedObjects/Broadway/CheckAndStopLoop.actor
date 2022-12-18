@@ -8,20 +8,20 @@
         {
             "name": "script",
             "const": {
-                "userCode": "flowArgs.loadedRecCnt += recordLoaded;\r\nif (flowArgs.loadedRecCnt == noOfEntities) {\r\n    contextLoop.stop();\r\n}\r\n",
-                "script": "flowArgs.loadedRecCnt += recordLoaded;\n\nif (flowArgs.loadedRecCnt == noOfEntities) {\n  contextLoop.stop();\n}"
+                "userCode": "flowArgs.loadedRecCnt += RECORD_LOADED;\r\nif (flowArgs.loadedRecCnt == NUM_OF_ENTITIES) {\r\n    contextLoop.stop();\r\n}\r\n",
+                "script": "flowArgs.loadedRecCnt += RECORD_LOADED;\n\nif (flowArgs.loadedRecCnt == NUM_OF_ENTITIES) {\n  contextLoop.stop();\n}"
             },
             "hidden": true
         },
         {
-            "name": "recordLoaded",
+            "name": "RECORD_LOADED",
             "schema": {
                 "type": "integer"
             },
             "mandatory": false
         },
         {
-            "name": "noOfEntities",
+            "name": "NUM_OF_ENTITIES",
             "schema": {
                 "type": "integer"
             },

@@ -2,7 +2,7 @@
 // Project Shared Functions
 /////////////////////////////////////////////////////////////////////////
 
-package com.k2view.cdbms.usercode.common.Util;
+package com.k2view.cdbms.usercode.common.TemplateUtils;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -139,7 +139,7 @@ public class SharedLogic {
 		map.put("MAIN_TABLE_SEQ_ID", seqIID);
 		map.put("MAIN_TABLE_SEQ_NAME", seqName);
 		//log.info("buildTemplateData - LU_TABLE: " + luTable + ", MAIN_TABLE_SEQ_ID: " + seqIID);
-		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = '" + luTable + "'";
+		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = '" + luTable + "', RESULT_STRUCTURE=ROW";
 		//log.info("buildTemplateData - cmd: " + cmd);
 		
 		LinkedList<Object> tableSeq = (LinkedList<Object>)fabric().fetch(cmd).firstRow().get("value");
@@ -227,7 +227,7 @@ public class SharedLogic {
 					break;
 				}
 			}
-			Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+			Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=', RESULT_STRUCTURE=ROW" +
 					originalTableName + "', luName=" + luType.luName);
 			String tableFiltered = "";
 			if (checkTable != null && checkTable.firstValue() != null) {

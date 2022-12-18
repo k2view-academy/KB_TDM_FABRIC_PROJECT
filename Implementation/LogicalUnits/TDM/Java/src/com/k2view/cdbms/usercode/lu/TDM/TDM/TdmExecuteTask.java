@@ -1,10 +1,8 @@
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
-//import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
-import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
@@ -24,11 +22,12 @@ import static com.k2view.cdbms.shared.user.UserCode.*;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIdSeparatorsFromTDM;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.setGlobals;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.*;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_PROPERTIES.*;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_TYPES.*;
 import static com.k2view.cdbms.usercode.lu.TDM.TDM_Extract.Logic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDMRef.SharedLogic.fnTdmReference;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class TdmExecuteTask {
@@ -127,7 +126,7 @@ public class TdmExecuteTask {
                 	        	updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId, versionExpDate);
 								try {
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-                                    TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                    fnTdmReference(String.valueOf(taskExecutionID), taskType);
 								} catch (Exception e) {
 									log.error("TdmExecuteTask - Update extract task status to failed");
 		                        	updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
@@ -142,7 +141,7 @@ public class TdmExecuteTask {
 						} else {
 							try {
 								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-                                TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                fnTdmReference(String.valueOf(taskExecutionID), taskType);
 							} catch (Exception e) {
 								log.error("TdmExecuteTask - Update extract task status to failed");
 								updateLuExecutionStatus(taskExecutionID, luID, "failed", null, versionExpDate);
@@ -162,7 +161,7 @@ public class TdmExecuteTask {
             	        	    if (!executionId.isEmpty()) {
                 	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
 									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-                                    TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                    fnTdmReference(String.valueOf(taskExecutionID), taskType);
 		                        } else {
     		                        // rollback LU and task status
         		                    updatedFailedStatus(taskExecutionID, luID);
@@ -170,7 +169,7 @@ public class TdmExecuteTask {
                 		        }
 							} else {
 								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-                                TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
+                                fnTdmReference(String.valueOf(taskExecutionID), taskType);
 							}
         	            } catch (Exception e) {
              	       	// rollback LU and task status
@@ -192,8 +191,6 @@ public class TdmExecuteTask {
 					                return;
 								}
 								updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
-								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
-								TdmSharedUtils.fnTdmCopyReference(String.valueOf(taskExecutionID), taskType);
 							} else {
 								// rollback LU and task status
 								updatedFailedStatus(taskExecutionID, luID);
@@ -496,10 +493,12 @@ public class TdmExecuteTask {
         String selectionMethod = ("" + SELECTION_METHOD.get(taskProperties)).toUpperCase();
 		String replaceSequences = "" + REPLACE_SEQUENCES.get(taskProperties);
 		String taskType = "" + TASK_TYPE.get(taskProperties);
-		String entityExclusionListWhere = ""; 
-		// Reservation is not relavent in case of replace sequence. 
-		// And in case of entity list the resevation will be checked by the batch process to failed the entity like any other failure
-		if (!"L".equals(selectionMethod) && !"S".equals(selectionMethod) && !"true".equals(replaceSequences) && !"extract".equalsIgnoreCase(taskType)) {
+		String entityExclusionListWhere = "";
+		//TDM 7.5.3 - The entity list will be checked against reserved entities only if requested in the task
+		Boolean filterOutReserved = (Boolean) FILTEROUT_RESERVED.get(taskProperties);
+		// Reservation is not relevant in case of replace sequence.
+		// And in case of entity list the reservation will be checked by the batch process to fail the entity like any other failure
+		if (filterOutReserved && !"L".equals(selectionMethod) && !"S".equals(selectionMethod) && !"true".equals(replaceSequences) && !"extract".equalsIgnoreCase(taskType)) {
 			entityExclusionListWhere = getReserveCondition(taskProperties);
 		}
         String entityInclusion = "";
@@ -508,12 +507,12 @@ public class TdmExecuteTask {
             case "L": // In case the task lists the entities to run
                String versionParams = VERSION_IND.get(taskProperties).equals("true") ? 
 					separator + SELECTED_VERSION_TASK_NAME.get(taskProperties) + separator + SELECTED_VERSION_DATETIME.get(taskProperties) : "";
-				//entitiesList = entitiesList.replaceAll("\\s+","");
+					//entitiesList = entitiesList.replaceAll("\\s+","");
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
 				
 				for (String entityID : entitiesListArray) {
-					//Remove leading and trailing spaces
-					entityID = entityID.trim();
+					// TDM 7.5.3 - Add separtors to the entity ID if they are in use
+					entityID = addSeparators(entityID.trim());
 					entityInclusion +=  "'" + env + separator + entityID + versionParams + "',";
 				}
 	
@@ -530,23 +529,21 @@ public class TdmExecuteTask {
                 entityInclusion = "SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " FROM " + luParamsTable + entityExclusionListWhere + " ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
                 break;
             case "S": // In case the task requests to synthetically create entities
-                    //entityInclusion = "SELECT '" + env + getEntityIDSelect("'" + entitiesList + "'") + " as entity_id from (select generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " ) as serie) t";
-                    entityInclusion = "SELECT '" + env + separator + entitiesList + "#params#{\"clone_id\"='||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
-                //todo - check if should be: env + getEntityIDSelect("'" + entitiesList + "'")
+				entityInclusion = "SELECT '" + env + separator + entitiesList + "#params#{\"clone_id\"='||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
                 break;
             case "P": // In case the task has criteria based on parameters
-                listOfMatchingEntities = TdmSharedUtils.generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
+                listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                 entityInclusion = "SELECT entity_id FROM (SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 " + entityExclusionListWhere + " LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
                 break;
             case "PR": // In case the task has criteria based on parameters and random list
-                listOfMatchingEntities = TdmSharedUtils.generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
+                listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
                 entityInclusion = "SELECT entity_id FROM ( SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 " + entityExclusionListWhere + "  ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
                 break;
             case "ALL":
                 if(VERSION_IND.get(taskProperties).equals("true") && taskType.equalsIgnoreCase("load")){
 					// TDM 7.4 - Make the entities reserved by other tasks are not loaded
 					entityExclusionListWhere.replace("WHERE", "AND");
-					// The entity list should be taken from TDMDB and it should consider the status of the entities, only entities extract successfully should be loaded
+					// The entity list should be taken from TDMDB and it should consider the status of the entities, only entities extracted successfully should be loaded
                     //Db.Rows rows = db(TDM).fetch("SELECT fabric_execution_id FROM TASK_EXECUTION_LIST WHERE task_execution_id=? and lu_id=?", SELECTED_VERSION_TASK_EXE_ID.get(taskProperties), LU_ID.get(taskProperties));
                     //entityInclusion = "SELECT entityid FROM k2batchprocess.batchprocess_entities_info WHERE bid = '" + rows.firstValue() + "' ALLOW FILTERING";
 					
@@ -558,11 +555,15 @@ public class TdmExecuteTask {
 			case "C" :
 				// TDM 7.5 - Set the environment before calling the Flow to make sure that the records are restored from the right DB.
 				fabric().execute("set environment " + env);
-	
-				String luName = LU_NAME.get(taskProperties);
+				
+				// TDM 7.5.3 - Get the Lu Name of the Custom Logic flow from the SELECTION_PARAM_VALUE
+				//String luName = LU_NAME.get(taskProperties);
+				String[] params = ("" + SELECTION_PARAM_VALUE.get(taskProperties)).split("#");
+				String luName = params[0];
+				String customLogicFlow = params[1];
 	
 				// TDM 7.5.1 - If the entity List table does not exists create it
-				String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable luName = " + luName;
+				String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable luName = " + luName + ", RESULT_STRUCTURE=ROW";
 				fabric().execute(createEntityListTab);
 
 				Long entitiesLimit = 0L;
@@ -572,7 +573,7 @@ public class TdmExecuteTask {
 					entitiesLimit = Long.valueOf(NUM_OF_ENTITIES.get(taskProperties));
 				}
 
-				String broadwayCommand = geCLBroadwayCmd(taskProperties);
+				String broadwayCommand = geCLBroadwayCmd(luName, customLogicFlow, taskProperties);
 				//Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
 				//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
 				String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
@@ -598,16 +599,16 @@ public class TdmExecuteTask {
     }
 
 	@NotNull
-	private static String geCLBroadwayCmd(Map<String, Object> taskProperties) {
+	private static String geCLBroadwayCmd(String luName, String clFlowName, Map<String, Object> taskProperties) {
 		
-		String luName = LU_NAME.get(taskProperties);
+		//String luName = LU_NAME.get(taskProperties);
 		Long entitiesLimit = 0L;
 		if(NUM_OF_ENTITIES.get(taskProperties) instanceof Long) {
 			entitiesLimit = NUM_OF_ENTITIES.get(taskProperties);
 		} else {
 			entitiesLimit = Long.valueOf(NUM_OF_ENTITIES.get(taskProperties));
 		}
-		String clFlowName = SELECTION_PARAM_VALUE.get(taskProperties);
+		//String clFlowName = SELECTION_PARAM_VALUE.get(taskProperties);
 		String clFlowParams = PARAMETERS.get(taskProperties);
 		
 		clFlowParams = clFlowParams.replaceAll("\\\\n","").replaceAll("\\\\t","");
@@ -627,28 +628,10 @@ public class TdmExecuteTask {
 				//fabricCommandParams += ", " + clFlowParamMap.get("name") + "=" + paramValue;
 			}
 		}
-		
-		String broadwayCommand = "broadway " + luName + "."  +  clFlowName +  " iid=?," + fabricCommandParams;
-		return broadwayCommand;
+
+		return "broadway " + luName + "."  +  clFlowName +  " iid=?," + fabricCommandParams;
+
       }
-
-
-//    @NotNull
-//    private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
-//        String entityExclusionLIst = ENTITY_EXCLUSION_LIST.get(taskProperties);
-//		String env = isDeleteOnlyMode(taskProperties) ? TARGET_ENVIRONMENT_NAME.get(taskProperties) : SOURCE_ENVIRONMENT_NAME.get(taskProperties);
-//        String entityExclusionListWhere = !Util.isEmpty(entityExclusionLIst) ? "cast (entity_id as text) NOT IN (" + Arrays.stream(entityExclusionLIst.split(","))
-//                .map(entityID -> buildEntityExclusion(env, SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
-//                .map(eID -> "'" + eID + "'").collect(Collectors.joining(",")) + ")" : "1 = 1";
-//
-//        String eIDsToExcludeBasedOnEnvAndBE = (String) db(TDM).fetch("select replace(string_agg(exclusion_list, ','), ' ', '') from TDM_BE_ENV_EXCLUSION_LIST where be_id=? and environment_id=?;", BE_ID.get(taskProperties), ENVIRONMENT_ID.get(taskProperties)).firstValue();
-//        if(!Util.isEmpty(eIDsToExcludeBasedOnEnvAndBE)){
-//            entityExclusionListWhere += " AND cast (entity_id as text) NOT IN (" + Arrays.stream(eIDsToExcludeBasedOnEnvAndBE.split(","))
-//                    .map(entityID -> buildEntityExclusion(env, SELECTION_METHOD.get(taskProperties), VERSION_IND.get(taskProperties), SELECTED_VERSION_TASK_NAME.get(taskProperties), SELECTED_VERSION_DATETIME.get(taskProperties), entityID))
-//                    .map(eID -> "'" + eID + "'").collect(Collectors.joining(",")) + ")";
-//        }
-//        return entityExclusionListWhere;
-//    }
 
     @NotNull
     private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
@@ -721,7 +704,7 @@ public class TdmExecuteTask {
         //Gson gson = new Gson();
 		
 		//TDM 7.2 - Get task execution override globals and add them to the task's globals.
-		Map <String, Object> taskOverrideAttrs = TdmSharedUtils.fnGetTaskExecOverrideAttrs(TASK_ID.get(taskProperties), TASK_EXECUTION_ID.get(taskProperties));
+		Map <String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs(TASK_ID.get(taskProperties), TASK_EXECUTION_ID.get(taskProperties));
 		String overrideGlobalsStr = "" + taskOverrideAttrs.get("TASK_GLOBALS");
 		//log.info("TdmExecuteTask - overrideGlobalsStr : " + overrideGlobalsStr);
 	
@@ -733,8 +716,9 @@ public class TdmExecuteTask {
 		}
 		
 		if (selectionMethod.equals("S")) {
-			globals.keySet().removeIf(key -> key.contains("MASK_FLAG"));
-			globals.put("MASK_FLAG", "1");
+			globals.keySet().removeIf(key -> key.contains("LOAD_MASKING_FLAG"));
+			globals.put("LOAD_MASKING_FLAG", "true");
+			globals.put("enable_masking", "true");
 		}
 
         globals.put("TDM_SYNTHETIC_DATA", getSyntheticData(selectionMethod));
@@ -744,11 +728,15 @@ public class TdmExecuteTask {
 	        globals.put("TDM_VERSION_NAME", SELECTED_VERSION_TASK_NAME.get(taskProperties));
     	    globals.put("TDM_VERSION_DATETIME", SELECTED_VERSION_DATETIME.get(taskProperties));
 			
-            globals.keySet().removeIf(key -> key.contains("MASK_FLAG"));
-    	    globals.put("MASK_FLAG", "0");
+            globals.keySet().removeIf(key -> key.contains("MASKING_FLAG"));
+    	    globals.put("LOAD_MASKING_FLAG", "false");
+			globals.put("EXTRACT_MASKING_FLAG", "false");
 
 			globals.put("TDM_REPLACE_SEQUENCES", "false");
 			
+			globals.put("enable_masking", "false");
+			globals.put("enable_sequences", "false");			
+
 			//TDM 7.3 - Add global to mark dataflux tasks
 			globals.put("TDM_DATAFLUX_TASK", "true");
 			if ("load".equalsIgnoreCase("" + TASK_TYPE.get(taskProperties))) {
@@ -764,7 +752,7 @@ public class TdmExecuteTask {
 			
 		// TDM 7.5 - Set the masking/sequencing flags based on the task flags
 		if (globals.containsKey("MASK_FLAG")) {
-			if ("0".equals("" + globals.get("MASK_FLAG"))) {
+			if ("false".equals("" + globals.get("MASK_FLAG"))) {
 				globals.put("enable_masking", "false");
 			} else {
 				globals.put("enable_masking", "true");
@@ -802,10 +790,11 @@ public class TdmExecuteTask {
 				additionalGlobals.put("TDM_DELETE_ONLY_TASK", isDeleteOnlyMode(taskProperties));
 				additionalGlobals.put("TARGET_ENVIRONMENT_ID", "" + ENVIRONMENT_ID.get(taskProperties));
 				additionalGlobals.put("CHILD_LU_IND", isChildLU(taskProperties));
+				additionalGlobals.put("FILTEROUT_RESERVED", FILTEROUT_RESERVED.get(taskProperties));
 			
 				// TDM 7.4 - Get MAX_RESERVATION_DAYS_FOR_TESTER
 				String maxReserveTester = "0";
-				Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner("" + ENVIRONMENT_ID.get(taskProperties), TASK_EXECUTED_BY.get(taskProperties)));
+				boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner("" + ENVIRONMENT_ID.get(taskProperties), TASK_EXECUTED_BY.get(taskProperties)));
 				if (!adminOrOwner) {
 					Map<String, Object> retentionInfo = fnGetRetentionPeriod();
 					maxReserveTester = String.valueOf(retentionInfo.get("maxReserveDays"));
@@ -868,7 +857,6 @@ public class TdmExecuteTask {
 			//log.info("setSyncMode - SYNC_MODE: " + SYNC_MODE.get(taskProperties));
 		}
 	}
-	
 	private static String getSyncModeForLoad(Map<String, Object> taskProperties) {
 		String syncMode = SYNC_MODE.get(taskProperties);
 		// In case of Load and sync mode is set to OFF and the deleteBeforeLoad is set to TRUE or it is dataflux load task (therefore requires delete before load), 
@@ -929,7 +917,7 @@ public class TdmExecuteTask {
 			String intsanceID = "" + row.cell(0);
 			//Object[] splitCloneId = intsanceID.split("#params#");
 			
-			Db.Rows instanceSplitted = fabric().fetch("broadway " + luName + ".SplitIIDAndCloneNumber iid='" + intsanceID + "'");
+			Db.Rows instanceSplitted = fabric().fetch("broadway " + luName + ".SplitIIDAndCloneNumber iid='" + intsanceID + "', RESULT_STRUCTURE=ROW");
 
 			for (Db.Row instanceField : instanceSplitted) {
 				if ("UID".equals(instanceField.get("column"))) {
@@ -1036,18 +1024,17 @@ public class TdmExecuteTask {
             // get LU properties
             Db.Row luProperties = getLuProperties((Long) taskProperties.get("lu_id"));
             taskProperties.put("lu_name", luProperties.get("lu_name"));
-            //taskProperties.put("lu_dc_name", luProperties.get("lu_dc_name"));
             taskProperties.put("parent_lu_name", getLuName((Long) taskProperties.get("parent_lu_id")));
         } catch (Exception e) {
             log.error("Can't get task properties for task_execution_id=" + row.get("task_execution_id"), e);
         }
 	
 		//TDM 7.2 - Get task execution override attributes and use them to override the task's attributes
-		Map <String, Object> taskOverrideAttrs = TdmSharedUtils.fnGetTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
+		Map <String, Object> taskOverrideAttrs = fnGetTaskExecOverrideAttrs((Long) row.get("task_id"), (Long) row.get("task_execution_id"));
 		String overrideValue = "";
 		try {
 			for (String attrName : taskOverrideAttrs.keySet()) {
-				Boolean entityListFlag = false;
+				boolean entityListFlag = false;
 				
 				if (!"task_globals".equalsIgnoreCase(attrName)) {
 					overrideValue = "" + taskOverrideAttrs.get(attrName);
@@ -1129,8 +1116,6 @@ public class TdmExecuteTask {
     private static Map<String, String> migrateEntitiesForTdmExtract(Long taskExecutionId, Map<String, Object> taskProperties) {
         try {
 			 // TDM 7.4 - 19.01.22 - Set globals at task level instead of instance level
-			//String srcSyncData = getSrcSyncDataVal(taskProperties);
-			//Map<String,Object> globals = getGlobals(EXTRACT.query(), taskProperties, Util.map("TDM_SYNC_SOURCE_DATA", srcSyncData, "TDM_DELETE_BEFORE_LOAD", "true"), EXTRACT.params(taskProperties));
 			setGlobalsForTask("extract", taskProperties);
             String syncMode = SYNC_MODE.get(taskProperties);
             String sourceEnv = SOURCE_ENVIRONMENT_NAME.get(taskProperties);
@@ -1309,7 +1294,8 @@ public class TdmExecuteTask {
 		TASK_EXECUTED_BY(""),
 		USER_ROLES(""),
 		PARAMETERS(""),
-		RESERVE_NOTE("");
+		RESERVE_NOTE(""),
+		FILTEROUT_RESERVED("true");
         private Object def;
 
         TASK_PROPERTIES(Object def) {

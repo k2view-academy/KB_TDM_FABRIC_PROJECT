@@ -2,7 +2,7 @@ package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks;
 
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 import org.json.JSONObject;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static com.k2view.cdbms.shared.user.UserCode.*;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnIsAdminOrOwner;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
@@ -260,7 +260,7 @@ public class TaskValidationsUtils {
 	static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) {
 		Map<String, String> errorMessages = new HashMap<>();
 		Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
-		Map<String, Object> retentionDefinitions = TdmSharedUtils.fnGetRetentionPeriod();
+		Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
 		Long maxRetentionPeriod = -1L;
 		if ("versioning".equals(validation)) {	
 			maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxRetentionPeriod"));

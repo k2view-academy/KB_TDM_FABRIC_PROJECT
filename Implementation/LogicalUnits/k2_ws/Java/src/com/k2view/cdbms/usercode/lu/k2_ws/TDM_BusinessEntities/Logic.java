@@ -19,9 +19,9 @@ import java.util.*;
 import java.util.stream.StreamSupport;
 
 import static com.k2view.cdbms.usercode.common.SharedGlobals.COMBO_MAX_COUNT;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -46,6 +46,8 @@ public class Logic extends WebServiceUserCode {
 	public static final String LU_NAME = "LU_NAME";
 	public static final String PARAM_NAME = "PARAM_NAME";
 	public static final String PARAM_TYPE = "PARAM_TYPE";
+
+	public static final String COMBO_INDICATOR = "COMBO_INDICATOR";
 	public static final String VALID_VALUES = "VALID_VALUES";
 	public static final String LU_PARAMS_TABLE_NAME = "LU_PARAMS_TABLE_NAME";
 	public static final String MAX_VALUE = "MAX_VALUE";
@@ -54,7 +56,6 @@ public class Logic extends WebServiceUserCode {
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	public enum PARAM_TYPES{
 		COMBO, NUMBER, TEXT;
-
 		public String getName(){
 			return this.toString().toLowerCase();
 		}
@@ -1250,10 +1251,17 @@ public class Logic extends WebServiceUserCode {
 					while (iter.hasNext()) {
 						Util.rte(() -> columnDistinctValues.add(iter.next().resultSet().getString(colName)));
 					}
+					//int val = Interger.valueOf(columnDistinctValues.get(0));
 					columnDistinctValues.sort(String::compareTo);
-					beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.COMBO.getName(), VALID_VALUES, columnDistinctValues, MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-					));
-
+					String s =columnDistinctValues.get(0);
+					if(isNumeric(s)) {
+						String min = columnDistinctValues.get(0);
+						String max = columnDistinctValues.get(columnDistinctValues.size()-1);
+						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.NUMBER.getName(),COMBO_INDICATOR,"true", VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
+					}
+					else {
+						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"true", VALID_VALUES, columnDistinctValues, MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
+					}
 				} else {
 					int colNum = getColNumber(env, tdmDB, colName, beTableName);
 
@@ -1263,12 +1271,12 @@ public class Logic extends WebServiceUserCode {
 
 						Db.Row columnMinMaxRow = Util.rte(() -> tdmDB.fetch(columnMinMaxSQL).firstRow());
 						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), VALID_VALUES, "\\N", MIN_VALUE, 
+							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE,
 							Util.rte(() -> columnMinMaxRow.cell(0)), MAX_VALUE, Util.rte(() -> columnMinMaxRow.cell(1)), LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
 						));
 					} else {
 						// Mark it as text
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(), VALID_VALUES, "\\N", MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
+						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
 						));
 					}
 				}
@@ -1316,5 +1324,19 @@ public class Logic extends WebServiceUserCode {
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);
 	}
-
+	public static boolean isNumeric(String string) {
+		int intValue;
+		System.out.printf("Parsing string: \"%s\"%n", string);
+		if(string == null || string.equals("")) {
+			System.out.println("String cannot be parsed, it is null or empty.");
+			return false;
+		}
+		try {
+			intValue = Integer.parseInt(string);
+			return true;
+		} catch (NumberFormatException e) {
+			System.out.println("Input String cannot be parsed to Integer.");
+		}
+		return false;
+	}
 }

@@ -36,6 +36,20 @@
                             }
                         },
                         {
+                            "name": "Get FILTEROUT_RESERVED",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "FILTEROUT_RESERVED",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Get BE_ID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -110,8 +124,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "var result = true;\r\nif (taskType == 'EXTRACT' || sequenceInd == 'true') {\r\n    result = false;\r\n}\r\nresult;",
-                                            "script": "var result = true;\n\nif (taskType == 'EXTRACT' || sequenceInd == 'true') {\n  result = false;\n}\n\nresult;"
+                                            "userCode": "var result = true;\r\nif (taskType == 'EXTRACT' || sequenceInd == 'true' || filteroutReserved == 'false') {\r\n    result = false;\r\n}\r\nresult;",
+                                            "script": "var result = true;\n\nif (taskType == 'EXTRACT' || sequenceInd == 'true' || filteroutReserved == 'false') {\n  result = false;\n}\n\nresult;"
                                         }
                                     },
                                     {
@@ -123,6 +137,13 @@
                                     },
                                     {
                                         "name": "sequenceInd",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "filteroutReserved",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -396,6 +417,16 @@
             "rightPort": {
                 "actor": "JavaScript1",
                 "name": "sequenceInd"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get FILTEROUT_RESERVED",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "filteroutReserved"
             }
         },
         {

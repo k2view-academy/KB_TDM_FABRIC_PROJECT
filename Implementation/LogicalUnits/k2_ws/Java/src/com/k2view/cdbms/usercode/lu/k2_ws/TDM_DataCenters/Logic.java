@@ -11,8 +11,8 @@ import com.k2view.fabric.api.endpoint.Endpoint.Produce;
 import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
 import com.k2view.fabric.api.endpoint.Endpoint.webService;
 
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.getFabricResponse;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class Logic extends WebServiceUserCode {

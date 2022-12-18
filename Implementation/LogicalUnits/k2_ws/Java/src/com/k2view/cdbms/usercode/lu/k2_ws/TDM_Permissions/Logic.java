@@ -10,8 +10,8 @@ import com.k2view.fabric.api.endpoint.Endpoint.*;
 
 import java.util.*;
 
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -22,6 +22,8 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.fabric.common.Util;
+
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
@@ -262,13 +264,16 @@ public class Logic extends WebServiceUserCode {
 	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
 	public static Object wsGetFabricRolesByUser(String user) throws Exception {
 		List<String> roles=new ArrayList<>();
-		fabric().fetch("list users;").
-		forEach(r -> {
-			if(user.equals(r.get("user"))) {
-				roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
-			}
-		});
-		
+		if (user == null || "".equals(user) || user.equalsIgnoreCase(sessionUser().name())) {
+			roles.addAll(sessionUser().roles());}
+		else {
+			fabric().fetch("list users;").
+				forEach(r -> {
+					if(user.equals(r.get("user"))) {
+						roles.addAll(Arrays.asList(((String) r.get("roles")).split(",")));
+					}
+				});
+		}
 		return wrapWebServiceResults("SUCCESS", null, roles);
 	}
 
@@ -276,21 +281,13 @@ public class Logic extends WebServiceUserCode {
 	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
 	public static Object wsGetPermissionGroupByUser(String user) throws Exception {
 		String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(user)).get("result"));
-		
-		Integer[] weight = {0};
-		db(TDM).fetch(SELECT_PERMISSION_GROUP, fabricRoles).forEach(row -> {
-			Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
-			if (nextWeight != null && nextWeight > weight[0]) {
-				weight[0] = nextWeight;
-			}
-		});
-		
-		if (weight[0] == 0) {
+		Integer weight =fnGetPermissionGroupWeight(fabricRoles) ;
+		if (weight == 0) {
 			return wrapWebServiceResults("FAILED", "Can't find permission group for the user " + sessionUser().name() + ".", null);
 		} else {
 			String permissionGroup = null;
 			for (Map.Entry<String, Integer> e : PERMISSION_GROUPS.entrySet()) {
-				if (e.getValue().equals(weight[0])) {
+				if (e.getValue().equals(weight)) {
 					permissionGroup = e.getKey();
 					break;
 				}
@@ -300,6 +297,17 @@ public class Logic extends WebServiceUserCode {
 		}
 	}
 
+public static Integer fnGetPermissionGroupWeight(String roles) throws SQLException {
+        Integer[] weight = {0};
+        String sql = "select permission_group from public.permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
+        Util.rte(() -> db(TDM).fetch(sql, roles).forEach(row -> {
+            Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
+            if (nextWeight != null && nextWeight > weight[0]) {
+                weight[0] = nextWeight;
+            }
+        }));
+        return weight[0];
+    }
 
 	@desc("Gets all users by TDM permission group.")
 	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})

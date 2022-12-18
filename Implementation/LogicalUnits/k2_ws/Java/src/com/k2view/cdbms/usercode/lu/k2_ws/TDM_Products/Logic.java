@@ -7,7 +7,7 @@ package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Products;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
-import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
+import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 
 import java.sql.ResultSet;
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.fnGetUserPermissionGroup;
 import java.util.*;
 import java.sql.*;
 import java.math.*;
@@ -35,6 +34,7 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
@@ -175,8 +175,8 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsPostProduct(String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
-		if(product_name==null||product_versions==null) return TdmSharedUtils.wrapWebServiceResults("FAILED","product_name and product_versions are mandatory fields.",null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		if(product_name==null||product_versions==null) return wrapWebServiceResults("FAILED","product_name and product_versions are mandatory fields.",null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -232,7 +232,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsUpdateProduct(@param(required=true) Long prodId, String product_name, String product_description, String product_vendor, String product_versions) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -434,7 +434,7 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsDeleteProduct(@param(required=true) Long prodId) throws Exception {
 		String permissionGroup = fnGetUserPermissionGroup("");
-		if (!"admin".equals(permissionGroup)) return TdmSharedUtils.wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
+		if (!"admin".equals(permissionGroup)) return wrapWebServiceResults("FAILED",admin_pg_access_denied_msg,null);
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";

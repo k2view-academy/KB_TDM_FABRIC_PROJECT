@@ -1,0 +1,740 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "source_env_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tdm_task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "tdm_task_execution_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "source_env_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Number Of Records Of The Table",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_TABLE_COUNT",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Interface Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Schema Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Number of Records if not given",
+                    "dependsOnList": [
+                        "Input"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IsNull1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Count Records",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select count(1) from ${@refSchema}.${@refTableName}"
+                                    },
+                                    {
+                                        "name": "refSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Use given Number of records",
+                    "dependsOnList": [
+                        "Input"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Table Data and List of Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Table Data as Json",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetTableInJson"
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "tableRecords",
+                                        "schema": {}
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get List of Table's fields",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getDbTableColumns"
+                                    },
+                                    {
+                                        "name": "dbInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "catalogSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "columns",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "pks",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Json Stringify",
+                            "actorType": {
+                                "parentType": "JsonStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create A List Of Fields",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Compress Json",
+                            "actorType": {
+                                "parentType": "Compress",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LU Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "reference_table",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "table_name",
+                                            "tdm_task_execution_id",
+                                            "source_env_name",
+                                            "table_data",
+                                            "records_count",
+                                            "table_fields"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
+                                        "name": "tdm_task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "source_env_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "table_data",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    },
+                                    {
+                                        "name": "records_count",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table_fields",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "source_env_name"
+            },
+            "iterate": "First",
+            "path": [
+                "source_env_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Get Table Data as Json",
+                "name": "tableName"
+            },
+            "iterate": "First",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "table_name"
+            },
+            "iterate": "First",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Get List of Table's fields",
+                "name": "table"
+            },
+            "iterate": "First",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Count Records",
+                "name": "refTableName"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "tdm_task_execution_id"
+            },
+            "iterate": "First",
+            "path": [
+                "tdm_task_execution_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Number Of Records Of The Table",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Number Of Records Of The Table",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Interface Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get List of Table's fields",
+                "name": "dbInterfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Interface Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Records",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Interface Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Data as Json",
+                "name": "interfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Schema Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get List of Table's fields",
+                "name": "catalogSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Schema Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Records",
+                "name": "refSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Schema Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Data as Json",
+                "name": "schemaName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "records_count"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "records_count"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data as Json",
+                "name": "tableRecords"
+            },
+            "rightPort": {
+                "actor": "Json Stringify",
+                "name": "object"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get List of Table's fields",
+                "name": "columns"
+            },
+            "rightPort": {
+                "actor": "Create A List Of Fields",
+                "name": "elements"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Json Stringify",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Compress Json",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create A List Of Fields",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "table_fields"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Compress Json",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "table_data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table_name"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "table_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "source_env_name"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "source_env_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tdm_task_execution_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "tdm_task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "table"
+            }
+        }
+    ]
+}

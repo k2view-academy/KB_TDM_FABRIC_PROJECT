@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6.5.9.5">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.0.0.23">
   <Name>vdb</Name>
   <RootView>TASK_EXECUTION</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -91,6 +91,7 @@
     <Item order="4" active="true" name="TASK_EXECUTION" columnName="fnUpdateTaskSyncStatus" type="Table" />
     <Item order="5" active="true" name="TASK_EXECUTION_LINK_ENTITIES" columnName="fnEnrSetRootEntSts" type="Table" />
     <Item order="6" active="true" name="TASK_EXECUTION" columnName="fnUpdateTaskSummaryTable" type="Table" />
+    <Item order="7" active="true" name="TASK_EXECUTION" columnName="fnTDMJMXStats" type="Table" />
   </EnrichmentsOrderList>
   <ReferencesList />
   <Relations />
@@ -173,7 +174,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="6.5.9.5" name="vdb.k2vdb.xml">
+    <Graph version="7.0.0.23" name="vdb.k2vdb.xml">
       <Node name="TASK_EXECUTION" pos="10 321" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TDM_SEQ_MAPPING" pos="313 16" size="257 232" listGroupSize="250 196" viewType="Table" />
       <Node name="task_execution_entities" pos="330 366" size="257 260" listGroupSize="250 224" viewType="Table" />

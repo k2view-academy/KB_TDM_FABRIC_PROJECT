@@ -523,7 +523,7 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "Entity cannot be reserved by user ${userName} as it is reseved by user: ${owner}"
+                                        "const": "Entity cannot be reserved by user ${userName} as it is reserved by user: ${owner}"
                                     },
                                     {
                                         "name": "owner",
