@@ -610,9 +610,48 @@
         {
             "stages": [
                 {
-                    "name": "Post Load",
+                    "name": "Stage 1",
                     "dependsOnList": [
                         "LU Table"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals2",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Do Nothing 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [
+                        "Stage 1"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -643,7 +682,7 @@
                 {
                     "name": "Do Nothing 3",
                     "dependsOnList": [
-                        "Do Nothing 2"
+                        "Stage 4"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -730,6 +769,16 @@
             },
             "rightPort": {
                 "actor": "NotEquals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals2",
                 "name": "a"
             }
         },

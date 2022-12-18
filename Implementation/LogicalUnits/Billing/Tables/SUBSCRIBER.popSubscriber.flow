@@ -609,9 +609,48 @@
         {
             "stages": [
                 {
-                    "name": "Post Load",
+                    "name": "If the data is taken from the source",
                     "dependsOnList": [
                         "LU Table"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals2",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [
+                        "Do Nothing 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [
+                        "If the data is taken from the source"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -640,18 +679,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 7",
-                    "dependsOnList": [
-                        "LU Table"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
-                },
-                {
                     "name": "Do Nothing 3",
                     "dependsOnList": [
-                        "Do Nothing 2"
+                        "Stage 6"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -752,6 +782,16 @@
             },
             "rightPort": {
                 "actor": "NotEquals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals2",
                 "name": "a"
             }
         },
