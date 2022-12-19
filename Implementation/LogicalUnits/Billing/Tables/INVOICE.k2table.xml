@@ -1,22 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name>INVOICE</Name>
-  <ID>tbl_INVOICE</ID>
+  <Name>invoice</Name>
+  <ID>tbl_invoice</ID>
   <Columns>
-    <Column name="SUBSCRIBER_ID" id="tblCol_81e341bec8074315b47cf7daae6165c6" index="0" datatype="text" />
-    <Column name="INVOICE_ID" id="tblCol_a48f99e18d024160814094e349b9e0fc" index="1" datatype="text" mandatory="true" />
-    <Column name="ISSUED_DATE" id="tblCol_961d2c04d9104bd6be62a6f7f515a088" index="2" datatype="Text" />
-    <Column name="DUE_DATE" id="tblCol_3bdbe69baade4fb0b1824f206c80bc72" index="3" datatype="Text" />
-    <Column name="STATUS" id="tblCol_d30f402968424df6b63f117f56c9c725" index="4" datatype="Text" />
-    <Column name="BALANCE" id="tblCol_9077cf4cee474de2bea96aac35112498" index="5" datatype="Real" />
-    <Column name="INVOICE_IMAGE" id="tblCol_b55ef6b3b58045aea00477fe3f32d015" index="6" datatype="Text" />
+    <Column name="subscriber_id" id="subscriber_id" index="0" datatype="Integer" />
+    <Column name="invoice_id" id="invoice_id" index="1" datatype="Integer" mandatory="true" />
+    <Column name="issued_date" id="issued_date" index="2" datatype="Datetime" />
+    <Column name="due_date" id="due_date" index="3" datatype="Datetime" />
+    <Column name="status" id="status" index="4" datatype="Text" />
+    <Column name="balance" id="balance" index="5" datatype="Integer" />
+    <Column name="invoice_image" id="invoice_image" index="6" datatype="BLOB" />
   </Columns>
   <IndexesList>
-    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_a48f99e18d024160814094e349b9e0fc" />
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="invoice_id" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
   <TriggersList />
 </TableObject>

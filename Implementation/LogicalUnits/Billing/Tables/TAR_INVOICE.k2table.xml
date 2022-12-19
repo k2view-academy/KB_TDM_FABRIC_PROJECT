@@ -3,8 +3,8 @@
   <Name>TAR_INVOICE</Name>
   <ID>tbl_TAR_INVOICE</ID>
   <Columns>
-    <Column name="SUBSCRIBER_ID" id="tblCol_81e341bec8074315b47cf7daae6165c6" index="0" datatype="text" />
-    <Column name="INVOICE_ID" id="tblCol_a48f99e18d024160814094e349b9e0fc" index="1" datatype="text" mandatory="true" />
+    <Column name="subscriber_id" id="tblCol_81e341bec8074315b47cf7daae6165c6" index="0" datatype="text" />
+    <Column name="invoice_id" id="tblCol_a48f99e18d024160814094e349b9e0fc" index="1" datatype="text" mandatory="true" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_a48f99e18d024160814094e349b9e0fc" />
@@ -12,7 +12,6 @@
   <EnrichmentList />
   <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
     <DecisionFunction>fnDecisionDeleteFromTarget</DecisionFunction>
-    <TruncateBeforeSync>true</TruncateBeforeSync>
   </LazyDataUpdate>
   <TriggersList />
 </TableObject>
