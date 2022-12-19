@@ -1155,8 +1155,14 @@ public class SharedLogic {
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionDeleteFromTarget() throws Exception {
 		String luName = getLuType().luName;
+		
+		//String deleteInd = "" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue();
+		
+		//log.info("TDM_DELETE_BEFORE_LOAD: " + deleteInd);
+		
 		if(("" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
 		{
+			log.info("TESTT - return true");
 			return true;
 		}
 		else

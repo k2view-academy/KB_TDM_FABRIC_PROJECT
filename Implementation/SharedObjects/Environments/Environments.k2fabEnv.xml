@@ -58,6 +58,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>host.docker.internal</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>CMsxdWGOWVbxXFXw/wHqRI/pnD2BSLoI7Ury1sR/O/E=:qe3iWhsVNgqnf5UG3WqhPaNwcXqqE6lmcDtXaUrWvHs=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5433/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5433</dbPort>
@@ -99,9 +110,6 @@
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
           <Value>23</Value>
-        </Global>
-        <Global name="MASK_FLAG" luName="">
-          <Value>1</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
           <Value>SRC</Value>
@@ -177,34 +185,20 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="LOAD_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
           <Value>DEV</Value>
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
-        <Global name="TDMDB_SCHEMA" luName="">
-          <Value>public</Value>
-        </Global>
-        <Global name="clone_id" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="ORACLE8_DB_TYPE" luName="">
-          <Value>Oracle8</Value>
-          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -310,33 +304,33 @@
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>Z4vNIG2vZYpbvk7YshA94BAOFvXCqZOzcSQTSZQz1PM=:zz9GHja0iUOmP/dbVafciM4jTY10Fm1+trk0MhvYMGM=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
           <dbPasswordEncrypted>oPyNv420dIR79vmUJhrqr6YVXo2XjSGLd31R9jlk9Pw=:CZJ6OLSxnElR0RgoEcgiNh1Ov20l+khXVkj4goKOBTY=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -353,22 +347,33 @@
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>ORDERING_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>6sZR40JP5KtkTEPfYQgMrGX+XtTRin80uAQ3QT4C8AI=:Hp8csxAT7jTAenOK1w1avPQLO3Jf89yqUn2OwE4V/U0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/ORDERING_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>lF3UD0RKS4oi4H9xThrowoghfIpGwY5SsO1yiiTtJTk=:6Q0WF3Z08pgWEw12tXOw1fCKt0ieIpSH0ThqABDmR70=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>YmnnbUnvJ7HScTj4lS38ykxRLF71tRaDtnjP2nEB1LQ=:W2qTnZQuBxfvnhdimCCd/DcyyZjMSBUBDiWVK++jyog=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -380,7 +385,7 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
@@ -403,9 +408,6 @@
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
           <Value>133</Value>
-        </Global>
-        <Global name="MASK_FLAG" luName="">
-          <Value>1</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
           <Value>SRCLocalDebug</Value>
@@ -473,7 +475,7 @@
           <Value>EXTRACT</Value>
         </Global>
         <Global name="enable_masking" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
         </Global>
         <Global name="enable_sequences" luName="">
           <Value>false</Value>
@@ -481,34 +483,20 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="LOAD_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
           <Value>DEV</Value>
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
-        <Global name="TDMDB_SCHEMA" luName="">
-          <Value>public</Value>
-        </Global>
-        <Global name="clone_id" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="ORACLE8_DB_TYPE" luName="">
-          <Value>Oracle8</Value>
-          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -666,6 +654,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>host.docker.internal</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>zDtYt+HpQgHGwvvHhiYqFrOJpka6mYU8GQvH/i9DoeA=:DvzSPMSnfBlYG72cxR7zh0IP3wTieaXQ48pGV4/vs3g=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5433/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5433</dbPort>
@@ -706,9 +705,6 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="MASK_FLAG" luName="">
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
@@ -785,34 +781,20 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="LOAD_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
           <Value>DEV</Value>
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
-        <Global name="TDMDB_SCHEMA" luName="">
-          <Value>public</Value>
-        </Global>
-        <Global name="clone_id" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="ORACLE8_DB_TYPE" luName="">
-          <Value>Oracle8</Value>
-          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -918,33 +900,33 @@
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
           <dbPasswordEncrypted>dm9bLdI7jl6gTlCkw2VRGiTFDCba7RXPML4J+F9mbE8=:jl2zeqnMP9IOFtaJrfgOYJ3NF4/ja6yWITFdMDMCfmw=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TAR_COLLECTION</dbScheme>
           <dbUser>TAR_COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>z9VmcYm0EeosJgh7ecGjtjxakPUEm0ioZwmIwngTSXw=:7283Y/pXU3l0n0ni64ln+01tA7XgEfW+/6ILyvA3h1Q=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_COLLECTION?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/TAR_COLLECTION?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
           <dbUser>TAR_CRM_USER</dbUser>
           <dbPasswordEncrypted>ciTFwNYxZWZfZOZdw0PliE9M7NM9ymCJsvx/jm8Dg28=:NB/wCHq7Ylp4Gi47idwmGR9yl0BPruDLizv36dQnc4Q=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -961,22 +943,31 @@
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TAR_ORDERING</dbScheme>
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>5hzwVQ3UwP0lMOt5MGvUOoBRp9lO58VRURZlwzDkmE8=:sdrDPOZrEJSTeGJWGWIX+WvTEywZPrvtb0jsf9/ogv4=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_ORDERING?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/TAR_ORDERING?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
-          <dbPort>5432</dbPort>
+          <dbPort>5433</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://localhost:5433/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -988,7 +979,7 @@
           <Comment>Maximum values of combo box input object</Comment>
         </Global>
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
-          <Value>false</Value>
+          <Value>true</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
         <Global name="TDM_INSERT_TO_TARGET" luName="">
@@ -1010,9 +1001,6 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="MASK_FLAG" luName="">
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
@@ -1089,34 +1077,20 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="LOAD_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
           <Value>DEV</Value>
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
-        <Global name="TDMDB_SCHEMA" luName="">
-          <Value>public</Value>
-        </Global>
-        <Global name="clone_id" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="ORACLE8_DB_TYPE" luName="">
-          <Value>Oracle8</Value>
-          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -1274,6 +1248,14 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <connString>jdbc:postgresql://:5432/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5433</dbPort>
@@ -1314,9 +1296,6 @@
           <Value>false</Value>
         </Global>
         <Global name="TDM_TASK_EXE_ID" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="MASK_FLAG" luName="">
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
@@ -1393,34 +1372,20 @@
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
         </Global>
+        <Global name="clone_id" luName="">
+          <Value>0</Value>
+        </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
+        <Global name="LOAD_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
           <Value>DEV</Value>
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
-        </Global>
-        <Global name="MAIL_ADDRESS" luName="" />
-        <Global name="TDMDB_SCHEMA" luName="">
-          <Value>public</Value>
-        </Global>
-        <Global name="clone_id" luName="">
-          <Value>0</Value>
-        </Global>
-        <Global name="ORACLE8_DB_TYPE" luName="">
-          <Value>Oracle8</Value>
-          <Comment>The global is used by the test connection of Oracle 8- the dbType parameter must be set to the database type name, defined for the Oracle8 DB</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_TYPE" luName="">
-          <Value>Days</Value>
-          <Comment>In case of cloning, each clone can have a TTL, this global holds the type of the TTL and it can have one of the following values:Minutes, Days, Weeks, Months</Comment>
-        </Global>
-        <Global name="CLONE_CLEANUP_RETENTION_PERIOD_VALUE" luName="">
-          <Value>1</Value>
-          <Comment>The value of the TTL based on the type defined in CLONE_CLEANUP_RETENTION_PERIOD_TYPE</Comment>
-        </Global>
-        <Global name="TDM_DEL_TABLE_PREFIX" luName="">
-          <Value>TAR</Value>
-          <Comment>Prefix of delete tables</Comment>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>

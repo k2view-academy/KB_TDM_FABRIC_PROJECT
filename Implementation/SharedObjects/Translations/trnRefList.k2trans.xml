@@ -9,7 +9,6 @@
       <Direction>Input</Direction>
       <Type>LU NAME</Type>
       <Length>80</Length>
-      <Format />
       <Index>0</Index>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="120" />
@@ -20,7 +19,6 @@
       <Direction>Input</Direction>
       <Type>Integer</Type>
       <Length>6</Length>
-      <Format />
       <Index>1</Index>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="81" />
@@ -38,28 +36,28 @@
       <GridColumnProperties width="142" />
     </Column>
     <Column>
-      <Title>schema_name</Title>
-      <ColumnName>schema_name</ColumnName>
-      <Direction>Output</Direction>
-      <Type>Text</Type>
-      <Length>50</Length>
-      <Format />
-      <Index>1</Index>
-      <DefaultValueIsExpression>false</DefaultValueIsExpression>
-      <AllowNULL>true</AllowNULL>
-      <GridColumnProperties width="100" />
-    </Column>
-    <Column>
       <Title>interface_name</Title>
       <ColumnName>interface_name</ColumnName>
       <Direction>Output</Direction>
       <Type>DB Interface</Type>
       <Length>50</Length>
       <Format />
-      <Index>2</Index>
+      <Index>1</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="120" />
+    </Column>
+    <Column>
+      <Title>schema_name</Title>
+      <ColumnName>schema_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>2</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="100" />
     </Column>
     <Column>
       <Title>target_ref_table_name</Title>
@@ -74,28 +72,28 @@
       <GridColumnProperties width="135" />
     </Column>
     <Column>
-      <Title>target_schema_name</Title>
-      <ColumnName>target_schema_name</ColumnName>
-      <Direction>Output</Direction>
-      <Type>Text</Type>
-      <Length>50</Length>
-      <Format />
-      <Index>4</Index>
-      <DefaultValueIsExpression>false</DefaultValueIsExpression>
-      <AllowNULL>true</AllowNULL>
-      <GridColumnProperties width="130" />
-    </Column>
-    <Column>
       <Title>target_interface_name</Title>
       <ColumnName>target_interface_name</ColumnName>
       <Direction>Output</Direction>
       <Type>DB Interface</Type>
       <Length>50</Length>
       <Format />
-      <Index>5</Index>
+      <Index>4</Index>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <GridColumnProperties width="134" />
+    </Column>
+    <Column>
+      <Title>target_schema_name</Title>
+      <ColumnName>target_schema_name</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>50</Length>
+      <Format />
+      <Index>5</Index>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <GridColumnProperties width="130" />
     </Column>
     <Column>
       <Title>table_pk_list</Title>
@@ -108,6 +106,48 @@
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
       <Comment>It is used to list the PK of the reference Table</Comment>
+      <GridColumnProperties width="100" />
+    </Column>
+    <Column>
+      <Title>truncate_or_delete</Title>
+      <ColumnName>truncate_or_delete</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Boolean</Type>
+      <Length>1</Length>
+      <Format />
+      <Index>7</Index>
+      <DefaultValue>False</DefaultValue>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <Comment>false for delete true for truncate</Comment>
+      <GridColumnProperties width="115" />
+    </Column>
+    <Column>
+      <Title>count_indicator</Title>
+      <ColumnName>count_indicator</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Boolean</Type>
+      <Length>1</Length>
+      <Format />
+      <Index>8</Index>
+      <DefaultValue>False</DefaultValue>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <Comment>true in case the user wants to count the records , in case it was true the user should specify the broadway flow name </Comment>
+      <GridColumnProperties width="86" />
+    </Column>
+    <Column>
+      <Title>count_bf</Title>
+      <ColumnName>count_bf</ColumnName>
+      <Direction>Output</Direction>
+      <Type>Text</Type>
+      <Length>20</Length>
+      <Format />
+      <Index>9</Index>
+      <DefaultValue>NULL</DefaultValue>
+      <DefaultValueIsExpression>false</DefaultValueIsExpression>
+      <AllowNULL>true</AllowNULL>
+      <Comment>name of the broadway flow in case the user wannts to count</Comment>
       <GridColumnProperties width="100" />
     </Column>
   </SchemaColumns>
@@ -137,14 +177,14 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
-                  <xs:element name="schema_name" default="" minOccurs="0">
+                  <xs:element name="interface_name" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="50" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
-                  <xs:element name="interface_name" default="" minOccurs="0">
+                  <xs:element name="schema_name" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="50" />
@@ -158,14 +198,14 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
-                  <xs:element name="target_schema_name" default="" minOccurs="0">
+                  <xs:element name="target_interface_name" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="50" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
-                  <xs:element name="target_interface_name" default="" minOccurs="0">
+                  <xs:element name="target_schema_name" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="50" />
@@ -176,6 +216,15 @@
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
                         <xs:maxLength value="100" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="truncate_or_delete" type="xs:boolean" minOccurs="0" />
+                  <xs:element name="count_indicator" type="xs:boolean" minOccurs="0" />
+                  <xs:element name="count_bf" default="" minOccurs="0">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:maxLength value="20" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
@@ -192,12 +241,15 @@
           <lu_name>Customer</lu_name>
           <id>1</id>
           <reference_table_name>DEVICESTABLE2017</reference_table_name>
-          <schema_name>public</schema_name>
           <interface_name>CRM_DB</interface_name>
+          <schema_name>public</schema_name>
           <target_ref_table_name>DEVICESTABLE2017</target_ref_table_name>
-          <target_schema_name>public</target_schema_name>
           <target_interface_name>CRM_DB</target_interface_name>
+          <target_schema_name>public</target_schema_name>
           <table_pk_list></table_pk_list>
+          <truncate_or_delete>true</truncate_or_delete>
+          <count_indicator>true</count_indicator>
+          <count_bf></count_bf>
         </trnRefList>
       </DocumentElement>
     </diffgr:diffgram>
