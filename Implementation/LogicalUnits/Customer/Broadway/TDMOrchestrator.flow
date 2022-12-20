@@ -113,10 +113,10 @@
                                     {
                                         "name": "reserveInd",
                                         "schema": {
-                                            "type": "boolean"
+                                        "type": "boolean"
                                         }
                                     }
-                                ],
+								],
                                 "outputs": []
                             }
                         }
@@ -386,10 +386,10 @@
                                     {
                                         "name": "reserveInd",
                                         "schema": {
-                                            "type": "boolean"
+                                        "type": "boolean"
                                         }
                                     }
-                                ],
+								],
                                 "outputs": []
                             }
                         }

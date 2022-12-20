@@ -843,63 +843,125 @@ public class Logic extends WebServiceUserCode {
 			"Example of a request body:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"  \"be_id\": 3,\r\n" +
-			"  \"environment_id\": 1,\r\n" +
-			"  \"source_environment_id\": 1,\r\n" +
-			"  \"scheduler\": \"immediate\",\r\n" +
-			"  \"delete_before_load\": true,\r\n" +
-			"  \"request_of_fresh_data\": true,\r\n" +
-			"  \"num_of_entities\": 0,\r\n" +
-			"  \"selection_method\": \"R\",\r\n" +
-			"  \"selection_param_value\": null,\r\n" +
-			"  \"entity_exclusion_list\": \"5,9,28\",\r\n" +
-			"  \"task_title\": \"taskTitle\",\r\n" +
-			"  \"parameters\": null,\r\n" +
-			"  \"refresh_reference_data\": true,\r\n" +
-			"  \"replace_sequences\": true,\r\n" +
-			"  \"source_env_name\": \"env1\",\r\n" +
-			"  \"load_entity\": true,\r\n" +
-			"  \"task_type\": \"LOAD\",\r\n" +
-			"  \"scheduling_end_date\": \"2021-02-04 14:20:59.454\",\r\n" +
-			"  \"version_ind\": true,\r\n" +
-			"  \"retention_period_type\": \"Days\",\r\n" +
-			"  \"retention_period_value\": 5,\r\n" +
-			"  \"selected_version_task_name\": \"TaskName\",\r\n" +
-			"  \"selected_version_datetime\": \"2021-02-04\",\r\n" +
-			"  \"selected_version_task_exe_id\": 0,\r\n" +
-			"  \"task_globals\": true,\r\n" +
-			"  \"selected_ref_version_task_exe_id\": 0,\r\n" +
-			"  \"selected_ref_version_datetime\": \"2021-02-04\",\r\n" +
-			"  \"selected_ref_version_task_name\": null,\r\n" +
-			"  \"sync_mode\": null,\r\n" +
-			"  \"selectAllEntites\": true,\r\n" +
-			"  \"refList\": [\r\n" +
-			"    {\r\n" +
-			"        \"reference_table_name\":\t\"RefT\",\r\n" +
-			"        \"logical_unit_name\": \"RefLU\",\r\n" +
-			"        \"schema_name\": \"RefSchema\",\r\n" +
-			"        \"interface_name\": \"RefInterface\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"        \"reference_table_name\":\t\"RefT2\",\r\n" +
-			"        \"logical_unit_name\": \"RefLU2\",\r\n" +
-			"        \"schema_name\": \"RefSchema2\",\r\n" +
-			"        \"interface_name\": \"RefInterface2\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"globals\": [\r\n" +
-			"    {\r\n" +
-			"      \"global_name\":\"globalName1\",\r\n" +
-			"      \"lu_name\":\"LulName1\",\r\n" +
-			"      \"global_value\":\"globalValue1\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"global_name\":\"globalName2\",\r\n" +
-			"      \"lu_name\":\"ALL\",\r\n" +
-			"      \"global_value\":\"globalValue2\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"reference\": \"ref\"\r\n" +
+			"   \"filterout_reserved\":false,\r\n" +
+			"   \"operationMode\":\"insert_entity_without_delete\",\r\n" +
+			"   \"task_type\":\"LOAD\",\r\n" +
+			"   \"task_title\":\"testapi2\",\r\n" +
+			"   \"extractSelected\":false,\r\n" +
+			"   \"load_entity\":true,\r\n" +
+			"   \"delete_before_load\":false,\r\n" +
+			"   \"reserve_ind\":true,\r\n" +
+			"   \"be_id\":4,\r\n" +
+			"   \"source_environment_id\":1,\r\n" +
+			"   \"environment_id\":2,\r\n" +
+			"   \"source_env_name\":\"SRC\",\r\n" +
+			"   \"environment_name\":\"TAR\",\r\n" +
+			"   \"allLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":null,\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"product_name\":\"CRM\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"product_name\":\"ORDERS\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"selectedLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":null,\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"product_name\":\"CRM\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"product_name\":\"ORDERS\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"missingRootLU\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"num_of_entities\":2,\r\n" +
+			"   \"syncModeRadio\":null,\r\n" +
+			"   \"sync_mode\":null,\r\n" +
+			"   \"reserve_retention_period_value\":5,\r\n" +
+			"   \"reserve_retention_period_type\":\"Days\",\r\n" +
+			"   \"allPostExecutionProcess\":[\r\n" +
+			"      {\r\n" +
+			"         \"process_id\":1,\r\n" +
+			"         \"be_id\":4,\r\n" +
+			"         \"process_name\":\"PostExecFlow\",\r\n" +
+			"         \"process_description\":null,\r\n" +
+			"         \"execution_order\":1\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"postExecutionProcesses\":[\r\n" +
+			"      1\r\n" +
+			"   ],\r\n" +
+			"   \"reference\":\"both\",\r\n" +
+			"   \"versionsForLoad\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"selection_method\":\"PR\",\r\n" +
+			"   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
+			"   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
+			"   \"refList\":[\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"devicestable2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"devicestable2017\",\r\n" +
+			"         \"selected\":true\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"refresh_reference_data\":false,\r\n" +
+			"   \"selected_version_task_name\":null,\r\n" +
+			"   \"selected_version_datetime\":null,\r\n" +
+			"   \"selected_version_task_exe_id\":null,\r\n" +
+			"   \"selected_ref_version_task_name\":null,\r\n" +
+			"   \"selected_ref_version_datetime\":null,\r\n" +
+			"   \"selected_ref_version_task_exe_id\":null,\r\n" +
+			"   \"scheduler\":\"immediate\"\r\n" +
 			"}")
 	@webService(path = "task", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -1173,69 +1235,208 @@ public class Logic extends WebServiceUserCode {
 	@desc("Updates Task. The task update creates a new version of the task and set the status of the previous task version to Inactive.\r\n" +
 			"\r\n" +
 			"Example of a request body:\r\n" +
+			"\r\n" +
 			"{\r\n" +
-			"  \"copy\": false,\r\n" +
-			"  \"task_status\": \"complete\",\r\n" +
-			"  \"be_id\": 3,\r\n" +
-			"  \"environment_id\": 1,\r\n" +
-			"  \"source_environment_id\": 1,\r\n" +
-			"  \"scheduler\": \"immediate\",\r\n" +
-			"  \"delete_before_load\": true,\r\n" +
-			"  \"request_of_fresh_data\": true,\r\n" +
-			"  \"num_of_entities\": 0,\r\n" +
-			"  \"selection_method\": \"R\",\r\n" +
-			"  \"selection_param_value\": null,\r\n" +
-			"  \"entity_exclusion_list\": \"9,8,123\",\r\n" +
-			"  \"task_title\": \"taskTitle\",\r\n" +
-			"  \"parameters\": null,\r\n" +
-			"  \"refresh_reference_data\": true,\r\n" +
-			"  \"replace_sequences\": true,\r\n" +
-			"  \"source_env_name\": \"env1\",\r\n" +
-			"  \"load_entity\": true,\r\n" +
-			"  \"task_type\": \"LOAD\",\r\n" +
-			"  \"scheduling_end_date\": \"2021-02-04 14:20:59.454\",\r\n" +
-			"  \"version_ind\": true,\r\n" +
-			"  \"retention_period_type\": \"Days\",\r\n" +
-			"  \"retention_period_value\": 0,\r\n" +
-			"  \"selected_version_task_name\": \"TaskName\",\r\n" +
-			"  \"selected_version_datetime\": \"2021-02-04\",\r\n" +
-			"  \"selected_version_task_exe_id\": 0,\r\n" +
-			"  \"task_globals\": true,\r\n" +
-			"  \"selected_ref_version_task_exe_id\": 0,\r\n" +
-			"  \"selected_ref_version_datetime\": \"2021-02-04\",\r\n" +
-			"  \"selected_ref_version_task_name\": null,\r\n" +
-			"  \"sync_mode\": null,\r\n" +
-			"  \"selectAllEntites\": true,\r\n" +
-			"  \"refList\": [\r\n" +
-			"    {\r\n" +
-			"        \"reference_table_name\":\t\"RefT\",\r\n" +
-			"        \"logical_unit_name\": \"RefLU\",\r\n" +
-			"        \"schema_name\": \"RefSchema\",\r\n" +
-			"        \"interface_name\": \"RefInterface\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"        \"reference_table_name\":\t\"RefT2\",\r\n" +
-			"        \"logical_unit_name\": \"RefLU2\",\r\n" +
-			"        \"schema_name\": \"RefSchema2\",\r\n" +
-			"        \"interface_name\": \"RefInterface2\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"globals\": [\r\n" +
-			"    {\r\n" +
-			"      \"global_name\":\"globalName1\",\r\n" +
-			"      \"lu_name\":\"LuName1\",\r\n" +
-			"      \"global_value\":\"globalValue1\"\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"global_name\":\"globalName2\",\r\n" +
-			"      \"lu_name\":\"ALL\",\r\n" +
-			"      \"global_value\":\"globalValue2\"\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"reference\": \"ref\",\r\n" +
-			"  \"task_created_by\": \"test\",\r\n" +
-			"  \"task_creation_date\": \"2021-02-04 14:20:59.454\"\r\n" +
-			"}")
+			"   \"task_last_updated_date\":\"2022-12-19 12:16:48.257\",\r\n" +
+			"   \"filterout_reserved\":false,\r\n" +
+			"   \"be_id\":4,\r\n" +
+			"   \"selected_version_task_name\":null,\r\n" +
+			"   \"reserve_retention_period_type\":\"Days\",\r\n" +
+			"   \"environment_id\":2,\r\n" +
+			"   \"selection_method\":\"PR\",\r\n" +
+			"   \"selected_ref_version_task_name\":null,\r\n" +
+			"   \"refresh_reference_data\":false,\r\n" +
+			"   \"tester\":\"tester2\",\r\n" +
+			"   \"be_last_updated_date\":\"2022-12-19 12:12:39.838\",\r\n" +
+			"   \"owners\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"refcount\":1,\r\n" +
+			"   \"num_of_entities\":2,\r\n" +
+			"   \"tester_type\":\"ID\",\r\n" +
+			"   \"reserve_note\":null,\r\n" +
+			"   \"load_entity\":true,\r\n" +
+			"   \"selected_version_task_exe_id\":null,\r\n" +
+			"   \"task_created_by\":\"admin\",\r\n" +
+			"   \"be_last_updated_by\":\"admin\",\r\n" +
+			"   \"scheduling_end_date\":null,\r\n" +
+			"   \"environment_point_of_contact_phone1\":null,\r\n" +
+			"   \"processnames\":\"PostExecFlow\",\r\n" +
+			"   \"testers\":[\r\n" +
+			"      {\r\n" +
+			"         \"tester_type\":\"ID\",\r\n" +
+			"         \"role_id\":[\r\n" +
+			"            \"4\"\r\n" +
+			"         ],\r\n" +
+			"         \"tester\":\"tester2\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"tester_type\":\"ID\",\r\n" +
+			"         \"role_id\":[\r\n" +
+			"            \"3\"\r\n" +
+			"         ],\r\n" +
+			"         \"tester\":\"tester1\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
+			"   \"environment_status\":\"Active\",\r\n" +
+			"   \"be_status\":\"Active\",\r\n" +
+			"   \"selected_version_datetime\":null,\r\n" +
+			"   \"task_last_updated_by\":\"admin\",\r\n" +
+			"   \"selected_ref_version_task_exe_id\":null,\r\n" +
+			"   \"task_execution_status\":\"Active\",\r\n" +
+			"   \"sync_mode\":null,\r\n" +
+			"   \"replace_sequences\":false,\r\n" +
+			"   \"entity_exclusion_list\":null,\r\n" +
+			"   \"environment_point_of_contact_last_name\":null,\r\n" +
+			"   \"environment_point_of_contact_email\":null,\r\n" +
+			"   \"be_description\":\"\",\r\n" +
+			"   \"reserve_retention_period_value\":5,\r\n" +
+			"   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
+			"   \"environment_expiration_date\":null,\r\n" +
+			"   \"environment_point_of_contact_phone2\":null,\r\n" +
+			"   \"environment_created_by\":\"admin\",\r\n" +
+			"   \"roles\":[\r\n" +
+			"      [\r\n" +
+			"         {\r\n" +
+			"            \"role_id\":4,\r\n" +
+			"            \"allowed_test_conn_failure\":false\r\n" +
+			"         },\r\n" +
+			"         {\r\n" +
+			"            \"role_id\":3,\r\n" +
+			"            \"allowed_test_conn_failure\":false\r\n" +
+			"         }\r\n" +
+			"      ]\r\n" +
+			"   ],\r\n" +
+			"   \"environment_last_updated_by\":\"admin\",\r\n" +
+			"   \"be_creation_date\":\"2022-10-19 18:42:40.301\",\r\n" +
+			"   \"task_id\":87,\r\n" +
+			"   \"be_created_by\":\"admin\",\r\n" +
+			"   \"source_environment_id\":1,\r\n" +
+			"   \"role_id_orig\":4,\r\n" +
+			"   \"scheduler\":\"immediate\",\r\n" +
+			"   \"environment_description\":null,\r\n" +
+			"   \"selected_ref_version_datetime\":null,\r\n" +
+			"   \"source_env_name\":\"SRC\",\r\n" +
+			"   \"reserve_ind\":true,\r\n" +
+			"   \"task_title\":\"testapi2\",\r\n" +
+			"   \"fabric_environment_name\":null,\r\n" +
+			"   \"environment_name\":\"TAR\",\r\n" +
+			"   \"delete_before_load\":false,\r\n" +
+			"   \"allow_write\":true,\r\n" +
+			"   \"owner\":null,\r\n" +
+			"   \"task_status\":\"Active\",\r\n" +
+			"   \"executioncount\":0,\r\n" +
+			"   \"environment_last_updated_date\":\"2022-12-06 10:18:49.378\",\r\n" +
+			"   \"be_name\":\"Customer\",\r\n" +
+			"   \"version_ind\":false,\r\n" +
+			"   \"task_creation_date\":\"2022-12-19 12:16:48.257\",\r\n" +
+			"   \"task_globals\":false,\r\n" +
+			"   \"environment_point_of_contact_first_name\":null,\r\n" +
+			"   \"task_type\":\"LOAD\",\r\n" +
+			"   \"environment_creation_date\":\"2022-09-21 13:43:25.13\",\r\n" +
+			"   \"owner_type\":null,\r\n" +
+			"   \"creatorRoles\":[\r\n" +
+			"      \"admin\"\r\n" +
+			"   ],\r\n" +
+			"   \"selection_method2\":\"Parameters with Random Entity Selection\",\r\n" +
+			"   \"task_type2\":\"LOAD\",\r\n" +
+			"   \"operation_mode\":\"Load entity\",\r\n" +
+			"   \"data_type\":\"Entities and Reference\",\r\n" +
+			"   \"disabled\":false,\r\n" +
+			"   \"onHold\":false,\r\n" +
+			"   \"reference\":\"both\",\r\n" +
+			"   \"operationMode\":\"insert_entity_without_delete\",\r\n" +
+			"   \"extractSelected\":true,\r\n" +
+			"   \"postExecutionProcesses\":[\r\n" +
+			"      1\r\n" +
+			"   ],\r\n" +
+			"   \"refList\":[\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"devicestable2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"devicestable2017\",\r\n" +
+			"         \"selected\":true\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"globals\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"selectedLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"allLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":null,\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"product_name\":\"CRM\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"product_name\":\"ORDERS\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"missingRootLU\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"syncModeRadio\":null,\r\n" +
+			"   \"allPostExecutionProcess\":[\r\n" +
+			"      {\r\n" +
+			"         \"process_id\":1,\r\n" +
+			"         \"be_id\":4,\r\n" +
+			"         \"process_name\":\"PostExecFlow\",\r\n" +
+			"         \"process_description\":null,\r\n" +
+			"         \"execution_order\":1\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"versionsForLoad\":[\r\n" +
+			"      \r\n" +
+			"   ]\r\n" +
+			"}=-}")
 	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
@@ -1373,7 +1574,11 @@ public class Logic extends WebServiceUserCode {
 			"Use the ANY command when checking a value of a parameter since the TDM LU parameter tables contain an array of values on each parameter.\r\n" +
 			"\r\n" +
 			"Example of a request body:\r\n" +
-			"{\"where\":\"(( '2' = ANY(\\\"BILLING.NO_OF_OPEN_INVOICES\\\") ) AND ( '3' = ANY(\\\"BILLING.SUBSCRIBER_TYPE\\\") ))\"}")
+			"{\r\n" +
+			"  \"tar_env_name\": \"TAR\",\r\n" +
+			"  \"where\": \"(( 'Alise' = ANY(\\\"CUSTOMER.FIRST_NAME\\\") ))\",\r\n" +
+			"  \"filterout_reserved\": false\r\n" +
+			"}")
 	@webService(path = "businessentity/{beId}/sourceEnv/{src_env_name}/analysiscount", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\"errorCode\":\"SUCCESS\",\"message\":null,\"result\":834}")
 	public static Object wsGetAnalysiscountForBusinessEntity(@param(required=true) Long beId, @param(required=true) String src_env_name, String tar_env_name, String where, Boolean filterout_reserved) throws Exception {
@@ -1663,7 +1868,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"Example of a request body:\r\n" +
 			"{\"task_type\":\"LOAD\",\"logicalUnits\":[\"Customer\",\"Orders\"]}")
-	@webService(path = "task/getReferenceTaskTable", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/getReferenceTaskTable", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\"result\":[{\"ref_table_name\":\"CUSTOMER_TYPE\",\"lu_name\":\"Customer\",\"interface_name\":\"CRM_DB\",\"schema_name\":\"public\"}],\"errorCode\":\"SUCCESS\",\"message\":null}")
 	public static Object wsGetReferenceTaskTable(List<String> logicalUnits, String task_type, Boolean version_ind) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
@@ -1671,7 +1876,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		try {
 		
-			if (task_type.equals("EXTRACT")){
+			if (task_type.equals("EXTRACT") || (task_type.equals("LOAD") && (version_ind == null || !version_ind))){
 				//Object resultList = com.k2view.cdbms.usercode.lu.k2_ws.TDM.Logic.wsGetRefTablesByLu(luArray);
 		
 				List<Object> refTablesList = new ArrayList<Object>();
@@ -1708,20 +1913,6 @@ public class Logic extends WebServiceUserCode {
 			else if (task_type.equals("LOAD") && version_ind != null && version_ind){
 				List<Map<String,Object>> resultList = TaskExecutionUtils.fnGetRefTableForLoadWithVersion(logicalUnits);
 				response.put("result", resultList);
-			}
-			else{
-				Db.Rows rows = TaskExecutionUtils.fnGetRefTableForLoadWithoutVersion(logicalUnits);
-				List<Map<String,Object>> result=new ArrayList<>();
-				List<String> columnNames = rows.getColumnNames();
-				for (Db.Row row : rows) {
-					ResultSet resultSet = row.resultSet();
-					Map<String, Object> rowMap = new HashMap<>();
-					for (String columnName : columnNames) {
-						rowMap.put(columnName, resultSet.getObject(columnName));
-					}
-					result.add(rowMap);
-				}
-				response.put("result",result);
 			}
 			errorCode="SUCCESS";
 		} catch(Exception e){
