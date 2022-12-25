@@ -783,7 +783,7 @@ public class Logic extends WebServiceUserCode {
 			"        }\r\n" +
 			"    ]\r\n" +
 			"}")
-	@webService(path = "task", verb = {MethodType.POST}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@webService(path = "task", verb = {MethodType.POST}, version = "0", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 145\r\n" +
@@ -1181,7 +1181,7 @@ public class Logic extends WebServiceUserCode {
 			"        }\r\n" +
 			"    ]\r\n" +
 			"}")
-	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "2", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "0", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"id\": 146\r\n" +
@@ -3823,14 +3823,9 @@ public class Logic extends WebServiceUserCode {
 				// if the cluster ID is define, add it to the name of the keyspace.
 				String clusterID = "" + ludb().fetch("clusterid").firstValue();
 				String tableName = "k2system.k2_jobs";
-				if (clusterID != null && !clusterID.isEmpty()) {
-					tableName = "k2system_" + clusterID + ".k2_jobs";
-				}
 				if (!"IN_PROCESS".equalsIgnoreCase(jobStatus) && !"SCHEDULED".equalsIgnoreCase(jobStatus) && !"WAITING".equalsIgnoreCase(jobStatus)) {
 					if ("tdmExecuteTask".equalsIgnoreCase(functionName) || "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
-						String errMsg = "" + db("DB_CASSANDRA").fetch("select error_msg from " + tableName + " where type = 'USER_JOB' and name ='TDM." +
-							functionName + "' and uid = '" + uid + "'").firstValue();
-		
+						String errMsg = "" + jobDetails.get("Notes");
 						log.error("Job " + functionName + " is down, cannot run task. The Error Messge: " + errMsg);		
 						String jobDownMsg = "Job " + functionName + " is down, cannot run task! The Error is: " + errMsg;
 						jobDownError.put(functionName, jobDownMsg);

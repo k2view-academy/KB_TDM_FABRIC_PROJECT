@@ -125,7 +125,7 @@ public class TdmExecuteTask {
 								versionExpDate = migrationStatus.get("version_expiration_date");
                 	        	updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId, versionExpDate);
 								try {
-									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+									//log.info("TdmExecuteTask - Calling fnTdmReference");
                                     fnTdmReference(String.valueOf(taskExecutionID), taskType);
 								} catch (Exception e) {
 									log.error("TdmExecuteTask - Update extract task status to failed");
@@ -140,7 +140,7 @@ public class TdmExecuteTask {
     	                	}
 						} else {
 							try {
-								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+								//log.info("TdmExecuteTask - Calling fnTdmReference");
                                 fnTdmReference(String.valueOf(taskExecutionID), taskType);
 							} catch (Exception e) {
 								log.error("TdmExecuteTask - Update extract task status to failed");
@@ -160,7 +160,7 @@ public class TdmExecuteTask {
         	        	        String executionId = executeLoadBatch(taskProperties);
             	        	    if (!executionId.isEmpty()) {
                 	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
-									//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+									//log.info("TdmExecuteTask - Calling fnTdmReference");
                                     fnTdmReference(String.valueOf(taskExecutionID), taskType);
 		                        } else {
     		                        // rollback LU and task status
@@ -168,7 +168,7 @@ public class TdmExecuteTask {
             		                log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                 		        }
 							} else {
-								//log.info("TdmExecuteTask - Calling fnTdmCopyReference");
+								//log.info("TdmExecuteTask - Calling fnTdmReference");
                                 fnTdmReference(String.valueOf(taskExecutionID), taskType);
 							}
         	            } catch (Exception e) {

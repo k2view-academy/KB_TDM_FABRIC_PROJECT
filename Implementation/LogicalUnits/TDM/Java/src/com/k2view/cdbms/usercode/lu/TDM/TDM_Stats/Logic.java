@@ -37,6 +37,7 @@ public class Logic extends UserCode {
 
         fnTableStats();
         fnBEStats();
+		fnBEAndStatusStats();
         fnTotalExecutions();
         fnTotalStatusExecutions();
 
@@ -63,8 +64,8 @@ public class Logic extends UserCode {
 
     private static void fnBEStats() throws Exception {
         String sql = "select be.be_name, count(1) as execution_count" +
-                " from task_execution_list l, business_entities be" +
-                " where l.be_id = be.be_id" +
+                " from task_execution_summary s, business_entities be" +
+                " where s.be_id = be.be_id" +
                 " group by be.be_name";
 
         Db.Rows rows = db(TDM).fetch(sql);
@@ -77,6 +78,26 @@ public class Logic extends UserCode {
             UserCode.statsCount("TaskExecutionPerBE", beName, RecCount);
         }
     }
+	
+	    private static void fnBEAndStatusStats() throws Exception {
+        String sql = "select be.be_name, execution_status, count(1) as execution_count" +
+                " from task_execution_summary s, business_entities be" +
+                " where s.be_id = be.be_id" +
+                " group by be.be_name, execution_status" +
+				" order by be.be_name, execution_status";
+
+        Db.Rows rows = db(TDM).fetch(sql);
+
+        for (Db.Row row : rows) {
+
+            String beName = "" + row.get("be_name");
+			String status = "" + row.get("execution_status");
+            Long RecCount = Long.valueOf("" + row.get("execution_count")).longValue();
+
+            UserCode.statsCount("TaskExecutionPerBEAndStatus", beName + "#" + status, RecCount);
+        }
+    }
+
 
     private static void fnTotalExecutions() throws Exception {
         String sql = "select count(1) from task_execution_summary";

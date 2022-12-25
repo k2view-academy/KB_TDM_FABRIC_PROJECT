@@ -97,7 +97,6 @@ public class TaskExecutionUtils {
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
                     task_execution_id);
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
-            // The cancellation of the jobs for the tables will be handled by the new fabric listener user job for the reference copy.
 
             db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='stopped', number_of_processed_records = 0 where task_execution_id = ? " +
                     "and execution_status not in ('completed', 'failed')", task_execution_id);
@@ -229,17 +228,7 @@ public class TaskExecutionUtils {
                     task_execution_id);
 
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
-			
-            // The resume of the jobs for the tables will be handled by the new fabric listener user job for the reference copy.
 
-//            db(TDM).execute("UPDATE " + schema + ".task_execution_list l SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
-//                            "and (task_execution_id, lu_id) in (select task_execution_id, lu_id from task_ref_exe_stats r,  tasks_logical_units u, task_ref_tables s " +
-//                            "where l.task_execution_id = r.task_execution_id and l.lu_id = u.lu_id " +
-//                            "and l.task_id = u.task_id and u.lu_name = s.lu_name and s.task_ref_table_id = r.task_ref_table_id and s.task_id = l.task_id " +
-//                            "and lower(r.execution_status) = 'stopped')",
-//                    task_execution_id);
-	
-			
             db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume' where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null

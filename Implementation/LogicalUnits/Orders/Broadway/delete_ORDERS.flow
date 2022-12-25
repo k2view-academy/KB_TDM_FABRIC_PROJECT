@@ -15,6 +15,26 @@
         {
             "stages": [
                 {
+                    "name": "Initiate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Initiate TDM Delete",
+                            "actorType": {
+                                "parentType": "InitiateTDMLoad_Actor",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get Fabric Table Data",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -105,11 +125,11 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "ORDER_ID"
+                                            "order_id"
                                         ]
                                     },
                                     {
-                                        "name": "ORDER_ID",
+                                        "name": "order_id",
                                         "schema": {},
                                         "mandatory": false
                                     }
@@ -133,6 +153,36 @@
                 "name": "params"
             },
             "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "syncMode"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Delete",
+                "name": "syncMode"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Delete",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Initiate TDM Delete",
+                "name": "luName"
+            }
         }
     ]
 }

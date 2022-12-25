@@ -17,7 +17,6 @@ import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
-import com.k2view.loader.Loader;
 import groovy.json.JsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 
@@ -84,8 +83,6 @@ public class Logic extends UserCode {
     public static final String FAILED = "failed";
     public  static final String COMPLETED = "completed";
 	public static final String PAUSED = "paused";
-	public static final String TDM_COPY_REFERENCE = "fnTdmCopyReference";
-	public static final String TDM_COPY_REF_TABLES_FOR_TDM = "tdmCopyRefTablesForTDM";
 	
 	@out(name = "instanceId", type = String.class, desc = "")
 	@out(name = "envName", type = String.class, desc = "")
@@ -504,265 +501,6 @@ public class Logic extends UserCode {
 			}
 		}
 	}
-
-	// This function will add entities of child LUs to TDM table TASK_EXECUTION_ENTITIES
-
-
-//	@type(UserJob)
-//	public static void tdmCopyRefTablesForTDM(String sourceEnv, String ttl, Boolean versionID, String taskExecID, String taskRefTableID, String luName) throws Exception {
-//		//log.info("tdmCopyRefTablesForTDM - task_ref_table_id: " + taskRefTableID + "task exection id: " + taskExecID);
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-//		Date date = new Date();
-//		
-//		String errorCategory = "Rejected Reference Table Extract";
-//		
-//		//TDM 6.1.1 - sql to insert data into TDMDB error table
-//		String insertSql = "insert into " + TDMDB_SCHEMA + ".TASK_EXE_ERROR_DETAILED (TASK_EXECUTION_ID,LU_NAME,ENTITY_ID,IID,TARGET_ENTITY_ID, ERROR_MESSAGE, ERROR_CATEGORY) " +
-//			"VALUES (?, ?, ?, ?, ?, ?, ?)";
-//		
-//		
-//		//log.info("tdmCopyRefTablesForTDM - sourceEnv = " + sourceEnv);
-//		fabric().execute("set environment='" + sourceEnv + "'");
-//		
-//		//log.info("tdmCopyRefTablesForTDM- input task_ref_table_id: " + taskRefTableID+ ", task execution id: " + taskExecID);
-//		
-//		if(StringUtils.isEmpty(taskRefTableID)){
-//			throw new RuntimeException("task_ref_table_id is empty");
-//		}
-//		
-//		Db.Row rs = db(TDM).fetch("Select ref_table_name,schema_name,interface_name from " + TASK_REF_TABLES + "  where task_ref_table_id = ? and lu_name = ?", 
-//									Integer.valueOf(taskRefTableID), luName).firstRow();
-//		
-//		String tableName = "";
-//		String schemaName = "";
-//		String iface = "";
-//		if (!rs.isEmpty()) {
-//			tableName = "" + rs.get("ref_table_name");
-//			schemaName = "" + rs.get("schema_name");
-//			iface = "" + rs.get("interface_name");
-//		}
-//		
-//		//log.info("tdmCopyRefTablesForTDM - tableName: " + tableName);
-//		//log.info("tdmCopyRefTablesForTDM - schemaName: " + schemaName);
-//		//log.info("tdmCopyRefTablesForTDM - iface: " + iface);
-//		
-//		Object countObj=null;
-//		String count = "0";
-//		String job_uid = taskExecID + "_" + taskRefTableID;
-//		
-//		try {
-//		
-//			countObj = db(iface).fetch("Select count(*) from " + schemaName + "." + tableName).firstValue();
-//		//if(countObj!= null)	
-//			//log.info("tdmCopyRefTablesForTDM - number of records for table: " + schemaName+ "." + tableName + " and interface: " + iface + " is: " + countObj.toString());	
-//			
-//		} catch (SQLException e){
-//			log.error(e.getMessage(), e);
-//			
-//			db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set job_uid = ?, execution_status = ?, " + 
-//					"number_of_records_to_process = ?, start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?,  updated_by = ?" +
-//					" where task_execution_id = ? and task_ref_table_id = ?; ",
-//				job_uid, FAILED, count, e.getMessage(), TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//			
-//			// TDM 6.1.1, 20-may-20, Add entry to TDM DB error table
-//			db(TDM).execute(insertSql, taskExecID, luName, tableName, tableName, tableName, e.getMessage(), errorCategory);
-//			
-//			return;
-//		}
-//		
-//		//log.info("tdmCopyRefTablesForTDM - No of records for table name: " + tableName + " is: " + count);
-//		count = countObj != null ? countObj.toString() : "0";
-//		
-//		if(Integer.valueOf(count) == 0){
-//			
-//			//log.info("tdmCopyRefTablesForTDM- update status to failure- empty source table: " + tableName);
-//		
-//			db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set job_uid = ?, execution_status = ?, number_of_records_to_process = ?, number_of_processed_records = ?, " + 
-//					"start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?,  updated_by = ?" +
-//					" where task_execution_id = ? and task_ref_table_id = ?; ",
-//				job_uid, FAILED, count, count, " Source table is empty", TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//			
-//			// TDM 6.1.1, 20-may-20, Add entry to TDM DB error table
-//			db(TDM).execute(insertSql, taskExecID, luName, tableName, tableName, tableName, "Empty Source Table", errorCategory);
-//			
-//			//log.info("tdmCopyRefTablesForTDM- after update, exiting function");
-//			return;
-//		}else{
-//			//log.info("tdmCopyRefTablesForTDM - Updating status to Running");
-//			db(TDM).execute("update " + TASK_REF_EXE_STATS + " set job_uid= ?, execution_status = ?, " +
-//					"start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', number_of_records_to_process = ?, updated_by = ?" +
-//					"where task_execution_id = ? and task_ref_table_id = ?; ",
-//				job_uid, RUNNING, count, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//		
-//		}
-//		
-//		try (Connection conn = getConnection(iface)) {
-//			Statement select = conn.createStatement();
-//		
-//			ResultSet refTableRS = select.executeQuery("Select * from " + schemaName + "." + tableName);
-//			ResultSetMetaData metaData = refTableRS.getMetaData();
-//			
-//			
-//			String table = "";
-//			//String clusterID = (String) DBSelectValue(DB_FABRIC, "clusterid", null);
-//			String clusterID = (String) fabric().fetch("clusterid").firstValue();
-//			if (clusterID == null || clusterID.isEmpty()) {
-//				table = "k2view_tdm." + tableName;
-//			} else {
-//				table = "k2view_tdm_" + clusterID + "." + tableName;
-//			}
-//
-//
-//			// TDM 7.5.1 - 29-June-22 - Create the Table in Cassandra if it does not exist yet
-//			createCassandraTable(iface, schemaName, tableName);
-//			
-//			// Tali - 9-MAY-22- fix the insert statement and insert prepare- insert the entire record as a JSON into the new field: rec_data
-//			StringBuilder insertStmt = new StringBuilder("INSERT INTO ").append(table).append(" ( source_env_name, tdm_task_execution_id, tdm_rec_id, rec_data ");
-//			StringBuilder insertPrepare = new StringBuilder();
-//		
-//			insertPrepare.append("?,?,?,?");
-//		
-//			int colsCount = metaData.getColumnCount();
-//
-//			// Tali- 9-May-22- comment this part- the insert statement insets the entire record into the new field: rec_Data
-//			/*if (colsCount > 0) {
-//				insertPrepare.append(COMMA_DEL);
-//			}
-//
-//			for (int i = 1; i <= colsCount; i++) {
-//				String colName = metaData.getColumnName(i);
-//				insertStmt.append(colName);
-//				insertPrepare.append("?");
-//				if (i < colsCount) {
-//					insertStmt.append(COMMA_DEL);
-//					insertPrepare.append(COMMA_DEL);
-//				}
-//			}
-//			*/
-//		
-//			if (!ttl.isEmpty() && !ttl.equals("0")) {
-//				insertStmt.append(") VALUES (").append(insertPrepare).append(") USING TTL ").append(ttl);
-//			} else {
-//				insertStmt.append(") VALUES (").append(insertPrepare).append(")");
-//			}
-//		
-//			//log.info("tdmCopyRefTablesForTDM - insertStmt: " + insertStmt.toString());
-//		
-//			insertRefDataToCassandra(sourceEnv, taskExecID, versionID, taskRefTableID, tableName, refTableRS, insertStmt, colsCount);
-//		}catch (Exception e) {
-//			log.error(e.getMessage());
-//			db(TDM).execute( "update " + TASK_REF_EXE_STATS + " set job_uid= ?, execution_status = ?, " +
-//					"start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC',  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', " +
-//					"number_of_records_to_process = ?, updated_by = ? " +
-//					"where task_execution_id = ? and task_ref_table_id = ?; ",
-//				job_uid, FAILED, 0, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//			
-//			// TDM 6.1.1, 20-may-20, Add entry to TDM DB error table
-//			db(TDM).execute(insertSql, taskExecID, luName, tableName, tableName, tableName, e.getMessage(), errorCategory);
-//		}
-//	}
-//
-//
-//	@desc("This user job validates for reference tables defined in \r\ntranslation table trnRefList, the following:\r\n1. The table exits in Cassandra DB, if not then create it\r\n2. If the table already exists then check if the structure \r\n  is up to date and if not drop and recreate the table.\r\nThe function will also expire entries related to each \r\nrebuilt table in task_execution_list")
-//	@type(UserJob)
-//	public static void fnValidateAndRebuildRefTables() throws Exception {
-//		Map<String,Map<String, String>> trnRefListValues = getTranslationsData("trnRefList");
-//		
-//		String reTableName;
-//		String schemaName;
-//		String interfaceName;
-//		
-//		for(String index: trnRefListValues.keySet()){
-//			Map<String, String> valMap = trnRefListValues.get(index);
-//		
-//			reTableName = valMap.get("reference_table_name");
-//			schemaName = valMap.get("schema_name");
-//			interfaceName = valMap.get("interface_name");
-//		
-//			//log.info("Calling createCassandraTable with: interfaceName: " + interfaceName +
-//			//		" schemaName: " + schemaName + " reTableName: " + reTableName);
-//			createCassandraTable(interfaceName, schemaName, reTableName);
-//		}
-//	}
-
-//	private static void insertRefDataToCassandra(String sourceEnv, String taskExecID, Boolean versionID, String taskRefTableID, String tableName, ResultSet refTableRS, StringBuilder insertStmt, int colsCount) throws SQLException, ExecutionException, InterruptedException {
-//		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-//		Date date = new Date();
-//		int processedCounter = 0;
-//		int updateStatsSize = Integer.parseInt(TDM_REF_UPD_SIZE);
-//		AtomicInteger counter = new AtomicInteger(0);
-//		AtomicBoolean failed = new AtomicBoolean(false);
-//		Loader loader = buildLoader(counter, failed, tableName);
-//
-//		int tdm_rec_id = 1;
-//		while (refTableRS.next()) {
-//			if (failed.get()) {
-//				db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, updated_by = ? " +
-//					"where task_execution_id = ? and task_ref_table_id = ?; ", FAILED, " failed to insert " , TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//
-//				throw new RuntimeException("failed to insert... ");
-//			}
-//			//log.info("colsCount: " + colsCount);
-//
-//			// Tali - 9-May-22 - Fix the row size and set it 4.
-//			//Object[] row = new Object[colsCount + 3];
-//			Object[] row = new Object[4];
-//			row[0] = sourceEnv;
-//			row[1] = versionID ?  taskExecID : "ALL";
-//			row[2]= String.valueOf(tdm_rec_id++);
-//
-//            try {
-//				// Tali- 9-May-22- build a JSON object with the record's columns + values
-//				String JSONObject;
-//				Map<String, Object> dataRec = new LinkedHashMap<String, Object>();
-//
-//				for (int j = 1; j <= colsCount; j++) {
-//					//log.info("type: " + refTableRS.getMetaData().getColumnTypeName(j).toLowerCase());
-//
-//					// Tali- 9-May-22- build a JSON object with the record's columns + values
-//					Object fieldVal =  typeCheck(refTableRS.getObject(j));
-//
-//					String colName = refTableRS.getMetaData().getColumnName(j);
-//
-//					if(fieldVal == null) {
-//						dataRec.put(colName, null);
-//					}else{
-//						dataRec.put(colName, fieldVal);
-//					}
-//
-//					//row[j+2] = typeCheck(refTableRS.getObject(j));
-//					//log.info("val: " + row[j]);
-//				}
-//
-//				// Tali- 9-May-22- build a JSON from the map and populate it in the row[] out of the for loop
-//				//GsonBuilder gsonMapBuilder = new GsonBuilder();
-//				//Gson gsonObject = gsonMapBuilder.serializeNulls().create();
-//				//JSONObject = gsonObject.toJson(dataRec);
-//				JSONObject = Json.get(Json.Feature.SERIALIZE_NULLS).toJson(dataRec);
-//				row[3] = JSONObject;
-//
-//                loader.submit(insertStmt.toString(), row);
-//            }
-//            catch(Exception e) {
-//				db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set execution_status = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?, " +
-//						"number_of_records_to_process=?, number_of_processed_records=?, updated_by = ? " +
-//						"where task_execution_id = ? and task_ref_table_id = ?; ", 
-//						FAILED, e.getMessage(), null, null, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//
-//				throw new RuntimeException(e.getMessage());
-//            }
-//			processedCounter++;
-//			if(processedCounter%updateStatsSize == 0) {
-//				db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
-//						"where task_execution_id = ? and task_ref_table_id = ?; ", processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, taskExecID, taskRefTableID);
-//			}
-//		}
-//		loader.join();
-//		loader.close();
-//
-//		db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  number_of_processed_records = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
-//				"where task_execution_id = ? and task_ref_table_id = ? and execution_status != ?; ", COMPLETED, processedCounter, TDM_COPY_REF_TABLES_FOR_TDM, null, taskExecID, taskRefTableID, FAILED);
-//	}
 
 	private static boolean isCommonlyUsedType(Object val) {
 		// Cover all cases of Integer, Decimal, Double, Float etc...
@@ -1267,7 +1005,7 @@ public class Logic extends UserCode {
 			getErrorlistSql="select entityid, error from k2batchprocess_" + clusterID + ".batchprocess_entities_errors where bid=?";
 		}
 				
-		Db.Rows errorList = db("DB_CASSANDRA").fetch(getErrorlistSql, i_migrateId);
+		Db.Rows errorList = db(DBCASSANDRA).fetch(getErrorlistSql, i_migrateId);
 		
 		for (Db.Row errorRec : errorList) {
 			String entityId = "" + errorRec.get("entityid");
@@ -1324,102 +1062,10 @@ public class Logic extends UserCode {
 	}
 
 
-
-
 	@type(UserJob)
 	public static void tdmTaskScheduler() throws Exception {
 		TdmTaskScheduler.fnTdmTaskScheduler();
 	}
-
-	private static void createCassandraTable(String iface, String schemaName, String tableName) throws SQLException {
-
-		try  (Connection cassandraConn = getConnection(DBCASSANDRA);)
-		{
-
-			String table = "";
-			//TDM 5.1, replacing dbFabtic with fabric as Fabric 5.3 expectations
-			//String clusterID = (String) DBSelectValue(DB_FABRIC, "clusterid", null);
-			String clusterID = "" + fabric().fetch("clusterid").firstValue();
-			if (clusterID == null || clusterID.isEmpty()) {
-				table = "k2view_tdm." + tableName.toLowerCase();
-			} else {
-				table = "k2view_tdm_" + clusterID + "." + tableName.toLowerCase();
-			}
-
-			// TDM 7.5.1 - 29-June-22 - The table will be created only in case it did not exists before, the compare of table structure in source and Cassandra is disabled.
-
-			// TALI- 9-MAY-22- fix - comment the new columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field. Update the create statement to include the new field: rec_data
-			StringBuilder createStmt = new StringBuilder("CREATE TABLE IF NOT EXISTS ").append(table).append(" ( source_env_name text, tdm_task_execution_id text, tdm_rec_id text, rec_data text, ");
-
-			// Tali - 9-May-22- remove the append of the source PK fields to the Cassandra PK fields
-			createStmt.append(" PRIMARY KEY (source_env_name, tdm_task_execution_id, tdm_rec_id ))");
-
-			//log.info("createStmt: " + createStmt.toString());
-			//log.info("updateStatement: " + updateStatement.toString() + ", size of existing table: " + originColumns.size() + ", size of new table: " + newColumns.size());
-
-			// TALI- 9-MAY-22- fix - comment the original columns. It is no longer needed since the entire result set is entered as a JSON into one TEXT field
-			db(DBCASSANDRA).execute("" + createStmt);
-			
-		} catch (Exception e) {
-			log.error("Table: " + schemaName + "." + tableName + " at Interface: " + iface + " failed with Err Message: " + e.getMessage());
-		}
-	}
-
-	private static String convertToCassandraType(String originType) throws SQLException {
-		String colType;
-		switch (originType) {
-			case "varchar2":
-			case "char":
-			case "long":
-			case "clob":
-			case "nchar":
-			case "nvarchar":
-				colType = CASSANDRA_TEXT_TYPE;
-				break;
-			case "number":
-			case "integer":
-			case "int4":
-			case "smallint": 
-				colType = CASSANDRA_INT_TYPE;
-				break;
-			case "int8":
-				colType = CASSANDRA_BIGINT_TYPE;
-				break;
-			case "decimal":
-			case "binary_double":
-			case "binary_float":
-			case "float8":
-			case "numeric":
-				colType = CASSANDRA_DOUBLE_TYPE;
-				break;
-			case "date":
-			case "datetime":
-			case "datetime2":
-				colType = "timestamp";
-				break;
-			case "bool":
-			case "boolean":
-			case "bit": //sql server
-				colType = CASSANDRA_BOOL_TYPE;
-				break;
-			default:
-				colType = originType;
-				break;
-		}
-		return colType;
-	}
-
-//	private static Loader buildLoader(AtomicInteger counter, AtomicBoolean failed, String tableName) {
-//		return Loader.to("TDM").withOnFailure(t -> {
-//			failed.set(true);
-//			log.error("Failed on table" + tableName + " with error message: " +  t.getMessage());
-//			System.out.println(String.format("Failed on table [%s] with error message", tableName, t.getMessage()));// DBExecute(save failure)
-//		})
-//				.withOnSuccess(() -> {
-//					int currentCount = counter.addAndGet(10);
-//					//DBexecute(update the source-update the number of processed records by the batch size)
-//				}).please();
-//	}
 
 	private static String getBatchStatus(Object originalStatus) {
 		if (originalStatus == null) {

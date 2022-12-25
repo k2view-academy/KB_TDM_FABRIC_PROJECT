@@ -738,11 +738,6 @@ public class SharedLogic {
 		return new Object[]{instanceId, envName, versionName, versionDateTime};
 	}
 
-	@type(RootFunction)
-	@out(name = "dummy_output", type = void.class, desc = "")
-	public static void fnPop_TDM_LU_TYPE_RELATION_EID(String dummy_input) throws Exception {
-		if(1 == 2)UserCode.yield(new Object[] {null});
-	}
 
 
 	@out(name = "refSummaryStats", type = Map.class, desc = "")

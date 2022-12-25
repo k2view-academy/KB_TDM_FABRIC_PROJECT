@@ -12,36 +12,6 @@
       <ExecuteEvery>7.00:00:00</ExecuteEvery>
       <InputParams />
     </Job>
-    <Job methodName="tdmCopyRefTablesForTDM" jobName="tdmCopyRefTablesForTDM" active="true">
-      <ExecutionMode>Manually</ExecutionMode>
-      <ScheduleType>TimeInterval</ScheduleType>
-      <ExecuteEvery>00:00:00</ExecuteEvery>
-      <InputParams>
-        <Input name="sourceEnv" dataType="String">
-          <Value><![CDATA[]]></Value>
-        </Input>
-        <Input name="ttl" dataType="String">
-          <Value><![CDATA[]]></Value>
-        </Input>
-        <Input name="versionID" dataType="Boolean">
-          <Value><![CDATA[]]></Value>
-        </Input>
-        <Input name="taskExecID" dataType="String">
-          <Value><![CDATA[]]></Value>
-        </Input>
-        <Input name="taskRefTableID" dataType="String">
-          <Value><![CDATA[]]></Value>
-        </Input>
-        <Input name="luName" dataType="String">
-          <Value><![CDATA[]]></Value>
-        </Input>
-      </InputParams>
-    </Job>
-    <Job methodName="fnValidateAndRebuildRefTables" jobName="fnValidateAndRebuildRefTables" active="false">
-      <ScheduleType>TimeInterval</ScheduleType>
-      <ExecuteEvery>1.00:00:00</ExecuteEvery>
-      <InputParams />
-    </Job>
     <Job methodName="tdmExecuteTask" jobName="tdmExecuteTask" active="true">
       <ScheduleType>TimeInterval</ScheduleType>
       <ExecuteEvery>00:00:10</ExecuteEvery>
