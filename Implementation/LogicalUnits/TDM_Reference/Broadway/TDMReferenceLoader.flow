@@ -81,12 +81,6 @@
                                         }
                                     },
                                     {
-                                        "name": "countBF",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "trnLuName",
                                         "schema": {
                                             "type": "string"
@@ -111,9 +105,15 @@
                                         }
                                     },
                                     {
-                                        "name": "truncateOrdelete",
+                                        "name": "truncateIndicator",
                                         "schema": {
                                             "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "countFlow",
+                                        "schema": {
+                                            "type": "string"
                                         }
                                     }
                                 ]
@@ -212,17 +212,26 @@
                             }
                         },
                         {
-                            "name": "FabricSetRead REFERENCE_LU",
+                            "name": "REFERENCE_LU",
                             "actorType": {
-                                "parentType": "FabricSetRead",
+                                "parentType": "Const",
                                 "inputs": [
                                     {
-                                        "name": "key",
-                                        "const": "REFERENCE_LU",
-                                        "isDefault": false
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_Reference"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -472,114 +481,26 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "GreaterThan1",
+                            "name": "Not Zero",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "GreaterThan",
+                                "parentType": "NotEquals",
                                 "inputs": [
                                     {
                                         "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
                                         "const": 0
                                     }
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Error Handler Of Get Data From Cassandra",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": "PopulateTableErrorsForRef"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Initiate Counter",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": "flowArgs.isNewTable = true;"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get Commit Size",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_REF_UPD_SIZE",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "table_data from reference_table",
-                            "actorType": {
-                                "parentType": "DbFetchField",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select table_data from reference_table"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 },
                 {
-                    "name": "Empty Source Table",
+                    "name": "Empty Source Table Or Records Are Not Available",
                     "dependsOnList": [
                         "Initiate the TDMDB Table"
                     ],
@@ -701,13 +622,116 @@
         {
             "stages": [
                 {
+                    "name": "Get The Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Error Handler Of Get Data From Table",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate Counter",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.isNewTable = true;"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Commit Size",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_REF_UPD_SIZE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "table_data from reference_table",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select table_data from reference_table"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Set Target Environment",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Set Environment",
+                            "name": "Set TAR Environment",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -738,7 +762,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Truncate or Delete inner flow",
+                            "name": "Truncate or Delete Table",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -785,6 +809,41 @@
         {
             "stages": [
                 {
+                    "name": "Get Table Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Get Ref Data Fields From Fabric",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "GetRefTableFieldsFromFabric"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "tableFields",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Uncompress Data",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -792,7 +851,6 @@
                     "actors": [
                         {
                             "name": "Uncompress Blob To Json",
-                            "minHeight": 335,
                             "actorType": {
                                 "parentType": "Uncompress",
                                 "inputs": [],
@@ -815,18 +873,410 @@
                             "name": "JsonParser Table_Data",
                             "actorType": {
                                 "parentType": "JsonParser",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "single",
+                                        "const": false
+                                    }
+                                ],
                                 "outputs": [
                                     {
                                         "name": "object",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "TABLE_DATA": {
-                                                        "type": "string"
-                                                    }
+                                            "type": "object",
+                                            "properties": {
+                                                "tac": {
+                                                    "type": "number"
+                                                },
+                                                "brandmodel": {
+                                                    "type": "string"
+                                                },
+                                                "manufacturer": {
+                                                    "type": "string"
+                                                },
+                                                "frequencies_band": {
+                                                    "type": "string"
+                                                },
+                                                "radiointerface": {
+                                                    "type": "string"
+                                                },
+                                                "brandname": {
+                                                    "type": "string"
+                                                },
+                                                "modelname": {
+                                                    "type": "string"
+                                                },
+                                                "os": {
+                                                    "type": "string"
+                                                },
+                                                "chipnfc": {
+                                                    "type": "string"
+                                                },
+                                                "chipbluetooth": {
+                                                    "type": "string"
+                                                },
+                                                "chipwlan": {
+                                                    "type": "string"
+                                                },
+                                                "devicetype": {
+                                                    "type": "string"
+                                                },
+                                                "removableuicc": {
+                                                    "type": "string"
+                                                },
+                                                "removableeuicc": {
+                                                    "type": "string"
+                                                },
+                                                "nonremovableuicc": {
+                                                    "type": "string"
+                                                },
+                                                "nonremovableeuicc": {
+                                                    "type": "string"
+                                                },
+                                                "deviceatlasid": {
+                                                    "type": "string"
+                                                },
+                                                "standardisedfull": {
+                                                    "type": "string"
+                                                },
+                                                "standardised_device_model": {
+                                                    "type": "string"
+                                                },
+                                                "standardisedmarketing": {
+                                                    "type": "string"
+                                                },
+                                                "interlmodel": {
+                                                    "type": "string"
+                                                },
+                                                "allocationdate": {
+                                                    "type": "string"
+                                                },
+                                                "countrycode": {
+                                                    "type": "number"
+                                                },
+                                                "fixedcode": {
+                                                    "type": "string"
+                                                },
+                                                "manufacturercode": {
+                                                    "type": "string"
+                                                },
+                                                "year_released": {
+                                                    "type": "string"
+                                                },
+                                                "mobile_device": {
+                                                    "type": "number"
+                                                },
+                                                "hardwaretype": {
+                                                    "type": "string"
+                                                },
+                                                "touchscreen": {
+                                                    "type": "number"
+                                                },
+                                                "screenwidth": {
+                                                    "type": "number"
+                                                },
+                                                "screenheight": {
+                                                    "type": "number"
+                                                },
+                                                "diagolscreensize": {
+                                                    "type": "number"
+                                                },
+                                                "displayppi": {
+                                                    "type": "number"
+                                                },
+                                                "devicepixelratio": {
+                                                    "type": "number"
+                                                },
+                                                "screencolordepth": {
+                                                    "type": "number"
+                                                },
+                                                "nfc": {
+                                                    "type": "number"
+                                                },
+                                                "camera": {
+                                                    "type": "number"
+                                                },
+                                                "ismobilephone": {
+                                                    "type": "number"
+                                                },
+                                                "istablet": {
+                                                    "type": "number"
+                                                },
+                                                "isereader": {
+                                                    "type": "number"
+                                                },
+                                                "isgamesconsole": {
+                                                    "type": "number"
+                                                },
+                                                "istv": {
+                                                    "type": "number"
+                                                },
+                                                "issettupbox": {
+                                                    "type": "number"
+                                                },
+                                                "ismediaplayer": {
+                                                    "type": "number"
+                                                },
+                                                "chipsetvendor": {
+                                                    "type": "string"
+                                                },
+                                                "chipset": {},
+                                                "chipsetmodel": {
+                                                    "type": "string"
+                                                },
+                                                "cpu": {
+                                                    "type": "string"
+                                                },
+                                                "cpu_cores": {
+                                                    "type": "string"
+                                                },
+                                                "cpu_maximum_frequency": {
+                                                    "type": "string"
+                                                },
+                                                "gpu": {
+                                                    "type": "string"
+                                                },
+                                                "sim_slots": {
+                                                    "type": "number"
+                                                },
+                                                "sim_size": {
+                                                    "type": "string"
+                                                },
+                                                "interl_storage_capacity": {
+                                                    "type": "string"
+                                                },
+                                                "expandable_storage": {
+                                                    "type": "number"
+                                                },
+                                                "total_ram": {
+                                                    "type": "string"
+                                                },
+                                                "os_me": {
+                                                    "type": "string"
+                                                },
+                                                "os_version": {
+                                                    "type": "string"
+                                                },
+                                                "os_android": {
+                                                    "type": "number"
+                                                },
+                                                "os_bada": {
+                                                    "type": "number"
+                                                },
+                                                "os_ios": {
+                                                    "type": "number"
+                                                },
+                                                "os_rim": {
+                                                    "type": "number"
+                                                },
+                                                "os_symbian": {
+                                                    "type": "number"
+                                                },
+                                                "os_windows_mobile": {
+                                                    "type": "number"
+                                                },
+                                                "os_windows_phone": {
+                                                    "type": "number"
+                                                },
+                                                "os_windows_rt": {
+                                                    "type": "number"
+                                                },
+                                                "os_web_os": {
+                                                    "type": "number"
+                                                },
+                                                "browser_me": {
+                                                    "type": "string"
+                                                },
+                                                "browser_version": {},
+                                                "browser_rendering_engine": {
+                                                    "type": "string"
+                                                },
+                                                "markup_xhtml_basic_1v0": {
+                                                    "type": "number"
+                                                },
+                                                "markup_xhtml_mp_1v0": {
+                                                    "type": "number"
+                                                },
+                                                "markup_xhtml_mp_1v1": {
+                                                    "type": "number"
+                                                },
+                                                "markup_xhtml_mp_1v2": {
+                                                    "type": "number"
+                                                },
+                                                "markup_wml1": {},
+                                                "vcard_download": {
+                                                    "type": "number"
+                                                },
+                                                "image__gif87": {
+                                                    "type": "number"
+                                                },
+                                                "image__gif89a": {},
+                                                "image__jpg": {
+                                                    "type": "number"
+                                                },
+                                                "image__png": {
+                                                    "type": "number"
+                                                },
+                                                "uri_scheme_tel": {
+                                                    "type": "number"
+                                                },
+                                                "uri_scheme_sms": {
+                                                    "type": "number"
+                                                },
+                                                "uri_scheme_sms_to": {},
+                                                "cookie": {
+                                                    "type": "number"
+                                                },
+                                                "https": {
+                                                    "type": "number"
+                                                },
+                                                "memory_limit_markup": {
+                                                    "type": "number"
+                                                },
+                                                "memory_limit_embedded_media": {
+                                                    "type": "number"
+                                                },
+                                                "memory_limit_download": {
+                                                    "type": "number"
+                                                },
+                                                "flash_capable": {
+                                                    "type": "number"
+                                                },
+                                                "js_support_basic_java_script": {
+                                                    "type": "number"
+                                                },
+                                                "js_modify_dom": {
+                                                    "type": "number"
+                                                },
+                                                "js_modify_css": {
+                                                    "type": "number"
+                                                },
+                                                "js_support_events": {
+                                                    "type": "number"
+                                                },
+                                                "js_support_event_listener": {
+                                                    "type": "number"
+                                                },
+                                                "js_xhr": {
+                                                    "type": "number"
+                                                },
+                                                "js_support_console_log": {
+                                                    "type": "number"
+                                                },
+                                                "js_json": {
+                                                    "type": "number"
+                                                },
+                                                "supports_client_side": {
+                                                    "type": "number"
+                                                },
+                                                "csd": {},
+                                                "hscsd": {},
+                                                "gprs": {
+                                                    "type": "number"
+                                                },
+                                                "edge": {
+                                                    "type": "number"
+                                                },
+                                                "hsdpa": {
+                                                    "type": "number"
+                                                },
+                                                "umts": {
+                                                    "type": "number"
+                                                },
+                                                "hspa": {
+                                                    "type": "number"
+                                                },
+                                                "lte": {
+                                                    "type": "number"
+                                                },
+                                                "lte_category": {
+                                                    "type": "number"
+                                                },
+                                                "lte_advanced": {
+                                                    "type": "number"
+                                                },
+                                                "volte": {
+                                                    "type": "number"
+                                                },
+                                                "wifi": {
+                                                    "type": "number"
+                                                },
+                                                "vowifi": {
+                                                    "type": "number"
+                                                },
+                                                "html_audio": {
+                                                    "type": "number"
+                                                },
+                                                "html_canvas": {
+                                                    "type": "number"
+                                                },
+                                                "html_inline_svg": {
+                                                    "type": "number"
+                                                },
+                                                "html_svg": {
+                                                    "type": "number"
+                                                },
+                                                "html_video": {
+                                                    "type": "number"
+                                                },
+                                                "css_animations": {
+                                                    "type": "number"
+                                                },
+                                                "css_columns": {
+                                                    "type": "number"
+                                                },
+                                                "css_transforms": {
+                                                    "type": "number"
+                                                },
+                                                "css_transitions": {
+                                                    "type": "number"
+                                                },
+                                                "js_application_cache": {
+                                                    "type": "number"
+                                                },
+                                                "js_geo_location": {
+                                                    "type": "number"
+                                                },
+                                                "js_indexeddb": {},
+                                                "js_local_storage": {},
+                                                "js_session_storage": {
+                                                    "type": "number"
+                                                },
+                                                "js_web_gl": {
+                                                    "type": "number"
+                                                },
+                                                "js_web_sockets": {
+                                                    "type": "number"
+                                                },
+                                                "js_web_sql_database": {},
+                                                "js_web_workers": {
+                                                    "type": "number"
+                                                },
+                                                "js_device_orientation": {
+                                                    "type": "number"
+                                                },
+                                                "js_device_motion": {
+                                                    "type": "number"
+                                                },
+                                                "js_touch_events": {
+                                                    "type": "number"
+                                                },
+                                                "js_query_selector": {
+                                                    "type": "number"
+                                                },
+                                                "wmv": {},
+                                                "midi_monophonic": {
+                                                    "type": "number"
+                                                },
+                                                "midi_polyphonic": {
+                                                    "type": "number"
+                                                },
+                                                "amr": {},
+                                                "mp3": {
+                                                    "type": "number"
+                                                },
+                                                "aac": {
+                                                    "type": "number"
                                                 }
                                             }
                                         }
@@ -871,30 +1321,6 @@
                                                         }
                                                     }
                                                 }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get Ref Data Fields From Fabric",
-                            "minHeight": 385,
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetRefTableFieldsFromFabric"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "tableFields",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
                                             }
                                         }
                                     }
@@ -948,23 +1374,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": true,
-                    "actors": [
-                        {
-                            "name": "Parse Records",
-                            "actorType": {
-                                "parentType": "JsonParser",
-                                "inputs": [],
-                                "outputs": [
-                                    {
-                                        "name": "object",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -978,7 +1388,6 @@
                     "actors": [
                         {
                             "name": "Get the values of the record",
-                            "minHeight": 452,
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -992,8 +1401,9 @@
                                     {
                                         "name": "tableData",
                                         "schema": {
-                                            "type": "object"
-                                        }
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -1253,12 +1663,16 @@
                                     },
                                     {
                                         "name": "indicator",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "bf_name",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
@@ -1286,7 +1700,9 @@
                                 "outputs": [
                                     {
                                         "name": "result",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "integer"
+                                        }
                                     }
                                 ]
                             }
@@ -1583,6 +1999,7 @@
                     ],
                     "isLast": 0,
                     "isTransactional": false,
+                    "hasElse": false,
                     "actors": []
                 }
             ]
@@ -1663,61 +2080,11 @@
         {
             "leftPort": {
                 "actor": "Get Details of Reference Table",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "Truncate or Delete inner flow",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "schemaName"
-            },
-            "rightPort": {
-                "actor": "Truncate or Delete inner flow",
-                "name": "Schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
                 "name": "countIndicator"
             },
             "rightPort": {
                 "actor": "Count Method",
                 "name": "indicator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "schemaName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "refSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "countBF"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "bf_name"
             }
         },
         {
@@ -1733,7 +2100,57 @@
         {
             "leftPort": {
                 "actor": "Get Details of Reference Table",
-                "name": "trnTableName"
+                "name": "targetRefTableName"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetSchemaName"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "Schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetSchemaName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "refSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetRefTableName"
             },
             "rightPort": {
                 "actor": "Count Method",
@@ -1743,11 +2160,21 @@
         {
             "leftPort": {
                 "actor": "Get Details of Reference Table",
-                "name": "truncateOrdelete"
+                "name": "truncateIndicator"
             },
             "rightPort": {
-                "actor": "Truncate or Delete inner flow",
+                "actor": "Truncate or Delete Table",
                 "name": "Indicator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "countFlow"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "bf_name"
             }
         },
         {
@@ -1756,8 +2183,8 @@
                 "name": "trnTableName"
             },
             "rightPort": {
-                "actor": "Truncate or Delete inner flow",
-                "name": "refTableName"
+                "actor": "Get Ref Table Count",
+                "name": "table_name"
             }
         },
         {
@@ -1772,8 +2199,8 @@
         },
         {
             "leftPort": {
-                "actor": "FabricSetRead REFERENCE_LU",
-                "name": "result"
+                "actor": "REFERENCE_LU",
+                "name": "value"
             },
             "rightPort": {
                 "actor": "FabricGet Params",
@@ -1848,26 +2275,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "GreaterThan1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Ref Table Count",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Loaded < Original",
-                "name": "b"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Ref Table Count",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "Update TDMDB table for Reference Table",
                 "name": "recsToBeLoaded"
             }
@@ -1894,6 +2301,26 @@
         },
         {
             "leftPort": {
+                "actor": "Get Ref Table Count",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Not Zero",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Ref Table Count",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Loaded < Original",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Commit Size",
                 "name": "result"
             },
@@ -1910,6 +2337,16 @@
             "rightPort": {
                 "actor": "Uncompress Blob To Json",
                 "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Ref Data Fields From Fabric",
+                "name": "tableFields"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "fields"
             }
         },
         {
@@ -1945,34 +2382,14 @@
         },
         {
             "leftPort": {
-                "actor": "Get Ref Data Fields From Fabric",
-                "name": "tableFields"
-            },
-            "rightPort": {
-                "actor": "Insert Data To Target Table",
-                "name": "fields"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Records",
                 "name": "strings"
             },
             "rightPort": {
-                "actor": "Parse Records",
-                "name": "stream"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Parse Records",
-                "name": "object"
-            },
-            "rightPort": {
                 "actor": "Get the values of the record",
                 "name": "tableData"
-            }
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
@@ -2200,7 +2617,7 @@
                 "name": "targetEnvName"
             },
             "rightPort": {
-                "actor": "Set Environment",
+                "actor": "Set TAR Environment",
                 "name": "value"
             }
         },

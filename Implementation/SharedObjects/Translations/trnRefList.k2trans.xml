@@ -20,7 +20,7 @@
       <Type>Integer</Type>
       <Length>6</Length>
       <Index>1</Index>
-      <AllowNULL>true</AllowNULL>
+      <AllowNULL>false</AllowNULL>
       <GridColumnProperties width="81" />
     </Column>
     <Column>
@@ -109,17 +109,17 @@
       <GridColumnProperties width="100" />
     </Column>
     <Column>
-      <Title>truncate_or_delete</Title>
-      <ColumnName>truncate_or_delete</ColumnName>
+      <Title>truncate_indicator</Title>
+      <ColumnName>truncate_indicator</ColumnName>
       <Direction>Output</Direction>
       <Type>Boolean</Type>
-      <Length>1</Length>
+      <Length>50</Length>
       <Format />
       <Index>7</Index>
       <DefaultValue>False</DefaultValue>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
-      <Comment>false for delete true for truncate</Comment>
+      <Comment>In case of true the table will be truncated from target else it will be deleted</Comment>
       <GridColumnProperties width="115" />
     </Column>
     <Column>
@@ -127,27 +127,27 @@
       <ColumnName>count_indicator</ColumnName>
       <Direction>Output</Direction>
       <Type>Boolean</Type>
-      <Length>1</Length>
+      <Length>50</Length>
       <Format />
       <Index>8</Index>
-      <DefaultValue>False</DefaultValue>
+      <DefaultValue>True</DefaultValue>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
-      <AllowNULL>true</AllowNULL>
-      <Comment>true in case the user wants to count the records , in case it was true the user should specify the broadway flow name </Comment>
+      <AllowNULL>false</AllowNULL>
+      <Comment>If true table records will be counted according to a broadway flow if provided a name else the count method will be select count(*) , in case the indicator is false no count method would be applied </Comment>
       <GridColumnProperties width="86" />
     </Column>
     <Column>
-      <Title>count_bf</Title>
-      <ColumnName>count_bf</ColumnName>
+      <Title>count_flow</Title>
+      <ColumnName>count_flow</ColumnName>
       <Direction>Output</Direction>
       <Type>Text</Type>
-      <Length>20</Length>
+      <Length>50</Length>
       <Format />
       <Index>9</Index>
       <DefaultValue>NULL</DefaultValue>
       <DefaultValueIsExpression>false</DefaultValueIsExpression>
       <AllowNULL>true</AllowNULL>
-      <Comment>name of the broadway flow in case the user wannts to count</Comment>
+      <Comment>If count indicator is true and broadway flow name is provided the result of this flow will be used as the table records count</Comment>
       <GridColumnProperties width="100" />
     </Column>
   </SchemaColumns>
@@ -169,7 +169,7 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
-                  <xs:element name="id" type="xs:long" minOccurs="0" />
+                  <xs:element name="id" type="xs:long" />
                   <xs:element name="reference_table_name" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
@@ -219,12 +219,12 @@
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
-                  <xs:element name="truncate_or_delete" type="xs:boolean" minOccurs="0" />
-                  <xs:element name="count_indicator" type="xs:boolean" minOccurs="0" />
-                  <xs:element name="count_bf" default="" minOccurs="0">
+                  <xs:element name="truncate_indicator" type="xs:boolean" minOccurs="0" />
+                  <xs:element name="count_indicator" type="xs:boolean" />
+                  <xs:element name="count_flow" default="" minOccurs="0">
                     <xs:simpleType>
                       <xs:restriction base="xs:string">
-                        <xs:maxLength value="20" />
+                        <xs:maxLength value="50" />
                       </xs:restriction>
                     </xs:simpleType>
                   </xs:element>
@@ -247,9 +247,9 @@
           <target_interface_name>CRM_DB</target_interface_name>
           <target_schema_name>public</target_schema_name>
           <table_pk_list></table_pk_list>
-          <truncate_or_delete>true</truncate_or_delete>
+          <truncate_indicator>false</truncate_indicator>
           <count_indicator>true</count_indicator>
-          <count_bf></count_bf>
+          <count_flow></count_flow>
         </trnRefList>
       </DocumentElement>
     </diffgr:diffgram>

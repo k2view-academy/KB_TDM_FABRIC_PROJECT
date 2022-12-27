@@ -17,7 +17,14 @@
                                         "const": null
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -34,7 +41,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "False",
+                            "name": "indicator is false",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "EqualsIgnoreCase",
@@ -42,9 +49,9 @@
                                     {
                                         "name": "b",
                                         "schema": {
-                                            "type": "boolean"
+                                            "type": "string"
                                         },
-                                        "const": ""
+                                        "const": "false"
                                     }
                                 ],
                                 "outputs": []
@@ -59,6 +66,7 @@
                     ],
                     "isLast": 0,
                     "isTransactional": false,
+                    "hasElse": true,
                     "actors": []
                 }
             ]
@@ -110,7 +118,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "truncate from ${@Schema}.${@refTableName}"
+                                        "const": "Delete from ${@Schema}.${@refTableName}"
                                     },
                                     {
                                         "name": "Schema",
@@ -271,7 +279,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "False",
+                "actor": "indicator is false",
                 "name": "a"
             }
         },

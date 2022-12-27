@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Get Inputs",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -26,6 +26,26 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "BF Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -36,7 +56,7 @@
                 {
                     "name": "Count Indicator Is True",
                     "dependsOnList": [
-                        "Stage 1"
+                        "Get Inputs"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -62,7 +82,7 @@
                 {
                     "name": "Count Indicator Is False",
                     "dependsOnList": [
-                        "Stage 1"
+                        "Get Inputs"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -81,19 +101,34 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "If Broadway Flow is Given",
-                            "condition": "value",
+                            "name": "BF Name Is Empty",
+                            "condition": "result",
                             "actorType": {
-                                "parentType": "Const",
+                                "parentType": "EqualsIgnoreCase",
                                 "inputs": [
                                     {
-                                        "name": "value",
-                                        "const": null
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
                                     }
                                 ],
                                 "outputs": []
                             }
-                        },
+                        }
+                    ]
+                },
+                {
+                    "name": "BF Name Exists",
+                    "dependsOnList": [
+                        "Count Indicator Is True"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "remark": "pay attention! The Result Count should be set to external and named result\n\n",
+                    "actors": [
                         {
                             "name": "Call Count BF",
                             "actorType": {
@@ -107,7 +142,9 @@
                                 "outputs": [
                                     {
                                         "name": "result",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "integer"
+                                        }
                                     }
                                 ]
                             }
@@ -115,14 +152,25 @@
                     ]
                 },
                 {
-                    "name": "BF Name Exists",
+                    "name": "Do Nothing",
                     "dependsOnList": [
-                        "Count Indicator Is True"
+                        "Count Indicator Is False"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
-                    "hasElse": true,
-                    "remark": "pay attention! The Result Count should be set to external\n",
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Count Records",
+                    "dependsOnList": [
+                        "Check For Count Boradway Flow Name"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Error Handler For Getting Number of Records",
@@ -191,9 +239,18 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing",
+                    "name": "Stage 2",
                     "dependsOnList": [
-                        "Count Indicator Is False"
+                        "BF Name Exists"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Do Nothing"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -215,6 +272,26 @@
         },
         {
             "leftPort": {
+                "actor": "BF Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Call Count BF",
+                "name": "flowName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "BF Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "BF Name Is Empty",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "indicator"
             },
@@ -229,18 +306,8 @@
                 "name": "bf_name"
             },
             "rightPort": {
-                "actor": "If Broadway Flow is Given",
+                "actor": "BF Name",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "bf_name"
-            },
-            "rightPort": {
-                "actor": "Call Count BF",
-                "name": "flowName"
             }
         },
         {

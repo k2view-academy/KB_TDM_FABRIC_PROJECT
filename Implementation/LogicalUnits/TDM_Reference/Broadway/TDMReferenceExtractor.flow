@@ -71,12 +71,6 @@
                                         }
                                     },
                                     {
-                                        "name": "countBF",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
                                         "name": "trnLuName",
                                         "schema": {
                                             "type": "string"
@@ -101,10 +95,14 @@
                                         }
                                     },
                                     {
-                                        "name": "truncateOrdelete",
+                                        "name": "truncateIndicator",
                                         "schema": {
                                             "type": "boolean"
                                         }
+                                    },
+                                    {
+                                        "name": "countFlow",
+                                        "schema": {}
                                     }
                                 ]
                             }
@@ -411,20 +409,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "REFERENCE_LU",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "REFERENCE_LU",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "IID",
                             "actorType": {
                                 "parentType": "StringFormat",
@@ -463,6 +447,29 @@
                                     }
                                 ],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "REFERENCE_LU",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TDM_Reference"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -662,6 +669,16 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
@@ -718,21 +735,21 @@
         {
             "leftPort": {
                 "actor": "fnGetRefTableData",
-                "name": "countBF"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "bf_name"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "fnGetRefTableData",
                 "name": "trnTableName"
             },
             "rightPort": {
                 "actor": "Count Method",
                 "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "countFlow"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "bf_name"
             }
         },
         {
@@ -797,23 +814,23 @@
         },
         {
             "leftPort": {
-                "actor": "REFERENCE_LU",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "FabricGet IID",
-                "name": "luType"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
                 "actor": "IID",
                 "name": "string"
             },
             "rightPort": {
                 "actor": "FabricGet IID",
                 "name": "iid"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "REFERENCE_LU",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "FabricGet IID",
+                "name": "luType"
             },
             "arrayPosition": 0
         },

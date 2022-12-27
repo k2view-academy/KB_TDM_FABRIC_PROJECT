@@ -109,12 +109,10 @@ public class SharedGlobals {
 	public static String clone_id = "0";
 
 	@category("TDM")
-	public static String EXTRACT_MASKING_FLAG = "false";
+	public static String EXTRACT_MASKING_FLAG = "true";
 	@category("TDM")
 	public static String LOAD_MASKING_FLAG = "false";
 
-	@category("TDM")
-	public static final String REFERENCE_LU = "TDM_Reference";
 
 	@category("TDM")
 	public static final String BUILD_TDMDB = "false";

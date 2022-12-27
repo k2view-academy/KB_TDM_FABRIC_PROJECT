@@ -55,7 +55,6 @@ public class SharedLogic {
 	public static final String PRODUCT_LOGICAL_UNITS = "product_logical_units";
 	public static final String TASK_REF_EXE_STATS = "TASK_REF_EXE_STATS";
 	public static final String TASKS_LOGICAL_UNITS = "tasks_logical_units";
-	public static final String TDM_COPY_REFERENCE = "fnTdmCopyReference";
 	public static final String PENDING = "pending";
 	public static final String RUNNING = "running";
 	public static final String WAITING = "waiting";
@@ -738,6 +737,11 @@ public class SharedLogic {
 		return new Object[]{instanceId, envName, versionName, versionDateTime};
 	}
 
+	@type(RootFunction)
+	@out(name = "dummy_output", type = void.class, desc = "")
+	public static void fnPop_TDM_LU_TYPE_RELATION_EID(String dummy_input) throws Exception {
+		if(1 == 2)UserCode.yield(new Object[] {null});
+	}
 
 
 	@out(name = "refSummaryStats", type = Map.class, desc = "")
@@ -1150,14 +1154,8 @@ public class SharedLogic {
 	@out(name = "decision", type = Boolean.class, desc = "")
 	public static Boolean fnDecisionDeleteFromTarget() throws Exception {
 		String luName = getLuType().luName;
-		
-		//String deleteInd = "" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue();
-		
-		//log.info("TDM_DELETE_BEFORE_LOAD: " + deleteInd);
-		
 		if(("" + ludb().fetch("SET " + luName + ".TDM_DELETE_BEFORE_LOAD").firstValue()).equals("true"))
 		{
-			log.info("TESTT - return true");
 			return true;
 		}
 		else
@@ -1181,7 +1179,7 @@ public class SharedLogic {
 	@out(name = "targetTablePK", type = String.class, desc = "")
 	@out(name = "truncateOrdelete", type = Boolean.class, desc = "")
 	@out(name = "countIndicator", type = Boolean.class, desc = "")
-	@out(name = "countBF", type = String.class, desc = "")
+	@out(name = "countFlow", type = String.class, desc = "")
 	public static Object fnGetRefTableData(String luName, String refTableName) throws Exception {
 		Map<String,Map<String, String>> trnRefListValues = getTranslationsData("trnRefList");
 		
@@ -1193,9 +1191,9 @@ public class SharedLogic {
 		String targetSchemaName = "";
 		String targetInterfaceName = "";
 		String targetTablePK = "";
-		Boolean truncateOrdelete = null;
+		Boolean truncateIndicator = null;
 		Boolean countIndicator = null ; 
-		String  countBF = "";
+		String  countFlow = "";
 		//log.info("fnGetRefTableData - luName: " + luName + ", refTableName: " + refTableName);
 		
 		for(String index: trnRefListValues.keySet()){
@@ -1208,9 +1206,9 @@ public class SharedLogic {
 				//log.info("fnGetRefTableData - Found table in translation");
 				schemaName = valMap.get("schema_name");
 				interfaceName = valMap.get("interface_name");
-				truncateOrdelete = Boolean.valueOf(valMap.get("truncate_or_delete"));
+				truncateIndicator = Boolean.valueOf(valMap.get("truncate_indicator"));
 				countIndicator = Boolean.valueOf(valMap.get("count_indicator"));
-				countBF = valMap.get("count_bf");
+				countFlow = valMap.get("count_flow");
 				if (valMap.get("target_ref_table_name") != null && !Util.isEmpty(valMap.get("target_ref_table_name"))) {
 					targetRefTableName =  valMap.get("target_ref_table_name");
 				} else {
@@ -1227,7 +1225,7 @@ public class SharedLogic {
 		}
 		//log.info("fnGetRefTableData - Returning: targetRefTableName: " + targetRefTableName + ", schemaName: " + schemaName + ", interfaceName: " + interfaceName +
 		//		", targetSchemaName: " + targetSchemaName + ", targetInterfaceName: " + targetInterfaceName);
-		return new Object[]{trnLuName, trnTableName, schemaName, interfaceName, targetRefTableName, targetSchemaName, targetInterfaceName, targetTablePK, truncateOrdelete, countIndicator, countBF};
+		return new Object[]{trnLuName, trnTableName, schemaName, interfaceName, targetRefTableName, targetSchemaName, targetInterfaceName, targetTablePK, truncateIndicator, countIndicator, countFlow};
 	}
 
 	@desc("Dummy Root function")

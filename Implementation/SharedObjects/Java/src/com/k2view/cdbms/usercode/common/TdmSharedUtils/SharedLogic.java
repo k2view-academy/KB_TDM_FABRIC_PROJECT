@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
@@ -57,7 +56,7 @@ public class SharedLogic {
     private static final String PRODUCT_LOGICAL_UNITS = "product_logical_units";
     private static final String TASK_REF_EXE_STATS = "TASK_REF_EXE_STATS";
     private static final String TASKS_LOGICAL_UNITS = "tasks_logical_units";
-    private static final String TDM_COPY_REFERENCE = "fnTdmCopyReference";
+    private static final String TDM_REFERENCE = "fnTdmReference";
     private static final String PENDING = "pending";
     private static final String RUNNING = "running";
     private static final String WAITING = "waiting";
@@ -534,233 +533,6 @@ public class SharedLogic {
         return response;
     }
 
-    public static void fnTdmCopyReference(String taskExecutionID, String taskType) throws Exception {
-        //log.info("-- START Reference JOB for Task Type: " + taskType + " Task Execution ID: " + taskExecutionID + "---");
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        Date date = new Date();
-
-        Db.Rows refTabLst = null;
-
-        String refQuery = "Select ES.* from TASK_REF_EXE_STATS ES, TASKS T where execution_status  in ('" + WAITING + "', '" + PENDING + "', '" + RESUME + "', '" + STOPPED + "') " +
-                "and ES.TASK_ID = T.TASK_ID and lower(T.TASK_TYPE) = ? and ES.TASK_EXECUTION_ID = ? order by task_execution_id, task_id";
-
-        refTabLst = db(TDM).fetch(refQuery, taskType, taskExecutionID);
-
-        int refCount = 0;
-
-        for (Db.Row row : refTabLst) {
-            refCount++;
-            String taskRefTableID = "" + row.get("task_ref_table_id");
-            String refTableName = "" + row.get("ref_table_name");
-            //log.info("fnTdmCopyReference - refTableName: " + refTableName);
-
-            if (!StringUtils.isEmpty(taskRefTableID) && !StringUtils.isEmpty(taskExecutionID)) {
-
-                String luName = "" + db(TDM).fetch("Select lu_name from " + TASK_REF_TABLES + " where task_ref_table_id = ?", taskRefTableID).firstValue();
-
-                String taskID = "" + row.get("task_id");
-
-                String execStatus = "" + row.get("execution_status");
-
-                //log.info("fnTdmCopyReference - execution_status: " + execStatus);
-
-                Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name, t.version_ind, " +
-                                "t.retention_period_type, t.retention_period_value, t.selection_method, t.selected_ref_version_task_name, " +
-                                "t.selected_ref_version_datetime, t.selected_ref_version_task_exe_id " +
-                                "from TASKS t, TASK_EXECUTION_LIST l, ENVIRONMENTS e " +
-                                "where task_execution_id = ? and l.task_id = ? and t.task_id = l.task_id and l.environment_id = e.environment_id",
-                        taskExecutionID, taskID).firstRow();
-
-                String versionInd = "false";
-                if (taskParams.get("version_ind") != null) {
-                    versionInd = "" + taskParams.get("version_ind");
-                }
-                Object retPeriodType = taskParams.get("retention_period_type");
-                String retType = (retPeriodType != null) ? "" + retPeriodType : "";
-
-                Object retPeriodVal = taskParams.get("retention_period_value");
-                Float retVal = (retPeriodVal != null) ? Float.valueOf(retPeriodVal.toString()) : 0;
-                Integer ttl = getRetention(retType, retVal);
-
-                Db.Row luData = db(TDM).fetch("select p.lu_id, p.lu_dc_name from " + TASKS_LOGICAL_UNITS + " t, "
-                                + PRODUCT_LOGICAL_UNITS + " p where t.lu_name = ? and t.task_id = ? and t.lu_name = p.lu_name and t.lu_id = p.lu_id",
-                        luName, taskID).firstRow();
-
-                String luID = "" + luData.get("lu_id");
-                String luDCName = "" + luData.get("lu_dc_name");
-
-                String affinity = "";
-
-                if (luDCName != null && !"".equals(luDCName) && !"null".equals(luDCName)) {
-                    affinity = " AFFINITY='" + luDCName + "'";
-                }
-
-                String uid = "" + row.get("job_uid");
-
-                Object selectionMethod = "" + taskParams.get("selection_method");
-
-                if (selectionMethod != null && selectionMethod.toString().equals(REF)) {
-                    Long unixTime = System.currentTimeMillis();
-                    Long unixTime_plus_retention;
-
-                    String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis());
-                    Integer retention_in_seconds = getRetention(retType, retVal);
-
-                    unixTime_plus_retention = (unixTime / 1000L + retention_in_seconds) * 1000;
-                    String versionExpirationDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(unixTime_plus_retention);
-
-                    Object[] param;
-                    if (versionInd.equals("true")) {
-                        param = new Object[]{RUNNING, timeStamp, versionExpirationDate, taskExecutionID, taskID, luID};
-                    } else {
-                        param = new Object[]{RUNNING, null, null, taskExecutionID, taskID, luID};
-                    }
-
-                    //log.info("fnTdmCopyReference - Updating task to running for - task_execution_id: " + taskExecutionID +
-                    //		", task_id: " + taskID + ", lu_id: " + luID);
-
-                    db(TDM).execute("update " + TASK_EXECUTION_LIST + " set execution_status = ?, " +
-                            "version_datetime = ?, version_expiration_date = ? " +
-                            "where task_execution_id = ? and task_id = ? and lu_id = ?", param);
-                }
-
-                String sourceEnv = "" + taskParams.get("source_env_name");
-                String targetEnv = "" + taskParams.get("target_env_name");
-                //log.info("fnTdmCopyReference - sourceEnv: " + sourceEnv + ", targetEnv: " + targetEnv);
-                if (taskType.equalsIgnoreCase("extract")) {
-
-                    try {
-                        switch (execStatus) {
-                            case WAITING:
-                            case PENDING:
-                                //log.info("fnTdmCopyReference -inside PENDING/WAITING status: " + execStatus);
-                                String extractRefCmd = "BATCH " + luName + ".('" + taskExecutionID + "_" + refTableName + "') " +
-                                        "fabric_command=\"broadway " + luName + ".TDMReferenceExtractor " +
-                                        "iid=?, taskExecutionID=" + taskExecutionID + ", luName=" + luName + ", refTableName=" + refTableName +
-                                        ", sourceEnvName=" + sourceEnv + ", ttl=" + ttl +
-                                        ", taskRefTableID=" + taskRefTableID + ",versionInd=" + versionInd + "\" with async='true'";
-
-                                //log.info("fnTdmCopyReference - Running batch command: " + loadRefCmd);
-                                String batchID = Util.rte(() -> "" + fabric().fetch(extractRefCmd).firstValue());
-
-                                //log.info("fnTdmCopyReference - Updating batch ID to: " + batchID);
-                                db(TDM).execute("update " + TASK_REF_EXE_STATS + " set job_uid= ?, execution_status = ?, " +
-                                                "start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', updated_by = ?" +
-                                                "where task_execution_id = ? and task_ref_table_id = ?; ",
-                                        batchID, RUNNING, "TDMReferenceLoader", taskExecutionID, taskRefTableID);
-                                break;
-                            case STOPPED:
-								//log.info("fnTdmCopyReference -inside STOPPED status: " + execStatus);
-                                fabric().execute("batch_pause '" + uid + "';");
-                                break;
-                            case RESUME:
-								//log.info("fnTdmCopyReference -inside RESUME status: " + execStatus);
-                                fabric().execute("batch_retry '" + uid + "'" + ";");
-                                //log.info("------------------------------------- After resume case ------------------------------------");
-                                break;
-                        }
-                    } catch (Exception e) {
-                        if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
-                            e.printStackTrace();
-                            throw e;
-                        }
-
-                        db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?,  updated_by = ?" +
-                                        "where task_execution_id = ? and task_ref_table_id = ?; ",
-                                FAILED, e.getMessage(), TDM_COPY_REFERENCE, taskExecutionID, taskRefTableID);
-                        fabric().execute("stopjob USER_JOB NAME='TDM.tdmCopyRefTablesForTDM' UID='" + uid + "';");
-                    }
-                } else {// In case of Load Task
-                    //log.info("fnTdmCopyReference - Handling Load Task");
-                    try {
-                        switch (execStatus) {
-                            case WAITING:
-                            case PENDING:
-                                String selectedRefVersionTaskName = "''";
-                                String selectedRefVersionDateTime = "19700101000000";
-                                String selectedRefVersionTaskExeId = "''";
-                                if (versionInd.equals("true")) {
-                                    selectedRefVersionTaskName = "" + taskParams.get("selected_ref_version_task_name");
-                                    selectedRefVersionDateTime = "" + taskParams.get("selected_ref_version_datetime");
-                                    selectedRefVersionTaskExeId = "" + taskParams.get("selected_ref_version_task_exe_id");
-                                }
-
-                                String loadRefCmd = "BATCH " + luName + ".('" + taskExecutionID + "_" + refTableName + "') " +
-                                        "fabric_command=\"broadway " + luName + ".TDMReferenceLoader " +
-                                        "iid=?, taskExecutionID=" + taskExecutionID + ", luName=" + luName + ", refTableName=" + refTableName +
-                                        ", sourceEnvName=" + sourceEnv + ", targetEnvName=" + targetEnv +
-                                        ", selectedRefVersionTaskName='" + selectedRefVersionTaskName + "', selectedRefVersionDateTime=" +
-                                        selectedRefVersionDateTime + ", selectedRefVersionTaskExeId=" + selectedRefVersionTaskExeId + "\" with async='true'";
-
-                                //log.info("fnTdmCopyReference - Running batch command: " + loadRefCmd);
-                                String batchID = Util.rte(() -> "" + fabric().fetch(loadRefCmd).firstValue());
-
-                                //log.info("fnTdmCopyReference - Updating batch ID to: " + batchID);
-                                db(TDM).execute("update " + TASK_REF_EXE_STATS + " set job_uid= ?, execution_status = ?, " +
-                                                "start_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', updated_by = ?" +
-                                                "where task_execution_id = ? and task_ref_table_id = ?; ",
-                                        batchID, RUNNING, "TDMReferenceLoader", taskExecutionID, taskRefTableID);
-                                break;
-                            case STOPPED:
-                                fabric().execute("batch_pause '" + uid + "';");
-                                break;
-                            case RESUME:
-                                fabric().execute("batch_retry '" + uid + "'" + ";");
-                                //log.info("------------------------------------- After resume case ------------------------------------");
-                                break;
-                        }
-                    } catch (Exception e) {
-                        log.error("Reference Table handling had an exception: " + e);
-                        if (e instanceof InterruptedException || e.getCause() instanceof InterruptedException) {
-                            throw e;
-                        }
-                        db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', error_msg = ?,  updated_by = ?" +
-                                        "where task_execution_id = ? and task_ref_table_id = ?; ",
-                                FAILED, e.getMessage(), TDM_COPY_REFERENCE, taskExecutionID, taskRefTableID);
-                        //log.info("uid to cancel: " + uid);
-                        if (!"null".equals(uid)) {
-                            fabric().execute("cancel batch '" + uid + "';");
-                        }
-                    }
-                }
-
-            }
-            //log.info("fnTdmCopyReference - Handling next Ref table #" + refCount);
-        }
-        //log.info("fnTdmCopyReference - After the loop on ref tables, refCount: " + refCount);
-        //In case the task type was REF, but included LUs that do not have reference,or none of their reference were chosen, update the status to COMPLETE
-        String lusWithoutRefSql = "select l.task_id, l.task_execution_id, l.lu_id from task_execution_list l, tasks t, tasks_logical_units lu " +
-                "where l.task_id = t.task_id and t.selection_method = 'REF' and l.task_id = lu.task_id and l.lu_id = lu.lu_id and " +
-                "lower(l.execution_status) in ('pending', 'stopped') and " +
-                "not exists (select 1 from task_ref_tables r, task_ref_exe_stats s where r.task_id = lu.task_id and r.lu_name = lu.lu_name " +
-                "and r.task_ref_table_id = s.task_ref_table_id and s.task_execution_id = l.task_execution_id " +
-                "and lower(s.execution_status) not in ('completed', 'failed'))";
-
-        String updateLuWithoutRefSql = "UPDATE task_execution_list SET execution_status = ?, num_of_processed_entities = 0, " +
-                "start_execution_time = current_timestamp at time zone 'utc', " +
-                "end_execution_time = current_timestamp at time zone 'utc', num_of_copied_entities = 0, num_of_failed_entities = 0, " +
-                "num_of_processed_ref_tables = 0, num_of_copied_ref_tables = 0, num_of_failed_ref_tables = 0 " +
-                "WHERE  task_id = ? AND task_execution_id = ? and lu_id = ?";
-
-        Db.Rows lusWithoutRef = db(TDM).fetch(lusWithoutRefSql);
-
-        for (Db.Row luWithoutRef : lusWithoutRef) {
-            String taskId = "" + luWithoutRef.get("task_id");
-            String taskExecID = "" + luWithoutRef.get("task_execution_id");
-            String luId = "" + luWithoutRef.get("lu_id");
-            //log.info("tdmCopyReferenceListener - Setting status to completed for LU without reference to be handled. Task Execution ID: " + taskExecID + ", lu id: " + luId);
-            db(TDM).execute(updateLuWithoutRefSql, COMPLETED, taskId, taskExecID, luId);
-        }
-
-        if (refTabLst != null) {
-            refTabLst.close();
-        }
-
-        if (lusWithoutRef != null) {
-            lusWithoutRef.close();
-        }
-    }
 	
 	public static Map<String, Object> fnGetRetentionPeriod() {
 		try {
@@ -1099,12 +871,11 @@ public class SharedLogic {
 			Object overrideAttrVal = db(TDM).fetch(sql, taskId, taskExecutionId).firstValue();
 			String overrideAttrStr = overrideAttrVal != null ?  overrideAttrVal.toString() : "";
 			//log.info("getTaskExecOverrideAttrs - overrideAttrStr: " + overrideAttrStr);
-			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
 			if (!"".equals(overrideAttrStr)) {
 				// Replace gson with K2view Json
 				//Gson gson = new Gson();
 				//overrideAttrubtes = gson.fromJson(overrideAttrStr, mapType);
-				overrideAttrubtes = Json.get().fromJson(overrideAttrStr, mapType);
+				overrideAttrubtes = Json.get().fromJson(overrideAttrStr);
 			}
 		} catch (SQLException e) {
 			log.error("Failed to get override attributes for task_execution_id: " + taskExecutionId);
@@ -1222,14 +993,14 @@ public class SharedLogic {
             processedCounter++;
             if(processedCounter%updateStatsSize == 0) {
                 db(TDM).execute("Update " + TASK_REF_EXE_STATS + " set number_of_processed_records = ?, updated_by = ?" +
-                       "where task_execution_id = ? and trim(lower(ref_table_name)) = ?; ", processedCounter, TDM_COPY_REFERENCE, taskExecID, tableName.toLowerCase());
+                       "where task_execution_id = ? and trim(lower(ref_table_name)) = ?; ", processedCounter, TDM_REFERENCE, taskExecID, tableName.toLowerCase());
             }
         }
         //loader.join();
         //loader.close();
 
         db(TDM).execute("update " + TASK_REF_EXE_STATS + " set execution_status = ?,  number_of_processed_records = ?, end_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC' , updated_by = ?, error_msg = ?" +
-               "where task_execution_id = ? and trim(lower(ref_table_name)) = ? and execution_status != ?; ", COMPLETED, processedCounter, TDM_COPY_REFERENCE, null, taskExecID, tableName.toLowerCase(), FAILED);
+               "where task_execution_id = ? and trim(lower(ref_table_name)) = ? and execution_status != ?; ", COMPLETED, processedCounter, TDM_REFERENCE, null, taskExecID, tableName.toLowerCase(), FAILED);
         return tableRecords;
     }
 

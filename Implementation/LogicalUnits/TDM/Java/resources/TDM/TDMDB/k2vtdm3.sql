@@ -302,7 +302,7 @@ CREATE TABLE IF NOT EXISTS public.tasks
     reserve_retention_period_type character varying(20) COLLATE pg_catalog."default",
     reserve_retention_period_value numeric,
     reserve_note text, -- TDM 7.5.2
-	filterout_reserved boolean DEFAULT true, --TDM 7.5.3
+    filterout_reserved boolean DEFAULT true, --TDM 7.6
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 

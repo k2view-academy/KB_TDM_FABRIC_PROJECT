@@ -200,6 +200,9 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
+        <Global name="TALI_TEST" luName="">
+          <Value>1</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -497,6 +500,9 @@
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
+        </Global>
+        <Global name="TALI_TEST" luName="">
+          <Value>1</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -796,6 +802,9 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
+        <Global name="TALI_TEST" luName="">
+          <Value>1</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1092,6 +1101,9 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
+        <Global name="TALI_TEST" luName="">
+          <Value>1</Value>
+        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -1386,6 +1398,9 @@
         </Global>
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
+        </Global>
+        <Global name="TALI_TEST" luName="">
+          <Value>1</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>

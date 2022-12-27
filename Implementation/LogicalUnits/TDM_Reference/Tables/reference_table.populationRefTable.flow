@@ -60,7 +60,7 @@
                             }
                         },
                         {
-                            "name": "Get Number Of Records Of The Table",
+                            "name": "Get Records Count",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -108,14 +108,160 @@
         {
             "stages": [
                 {
-                    "name": "Get Number of Records if not given",
+                    "name": "Get Lu Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lu Name",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var str = input;\r\nconst result = input.split('|');\r\nresult[0];",
+                                            "script": "var str = input;\nvar result = input.split('|');\nresult[0];"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Find Count Method",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "fnGetRefTableData",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetRefTableData"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "schemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetSchemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "countIndicator",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "trnLuName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "trnTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetRefTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetTablePK",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "countFlow",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "truncateIndicator",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Count",
                     "dependsOnList": [
-                        "Input"
+                        "Find Count Method"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "IsNull1",
+                            "name": "IsNull",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "IsNull",
@@ -124,17 +270,34 @@
                             }
                         },
                         {
-                            "name": "Count Records",
+                            "name": "Count Method",
                             "actorType": {
-                                "parentType": "DbFetchField",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
-                                        "name": "interface",
-                                        "const": null
+                                        "name": "flowName",
+                                        "const": "CountMethod"
                                     },
                                     {
-                                        "name": "sql",
-                                        "const": "select count(1) from ${@refSchema}.${@refTableName}"
+                                        "name": "indicator",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "bf_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     },
                                     {
                                         "name": "refSchema",
@@ -164,16 +327,16 @@
                     ]
                 },
                 {
-                    "name": "Use given Number of records",
+                    "name": "Ref Table Count",
                     "dependsOnList": [
-                        "Input"
+                        "Find Count Method"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
                         {
-                            "name": "Const1",
+                            "name": "REF_TABLE_COUNT",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -202,13 +365,172 @@
         {
             "stages": [
                 {
-                    "name": "Get Table Data and List of Fields",
+                    "name": "In Case Count Method Returns Null",
+                    "dependsOnList": [
+                        "Get Count"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Count Is Null",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SET REF_TABLE_COUNT -1",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_TABLE_COUNT"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "-1",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "GET REF_TABLE_COUNT",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_TABLE_COUNT",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Count Method Result Is Not Null ",
+                    "dependsOnList": [
+                        "Get Count"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "FabricSet REF_TABLE_COUNT",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "REF_TABLE_COUNT"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Ref Table Count"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Records Count Not Avaliabe",
+                    "dependsOnList": [
+                        "In Case Count Method Returns Null"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Records Ref Count",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Records Count Is Avaliable",
+                    "dependsOnList": [
+                        "Count Method Result Is Not Null "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Records Method Count",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Table Fields and Data",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "ErrorHandler1",
+                            "name": "ErrorHandler",
                             "onError": "result",
                             "actorType": {
                                 "parentType": "ErrorHandler",
@@ -217,7 +539,7 @@
                             }
                         },
                         {
-                            "name": "Get Table Data as Json",
+                            "name": "fnGetTableInJson",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -250,13 +572,18 @@
                                 "outputs": [
                                     {
                                         "name": "tableRecords",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
                                 ]
                             }
                         },
                         {
-                            "name": "Get List of Table's fields",
+                            "name": "getDbTableColumns",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -300,7 +627,9 @@
                                         "name": "pks",
                                         "schema": {
                                             "type": "array",
-                                            "items": {}
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         }
                                     }
                                 ]
@@ -313,18 +642,10 @@
         {
             "stages": [
                 {
-                    "name": "Prepare Data",
+                    "name": "Table Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "Json Stringify",
-                            "actorType": {
-                                "parentType": "JsonStringify",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Create A List Of Fields",
                             "actorType": {
@@ -340,12 +661,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Compress Data",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Compress Json",
+                            "name": "Compress",
                             "actorType": {
                                 "parentType": "Compress",
                                 "inputs": [],
@@ -416,7 +737,7 @@
                                     {
                                         "name": "table_data",
                                         "schema": {
-                                            "type": "blob"
+                                            "type": "string"
                                         }
                                     },
                                     {
@@ -440,19 +761,19 @@
                     ]
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Post Load",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
         }
     ],
     "connections": [
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Lu Name",
+                "name": "input"
+            }
+        },
         {
             "leftPort": {
                 "actor": "PopulationArgs",
@@ -473,8 +794,8 @@
                 "name": "parent_rows"
             },
             "rightPort": {
-                "actor": "Get Table Data as Json",
-                "name": "tableName"
+                "actor": "getDbTableColumns",
+                "name": "table"
             },
             "iterate": "First",
             "path": [
@@ -501,33 +822,6 @@
                 "name": "parent_rows"
             },
             "rightPort": {
-                "actor": "Get List of Table's fields",
-                "name": "table"
-            },
-            "iterate": "First",
-            "path": [
-                "table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Count Records",
-                "name": "refTableName"
-            },
-            "path": [
-                "table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
                 "actor": "reference_table",
                 "name": "tdm_task_execution_id"
             },
@@ -538,21 +832,48 @@
         },
         {
             "leftPort": {
-                "actor": "Get Number Of Records Of The Table",
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "tableName"
+            },
+            "iterate": "First",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "fnGetRefTableData",
+                "name": "refTableName"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Records Count",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "IsNull1",
+                "actor": "REF_TABLE_COUNT",
                 "name": "value"
             }
         },
         {
             "leftPort": {
-                "actor": "Get Number Of Records Of The Table",
+                "actor": "Get Records Count",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Const1",
+                "actor": "IsNull",
                 "name": "value"
             }
         },
@@ -562,7 +883,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Get List of Table's fields",
+                "actor": "getDbTableColumns",
                 "name": "dbInterfaceName"
             }
         },
@@ -572,17 +893,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Count Records",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Interface Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Table Data as Json",
+                "actor": "fnGetTableInJson",
                 "name": "interfaceName"
             }
         },
@@ -592,7 +903,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Get List of Table's fields",
+                "actor": "getDbTableColumns",
                 "name": "catalogSchema"
             }
         },
@@ -602,33 +913,103 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Count Records",
-                "name": "refSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Schema Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Table Data as Json",
+                "actor": "fnGetTableInJson",
                 "name": "schemaName"
             }
         },
         {
             "leftPort": {
-                "actor": "Count Records",
+                "actor": "Lu Name",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "reference_table",
-                "name": "records_count"
+                "actor": "fnGetRefTableData",
+                "name": "luName"
             }
         },
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "fnGetRefTableData",
+                "name": "countIndicator"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "indicator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "trnTableName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "countFlow"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "bf_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "refSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Method",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Records Method Count",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Method",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Is Null",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Count Method",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FabricSet REF_TABLE_COUNT",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "REF_TABLE_COUNT",
                 "name": "value"
             },
             "rightPort": {
@@ -638,32 +1019,52 @@
         },
         {
             "leftPort": {
-                "actor": "Get Table Data as Json",
-                "name": "tableRecords"
+                "actor": "GET REF_TABLE_COUNT",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Json Stringify",
-                "name": "object"
+                "actor": "Records Ref Count",
+                "name": "value"
             }
         },
         {
             "leftPort": {
-                "actor": "Get List of Table's fields",
+                "actor": "Records Ref Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "records_count"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Records Method Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "reference_table",
+                "name": "records_count"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetTableInJson",
+                "name": "tableRecords"
+            },
+            "rightPort": {
+                "actor": "Compress",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "getDbTableColumns",
                 "name": "columns"
             },
             "rightPort": {
                 "actor": "Create A List Of Fields",
                 "name": "elements"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Json Stringify",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Compress Json",
-                "name": "stream"
             }
         },
         {
@@ -678,7 +1079,7 @@
         },
         {
             "leftPort": {
-                "actor": "Compress Json",
+                "actor": "Compress",
                 "name": "stream"
             },
             "rightPort": {

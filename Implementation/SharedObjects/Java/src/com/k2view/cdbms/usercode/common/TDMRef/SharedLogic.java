@@ -160,7 +160,8 @@ public class SharedLogic {
 		                case PENDING:
 		                    //log.info("fnTdmReference -inside PENDING/WAITING status: " + execStatus);
 		                    String updatedBy = "";
-		                    if (taskType.equalsIgnoreCase("extract")) {
+							String REFERENCE_LU = "TDM_Reference";
+							if (taskType.equalsIgnoreCase("extract")) {
 		                        updatedBy = "TDMReferenceExtractor";
 								//
 								String batchRefCmd = "BATCH " + REFERENCE_LU + ".('" + taskExecutionID + "_" + refTableName + "') " +
