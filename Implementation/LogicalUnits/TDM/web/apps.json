@@ -1,8 +1,14 @@
 [
-       {
+   {
       "name": "Admin",
       "appId": "admin",
       "hidden": false
+   },
+   {
+      "name": "Studio",
+      "appId": "studio",
+      "disableFontInjection": true,
+      "hidden": true
    },
    {
       "name": "Graphit",
@@ -32,16 +38,47 @@
    {
       "name": "Data Catalog",
       "appId": "dataCatalog",
+      "hidden": false
+   },
+   {
+      "name": "BI",
+      "appId": "BI",
       "hidden": true
    },
    {
       "name": "Documentation",
       "appId": "doc",
       "hidden": false
-   }, 
-	{
-        "hidden": false,
-        "name": "TDM",
-        "appId": "TDM"
-	}
+   },
+   {
+      "name": "Simple History API Route",
+      "appId": "historyApi",
+      "hidden": true
+   },
+   {
+      "name": "Multiple Pages",
+      "appId": "multiPage",
+      "hidden": true,
+      "expand": true
+   },
+   {
+      "name": "Hash Base Route",
+      "appId": "hash",
+      "hidden": true
+   },
+   {
+      "name": "No Routing",
+      "appId": "noRouter",
+      "hidden": true
+   },
+   {
+      "name": "Widgets Example",
+      "appId": "widgetsExample",
+      "hidden": true
+   },
+   {
+      "name": "TDM",
+      "appId": "TDM",
+	  "hidden": false
+   }
 ]

@@ -73,7 +73,7 @@
                                     },
                                     {
                                         "name": "value",
-                                        "const": "\"Please set the environment for the Cassandra and Redis connections\"",
+                                        "const": "SRC",
                                         "isDefault": false
                                     }
                                 ],
@@ -101,7 +101,14 @@
                                         "const": "TDMDB"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]

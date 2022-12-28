@@ -24,28 +24,28 @@ SET row_security = off;
 -- Data for Name: activities; Type: TABLE DATA; Schema: public; Owner: tdm
 --
 
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:27:20.695', 'create', 'Business entities', 'admin', 'Business entity Customer360 was created', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:29:18.692', 'update', 'Business entities', 'admin', 'Logical unit Customer was added to business entity Customer360', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:29:18.695', 'update', 'Business entities', 'admin', 'Logical unit Collection was added to business entity Customer360', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:29:18.697', 'update', 'Business entities', 'admin', 'Logical unit Orders was added to business entity Customer360', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:31:05.926', 'update', 'Business entities', 'admin', 'Post Execution Process postTaskExePrintToLog was added to business entity Customer360', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:38:25.99', 'update', 'Business entities', 'admin', 'Business entity Customer360 was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:39:24.84', 'create', 'Product', 'admin', 'Product CRM System was created', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:39:28.675', 'update', 'Product', 'admin', 'Product CRM System was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:14.631', 'delete', 'Environment', 'admin', 'Environment SRCLocalDebug was created', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:59.787', 'update', 'Business entities', 'admin', 'Logical unit Collection was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:59.791', 'update', 'Business entities', 'admin', 'Logical unit Customer was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:59.795', 'update', 'Business entities', 'admin', 'Logical unit Orders was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:02.997', 'update', 'Product', 'admin', 'Product CRM System was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:16.237', 'update', 'Environments', 'admin', 'Products of environment SRCLocalDebug were updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:54.059', 'update', 'Environment', 'admin', 'Role set1 was added to environment SRCLocalDebug', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:54.093', 'update', 'Environments', 'admin', 'Testers of role set1 of environment SRCLocalDebug were updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:58.952', 'update', 'Environment', 'admin', 'Environment SRCLocalDebug was updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:42:33.742', 'delete', 'Environment', 'admin', 'Environment TARLocalDebug was created', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:42:43.85', 'update', 'Environments', 'admin', 'Products of environment TARLocalDebug were updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:43:19.186', 'update', 'Environment', 'admin', 'Role set2 was added to environment TARLocalDebug', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:43:19.254', 'update', 'Environments', 'admin', 'Testers of role set2 of environment TARLocalDebug were updated', 'admin');
-INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:43:23.543', 'update', 'Environment', 'admin', 'Environment TARLocalDebug was updated', 'admin');
+-- INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:27:20.695', 'create', 'Business entities', 'admin', 'Business entity Customer360 was created', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:29:18.692', 'update', 'Business entities', 'admin', 'Logical unit Customer was added to business entity Customer360', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:29:18.695', 'update', 'Business entities', 'admin', 'Logical unit Collection was added to business entity Customer360', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:29:18.697', 'update', 'Business entities', 'admin', 'Logical unit Orders was added to business entity Customer360', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:31:05.926', 'update', 'Business entities', 'admin', 'Post Execution Process postTaskExePrintToLog was added to business entity Customer360', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:38:25.99', 'update', 'Business entities', 'admin', 'Business entity Customer360 was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:39:24.84', 'create', 'Product', 'admin', 'Product CRM System was created', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:39:28.675', 'update', 'Product', 'admin', 'Product CRM System was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:14.631', 'delete', 'Environment', 'admin', 'Environment SRCLocalDebug was created', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:59.787', 'update', 'Business entities', 'admin', 'Logical unit Collection was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:59.791', 'update', 'Business entities', 'admin', 'Logical unit Customer was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:40:59.795', 'update', 'Business entities', 'admin', 'Logical unit Orders was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:02.997', 'update', 'Product', 'admin', 'Product CRM System was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:16.237', 'update', 'Environments', 'admin', 'Products of environment SRCLocalDebug were updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:54.059', 'update', 'Environment', 'admin', 'Role set1 was added to environment SRCLocalDebug', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:54.093', 'update', 'Environments', 'admin', 'Testers of role set1 of environment SRCLocalDebug were updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:41:58.952', 'update', 'Environment', 'admin', 'Environment SRCLocalDebug was updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:42:33.742', 'delete', 'Environment', 'admin', 'Environment TARLocalDebug was created', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:42:43.85', 'update', 'Environments', 'admin', 'Products of environment TARLocalDebug were updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:43:19.186', 'update', 'Environment', 'admin', 'Role set2 was added to environment TARLocalDebug', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:43:19.254', 'update', 'Environments', 'admin', 'Testers of role set2 of environment TARLocalDebug were updated', 'admin');
+--INSERT INTO public.activities (date, action, entity, username, description, user_id) VALUES ('2022-12-01 13:43:23.543', 'update', 'Environment', 'admin', 'Environment TARLocalDebug was updated', 'admin');
 
 
 --
@@ -71,8 +71,25 @@ INSERT INTO public.business_entities (be_name, be_description, be_id, be_created
 -- Data for Name: environment_products; Type: TABLE DATA; Schema: public; Owner: tdm
 --
 
-INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status, data_center_name) VALUES (1, 1, 1, 'ProdV1', 'admin', '2022-12-01 13:41:16.2', '2022-12-01 13:41:16.2', 'admin', 'Active', 'DC1');
-INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status, data_center_name) VALUES (2, 2, 1, 'ProdV1', 'admin', '2022-12-01 13:42:43.848', '2022-12-01 13:42:43.848', 'admin', 'Active', 'DC1');
+-- Source Env
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (1, 1, 1, '1', 'admin', now(), now(), 'admin', 'Active');
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (2, 1, 2, 'PROD', 'admin', now(), now(), 'admin', 'Active');
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (3, 1, 3, '1', 'admin', now(), now(), 'admin', 'Active');
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (4, 1, 4, '1', 'admin', now(), now(), 'admin', 'Active');
+
+-- Target Env
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (5, 2, 1, '1', 'admin', now(), now(), 'admin', 'Active');
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (6, 2, 2, 'DEV', 'admin', now(), now(), 'admin', 'Active');
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (7, 2, 3, '1', 'admin', now(), now(), 'admin', 'Active');
+
+INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status) VALUES (8, 2, 4, '1', 'admin', now(), now(), 'admin', 'Active');
 
 
 --
@@ -129,7 +146,9 @@ INSERT INTO public.environments (environment_name, environment_description, envi
 -- Data for Name: permission_groups_mapping; Type: TABLE DATA; Schema: public; Owner: tdm
 --
 
-INSERT INTO public.permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date) VALUES ('Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', '2022-03-31 18:28:28.773873', '2022-03-31 18:28:28.773873');
+-- 28-12-22 - comment the initial setting since it is included in the create TDM DB scripts
+
+-- INSERT INTO public.permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date) VALUES ('Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', '2022-03-31 18:28:28.773873', '2022-03-31 18:28:28.773873');
 INSERT INTO public.permission_groups_mapping (description, fabric_role, permission_group, created_by, updated_by, creation_date, update_date) VALUES ('Maps Tester Permission Group to Testersgrp1 Fabric Role.', 'Testersgrp1', 'tester', 'admin', 'admin', '2022-12-01 13:25:30.980407', '2022-12-01 13:25:30.980407');
 
 
@@ -139,9 +158,11 @@ INSERT INTO public.permission_groups_mapping (description, fabric_role, permissi
 -- Data for Name: product_logical_units; Type: TABLE DATA; Schema: public; Owner: tdm
 --
 
-INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id, lu_dc_name) VALUES ('Collection', 'This is a Child LU.', 1, NULL, 2, 'CRM System', NULL, 1, NULL);
-INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id, lu_dc_name) VALUES ('Customer', 'This is the Parent LU.', 1, NULL, 1, 'CRM System', NULL, 1, NULL);
-INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id, lu_dc_name) VALUES ('Orders', 'This is a Child LU.', 1, NULL, 3, 'CRM System', NULL, 1, NULL);
+INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id) VALUES ('Customer', 'This is the Parent LU.', 1, NULL, 1, 'CRM', NULL, 1);
+INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id) VALUES ('Billing', 'This is a Child LU.', 1, 1, 4, 'Billing', 'Customer', 2);
+INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id) VALUES ('Collection', 'This is a Child LU.', 1, 1, 2, 'Collection', 'Customer', 3);
+INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_parent_id, lu_id, product_name, lu_parent_name, product_id) VALUES ('Orders', 'This is a Child LU.', 1, 1, 3, 'Ordering', 'Customer', 4);
+
 
 
 --
@@ -150,187 +171,24 @@ INSERT INTO public.product_logical_units (lu_name, lu_description, be_id, lu_par
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: tdm
 --
 
-INSERT INTO public.products (product_name, product_description, product_vendor, product_versions, product_id, product_created_by, product_creation_date, product_last_updated_date, product_last_updated_by, product_status) VALUES ('CRM System', 'CRM Application', 'K2View', 'ProdV1', 1, 'admin', '2022-12-01 13:39:24.786', '2022-12-01 13:41:02.993', 'admin', 'Active');
 
+INSERT INTO public.products (product_name, product_description,  product_versions, product_id, product_created_by, product_creation_date, product_last_updated_date, product_last_updated_by, product_status) VALUES ('CRM', 'CRM Application', '1', 1, 'admin', now(), now(), 'admin', 'Active');
+INSERT INTO public.products (product_name, product_description,  product_versions, product_id, product_created_by, product_creation_date, product_last_updated_date, product_last_updated_by, product_status) VALUES ('Billing', 'Billing Application', 'DEV, PROD', 2, 'admin', now(), now(), 'admin', 'Active');
+INSERT INTO public.products (product_name, product_description,  product_versions, product_id, product_created_by, product_creation_date, product_last_updated_date, product_last_updated_by, product_status) VALUES ('Collection', 'Collection Application', '1', 3, 'admin', now(), now(), 'admin', 'Active');
+INSERT INTO public.products (product_name, product_description,  product_versions, product_id, product_created_by, product_creation_date, product_last_updated_date, product_last_updated_by, product_status) VALUES ('Ordering', 'Ordering Application', '1', 4, 'admin', now(), now(), 'admin', 'Active');
 
---
--- TOC entry 3269 (class 0 OID 32891)
--- Dependencies: 223
--- Data for Name: task_exe_error_detailed; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3270 (class 0 OID 32898)
--- Dependencies: 224
--- Data for Name: task_exe_error_summary; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3271 (class 0 OID 32904)
--- Dependencies: 225
--- Data for Name: task_exe_stats_detailed; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3272 (class 0 OID 32910)
--- Dependencies: 226
--- Data for Name: task_exe_stats_summary; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3273 (class 0 OID 32913)
--- Dependencies: 227
--- Data for Name: task_execution_entities; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3274 (class 0 OID 32924)
--- Dependencies: 228
--- Data for Name: task_execution_list; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3275 (class 0 OID 32934)
--- Dependencies: 229
--- Data for Name: task_execution_override_attrs; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3276 (class 0 OID 32940)
--- Dependencies: 230
--- Data for Name: task_execution_summary; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3277 (class 0 OID 32946)
--- Dependencies: 231
--- Data for Name: task_globals; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3278 (class 0 OID 32949)
--- Dependencies: 232
--- Data for Name: task_ref_exe_stats; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3280 (class 0 OID 32957)
--- Dependencies: 234
--- Data for Name: task_ref_tables; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3282 (class 0 OID 32966)
--- Dependencies: 236
--- Data for Name: tasks; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3283 (class 0 OID 32978)
--- Dependencies: 237
--- Data for Name: tasks_logical_units; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3284 (class 0 OID 32981)
--- Dependencies: 238
--- Data for Name: tasks_post_exe_process; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3287 (class 0 OID 32991)
--- Dependencies: 241
--- Data for Name: tdm_be_env_exclusion_list; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3288 (class 0 OID 32998)
--- Dependencies: 242
--- Data for Name: tdm_be_post_exe_process; Type: TABLE DATA; Schema: public; Owner: tdm
---
 
 INSERT INTO public.tdm_be_post_exe_process (process_id, process_name, process_description, be_id, execution_order) VALUES (1, 'postTaskExePrintToLog', 'This is a Post Execution Process Flow.', 1, 1);
 
 
---
--- TOC entry 3289 (class 0 OID 33005)
--- Dependencies: 243
--- Data for Name: tdm_env_globals; Type: TABLE DATA; Schema: public; Owner: tdm
---
 
+-- 28-12-22- Comment the insert to the tdm_general_parameters. This insert is included in the creation scripts of the TDMDB 
 
+-- INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('cleanup_retention_period', '2');
+-- INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('tdm_gui_params', '{"maxRetentionPeriod":90,"defaultPeriod":{"unit":"Days","value":5},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}]}');
+-- INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('MAX_RESERVATION_DAYS_FOR_TESTER', '10');
+-- INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('TDM_VERSION', '7.5.2');
 
---
--- TOC entry 3290 (class 0 OID 33011)
--- Dependencies: 244
--- Data for Name: tdm_general_parameters; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('cleanup_retention_period', '2');
-INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('tdm_gui_params', '{"maxRetentionPeriod":90,"defaultPeriod":{"unit":"Days","value":5},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}]}');
-INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('MAX_RESERVATION_DAYS_FOR_TESTER', '10');
-INSERT INTO public.tdm_general_parameters (param_name, param_value) VALUES ('TDM_VERSION', '7.5.2');
-
-
---
--- TOC entry 3291 (class 0 OID 33017)
--- Dependencies: 245
--- Data for Name: tdm_lu_type_rel_tar_eid; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3292 (class 0 OID 33023)
--- Dependencies: 246
--- Data for Name: tdm_lu_type_relation_eid; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3293 (class 0 OID 33031)
--- Dependencies: 247
--- Data for Name: tdm_reserved_entities; Type: TABLE DATA; Schema: public; Owner: tdm
---
-
-
-
---
--- TOC entry 3294 (class 0 OID 33037)
--- Dependencies: 248
--- Data for Name: tdm_seq_mapping; Type: TABLE DATA; Schema: public; Owner: tdm
---
 
 
 

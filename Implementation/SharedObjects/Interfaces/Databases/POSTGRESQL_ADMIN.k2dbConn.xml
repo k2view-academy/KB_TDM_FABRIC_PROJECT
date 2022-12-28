@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="POSTGRESQL_ADMIN" type="genericdb" version="7.0.0.23">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="POSTGRESQL_ADMIN" type="genericdb" version="7.0.0.24">
   <Active>true</Active>
   <DataSource>localhost</DataSource>
   <PortNum>5432</PortNum>

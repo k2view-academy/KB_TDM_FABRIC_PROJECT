@@ -155,8 +155,78 @@
         {
             "stages": [
                 {
-                    "name": "Stage 4",
+                    "name": "Check if the tdm role exists inDB",
                     "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchField1",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select count(*) no_of_tdm_users\r\nFrom pg_catalog.pg_user\r\nWhere pg_catalog.pg_user.usename = 'tdm'"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "tdm role does not exist",
+                    "dependsOnList": [
+                        "Check if the tdm role exists inDB"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 10",
+                    "dependsOnList": [
+                        "Check if the tdm role exists inDB"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "tdm role does not exist"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -169,8 +239,8 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "name": "path",
                                         "const": "TDM/TDMDB/k2vtdm1.sql",
+                                        "name": "path",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -188,6 +258,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 11",
+                    "dependsOnList": [
+                        "Stage 10"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -195,7 +274,9 @@
             "stages": [
                 {
                     "name": "Stage 5",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -240,7 +321,27 @@
                                 ],
                                 "outputs": []
                             }
-                        },
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 13",
+                    "dependsOnList": [
+                        "Stage 11"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 12",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
                         {
                             "name": "Get  SQL Resource File To Clear TDMDB And Create Sequences",
                             "actorType": {
@@ -251,8 +352,8 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "name": "path",
                                         "const": "TDM/TDMDB/k2vtdm2.sql",
+                                        "name": "path",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -307,13 +408,13 @@
                             }
                         },
                         {
-                            "name": "Clear TDMDB and Create Sequences",
+                            "name": "Create Sequences",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "TDM1"
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "sql",
@@ -333,8 +434,8 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "name": "path",
                                         "const": "TDM/TDMDB/k2vtdm3.sql",
+                                        "name": "path",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -395,7 +496,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "TDM1"
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "sql",
@@ -449,6 +550,16 @@
         },
         {
             "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
                 "name": "result"
             },
@@ -463,7 +574,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Clear TDMDB and Create Sequences",
+                "actor": "Create Sequences",
                 "name": "sql"
             }
         },

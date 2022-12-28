@@ -35,14 +35,18 @@ Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON Business_Entities (be
 
 --DROP TABLE IF EXISTS public.environment_owners;
 
+-- Tali move the constraint to be included in the table creation
+
 CREATE TABLE IF NOT EXISTS public.environment_owners
 (
     environment_id bigint NOT NULL,
     user_type character varying(10) NOT NULL,
     user_name character varying(200),
-    user_id character varying(200)
+    user_id character varying(200),
+    CONSTRAINT check_env_owner_type CHECK (user_type = 'ID' OR user_type = 'GROUP')
 );
-ALTER TABLE environment_owners ADD CONSTRAINT check_env_owner_type CHECK (user_type = 'ID' OR user_type = 'GROUP');
+
+-- ALTER TABLE environment_owners ADD CONSTRAINT check_env_owner_type CHECK (user_type = 'ID' OR user_type = 'GROUP');
 -- Table: public.environment_products
 
 --DROP TABLE IF EXISTS public.environment_products;
@@ -68,16 +72,19 @@ Create UNIQUE INDEX IF NOT EXISTS ENV_PROD_FOR_ACTIVE_IX ON environment_products
 
 --DROP TABLE IF EXISTS public.environment_role_users;
 
+-- Tali move the constraint to be included in the table creation
+
 CREATE TABLE IF NOT EXISTS public.environment_role_users
 (
     environment_id bigint NOT NULL,
     role_id bigint NOT NULL,
     user_type character varying(10) NOT NULL,
     username character varying,
-    user_id character varying(200)
+    user_id character varying(200),
+   CONSTRAINT check_user_type CHECK (user_type = 'ALL' OR user_type = 'ID' OR user_type = 'GROUP') 
 );
 
-ALTER TABLE environment_role_users ADD CONSTRAINT check_user_type CHECK (user_type = 'ALL' OR user_type = 'ID' OR user_type = 'GROUP');
+-- ALTER TABLE environment_role_users ADD CONSTRAINT IF NOT EXISTS check_user_type CHECK (user_type = 'ALL' OR user_type = 'ID' OR user_type = 'GROUP');
    
 Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON environment_role_users (environment_id, user_id);
 
@@ -473,21 +480,28 @@ CREATE TABLE IF NOT EXISTS public.tdm_general_parameters
   CONSTRAINT tdm_general_parameters_pk PRIMARY KEY (param_name)
 );
 
-INSERT INTO public.tdm_general_parameters(
-            param_name, param_value)
-    VALUES ('cleanup_retention_period', '2');
+
+-- Tali - set conditional inserts
 
 INSERT INTO public.tdm_general_parameters(
             param_name, param_value)
-    VALUES ('tdm_gui_params', '{"maxRetentionPeriod":90,"defaultPeriod":{"unit":"Days","value":5},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}]}');
+    select 'cleanup_retention_period', '2'  
+where not exists (select 1 from public.tdm_general_parameters where param_name = 'cleanup_retention_period');
+
+INSERT INTO public.tdm_general_parameters(
+            param_name, param_value)
+     select 'tdm_gui_params', '{"maxRetentionPeriod":90,"defaultPeriod":{"unit":"Days","value":5},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}]}' 
+where not exists (select 1 from public.tdm_general_parameters where param_name = 'tdm_gui_params');
     
 INSERT INTO public.tdm_general_parameters(
 	   param_name, param_value) 
-    VALUES ('TDM_VERSION', '7.5.2');
+    select 'TDM_VERSION', '7.6' 
+where not exists (select 1 from public.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 insert into public.tdm_general_parameters(
 		param_name, param_value) 
-	values ('MAX_RESERVATION_DAYS_FOR_TESTER', 10);
+	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
+where not exists (select 1 from public.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
 
 -- Table: public.task_globals
 
@@ -667,6 +681,9 @@ CREATE TABLE IF NOT EXISTS public.permission_groups_mapping
 );
 
 -- Add initial mapping for admin user
+
+-- Tali - set a conditional insert
+
 insert into public.permission_groups_mapping (
 	description,
 	fabric_role,
@@ -674,8 +691,20 @@ insert into public.permission_groups_mapping (
 	created_by,
 	updated_by,
 	creation_date,
-	update_date
-) values ('Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW());
+	update_date) 
+select'Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW()  
+where not exists (select 1 from public.permission_groups_mapping where fabric_role = 'admin');
+
+
+--insert into public.permission_groups_mapping (
+--	description,
+--	fabric_role,
+--	permission_group,
+--	created_by,
+--	updated_by,
+--	creation_date,
+--	update_date
+--) values ('Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW());
 
 
 -- Table: public.task_execution_override_attrs - TDM 7.2
