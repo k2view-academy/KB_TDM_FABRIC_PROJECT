@@ -705,22 +705,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Set Target Env",
-                            "remark": "Set the Target Environment in order to create the Target DB'S Tables \n",
+                            "name": "setTargetEnv_Actor1",
                             "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "TAR",
-                                        "isDefault": false
-                                    }
-                                ],
+                                "parentType": "setTargetEnv_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -951,6 +939,19 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get source env name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -976,7 +977,7 @@
                                     },
                                     {
                                         "name": "value",
-                                        "const": "SRC",
+                                        "const": null,
                                         "isDefault": false
                                     }
                                 ],
@@ -1246,6 +1247,16 @@
             "rightPort": {
                 "actor": "CREATE TAR ORDERS DB TABLES",
                 "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get source env name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Source Env",
+                "name": "value"
             }
         },
         {
