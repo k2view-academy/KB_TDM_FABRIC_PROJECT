@@ -4,7 +4,7 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_utils;
 
-import com.k2view.cdbms.FabricEncryption.FabricEncryption;
+//import com.k2view.cdbms.FabricEncryption.FabricEncryption;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
@@ -73,17 +73,17 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	//from logic.TDM
-	@desc("Gets a decrypted password.")
-	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	public static String wsDecryptPwd(String passTodDcrypt) throws Exception {
-		//log.info("TEST-SHAI-Input pwd: "+ passTodDcrypt);
-		String decryptPwd = FabricEncryption.decrypt(passTodDcrypt);
-		
-		//log.info("TEST-SHAI-after calling Fabric: "+ decryptPwd);
-		
-		return decryptPwd;
-		//FabricEncryption.decrypt(passTodDcrypt);
-	}
+//	@desc("Gets a decrypted password.")
+//	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+//	public static String wsDecryptPwd(String passTodDcrypt) throws Exception {
+//		//log.info("TEST-SHAI-Input pwd: "+ passTodDcrypt);
+//		String decryptPwd = FabricEncryption.decrypt(passTodDcrypt);
+//		
+//		//log.info("TEST-SHAI-after calling Fabric: "+ decryptPwd);
+//		
+//		return decryptPwd;
+//		//FabricEncryption.decrypt(passTodDcrypt);
+//	}
 
 
 	//end tdm

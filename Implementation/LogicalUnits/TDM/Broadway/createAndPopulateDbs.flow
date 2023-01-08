@@ -3,241 +3,10 @@
         {
             "stages": [
                 {
-                    "name": "Test Connection",
+                    "name": "Start",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check If PostgreSQL Admin Interface  Connection",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "test_connection interface=${POSTGRESQL_ADMIN}"
-                                    },
-                                    {
-                                        "const": "POSTGRESQL_ADMIN",
-                                        "name": "POSTGRESQL_ADMIN",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "interface": {
-                                                        "type": "string"
-                                                    },
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "environment": {
-                                                        "type": "string"
-                                                    },
-                                                    "active": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "passed": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "error_message": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check Admin Interface",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check If Admin Interface is Active",
-                            "actorType": {
-                                "parentType": "assertTrue",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "The Admin interface of Postgres is not active, cannot create the TDM DB"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Check If Admin Interface Is Valid",
-                            "actorType": {
-                                "parentType": "assertTrue",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "The Admin interface of Postgres is not valid, cannot create the TDM DB"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create Roles & Databases",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get  SQL Resource File To Create CRM DB Tables and Functions",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TRAINING/ROLES_CREATE.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get  SQL Resource File To Create BILLING DB Tables and Functions",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TRAINING/DBS_CREATE.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Execute Create Sql Statements For Roles&Dbs",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "DB Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
-                                                "conditions": {
-                                                    "standardType": "UNIQUE_CONSTRAINT"
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": ""
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create ROLES",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "POSTGRESQL_ADMIN"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create DBS",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "POSTGRESQL_ADMIN"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -432,7 +201,7 @@
                             }
                         },
                         {
-                            "name": "CREATE COLEECTION DB TABLES",
+                            "name": "CREATE COLLECTION DB TABLES",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -472,12 +241,12 @@
         {
             "stages": [
                 {
-                    "name": "Insert Data To Source Tables",
+                    "name": "Stage 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get  SQL Resource File To insert data to COLLECTION DB Tables",
+                            "name": "Get  SQL Resource File To insert data to ORDERING DB Tables",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -486,63 +255,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/COLLECTION_INSERT.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get  SQL Resource File To insert data to ORDERS DB Tables",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TRAINING/ORDERING_INSERT.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get  SQL Resource File To insert data to CRM DB Tables",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TRAINING/CRM_INSERT.sql",
+                                        "const": "TDM/TRAINING/ORDERING_INSERT.sql.gz",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -570,7 +283,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/BILLING_INSERT.sql",
+                                        "const": "TDM/TRAINING/BILLING_INSERT.sql.gz",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -586,6 +299,105 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Get  SQL Resource File To insert data to CRM DB Tables",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/TRAINING/CRM_INSERT.sql.gz",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get  SQL Resource File To insert data to COLLECTION DB Tables",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/TRAINING/COLLECTION_INSERT.sql.gz",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert Data To Source Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ORDERING",
+                            "actorType": {
+                                "parentType": "Uncompress",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Billing",
+                            "actorType": {
+                                "parentType": "Uncompress",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Crm",
+                            "actorType": {
+                                "parentType": "Uncompress",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "COLLECTION",
+                            "actorType": {
+                                "parentType": "Uncompress",
+                                "inputs": [],
+                                "outputs": []
                             }
                         }
                     ]
@@ -626,13 +438,13 @@
                             }
                         },
                         {
-                            "name": "Insert To COLLECTION DB",
+                            "name": "Insert To ORDERING DB",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "COLLECTION_DB"
+                                        "const": "ORDERS_DB"
                                     },
                                     {
                                         "name": "sql",
@@ -643,13 +455,13 @@
                             }
                         },
                         {
-                            "name": "Insert To ORDERING DB",
+                            "name": "Insert To BILLING DB",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "ORDERS_DB"
+                                        "const": "BILLING_DB"
                                     },
                                     {
                                         "name": "sql",
@@ -677,13 +489,13 @@
                             }
                         },
                         {
-                            "name": "Insert To BILLING DB",
+                            "name": "Insert To COLLECTION DB",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "BILLING_DB"
+                                        "const": "COLLECTION_DB"
                                     },
                                     {
                                         "name": "sql",
@@ -705,7 +517,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "setTargetEnv_Actor1",
+                            "name": "setTargetEnv",
                             "actorType": {
                                 "parentType": "setTargetEnv_Actor",
                                 "inputs": [],
@@ -733,7 +545,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/TAR_CRM_CREATE.sql",
+                                        "const": "TDM/TRAINING/CRM_TAR.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -761,7 +573,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/TAR_BILLING_CREATE.sql",
+                                        "const": "TDM/TRAINING/BILLING_TAR.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -789,7 +601,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/TAR_COLLECTION_CREATE.sql",
+                                        "const": "TDM/TRAINING/COLLECTION_TAR.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -808,7 +620,7 @@
                             }
                         },
                         {
-                            "name": "Get  SQL Resource File To create TAR ORDERING DB Tables",
+                            "name": "Get  SQL Resource File To create TAR ORDERS DB Tables",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -817,7 +629,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/TAR_ORDERING_CREATE.sql",
+                                        "const": "TDM/TRAINING/ORDERS_TAR.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -907,7 +719,7 @@
                             }
                         },
                         {
-                            "name": "CREATE TAR COLEECTION DB TABLES",
+                            "name": "CREATE TAR COLLECTION DB TABLES",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -941,13 +753,13 @@
                             }
                         },
                         {
-                            "name": "Get source env name",
+                            "name": "FabricSetRead",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
+                                        "const": "environment"
                                     }
                                 ],
                                 "outputs": []
@@ -965,19 +777,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Set Source Env",
-                            "remark": "Set the Source Environment in order to Populate the TDMDB tables\n",
+                            "name": "TDM_SOURCE_PRODUCT_VERSION",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "environment",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
+                                        "const": "TDM_SOURCE_PRODUCT_VERSION",
                                         "isDefault": false
                                     }
                                 ],
@@ -1085,52 +891,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Check If PostgreSQL Admin Interface  Connection",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Admin Interface is Active",
-                "name": "condition"
-            },
-            "path": [
-                "active"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Check If PostgreSQL Admin Interface  Connection",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Admin Interface Is Valid",
-                "name": "condition"
-            },
-            "path": [
-                "passed"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To Create CRM DB Tables and Functions",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Create ROLES",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To Create BILLING DB Tables and Functions",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Create DBS",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get  SQL Resource File To create CRM DB Tables",
                 "name": "result"
             },
@@ -1155,7 +915,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CREATE COLEECTION DB TABLES",
+                "actor": "CREATE COLLECTION DB TABLES",
                 "name": "sql"
             }
         },
@@ -1171,32 +931,12 @@
         },
         {
             "leftPort": {
-                "actor": "Get  SQL Resource File To insert data to COLLECTION DB Tables",
+                "actor": "Get  SQL Resource File To insert data to ORDERING DB Tables",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Insert To COLLECTION DB",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To insert data to ORDERS DB Tables",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Insert To ORDERING DB",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To insert data to CRM DB Tables",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Insert To CRM DB",
-                "name": "sql"
+                "actor": "ORDERING",
+                "name": "stream"
             }
         },
         {
@@ -1205,7 +945,67 @@
                 "name": "result"
             },
             "rightPort": {
+                "actor": "Billing",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To insert data to CRM DB Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Crm",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To insert data to COLLECTION DB Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "COLLECTION",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDERING",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Insert To ORDERING DB",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Billing",
+                "name": "stream"
+            },
+            "rightPort": {
                 "actor": "Insert To BILLING DB",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Crm",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Insert To CRM DB",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "COLLECTION",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Insert To COLLECTION DB",
                 "name": "sql"
             }
         },
@@ -1235,13 +1035,13 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CREATE TAR COLEECTION DB TABLES",
+                "actor": "CREATE TAR COLLECTION DB TABLES",
                 "name": "sql"
             }
         },
         {
             "leftPort": {
-                "actor": "Get  SQL Resource File To create TAR ORDERING DB Tables",
+                "actor": "Get  SQL Resource File To create TAR ORDERS DB Tables",
                 "name": "result"
             },
             "rightPort": {
@@ -1251,11 +1051,11 @@
         },
         {
             "leftPort": {
-                "actor": "Get source env name",
+                "actor": "FabricSetRead",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Set Source Env",
+                "actor": "TDM_SOURCE_PRODUCT_VERSION",
                 "name": "value"
             }
         },

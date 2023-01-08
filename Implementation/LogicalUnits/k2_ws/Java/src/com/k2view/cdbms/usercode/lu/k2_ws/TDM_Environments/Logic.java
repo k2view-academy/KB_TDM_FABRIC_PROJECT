@@ -1859,7 +1859,10 @@ public class Logic extends WebServiceUserCode {
 						!"BE_ID".equals(keyParts[2]) &&
 						!"TASK_TYPE".equals(keyParts[2]) &&
 						!"enable_masking".equals(keyParts[2]) &&
-						!"enable_sequences".equals(keyParts[2])
+						!"enable_sequences".equals(keyParts[2]) &&
+						!"BUILD_TDMDB".equals(keyParts[2]) &&
+						!"clone_id".equals(keyParts[2]) &&
+						!"TDMDB_SCHEMA".equals(keyParts[2])
 					) 
 					{
 						if ("k2_ws".equals(keyParts[1])) {
@@ -1944,7 +1947,7 @@ public class Logic extends WebServiceUserCode {
 				}
 			}
 			globals.sort((Comparator.comparing(o -> ((String) o.get("globalName")).toLowerCase())));
-
+		
 			errorCode = "SUCCESS";
 			response.put("result",globals);
 			//return globalsPerLu;

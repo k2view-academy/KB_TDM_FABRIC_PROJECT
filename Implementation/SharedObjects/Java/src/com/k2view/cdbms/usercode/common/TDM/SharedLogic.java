@@ -146,12 +146,19 @@ public class SharedLogic {
 		//                                                     //
 		//*****************************************************//
 		
+		
+		
 		Db ciTDM = db(TDM);
 		//ResultSetWrapper rs = null;
 		Set<String> pgColsList = new HashSet<>();
 		Set<String> luColsList = new HashSet<>();
 		String tblName = getLuType().luName.toLowerCase() + "_params";
 		String tblNameFabric = getLuType().luName + ".LU_PARAMS";
+		
+		
+		
+		log.info("TESTSSSS- TALI - test fnEnrichmentLuParams - lu param table name: " + tblName);
+		
 		String tblInfoSql = "select column_name from INFORMATION_SCHEMA.COLUMNS where table_name = ?";
 		String luParamTblSql = "DESCRIBE TABLE " + tblNameFabric;
 		StringBuilder sbCreStmt = new StringBuilder().append("CREATE TABLE IF NOT EXISTS " + TDMDB_SCHEMA + "." + tblName + "(");

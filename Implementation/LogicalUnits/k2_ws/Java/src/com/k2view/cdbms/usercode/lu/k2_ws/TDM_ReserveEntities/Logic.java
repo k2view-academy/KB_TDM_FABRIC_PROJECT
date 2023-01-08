@@ -17,7 +17,7 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.cdbms.usercode.lu.k2_ws.*;
+//import com.k2view.cdbms.usercode.lu.k2_ws.*;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;

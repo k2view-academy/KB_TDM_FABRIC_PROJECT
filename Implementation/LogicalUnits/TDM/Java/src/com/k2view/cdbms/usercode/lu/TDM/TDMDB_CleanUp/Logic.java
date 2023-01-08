@@ -37,8 +37,8 @@ public class Logic extends UserCode {
 			" based on retention period given in TDMDB table tdm_general_parameters")
 	@type(UserJob)
 	public static void TDMDB_CleanUp() throws Exception {
-		String paramName = "";
-		String paramValue = "";
+//		String paramName = "";
+//		String paramValue = "";
 		String retentionDate = "";
 		
 		//Set the SQL parameter

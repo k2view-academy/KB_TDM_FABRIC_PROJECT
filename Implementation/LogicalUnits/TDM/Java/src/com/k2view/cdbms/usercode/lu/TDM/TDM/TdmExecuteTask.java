@@ -1,12 +1,10 @@
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
-import com.google.gson.reflect.TypeToken;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
-import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -273,7 +271,6 @@ public class TdmExecuteTask {
         return parentID != null && parentID > 0;
     }
 
-    @NotNull
     private static String executeLoadBatch(Map<String, Object> taskProperties) throws Exception {
         //log.info("----------------- preparing for load execution -------------------");
 		 
@@ -356,7 +353,6 @@ public class TdmExecuteTask {
         return (String) fabric().fetch(batchCommand, entityInclusionOverride, broadwayCommand).firstValue();
     }
 
-	@NotNull
 	private static String executeReserveBatch(Map<String, Object> taskProperties) throws Exception {
 		//log.info("----------------- preparing for reserve execution -------------------");
 
@@ -420,7 +416,7 @@ public class TdmExecuteTask {
 		//log.info("getEntityInclusionForChildLU - handling Child LU: " + luName);
         String parentLU = "" + db(TDM).fetch("SELECT lu_parent_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE lu_id=?", (Object)LU_ID.get(taskProperties)).firstValue();
         String entityIdSelectChildID = "t.source_env" + getEntityIDSelect("rel.lu_type2_eid");
-        String entityIdSelectParID = "t.source_env" + getEntityIDSelect("rel.lu_type1_eid");
+        //String entityIdSelectParID = "t.source_env" + getEntityIDSelect("rel.lu_type1_eid");
         String versionClause;
         String selectedVersionTaskName = SELECTED_VERSION_TASK_NAME.get(taskProperties);
         String selectedVersionDateTime = SELECTED_VERSION_DATETIME.get(taskProperties);
@@ -430,7 +426,7 @@ public class TdmExecuteTask {
 		//log.info("getEntityInclusionForChildLU - selectedVersionTaskName: <" + selectedVersionTaskName + ">, selectedVersionDateTime: <" + selectedVersionDateTime + ">, separator: <" + separator + ">");
         if(!Util.isEmpty(selectedVersionTaskName) && !Util.isEmpty(selectedVersionDateTime)){
             entityIdSelectChildID += "||'" + separator + "'||'" + selectedVersionTaskName + "'||'" + separator + "'||'" + selectedVersionDateTime + "'";
-            entityIdSelectParID += "||'" + separator + "'||'" + selectedVersionTaskName + "'||'" + separator + "'||'" + selectedVersionDateTime + "'";
+            //entityIdSelectParID += "||'" + separator + "'||'" + selectedVersionTaskName + "'||'" + separator + "'||'" + selectedVersionDateTime + "'";
             versionClause = " and rel.version_name = '" + selectedVersionTaskName + "' and to_char(rel.version_datetime,'yyyyMMddhh24miss') = '" + selectedVersionDateTime + "'";
         }else{
             versionClause = " and rel.version_name ='''' ";
@@ -494,7 +490,7 @@ public class TdmExecuteTask {
 		String replaceSequences = "" + REPLACE_SEQUENCES.get(taskProperties);
 		String taskType = "" + TASK_TYPE.get(taskProperties);
 		String entityExclusionListWhere = "";
-		//TDM 7.5.3 - The entity list will be checked against reserved entities only if requested in the task
+		//TDM 7.6 - The entity list will be checked against reserved entities only if requested in the task
 		Boolean filterOutReserved = (Boolean) FILTEROUT_RESERVED.get(taskProperties);
 		// Reservation is not relevant in case of replace sequence.
 		// And in case of entity list the reservation will be checked by the batch process to fail the entity like any other failure
@@ -511,7 +507,7 @@ public class TdmExecuteTask {
                 String[] entitiesListArray = !Util.isEmpty(entitiesList) ? entitiesList.split(",") : new String[]{};
 				
 				for (String entityID : entitiesListArray) {
-					// TDM 7.5.3 - Add separtors to the entity ID if they are in use
+					// TDM 7.6 - Add separtors to the entity ID if they are in use
 					entityID = addSeparators(entityID.trim());
 					entityInclusion +=  "'" + env + separator + entityID + versionParams + "',";
 				}
@@ -556,7 +552,7 @@ public class TdmExecuteTask {
 				// TDM 7.5 - Set the environment before calling the Flow to make sure that the records are restored from the right DB.
 				fabric().execute("set environment " + env);
 				
-				// TDM 7.5.3 - Get the Lu Name of the Custom Logic flow from the SELECTION_PARAM_VALUE
+				// TDM 7.6 - Get the Lu Name of the Custom Logic flow from the SELECTION_PARAM_VALUE
 				//String luName = LU_NAME.get(taskProperties);
 				String[] params = ("" + SELECTION_PARAM_VALUE.get(taskProperties)).split("#");
 				String luName = params[0];
@@ -566,12 +562,12 @@ public class TdmExecuteTask {
 				String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable luName = " + luName + ", RESULT_STRUCTURE=ROW";
 				fabric().execute(createEntityListTab);
 
-				Long entitiesLimit = 0L;
+				/*Long entitiesLimit = 0L;
 				if(NUM_OF_ENTITIES.get(taskProperties) instanceof Long) {
 					entitiesLimit = NUM_OF_ENTITIES.get(taskProperties);
 				} else {
 					entitiesLimit = Long.valueOf(NUM_OF_ENTITIES.get(taskProperties));
-				}
+				}*/
 
 				String broadwayCommand = geCLBroadwayCmd(luName, customLogicFlow, taskProperties);
 				//Db.Row entityListTableRec = fabric().fetch(broadwayCommand).firstRow();
@@ -598,7 +594,6 @@ public class TdmExecuteTask {
         return entityInclusion;
     }
 
-	@NotNull
 	private static String geCLBroadwayCmd(String luName, String clFlowName, Map<String, Object> taskProperties) {
 		
 		//String luName = LU_NAME.get(taskProperties);
@@ -615,9 +610,9 @@ public class TdmExecuteTask {
 		//log.info("clFlowParams after replace: " + clFlowParams);
 		// Replace gson with K2view Json
 		//Gson gson = new Gson();
-		Type mapType = new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType();
+		//Type mapType = new TypeToken<Map<String, List<Map<String, Object>>>>(){}.getType();
 		//Map<String, List<Map <String, Object>>> clFlowParamJson = gson.fromJson(clFlowParams, mapType);
-		Map<String, List<Map <String, Object>>> clFlowParamJson = Json.get().fromJson(clFlowParams, mapType);
+		Map<String, List<Map <String, Object>>> clFlowParamJson = Json.get().fromJson(clFlowParams);
 		
 		String fabricCommandParams = " LU_NAME='" + luName + "', NUM_OF_ENTITIES=" + entitiesLimit;
 		if (!(clFlowParamJson.isEmpty())) {
@@ -633,7 +628,6 @@ public class TdmExecuteTask {
 
       }
 
-    @NotNull
     private static String getExclusion(Map<String, Object> taskProperties) throws SQLException {
         String entityExclusionLIst = ENTITY_EXCLUSION_LIST.get(taskProperties);
 		String env = isDeleteOnlyMode(taskProperties) ? TARGET_ENVIRONMENT_NAME.get(taskProperties) : SOURCE_ENVIRONMENT_NAME.get(taskProperties);
@@ -651,7 +645,6 @@ public class TdmExecuteTask {
     }
 
 
-	@NotNull
     private static String getReserveCondition(Map<String, Object> taskProperties) throws SQLException {
 	String env = isDeleteOnlyMode(taskProperties) ? TARGET_ENVIRONMENT_NAME.get(taskProperties) : SOURCE_ENVIRONMENT_NAME.get(taskProperties);
 	String envID = "" + ENVIRONMENT_ID.get(taskProperties);
@@ -709,9 +702,9 @@ public class TdmExecuteTask {
 		//log.info("TdmExecuteTask - overrideGlobalsStr : " + overrideGlobalsStr);
 	
 		if (!"".equals(overrideGlobalsStr) && !"null".equals(overrideGlobalsStr)) {
-			Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+			//Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
 			//Map <String, Object> overrideGlobals = gson.fromJson(overrideGlobalsStr, mapType);
-			Map <String, Object> overrideGlobals = Json.get().fromJson(overrideGlobalsStr, mapType);
+			Map <String, Object> overrideGlobals = Json.get().fromJson(overrideGlobalsStr);
 			globals.putAll(overrideGlobals);
 		}
 		
@@ -942,12 +935,10 @@ public class TdmExecuteTask {
 		}
 	}
 	
-    @NotNull
     private static String getSyntheticData(String selectionMethod) {
         return selectionMethod.equals("S") ? "true" : "false";
     }
 
-    @NotNull
     private static String buildEntityExclusion(String environment, String selectionMethod, String versionInd, String selectedVersionTaskName, String selectedVersionDateTime, String entityID) {
 		
         if (!selectionMethod.toUpperCase().equals("R")) {
@@ -964,7 +955,6 @@ public class TdmExecuteTask {
         }
     }
 
- @NotNull
     private static String buildEntityReserved(String environment, Map<String, Object> taskProperties) throws Exception {
 		String selectionMethod = ("" + SELECTION_METHOD.get(taskProperties)).toUpperCase();
 		String versionInd = "" + VERSION_IND.get(taskProperties);
@@ -990,7 +980,6 @@ public class TdmExecuteTask {
         }
     }
 	
-    @NotNull
     private static String getEntityIDSelect(String name) throws Exception {
         Object[] separators = fnGetIIdSeparatorsFromTDM();
         String open = (String) separators[0];

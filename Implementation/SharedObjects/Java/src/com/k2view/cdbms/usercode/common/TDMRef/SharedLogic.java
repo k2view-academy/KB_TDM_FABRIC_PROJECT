@@ -4,34 +4,23 @@
 
 package com.k2view.cdbms.usercode.common.TDMRef;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.Globals;
-import com.k2view.cdbms.shared.user.UserCode;
+import com.k2view.cdbms.shared.Db;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.fabric.common.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
-import java.util.*;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static com.k2view.cdbms.shared.user.UserCode.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDM_TASK_EXE_ID;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.createJsonArrayFromTableRecords;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
@@ -60,8 +49,8 @@ public class SharedLogic {
 	public static String fnTdmReference(String taskExecutionID, String taskType) throws Exception {
 		//log.info("-- START Reference JOB for Task Type: " + taskType + " Task Execution ID: " + taskExecutionID + "---");
 		fabric().execute("set TDM_TASK_EXE_ID = " + taskExecutionID);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-		Date date = new Date();
+		//SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+		//Date date = new Date();
 		
 		Db.Rows refTabLst = null;
 		

@@ -1,4 +1,4 @@
-INSERT INTO @TDMDB_SCHEMA@ TASK_REF_EXE_STATS(
+INSERT INTO @TDMDB_SCHEMA@.TASK_REF_EXE_STATS(
     task_id,
     task_execution_id,
     task_ref_table_id,
@@ -6,4 +6,4 @@ INSERT INTO @TDMDB_SCHEMA@ TASK_REF_EXE_STATS(
     update_date,
     execution_status
     )
-SELECT task_id, ?, task_ref_table_id, ref_table_name, localtimestamp, 'pending' from @TDMDB_SCHEMA@ TASK_REF_TABLES WHERE task_id = ? and lu_name = ?
+SELECT task_id, ?, task_ref_table_id, ref_table_name, localtimestamp, 'pending' from @TDMDB_SCHEMA@.TASK_REF_TABLES WHERE task_id = ? and lu_name = ?

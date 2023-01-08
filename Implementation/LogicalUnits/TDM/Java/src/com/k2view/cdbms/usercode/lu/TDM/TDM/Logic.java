@@ -10,45 +10,21 @@ import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
-import com.k2view.cdbms.usercode.common.TDM.SharedLogic;
-
 import com.k2view.cdbms.usercode.lu.TDM.TdmTaskScheduler;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
-import com.k2view.fabric.common.Json;
-import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
-import groovy.json.JsonBuilder;
-import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.RootFunction;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.UserJob;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import java.math.*;
-import java.io.*;
-import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.Globals;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
@@ -63,13 +39,10 @@ public class Logic extends UserCode {
 	public static final String COMMA_DEL = ",";
 	public static final String PENDING = "pending";
 
-	private static final int BATCH_SIZE = 10;
 	public static final String REF = "REF";
 	public static final String TASKS = TDMDB_SCHEMA + ".TASKS";
 	public static final String TDM = "TDM";
 	public static final String DBCASSANDRA = "DB_CASSANDRA";
-	//Fabric 5.3 feature, USER_JOB runs on FABRIC DB - "fabric"
-	// public static final String DB_FABRIC = "dbFabric";
 	public static final String DB_FABRIC = "fabric";
 	public static final String TASK_REF_TABLES = TDMDB_SCHEMA + ".TASK_REF_TABLES";
 	public static final String PRODUCT_LOGICAL_UNITS = TDMDB_SCHEMA + ".product_logical_units";
@@ -87,13 +60,13 @@ public class Logic extends UserCode {
 	@out(name = "instanceId", type = String.class, desc = "")
 	@out(name = "envName", type = String.class, desc = "")
 	public static Object fnGetSplittedID(String entityID, String idType, String envID) throws Exception {
-		
+		Object[] res = {entityID, envID};
+
 		if ("ENTITY".equals(idType)) {
-			Object[] res = fnSplitUID(entityID);
+			res = fnSplitUID(entityID);
 			return res;
 		} 
-		
-		Object[] res = {entityID, envID};
+
 		return res;
 		
 		
@@ -116,7 +89,6 @@ public class Logic extends UserCode {
 		Db.Rows taskExecutionList = null;
 		Db.Rows rows = null;
 		Db.Rows refRunningLus = null;
-		Boolean res = false;
 		
 		
 		try {
@@ -152,7 +124,7 @@ public class Logic extends UserCode {
 					if (row.get("fabric_execution_id") != null)
 						batchID = "" + row.get("fabric_execution_id");
 		
-					taskID = "" + row.get("task_id");;
+					taskID = "" + row.get("task_id");
 					taskExecutionID = "" + row.get("task_execution_id");
 					
 					// TDM 6.0 - Since the extract tasks can include multi LUs, each extract task execution will have multi entries;
@@ -524,7 +496,7 @@ public class Logic extends UserCode {
 
 			// Check first for the commonly used types to save all other 'instanceof'.
 			if (isCommonlyUsedType(val)) {
-				Class cls = val.getClass();
+				//Class cls = val.getClass();
 				//log.info("val instanceof " + cls.getName());
 				if (val instanceof java.math.BigDecimal){
 					return  ((BigDecimal) val).doubleValue();
@@ -616,7 +588,7 @@ public class Logic extends UserCode {
 		// TDM 6.0 - New Enrichment function
 		String taskExecId = "" + fabric().fetch("SELECT iid(?)", TDM).firstValue();
 			
-		String taskId = "" + fabric().fetch("select distinct task_id from task_execution_list").firstValue();
+		//String taskId = "" + fabric().fetch("select distinct task_id from task_execution_list").firstValue();
 		//log.info("fnUpdateTaskSummaryTable - taskID: " + taskId);
 		String executionStatus = "completed";
 		String startExecTime = "";

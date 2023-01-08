@@ -58,17 +58,6 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
-          <dbPort>5433</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>CMsxdWGOWVbxXFXw/wHqRI/pnD2BSLoI7Ury1sR/O/E=:qe3iWhsVNgqnf5UG3WqhPaNwcXqqE6lmcDtXaUrWvHs=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5433/postgres?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5433</dbPort>
@@ -355,17 +344,6 @@
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>6sZR40JP5KtkTEPfYQgMrGX+XtTRin80uAQ3QT4C8AI=:Hp8csxAT7jTAenOK1w1avPQLO3Jf89yqUn2OwE4V/U0=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5433/ORDERING_DB?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort>5433</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>lF3UD0RKS4oi4H9xThrowoghfIpGwY5SsO1yiiTtJTk=:6Q0WF3Z08pgWEw12tXOw1fCKt0ieIpSH0ThqABDmR70=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -660,17 +638,6 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
-          <dbPort>5433</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>zDtYt+HpQgHGwvvHhiYqFrOJpka6mYU8GQvH/i9DoeA=:DvzSPMSnfBlYG72cxR7zh0IP3wTieaXQ48pGV4/vs3g=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5433/postgres?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5433</dbPort>
@@ -714,10 +681,10 @@
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>SRC_local_debug</Value>
+          <Value>SRC</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>TAR_local_debug</Value>
+          <Value>TAR</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -957,15 +924,6 @@
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>5hzwVQ3UwP0lMOt5MGvUOoBRp9lO58VRURZlwzDkmE8=:sdrDPOZrEJSTeGJWGWIX+WvTEywZPrvtb0jsf9/ogv4=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5433/TAR_ORDERING?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
-          <dbPort>5433</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1256,14 +1214,6 @@
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>5hzwVQ3UwP0lMOt5MGvUOoBRp9lO58VRURZlwzDkmE8=:sdrDPOZrEJSTeGJWGWIX+WvTEywZPrvtb0jsf9/ogv4=</dbPasswordEncrypted>
           <connString>jdbc:postgresql://10.21.2.64:5433/TAR_ORDERING?stringtype=unspecified</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>PostgreSQL</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="false">
-          <dbPort>5432</dbPort>
-          <dbScheme>postgres</dbScheme>
-          <connString>jdbc:postgresql://:5432/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>

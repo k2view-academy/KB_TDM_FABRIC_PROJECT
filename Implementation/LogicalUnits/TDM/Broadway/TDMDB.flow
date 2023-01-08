@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Stage 7",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -57,7 +57,7 @@
                             }
                         },
                         {
-                            "name": "Check If PostgreSQL Admin Interface  Connection",
+                            "name": "Check TDM Interface Connection",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -67,11 +67,11 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "test_connection interface=${POSTGRESQL_ADMIN}"
+                                        "const": "test_connection interface=${TDMDB}"
                                     },
                                     {
-                                        "const": "POSTGRESQL_ADMIN",
-                                        "name": "POSTGRESQL_ADMIN",
+                                        "const": "TDM",
+                                        "name": "TDMDB",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -123,13 +123,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Check If Admin Interface is Active",
+                            "name": "Check If TDM Interface is Active",
                             "actorType": {
                                 "parentType": "assertTrue",
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "The Admin interface of Postgres is not active, cannot create the TDM DB"
+                                        "const": "The TDM interface is not active, cannot build the TDM DB"
                                     }
                                 ],
                                 "outputs": []
@@ -142,7 +142,7 @@
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "The Admin interface of Postgres is not valid, cannot create the TDM DB"
+                                        "const": "The TDM interface is not valid, cannot build the TDM DB"
                                     }
                                 ],
                                 "outputs": []
@@ -159,88 +159,6 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "Get  SQL Resource File To Create TDMDB Schema And User",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TDMDB/k2vtdm1.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Create TDMDB Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
-                                                "conditions": {
-                                                    "standardType": "UNIQUE_CONSTRAINT"
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": ""
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create TDMDB User and Schema",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "POSTGRESQL_ADMIN"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Get  SQL Resource File To Clear TDMDB And Create Sequences",
                             "actorType": {
@@ -276,7 +194,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 6",
+                    "name": "Stage 5",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -358,7 +276,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 7",
+                    "name": "Stage 6",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -423,20 +341,7 @@
         },
         {
             "leftPort": {
-                "actor": "Check If PostgreSQL Admin Interface  Connection",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Admin Interface is Active",
-                "name": "condition"
-            },
-            "path": [
-                "active"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Check If PostgreSQL Admin Interface  Connection",
+                "actor": "Check TDM Interface Connection",
                 "name": "result"
             },
             "rightPort": {
@@ -449,13 +354,16 @@
         },
         {
             "leftPort": {
-                "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
+                "actor": "Check TDM Interface Connection",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Create TDMDB User and Schema",
-                "name": "sql"
-            }
+                "actor": "Check If TDM Interface is Active",
+                "name": "condition"
+            },
+            "path": [
+                "active"
+            ]
         },
         {
             "leftPort": {
@@ -475,16 +383,6 @@
             "rightPort": {
                 "actor": "Create TDMDB Tables and Functions",
                 "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
             }
         },
         {

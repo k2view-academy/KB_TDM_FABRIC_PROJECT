@@ -798,8 +798,8 @@ $BODY$
 LANGUAGE plpgsql VOLATILE
 COST 100
 ROWS 1000;
-ALTER FUNCTION public.param_values(text, text, text, text, text, text, text)
-OWNER TO tdm;
+--ALTER FUNCTION public.param_values(text, text, text, text, text, text, text)
+--OWNER TO tdm;
 			     
 CREATE OR REPLACE FUNCTION param_values(
 	parentlu text,
@@ -854,8 +854,8 @@ END;
 END;
 $BODY$;
 
-ALTER FUNCTION param_values(text, text, text, text, text, text, text, text, text)
-    OWNER TO tdm;
+--ALTER FUNCTION param_values(text, text, text, text, text, text, text, text, text)
+--    OWNER TO tdm;
 
 -- eval function executes received string expression as query
 CREATE OR REPLACE FUNCTION eval(expression text) RETURNS void

@@ -21,7 +21,7 @@ import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.usercode.*;										 
+//import com.k2view.cdbms.usercode.*;										 
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.events.*;

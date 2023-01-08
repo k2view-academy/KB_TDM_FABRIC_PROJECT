@@ -9,7 +9,6 @@ import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 import com.k2view.fabric.common.Util;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.ResultSet;
 import java.time.Instant;
@@ -1286,8 +1285,6 @@ public class Logic extends WebServiceUserCode {
 	}
 
 
-
-	@NotNull
 	private static String getColumnMinMaxSQL(String env, String colName, String beTableName) {
 		return "SELECT MIN(CAST(\"" + colName + "\" AS DOUBLE PRECISION)) AS \"MIN_" + colName + "\", MAX(CAST(\"" + colName + "\" AS DOUBLE PRECISION)) AS \"MAX_" + colName + "\" FROM (SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable";
 	}

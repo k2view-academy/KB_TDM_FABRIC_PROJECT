@@ -1,6 +1,6 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Environments;
 
-import com.k2view.cdbms.FabricEncryption.FabricEncryption;
+//import com.k2view.cdbms.FabricEncryption.FabricEncryption;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.fabric.common.Log;
@@ -135,33 +135,33 @@ public class EnvironmentUtils {
         return Long.parseLong(row.get("environment_product_id").toString());
     }
 
-    static void fnAddProductInterfacesEnvironment(Long envId, Long product_id, Long env_product_id, List<Map<String, Object>> interfaces) throws Exception {
-        if (interfaces == null) return;
-
-        for (Map<String, Object> _interface : interfaces) {
-            //k2viewAPIs.getDataFromAPI("envEncryptDBConnPwd",[{"key" : "password", "value" : interface.db_password"}]
-            String decryptPwd = FabricEncryption.decrypt(_interface.get("db_password").toString());
-            //replace regular text password with encrypted password
-            _interface.put("db_password", decryptPwd);
-
-            String sql = "INSERT INTO \"" + schema + "\".environment_product_interfaces " +
-                    "(environment_id, product_id, db_host, db_port, db_user, db_password, db_schema, db_connection_string,env_product_interface_id,interface_name,interface_type,env_product_interface_status) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
-            db(TDM).execute(sql,
-                    envId,
-                    product_id,
-                    _interface.get("db_host"),
-                    _interface.get("db_port"),
-                    _interface.get("db_user"),
-                    _interface.get("db_password"),
-                    _interface.get("db_schema"),
-                    _interface.get("db_connection_string"),
-                    env_product_id,
-                    _interface.get("interface_name"),
-                    _interface.get("interface_type"),
-                    "Active");
-        }
-    }
+//    static void fnAddProductInterfacesEnvironment(Long envId, Long product_id, Long env_product_id, List<Map<String, Object>> interfaces) throws Exception {
+//        if (interfaces == null) return;
+//
+//        for (Map<String, Object> _interface : interfaces) {
+//            //k2viewAPIs.getDataFromAPI("envEncryptDBConnPwd",[{"key" : "password", "value" : interface.db_password"}]
+//            String decryptPwd = FabricEncryption.decrypt(_interface.get("db_password").toString());
+//            //replace regular text password with encrypted password
+//            _interface.put("db_password", decryptPwd);
+//
+//            String sql = "INSERT INTO \"" + schema + "\".environment_product_interfaces " +
+//                    "(environment_id, product_id, db_host, db_port, db_user, db_password, db_schema, db_connection_string,env_product_interface_id,interface_name,interface_type,env_product_interface_status) " +
+//                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+//            db(TDM).execute(sql,
+//                    envId,
+//                    product_id,
+//                    _interface.get("db_host"),
+//                    _interface.get("db_port"),
+//                    _interface.get("db_user"),
+//                    _interface.get("db_password"),
+//                    _interface.get("db_schema"),
+//                    _interface.get("db_connection_string"),
+//                    env_product_id,
+//                    _interface.get("interface_name"),
+//                    _interface.get("interface_type"),
+//                    "Active");
+//        }
+//    }
 
     static void fnUpdateProductToEnvironment(Long environment_product_id, String data_center_name, String product_version) throws Exception {
         String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
@@ -177,44 +177,44 @@ public class EnvironmentUtils {
         db(TDM).execute(sql, data_center_name, product_version, now, username);
     }
 
-    static void fnUpdateProductInterfacesEnvironment(Long envId, long product_id, Long env_product_id, List<Map<String, Object>> interfaces) throws Exception {
-        if (interfaces == null) return;
-        for (Map<String, Object> _interface : interfaces) {
-            if (_interface.get("update").toString() == "false" || _interface.get("passwordDecrypt").toString() != "false") {
-                String decryptPwd = FabricEncryption.decrypt(_interface.get("db_password").toString());
-                //replace regular text password with encrypted password
-                _interface.put("db_password", decryptPwd);
-            }
-            //check: env_product_interface_status
-            if (_interface.get("newInterface").toString() == "true" && _interface.get("env_product_interface_status").toString() == "null") {
-                String sql = "INSERT INTO \"" + schema + "\".environment_product_interfaces " +
-                        "(environment_id, product_id, db_host, db_port, db_user, db_password, db_schema, db_connection_string,env_product_interface_id,interface_name,interface_type,env_product_interface_status) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
-                db(TDM).execute(sql, envId, product_id, _interface.get("db_host"),
-                        _interface.get("db_port"), _interface.get("db_user"),
-                        _interface.get("db_password"), _interface.get("db_schema"),
-                        _interface.get("db_connection_string"), env_product_id,
-                        _interface.get("interface_name"), _interface.get("interface_type"), "Active");
-            } else if (_interface.get("deleted").toString() == "true") {
-                String sql = "DELETE FROM \"" + schema + "\".environment_product_interfaces WHERE ( env_product_interface_id = (?) AND interface_name = (?))";
-                db(TDM).execute(sql, _interface.get("env_product_interface_id"), _interface.get("interface_name"));
-
-            } else {
-                String sql = "UPDATE \"" + schema + "\".environment_product_interfaces SET " +
-                        "db_host=(?)," +
-                        "db_port=(?)," +
-                        "db_user=(?)," +
-                        "db_password=(?)," +
-                        "db_schema=(?)," +
-                        "db_connection_string=(?) " +
-                        "WHERE env_product_interface_id = " + _interface.get("env_product_interface_id") + " AND interface_name = " + "\"" + _interface.get("interface_name") + "\"";
-                db(TDM).execute(sql,
-                        _interface.get("db_host"), _interface.get("db_port"),
-                        _interface.get("db_user"), _interface.get("db_password"),
-                        _interface.get("db_schema"), _interface.get("db_connection_string"));
-            }
-        }
-    }
+//    static void fnUpdateProductInterfacesEnvironment(Long envId, long product_id, Long env_product_id, List<Map<String, Object>> interfaces) throws Exception {
+//        if (interfaces == null) return;
+//        for (Map<String, Object> _interface : interfaces) {
+//            if (_interface.get("update").toString() == "false" || _interface.get("passwordDecrypt").toString() != "false") {
+//                String decryptPwd = FabricEncryption.decrypt(_interface.get("db_password").toString());
+//                //replace regular text password with encrypted password
+//                _interface.put("db_password", decryptPwd);
+//            }
+//            //check: env_product_interface_status
+//            if (_interface.get("newInterface").toString() == "true" && _interface.get("env_product_interface_status").toString() == "null") {
+//                String sql = "INSERT INTO \"" + schema + "\".environment_product_interfaces " +
+//                        "(environment_id, product_id, db_host, db_port, db_user, db_password, db_schema, db_connection_string,env_product_interface_id,interface_name,interface_type,env_product_interface_status) " +
+//                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+//                db(TDM).execute(sql, envId, product_id, _interface.get("db_host"),
+//                        _interface.get("db_port"), _interface.get("db_user"),
+//                        _interface.get("db_password"), _interface.get("db_schema"),
+//                        _interface.get("db_connection_string"), env_product_id,
+//                        _interface.get("interface_name"), _interface.get("interface_type"), "Active");
+//            } else if (_interface.get("deleted").toString() == "true") {
+//                String sql = "DELETE FROM \"" + schema + "\".environment_product_interfaces WHERE ( env_product_interface_id = (?) AND interface_name = (?))";
+//                db(TDM).execute(sql, _interface.get("env_product_interface_id"), _interface.get("interface_name"));
+//
+//            } else {
+//                String sql = "UPDATE \"" + schema + "\".environment_product_interfaces SET " +
+//                        "db_host=(?)," +
+//                        "db_port=(?)," +
+//                        "db_user=(?)," +
+//                        "db_password=(?)," +
+//                        "db_schema=(?)," +
+//                        "db_connection_string=(?) " +
+//                        "WHERE env_product_interface_id = " + _interface.get("env_product_interface_id") + " AND interface_name = " + "\"" + _interface.get("interface_name") + "\"";
+//                db(TDM).execute(sql,
+//                        _interface.get("db_host"), _interface.get("db_port"),
+//                        _interface.get("db_user"), _interface.get("db_password"),
+//                        _interface.get("db_schema"), _interface.get("db_connection_string"));
+//            }
+//        }
+//    }
 
 
     static void fnUpdateEnvironmentRolesPermissions(Long environment_id, String type, boolean value) {

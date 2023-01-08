@@ -14,20 +14,17 @@ SET default_table_access_method = heap;
 
 
 
-CREATE TABLE public.collection(
+CREATE TABLE IF NOT EXISTS public.collection(
     customer_id bigint,
     collection_id bigint NOT NULL,
     last_update date,
-    collection_status character varying(200)
+    collection_status character varying(200),
+	CONSTRAINT collection_pk PRIMARY KEY (collection_id)
 );
 
 
 --ALTER TABLE public.collection OWNER TO "COLLECTION_USER";
 ALTER TABLE public.collection OWNER TO "COLLECTION_USER";
-
-
-ALTER TABLE ONLY public.collection
-    ADD CONSTRAINT collection_pk PRIMARY KEY (collection_id);
 
 
 

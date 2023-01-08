@@ -86,19 +86,19 @@
           <INDEX>1</INDEX>
           <COLUMN_NAME>FIRST_NAME</COLUMN_NAME>
           <SQL>Select CUSTOMER.FIRST_NAME
-From Customer.CUSTOMER</SQL>
+ From Customer.CUSTOMER</SQL>
         </trnLuParams>
         <trnLuParams diffgr:id="trnLuParams2" msdata:rowOrder="1">
           <INDEX>2</INDEX>
           <COLUMN_NAME>LAST_NAME</COLUMN_NAME>
-          <SQL>Select CUSTOMER.LAST_NAME
+          <SQL>Select CUSTOMER.LAST_NAME 
 From Customer.CUSTOMER</SQL>
         </trnLuParams>
         <trnLuParams diffgr:id="trnLuParams3" msdata:rowOrder="2">
           <INDEX>3</INDEX>
           <COLUMN_NAME>LINE_NUMBER</COLUMN_NAME>
           <SQL>Select CONTRACT.ASSOCIATED_LINE
-From Customer.CONTRACT</SQL>
+ From Customer.CONTRACT</SQL>
         </trnLuParams>
         <trnLuParams diffgr:id="trnLuParams4" msdata:rowOrder="3">
           <INDEX>5</INDEX>
@@ -115,7 +115,7 @@ From Customer.CASES where upper(status) &lt;&gt; 'CLOSED'</SQL>
         <trnLuParams diffgr:id="trnLuParams6" msdata:rowOrder="5">
           <INDEX>7</INDEX>
           <COLUMN_NAME>NO_OF_SUBSCRIBERS</COLUMN_NAME>
-          <SQL>Select count(*) AS NO_OF_CONTRACT
+          <SQL>Select count(*) AS NO_OF_CONTRACT 
 From Customer.CONTRACT</SQL>
         </trnLuParams>
       </DocumentElement>

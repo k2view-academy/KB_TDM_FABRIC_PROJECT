@@ -20,12 +20,13 @@ SET default_table_access_method = heap;
 -- Name: orders; Type: TABLE; Schema: public; Owner: TAR_ORDERING_USER
 --
 
-CREATE TABLE public.orders (
+CREATE TABLE IF NOT EXISTS public.orders (
     contract_id bigint,
     order_id bigint NOT NULL,
     order_type character varying(200),
     order_date date,
-    order_status character varying(200)
+    order_status character varying(200),
+	CONSTRAINT orders_pkey PRIMARY KEY (order_id)
 );
 
 
@@ -35,9 +36,6 @@ ALTER TABLE public.orders OWNER TO "TAR_ORDERING_USER";
 -- TOC entry 2849 (class 2606 OID 16728)
 -- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: TAR_ORDERING_USER
 --
-
-ALTER TABLE ONLY public.orders
-    ADD CONSTRAINT orders_pkey PRIMARY KEY (order_id);
 
 
 -- Completed on 2022-12-08 17:45:08
