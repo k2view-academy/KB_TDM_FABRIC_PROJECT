@@ -431,7 +431,7 @@
             },
             "rightPort": {
                 "actor": "Check And Stop Loop If enough records were added",
-                "name": "recordLoaded"
+                "name": "RECORD_LOADED"
             }
         },
         {
@@ -471,7 +471,7 @@
             },
             "rightPort": {
                 "actor": "Check And Stop Loop If enough records were added",
-                "name": "noOfEntities"
+                "name": "NUM_OF_ENTITIES"
             }
         }
     ]

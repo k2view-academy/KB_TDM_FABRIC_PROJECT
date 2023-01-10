@@ -281,7 +281,7 @@
             },
             "rightPort": {
                 "actor": "Check And Stop Loop If enough records were added",
-                "name": "recordLoaded"
+                "name": "RECORD_LOADED"
             }
         },
         {
@@ -312,6 +312,16 @@
             "rightPort": {
                 "actor": "Check Reserve And Load To Entity List Table",
                 "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "Check And Stop Loop If enough records were added",
+                "name": "NUM_OF_ENTITIES"
             }
         }
     ]

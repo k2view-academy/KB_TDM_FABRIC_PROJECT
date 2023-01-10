@@ -45,7 +45,7 @@ public class Logic extends UserCode {
 
 	private static void fnTableStats() throws Exception {
         String sql = "Select lu_name, table_name, flow_name, Sum(CAST (target_count AS INTEGER)) as target_count" +
-                "  from task_exe_stats_detailed" +
+                "  from " + TDMDB_SCHEMA + ".task_exe_stats_detailed" +
                 " group by lu_name, table_name, flow_name";
 
         Db.Rows rows = db(TDM).fetch(sql);
@@ -64,7 +64,7 @@ public class Logic extends UserCode {
 
     private static void fnBEStats() throws Exception {
         String sql = "select be.be_name, count(1) as execution_count" +
-                " from task_execution_summary s, business_entities be" +
+                " from " + TDMDB_SCHEMA + ".task_execution_summary s, " + TDMDB_SCHEMA + ".business_entities be" +
                 " where s.be_id = be.be_id" +
                 " group by be.be_name";
 
@@ -81,7 +81,7 @@ public class Logic extends UserCode {
 	
 	    private static void fnBEAndStatusStats() throws Exception {
         String sql = "select be.be_name, execution_status, count(1) as execution_count" +
-                " from task_execution_summary s, business_entities be" +
+                " from " + TDMDB_SCHEMA + ".task_execution_summary s, " + TDMDB_SCHEMA + ".business_entities be" +
                 " where s.be_id = be.be_id" +
                 " group by be.be_name, execution_status" +
 				" order by be.be_name, execution_status";
@@ -100,7 +100,7 @@ public class Logic extends UserCode {
 
 
     private static void fnTotalExecutions() throws Exception {
-        String sql = "select count(1) from task_execution_summary";
+        String sql = "select count(1) from " + TDMDB_SCHEMA + ".task_execution_summary";
 
         Object cnt = db(TDM).fetch(sql).firstValue();
         Long RecCount = Long.valueOf("" + cnt).longValue();
@@ -110,7 +110,7 @@ public class Logic extends UserCode {
 
     private static void fnTotalStatusExecutions() throws Exception {
 	    String sql = "select execution_status, count(1) as status_count" +
-                " from task_execution_summary" +
+                " from " + TDMDB_SCHEMA + ".task_execution_summary" +
                 " group by execution_status" +
                 " order by execution_status";
 

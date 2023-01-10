@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 7",
+                    "name": "Check the BUILD_TDMDB",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [

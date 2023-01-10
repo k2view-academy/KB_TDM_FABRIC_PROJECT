@@ -377,7 +377,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "UPDATE TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nerror_msg = ${errorMsg},\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader'\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                        "const": "UPDATE ${@schema}.TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nerror_msg = ${errorMsg},\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = 'TDMReferenceLoader'\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
                                     },
                                     {
                                         "name": "taskExecutionID",
@@ -396,6 +396,11 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -643,6 +648,16 @@
             },
             "rightPort": {
                 "actor": "Load Data To Error Table",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
                 "name": "schema"
             }
         },

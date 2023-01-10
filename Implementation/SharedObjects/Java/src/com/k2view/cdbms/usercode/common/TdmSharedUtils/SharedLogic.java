@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -697,7 +698,7 @@ public class SharedLogic {
     }
     public static Integer fnGetPermissionGroupWeight(String roles) throws SQLException {
         Integer[] weight = {0};
-        String sql = "select permission_group from public.permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
+        String sql = "select permission_group from " + TDMDB_SCHEMA + ".permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
         Util.rte(() -> db(TDM).fetch(sql, roles).forEach(row -> {
             Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
             if (nextWeight != null && nextWeight > weight[0]) {
@@ -940,7 +941,6 @@ public class SharedLogic {
     public static JSONArray createJsonArrayFromTableRecords(String taskExecID, String tableName, ResultSet refTableRS, int colsCount) throws SQLException {
         JSONArray tableRecords = new JSONArray();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        Date date = new Date();
         int processedCounter = 0;
         int updateStatsSize = Integer.parseInt(TDM_REF_UPD_SIZE);
         AtomicInteger counter = new AtomicInteger(0);

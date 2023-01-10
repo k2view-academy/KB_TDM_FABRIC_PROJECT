@@ -1598,7 +1598,8 @@ public class Logic extends WebServiceUserCode {
 					String sqlAll = "SELECT * FROM \"" + schema + "\".environment_role_users u INNER JOIN \"" + schema + "\".environment_roles r " +
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
-					"AND  u.user_id = '-1' AND u.user_type = 'ALL' ";
+					"AND  u.user_id = '-1' AND u.username = 'ALL' ";
+					//"AND  u.user_id = '-1' AND u.user_type = 'ALL' ";
 					
 					//log.info("wsGetRoleForUserInEnv - sqlAll: " + sqlAll);
 					

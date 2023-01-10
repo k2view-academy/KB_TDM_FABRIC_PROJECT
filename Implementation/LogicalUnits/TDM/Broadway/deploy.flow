@@ -58,25 +58,12 @@
                     "name": "Set Environment",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "remark": "Set the environment name from which the flow needs to get the DB_CASSANDRA and the Redis connections for the next flow's stages",
                     "actors": [
                         {
-                            "name": "Set Env",
-                            "remark": "Set the Environment name from which the DB Cassandra details need to be taken to create the k2masking",
+                            "name": "setSourceEnv",
                             "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "SRC",
-                                        "isDefault": false
-                                    }
-                                ],
+                                "parentType": "setSourceEnv_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }

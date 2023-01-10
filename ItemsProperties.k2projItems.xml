@@ -3,79 +3,14 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
-      <NodeName>BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+      <NodeName>setSourceEnv_Actor.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\setSourceEnv_Actor.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@General</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>DBS_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\DBS_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ROLES_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ROLES_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_BILLING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_COLLECTION_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_CRM_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_ORDERING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDM_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TDM_INSERT.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>BILLING_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>COLLECTION_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CRM_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ORDERING_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
+      <NodeName>setSourceEnv.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\setSourceEnv.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM@General</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
       <NodeName>createLoadAllTablesFlow.flow</NodeName>
@@ -110,16 +45,6 @@
     <ProjectItemProp>
       <NodeName>checkMainTableAndSequentialIID.flow</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\checkMainTableAndSequentialIID.flow</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDMFilterOutTargetTables.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
-      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>filterOutTDMTables.actor</NodeName>
-      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -558,6 +483,91 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
+      <NodeName>BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>DBS_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\DBS_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ROLES_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ROLES_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_BILLING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_COLLECTION_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_CRM_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TAR_ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_ORDERING_CREATE.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDM_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TDM_INSERT.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>BILLING_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_INSERT.sql.gz</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>COLLECTION_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_INSERT.sql.gz</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>CRM_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_INSERT.sql.gz</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>ORDERING_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_INSERT.sql.gz</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>TDMFilterOutTargetTables.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>filterOutTDMTables.actor</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\filterOutTDMTables.actor</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
       <NodeName>InitiateTDMReferenceLoad.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\InitiateTDMReferenceLoad.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference</CategoryKey>
@@ -860,8 +870,8 @@
   </ProjectItemPropList>
   <ProjectItemsCategoryList>
     <ProjectItemsCategory>
-      <Name>TDM_Training</Name>
-      <Key>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</Key>
+      <Name>General</Name>
+      <Key>Implementation\SharedObjects\Broadway@TDM@General</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>ScriptsForTemplates</Name>
@@ -896,12 +906,12 @@
       <Key>Implementation\SharedObjects\Broadway@TDM@CustomLogic</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
-      <Name>General</Name>
-      <Key>Implementation\SharedObjects\Broadway@TDM@General</Key>
-    </ProjectItemsCategory>
-    <ProjectItemsCategory>
       <Name>Upgrade</Name>
       <Key>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</Key>
+    </ProjectItemsCategory>
+    <ProjectItemsCategory>
+      <Name>TDM_Training</Name>
+      <Key>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</Key>
     </ProjectItemsCategory>
     <ProjectItemsCategory>
       <Name>TDM</Name>
