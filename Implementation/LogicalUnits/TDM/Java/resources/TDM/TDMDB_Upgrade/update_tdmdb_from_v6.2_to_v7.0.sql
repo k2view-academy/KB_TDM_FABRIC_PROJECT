@@ -1,27 +1,27 @@
-ALTER TABLE public.environments
+ALTER TABLE ${@schema}.environments
 ADD COLUMN IF NOT EXISTS allow_read boolean NOT NULL DEFAULT false;
 
-update environments set allow_read = true where fabric_environment_name is not null;
+update ${@schema}.environments set allow_read = true where fabric_environment_name is not null;
 
-ALTER TABLE public.environment_products
+ALTER TABLE ${@schema}.environment_products
 ADD COLUMN IF NOT EXISTS data_center_name character varying(200);
 
-update public.environment_products e set data_center_name = (select data_center_name from data_centers d where d.data_center_id = e.data_center_id);
+update ${@schema}.environment_products e set data_center_name = (select data_center_name from data_centers d where d.data_center_id = e.data_center_id);
 
-ALTER TABLE public.environment_products
+ALTER TABLE ${@schema}.environment_products
 DROP COLUMN IF EXISTS data_center_id;
 
-ALTER TABLE public.task_execution_list
+ALTER TABLE ${@schema}.task_execution_list
 ADD COLUMN IF NOT EXISTS data_center_name character varying(200);
 
-update public.task_execution_list l set data_center_name = (select data_center_name from data_centers d where d.data_center_id = l.data_center_id);
+update ${@schema}.task_execution_list l set data_center_name = (select data_center_name from data_centers d where d.data_center_id = l.data_center_id);
 
-ALTER TABLE public.task_execution_list
+ALTER TABLE ${@schema}.task_execution_list
 DROP COLUMN IF EXISTS data_center_id;
 
 -- Support Post Execution Process, TDM 7.0.1
-DROP SEQUENCE IF EXISTS public.post_exe_process_id_seq;
-CREATE SEQUENCE public.post_exe_process_id_seq
+DROP SEQUENCE IF EXISTS ${@schema}.post_exe_process_id_seq;
+CREATE SEQUENCE ${@schema}.post_exe_process_id_seq
 	INCREMENT 1
 	START 1
 	MINVALUE 1
@@ -29,7 +29,7 @@ CREATE SEQUENCE public.post_exe_process_id_seq
 	CACHE 1;
 
 -- Support Post Execution Process, TDM 7.0.1
-CREATE TABLE IF NOT EXISTS public.tdm_be_post_exe_process (
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_post_exe_process (
 	process_id bigint NOT NULL DEFAULT nextval('post_exe_process_id_seq'::regclass),
 	process_name character varying(500),
 	process_description character varying(500),
@@ -37,9 +37,9 @@ CREATE TABLE IF NOT EXISTS public.tdm_be_post_exe_process (
 	execution_order integer NOT NULL,
 	CONSTRAINT be_post_exe_process_pkey PRIMARY KEY (process_id)
 );
-CREATE UNIQUE INDEX tdm_be_post_exe_process_ix1 ON public.tdm_be_post_exe_process (process_name, be_id);
+CREATE UNIQUE INDEX tdm_be_post_exe_process_ix1 ON ${@schema}.tdm_be_post_exe_process (process_name, be_id);
 
-CREATE TABLE IF NOT EXISTS public.tasks_post_exe_process (
+CREATE TABLE IF NOT EXISTS ${@schema}.tasks_post_exe_process (
 	task_id bigint NOT NULL,
 	process_id bigint NOT NULL,
 	process_name character varying(500) NOT NULL,
@@ -77,9 +77,9 @@ alter table task_execution_entities ADD COLUMN IF NOT EXISTS total_processing_ti
 alter table task_execution_entities ADD COLUMN IF NOT EXISTS clone_no character varying(50) DEFAULT '0';
 
 
-DROP TABLE public.tdm_lu_type_rel_tar_eid;
+DROP TABLE ${@schema}.tdm_lu_type_rel_tar_eid;
 				  
-CREATE TABLE public.tdm_lu_type_rel_tar_eid
+CREATE TABLE ${@schema}.tdm_lu_type_rel_tar_eid
 (
 	target_env character varying(200) NOT NULL,
 	lu_type_1 character varying(200) NOT NULL,
@@ -90,13 +90,13 @@ CREATE TABLE public.tdm_lu_type_rel_tar_eid
 	CONSTRAINT tdm_lu_type_rel_tar_eid_pk PRIMARY KEY (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid)
 );
 
-CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_2ix ON public.tdm_lu_type_rel_tar_eid (lu_type_1, lu_type1_eid); -- TDM 6.1
-CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_3ix ON public.tdm_lu_type_rel_tar_eid (lu_type_2, lu_type2_eid); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_2ix ON ${@schema}.tdm_lu_type_rel_tar_eid (lu_type_1, lu_type1_eid); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_3ix ON ${@schema}.tdm_lu_type_rel_tar_eid (lu_type_2, lu_type2_eid); -- TDM 6.1
 
 
-DROP TABLE public.task_exe_error_detailed;
+DROP TABLE ${@schema}.task_exe_error_detailed;
 
-CREATE TABLE IF NOT EXISTS public.task_exe_error_detailed
+CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_detailed
 (
 	task_execution_id bigint NOT NULL,
 	lu_name character varying(200) NOT NULL,
@@ -115,11 +115,11 @@ CREATE TABLE IF NOT EXISTS public.task_exe_error_detailed
 
 -- Index: task_exe_error_detailed_1ix
 
--- DROP INDEX public.task_exe_error_detailed_1ix;
+-- DROP INDEX ${@schema}.task_exe_error_detailed_1ix;
 
-CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON public.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);
+CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON ${@schema}.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);
 
-CREATE TABLE IF NOT EXISTS public.task_exe_stats_detailed
+CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
 (
     task_execution_id bigint NOT NULL,
     lu_name character varying(200)  NOT NULL,
@@ -135,42 +135,4 @@ CREATE TABLE IF NOT EXISTS public.task_exe_stats_detailed
     diff character varying(20),
     results character varying(20)
 );
-
-
-CREATE OR REPLACE FUNCTION param_values(
-parentlu text,
-entity_id text,
-table_name text,
-env text,
-cols text,
-child_arr text,
-select_col text
-)
-RETURNS TABLE(path json) AS
-$$
-BEGIN
-RETURN QUERY EXECUTE
-	CASE WHEN EXISTS(SELECT 1 FROM tdm_lu_type_relation_eid) THEN '
-		SELECT row_to_json(allparams) as p from(
-		SELECT ' || cols ||' FROM public.' || lower(table_name) || ' WHERE entity_id in (
-		SELECT rel_base.'|| select_col || ' FROM ' || lower(parentlu) || '_params
-		LEFT JOIN ( SELECT * FROM tdm_lu_type_relation_eid
-		WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-		AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-		AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-		AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-		ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-		WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-		AND lu_type1_eid='''|| entity_id || ''')) allparams'
-	ELSE '
-		SELECT row_to_json(allparams) as p from(
-		SELECT ' || cols ||' FROM public.' || lower(table_name) || ' WHERE entity_id in (
-		SELECT entity_id FROM ' || lower(parentlu) || '_params
-		WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-		AND entity_id='''|| entity_id || ''')) allparams'
-	END;
-END;
-$$ LANGUAGE plpgsql;
-    
-\q
 

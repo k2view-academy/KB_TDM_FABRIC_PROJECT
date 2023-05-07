@@ -1,0 +1,422 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "This flow will create a new IID for the synthetic instance.\n1.Get Data from GenerateIIDGenerator Actor based on Input LU name.\n2.Loop from 1 to Number of IIDs\n  a. If the Generator actor is populated, then call it\n  b.Else,\n    i.Call UUID function to create a unique ID\n    ii.Add entry for each number to Cassandra table \n       <LU_NAME>_entity_list where:\n    iii.task_execution_id, lu_name and source_env_name fields \n    are set to the input values\n    iv.source_iid is set to the generated unique ID\n    v.tdm_eid is set to <Synthetic Environment \n    Name>_<Sequence value>\n  c.Return of entity list table.\n\n",
+                    "actors": [
+                        {
+                            "name": "Task Execution ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get SYNTHETIC_ENVIRONMENT",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SYNTHETIC_ENVIRONMENT",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Synthetic Environment Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Synthetic"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDM Keyspace",
+                            "actorType": {
+                                "parentType": "LuKeyspace",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": "TDM"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Name of Entity List Table",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${lu_name}_entity_list"
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "remark": "The Name of Logical Unit."
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Generate IIDS",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ReturnGeneratedIIDs",
+                            "actorType": {
+                                "parentType": "ReturnGeneratedIIDs",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build TDM_EID",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDM_EID",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "_"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data To Entity_List Table",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "DbLoad",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "task_execution_id",
+                                            "lu_name",
+                                            "tdm_eid",
+                                            "source_env_name ",
+                                            "source_iid"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "task_execution_id"
+                                        ]
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "Synthetic",
+                                        "name": "source_env_name ",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "source_iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tdm_eid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Task Execution ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SYNTHETIC_ENVIRONMENT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TDM_EID",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "TDM Keyspace",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "DbLoad",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set Name of Entity List Table",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbLoad",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "TDM_EID",
+                "name": "elements"
+            },
+            "iterate": "Iterate",
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "DbLoad",
+                "name": "source_iid"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "TDM_EID",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbLoad",
+                "name": "tdm_eid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Task Execution ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "Set Name of Entity List Table",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "num_iids"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "num_iids"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "DbLoad",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "DbLoad",
+                "name": "lu_name"
+            }
+        }
+    ]
+}

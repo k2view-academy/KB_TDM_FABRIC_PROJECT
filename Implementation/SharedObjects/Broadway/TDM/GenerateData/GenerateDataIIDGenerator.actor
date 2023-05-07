@@ -1,0 +1,42 @@
+{
+    "type": "GenerateIIDGenerator",
+    "badge": "gd",
+    "tags": [
+        "gd"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "const": [
+                {
+                    "Lu_name": "CRM",
+                    "Generator_actor": ""
+                },
+                {
+                    "Lu_name": "Billing",
+                    "Generator_actor": ""
+                },
+                {
+                    "Lu_name": "Asset",
+                    "Generator_actor": ""
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "Lu_name": {
+                            "type": "string"
+                        },
+                        "Generator_actor": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>tdm_generate_task_field_mappings</Name>
+  <ID>tbl_tdm_generate_task_field_mappings</ID>
+  <Columns>
+    <Column name="task_id" id="task_id" index="0" datatype="Integer" mandatory="true" />
+    <Column name="param_name" id="param_name" index="1" datatype="Text" mandatory="true" />
+    <Column name="param_type" id="param_type" index="2" datatype="Text" mandatory="true" />
+    <Column name="param_value" id="param_value" index="3" datatype="Text" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="task_id,param_name" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
+  <TriggersList />
+</TableObject>

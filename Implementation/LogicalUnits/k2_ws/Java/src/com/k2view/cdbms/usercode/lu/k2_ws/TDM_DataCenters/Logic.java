@@ -14,7 +14,7 @@ import com.k2view.fabric.api.endpoint.Endpoint.webService;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.getFabricResponse;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends WebServiceUserCode {
 
 	@desc("Gets the list of the Data Centers defined in the Fabric cluster.")

@@ -1,7 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>TASK_EXECUTION_LINK_ENTITIES</Name>
   <ID>tbl_TASK_EXECUTION_LINK_ENTITIES</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="LU_NAME" id="tblCol_96d37bfc6cf44834b400791ed4a05534" index="0" datatype="text" />
     <Column name="PARENT_LU_NAME" id="tblCol_8d95a0a3bb604a07a0e2f986e35fe70c" index="1" datatype="text" />
@@ -32,7 +34,8 @@
     </Enrichment>
   </EnrichmentList>
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
-  <TriggersList />
+  <TriggersList>
+  </TriggersList>
 </TableObject>

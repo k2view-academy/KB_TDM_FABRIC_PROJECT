@@ -32,9 +32,11 @@
 <body ng-app="TDM-FE">
 
 <div ng-controller="MainCtrl as main" ng-if="allowed">
+    <!-- {{main.stateRef.current.name}} -->
     <div ng-include="'views/common/breadcrumbs.html'">
     </div>
-    <div ng-include="'views/common/footer.html'"></div>
+    <div ng-show="
+    main.BreadCrumbs[main.BreadCrumbs.length -1].name !== 'TASK_BREADCRUMB'" ng-include="'views/common/footer.html'"></div>
 
 </div>
 
@@ -137,6 +139,9 @@
 <script src="js/components/task/tabs/taskVariables/taskVariables.js"></script>
 <script src="js/components/task/tabs/taskScheduling/taskScheduling.js"></script>
 <script src="js/components/task/taskVariableModal/taskVariableModal.js"></script>
+<script src="js/components/fabricWidget/fabricWidget.js"></script>
+<script src="js/components/task//taskActions/taskActions.js"></script>
+<script src="js/components/task/dataGenerationOption/dataGenerationOption.js"></script>
 
 <!-- controlers-->
 <script src="js/controllers/mainCtrl.js"></script>

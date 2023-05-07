@@ -7,29 +7,11 @@ package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
-
 import java.util.*;
-
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
-import java.sql.*;
-import java.math.*;
-import java.io.*;
 import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.sync.*;
-import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
-import com.k2view.fabric.common.Util;
-
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 	
 	public static final String TDM = "TDM";
@@ -281,7 +263,7 @@ public class Logic extends WebServiceUserCode {
 	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
 	public static Object wsGetPermissionGroupByUser(String user) throws Exception {
 		String fabricRoles = String.join(",", (List<String>)((Map<String,Object>)wsGetFabricRolesByUser(user)).get("result"));
-		Integer weight =fnGetPermissionGroupWeight(fabricRoles) ;
+		Integer weight = fnGetPermissionGroupWeight(fabricRoles) ;
 		if (weight == 0) {
 			return wrapWebServiceResults("FAILED", "Can't find permission group for the user " + sessionUser().name() + ".", null);
 		} else {
@@ -292,22 +274,10 @@ public class Logic extends WebServiceUserCode {
 					break;
 				}
 			}
-		
+
 			return wrapWebServiceResults("SUCCESS", null, permissionGroup);
 		}
 	}
-
-public static Integer fnGetPermissionGroupWeight(String roles) throws SQLException {
-        Integer[] weight = {0};
-        String sql = "select permission_group from public.permission_groups_mapping where fabric_role = ANY (string_to_array(?, ','))";
-        Util.rte(() -> db(TDM).fetch(sql, roles).forEach(row -> {
-            Integer nextWeight = PERMISSION_GROUPS.get(row.get("permission_group"));
-            if (nextWeight != null && nextWeight > weight[0]) {
-                weight[0] = nextWeight;
-            }
-        }));
-        return weight[0];
-    }
 
 	@desc("Gets all users by TDM permission group.")
 	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})

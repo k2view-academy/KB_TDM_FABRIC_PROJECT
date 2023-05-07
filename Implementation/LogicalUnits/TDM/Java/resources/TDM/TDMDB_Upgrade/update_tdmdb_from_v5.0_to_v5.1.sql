@@ -1,35 +1,35 @@
 
-DROP SEQUENCE IF EXISTS public.tasks_ref_table_id_seq;
+DROP SEQUENCE IF EXISTS ${@schema}.tasks_ref_table_id_seq;
 
-CREATE SEQUENCE public.tasks_ref_table_id_seq
+CREATE SEQUENCE ${@schema}.tasks_ref_table_id_seq
     INCREMENT 1
     START 1
     MINVALUE 1
     MAXVALUE 9223372036854775807
     CACHE 1;
 
-ALTER TABLE public.tasks 
+ALTER TABLE ${@schema}.tasks 
 ADD COLUMN IF NOT EXISTS selected_ref_version_task_name character varying(200);
 
-ALTER TABLE public.tasks 
+ALTER TABLE ${@schema}.tasks 
 ADD COLUMN IF NOT EXISTS selected_ref_version_datetime character varying(20);
 
-ALTER TABLE public.tasks 
+ALTER TABLE ${@schema}.tasks 
 ADD COLUMN IF NOT EXISTS selected_ref_version_task_exe_id bigint;
 
-ALTER TABLE public.tasks 
+ALTER TABLE ${@schema}.tasks 
 ADD COLUMN IF NOT EXISTS task_globals boolean;
 
-ALTER TABLE public.environment_product_interfaces
+ALTER TABLE ${@schema}.environment_product_interfaces
 ALTER COLUMN db_password TYPE varchar(200);
 
-ALTER TABLE public.PRODUCT_LOGICAL_UNITS 
+ALTER TABLE ${@schema}.PRODUCT_LOGICAL_UNITS 
 ADD COLUMN IF NOT EXISTS lu_dc_name character varying(200);
 
-ALTER TABLE public.task_execution_list 
+ALTER TABLE ${@schema}.task_execution_list 
 ADD COLUMN IF NOT EXISTS updated_by character varying(100);
 
-CREATE TABLE IF NOT EXISTS public.task_ref_tables
+CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
 (
   task_ref_table_id bigint NOT NULL DEFAULT nextval('tasks_ref_table_id_seq'::regclass),
   task_id bigint NOT NULL, 
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS public.task_ref_tables
 CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
 );
 
-CREATE TABLE IF NOT EXISTS public.task_ref_exe_stats
+CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
 (
   task_id bigint NOT NULL,
   task_execution_id bigint NOT NULL,
@@ -58,42 +58,42 @@ CREATE TABLE IF NOT EXISTS public.task_ref_exe_stats
   updated_by character varying(100)   
   );
 
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX1 on public.task_ref_exe_stats(task_execution_id);
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX2 on public.task_ref_exe_stats(task_execution_id, execution_status);
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX3 on public.task_ref_exe_stats(task_execution_id, task_ref_table_id, execution_status);
+Create INDEX IF NOT EXISTS task_ref_exe_stats_IX1 on ${@schema}.task_ref_exe_stats(task_execution_id);
+Create INDEX IF NOT EXISTS task_ref_exe_stats_IX2 on ${@schema}.task_ref_exe_stats(task_execution_id, execution_status);
+Create INDEX IF NOT EXISTS task_ref_exe_stats_IX3 on ${@schema}.task_ref_exe_stats(task_execution_id, task_ref_table_id, execution_status);
 
--- Table: public.tdm_general_parameters
+-- Table: ${@schema}.tdm_general_parameters
 
--- DROP TABLE IF EXISTS public.tdm_general_parameters
+-- DROP TABLE IF EXISTS ${@schema}.tdm_general_parameters
 
-CREATE TABLE IF NOT EXISTS public.tdm_general_parameters
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_general_parameters
 (
   param_name character varying(200) NOT NULL,
   param_value character varying(200),
   CONSTRAINT tdm_general_parameters_pk PRIMARY KEY (param_name)
 );
 
-INSERT INTO public.tdm_general_parameters(
+INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
     VALUES ('cleanup_active_ind', 'true');
 
-INSERT INTO public.tdm_general_parameters(
+INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
     VALUES ('cleanup_retention_period', '2');
     
---INSERT INTO public.tdm_general_parameters(
+--INSERT INTO ${@schema}.tdm_general_parameters(
 --            param_name, param_value)
 --    VALUES ('iid_close_separator', '>>>');
 
---INSERT INTO public.tdm_general_parameters(
+--INSERT INTO ${@schema}.tdm_general_parameters(
 --            param_name, param_value)
 --    VALUES ('iid_open_separator', '<<<');
 
-CREATE TABLE IF NOT EXISTS public.task_globals
+CREATE TABLE IF NOT EXISTS ${@schema}.task_globals
 (
   task_id bigint NOT NULL,
   global_name character varying(200),
   global_value character varying(200)
 );
 
-Create INDEX IF NOT EXISTS task_globals_ix on public.task_globals(task_id);
+Create INDEX IF NOT EXISTS task_globals_ix on ${@schema}.task_globals(task_id);

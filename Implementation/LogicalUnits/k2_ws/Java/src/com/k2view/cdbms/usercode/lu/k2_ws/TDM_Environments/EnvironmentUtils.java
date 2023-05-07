@@ -19,7 +19,7 @@ import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class EnvironmentUtils {
     static final Log log = Log.a(UserCode.class);
 	public static final String TDM = "TDM";

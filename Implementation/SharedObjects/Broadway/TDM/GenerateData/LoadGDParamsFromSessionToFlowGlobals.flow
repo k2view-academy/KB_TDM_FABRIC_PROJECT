@@ -1,0 +1,82 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Json Of Task Generate Params",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Task Params From Session",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "GENERATE_DATA_PARAMS",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Params to flowGlobals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Params to flowGlobals",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "const res = JSON.parse(GDParams);\r\n\r\nfor (const key in res){\r\n    flowGlobals[key] = res[key];\r\n}",
+                                            "script": "var res = JSON.parse(GDParams);\n\nfor (var key in res) {\n  flowGlobals[key] = res[key];\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "GDParams",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Task Params From Session",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Add Params to flowGlobals",
+                "name": "GDParams"
+            }
+        }
+    ]
+}

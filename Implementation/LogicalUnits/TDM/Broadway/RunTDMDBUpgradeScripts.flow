@@ -362,6 +362,19 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "TDMDB_SCHEMA",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -372,7 +385,7 @@
                 {
                     "name": "Stage 7",
                     "dependsOnList": [],
-                    "isLast": 0,
+                    "isLast": 1,
                     "actors": [
                         {
                             "name": "Apply Upgrade script",
@@ -386,6 +399,13 @@
                                     {
                                         "name": "sql",
                                         "const": null
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -541,6 +561,16 @@
             "rightPort": {
                 "actor": "Apply Upgrade script",
                 "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Apply Upgrade script",
+                "name": "schema"
             }
         },
         {

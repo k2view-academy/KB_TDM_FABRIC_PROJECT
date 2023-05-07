@@ -1,0 +1,191 @@
+{
+    "tags": [
+        "Generate Data"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {{#if TABLE_SEQ_DATA}}
+                        {
+                            "name": "Transformation Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": false,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+						{{#each TABLE_SEQ_DATA~}}
+                        {
+                            "name": "{{getFabricFieldName this}}",
+                            "actorType": {
+                                "parentType": "{{getSequenceActorName this}}",
+                                "inputs": [
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getTableName this}}"
+                                    },
+                                    {
+                                        "name": "columName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{{getFabricFieldName this}}"
+                                    }
+                                ],
+                                "outputs": []
+							}
+                        {{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+
+						{{/if}}
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {{#if TABLE_FIELDS}}
+                        {
+                            "name": "Transformation Error Handler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": false,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+						{{#each TABLE_FIELDS~}}
+                        {
+                            "name": "{{getLUFieldName this}}",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "{{getDMActorName this}}"
+                                    },
+                                    {
+                                        "name": "maxLength",
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "minLength",
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        {{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+
+						{{/if}}
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {{#if TABLE_SEQ_DATA}}
+        {{#each TABLE_SEQ_DATA~}}
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "{{getFabricFieldName this}}",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "{{getFabricFieldName this}}"
+            }
+        {{#if @last}} } {{else}} }, {{/if}}
+		{{/each}}
+        {{/if}}
+
+        {{#if TABLE_FIELDS}}
+         ,
+		{{#each TABLE_FIELDS~}}
+        {
+            "leftPort": {
+                "actor": "{{getLUFieldName this}}",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "{{getLUFieldName this}}"
+            }
+        {{#if @last}} } {{else}} }, {{/if}}
+		{{/each}}
+        {{/if}}
+
+    ]
+}

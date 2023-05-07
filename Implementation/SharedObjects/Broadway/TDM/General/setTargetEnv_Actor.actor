@@ -1,0 +1,26 @@
+{
+    "type": "setTargetEnv_Actor",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "setTargetEnv",
+            "mandatory": true
+        }
+    ],
+    "outputs": [
+        {
+            "name": "affected",
+            "schema": {
+                "type": "integer"
+            }
+        }
+    ],
+    "tags": [
+        "TDM"
+    ]
+}

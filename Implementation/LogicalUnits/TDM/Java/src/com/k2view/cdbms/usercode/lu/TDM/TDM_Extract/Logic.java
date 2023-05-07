@@ -34,16 +34,16 @@ import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIdSeparatorsFromTDM;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends UserCode {
 		public static final String TDM = "TDM";
 	
-		@out(name = "result", type = Map.class, desc = "")
+	@out(name = "result", type = Map.class, desc = "")
 	public static Map<String,String> fnMExtractEntities(String luName, String dcName, String sourceEnvName, String taskName, String versionInd, String entitiesList, String retentionPeriodType, Float retentionPeriodValue, String taskExecutionId, String parentLuName, String versionDateTime, String syncMode, String selectionMethod, Long luId) throws Exception {
 		if (!"ON".equalsIgnoreCase(syncMode)) {
 			fabric().execute("SET SYNC " + syncMode);
 		}
-	
+			
 		String batchCommand = "";
 		String entityList = "";
 		String migrationInfo = "";
@@ -73,7 +73,7 @@ public class Logic extends UserCode {
 		// Check if retention parameters are populated instead of checking the versioning parameter
 		
 		//Calculate retention date + set TTL
-		if (retentionPeriodType != null && !retentionPeriodType.isEmpty() && retentionPeriodValue != null && retentionPeriodValue > 0) {
+		if (retentionPeriodType != null && !retentionPeriodType.isEmpty() && retentionPeriodValue != null && retentionPeriodValue >= 0) {
 			// Tali- set the datetime only when versionInd is true (backup tasks)
 			// TDM 6.0, in case of versionInd = true, the version_datetime will be received as input
 			Integer retention_in_seconds = getRetention(retentionPeriodType, retentionPeriodValue);
@@ -89,16 +89,16 @@ public class Logic extends UserCode {
 				unixTime_plus_retention = (unixTime / 1000L + retention_in_seconds) * 1000;
 				version_exp_date = new SimpleDateFormat("yyyyMMddHHmmss").format(unixTime_plus_retention);
 			}
-		
 			//Set TTL
-			ludb().execute("SET INSTANCE_TTL = " + retention_in_seconds);
-		
+            if(-1 != retention_in_seconds) {
+				ludb().execute("SET INSTANCE_TTL = " + retention_in_seconds);
+			}
 		}
 		// end of if input retention parmeters are populated
 		// TDM 7.3 - Set version globals in case of VERSION_IND is true
 		if (versionInd.equals("true")) {
 			versionName = taskName;
-			versionDateTime = timeStamp;
+			//versionDateTime = timeStamp;
 			
 			fabric().execute("set TDM_VERSION_NAME = '" + versionName + "'");
 			fabric().execute("set TDM_VERSION_DATETIME = " + versionDateTime);
@@ -156,8 +156,9 @@ public class Logic extends UserCode {
 					//log.info("fnMExtractEntities - taskName: " + taskName + ", timeStamp: " + timeStamp);
 					entityIdSelectChildID += "||''" + separator + taskName + separator + "''||''" + timeStamp + "''";
 				}
-		
-				
+
+				entityIdSelectChildID += "||'#params#{\"root_entity_id\" : '|| t.root_entity_id ||'}'";
+				//log.info("entityIdSelectChildID: " + entityIdSelectChildID);
 				String selSql = "";
 		
 				if (versionInd.equals("true")) {

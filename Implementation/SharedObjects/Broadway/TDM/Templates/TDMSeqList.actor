@@ -1,0 +1,102 @@
+{
+    "type": "TDMSeqList",
+    "badge": "TD",
+    "tags": [
+        "basic"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "const": [
+                {
+                    "SEQUENCE_NAME": "customer_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "CustomerIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "contract_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "ContractIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "address_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "AddressIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "activity_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "ActivityIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "case_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "CaseIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "note_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "NoteIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "balance_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "BalanceIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "invoice_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "InvoiceIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "payment_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "PaymentIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "transaction_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "TransacrionIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "asset_location_id_seq",
+                    "CACHE_DB_NAME": "DB_CASSANDRA",
+                    "SEQUENCE_REDIS_OR_DB": "IN-MEMORY",
+                    "INITIATE_VALUE_OR_FLOW": "AssetLocationIdInit"
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "SEQUENCE_NAME": {
+                            "type": "string"
+                        },
+                        "CACHE_DB_NAME": {
+                            "type": "string"
+                        },
+                        "SEQUENCE_REDIS_OR_DB": {
+                            "type": "string"
+                        },
+                        "INITIATE_VALUE_OR_FLOW": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

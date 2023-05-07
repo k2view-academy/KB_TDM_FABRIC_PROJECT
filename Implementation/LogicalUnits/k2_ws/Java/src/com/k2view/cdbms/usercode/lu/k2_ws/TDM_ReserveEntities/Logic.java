@@ -27,13 +27,13 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnIsOwner;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.fnInsertActivity;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.fnValidateReservedEntities;
+import static com.k2view.cdbms.usercode.common.TaskExecutionUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 
 	public static final String TDM = "TDM";
@@ -202,7 +202,7 @@ public class Logic extends WebServiceUserCode {
 		String sqlFromWhere = "FROM " + TDMDB_SCHEMA + ".TDM_RESERVED_ENTITIES re, " + TDMDB_SCHEMA + ".TASKS t, " + 
 					TDMDB_SCHEMA + ".ENVIRONMENTS e, " + TDMDB_SCHEMA + ".BUSINESS_ENTITIES be " +
 					"WHERE re.task_id = t.task_id AND t.environment_id = e.environment_id AND e.environment_status = 'Active' " +
-					"AND t.be_id = be.be_id and (re.end_datetime is null or re.end_datetime >= timezone('UTC', now())) ";
+					"AND re.be_id = be.be_id and (re.end_datetime is null or re.end_datetime >= timezone('UTC', now())) ";
 		
 		if(entityId != null && !"".equals(entityId)) {
 			sqlFromWhere += " and entity_id = '" + entityId + "' ";
@@ -212,7 +212,7 @@ public class Logic extends WebServiceUserCode {
 		
 		if (!"admin".equalsIgnoreCase(permissionGroup)) {
 		
-			List<Map<String, Object>> allEnvsList = fnGetUserEnvs();
+			List<Map<String, Object>> allEnvsList = fnGetUserEnvs("");
 			List<Map<String, Object>> allTargetEnvs;
 			//log.info("------- allEnvsList Size: " + allEnvsList.size());
 			if("owner".equalsIgnoreCase(permissionGroup)) {
@@ -251,7 +251,7 @@ public class Logic extends WebServiceUserCode {
 					} else {
 						for (Map<String, Object> env : allTargetEnvs) {
 							//log.info("wsGetReservedEntities - assignment_type: " + env.get("assignment_type"));
-							if ("user".equals(env.get("assignment_type").toString())) {
+							if ("user".equals(env.get("assignment_type").toString()) || "all".equals(env.get("assignment_type").toString())) {
 								testerEnvs.add(env.get("environment_id").toString());
 							}
 						}
@@ -754,7 +754,7 @@ public class Logic extends WebServiceUserCode {
 		if (!"admin".equalsIgnoreCase(permissionGroup)) {
 			float maxReserveDays = Float.parseFloat("" + db(TDM).fetch("SELECT param_value from tdm_general_parameters " + 
 												"where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'").firstValue());
-			if (retentionUnit != null && !"".equals(retentionUnit) && retentionValue != null && !"".equals(retentionValue)) {
+			if (retentionUnit != null && !"".equals(retentionUnit) && retentionValue != null && retentionValue != 0) {
 				checkRetentionInfo = true;
 				maxRetentionInSeconds = getRetention("Days", maxReserveDays);
 				givenRetentionInSeconds = getRetention(retentionUnit, (float)retentionValue);
@@ -998,7 +998,7 @@ public class Logic extends WebServiceUserCode {
 			"where env_id = ? and be_id = ? and reserve_owner = ? and end_datetime > CURRENT_TIMESTAMP";
 		
 		List<Map<String,Object>> targetRolesList = new ArrayList<>();
-		List<Map<String,Object>> rolesList = fnGetUserEnvs();
+		List<Map<String,Object>> rolesList = fnGetUserEnvs("");
 		//log.info("------- Size: " + rolesList.size());
 		for (Map<String, Object> envType : rolesList) {
 			if (envType.get("target environments") != null) {

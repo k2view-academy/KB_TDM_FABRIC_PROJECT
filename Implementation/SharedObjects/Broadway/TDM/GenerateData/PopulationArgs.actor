@@ -1,0 +1,30 @@
+{
+    "type": "PopulationArgs",
+    "actorClass": "com.k2view.cdbms.usercode.common.TDMPopulationArgs",
+    "badge": "Po",
+    "doc": "This actor starts fabric and TDM population",
+    "addInput": true,
+    "tags": [
+        "TDM"
+    ],
+    "inputs": [],
+    "outputs": [
+        {
+            "name": "iid",
+            "schema": {
+                "type": "string"
+            },
+            "doc": "The instance id of the execution"
+        },
+        {
+            "name": "parent_rows",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            },
+            "doc": "Iterator of the parents row"
+        }
+    ]
+}

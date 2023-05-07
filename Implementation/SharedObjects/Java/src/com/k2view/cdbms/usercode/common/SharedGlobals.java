@@ -41,11 +41,11 @@ public class SharedGlobals {
 	public static String TDM_TASK_EXE_ID = "0";
 
 	@category("TDM")
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRC";
+	public static String TDM_SOURCE_ENVIRONMENT_NAME = "";
 	@category("TDM")
-	public static String TDM_TAR_ENV_NAME = "TAR";
+	public static String TDM_TAR_ENV_NAME = "";
 	@category("TDM")
-	public static String TDM_SYNTHETIC_DATA = "false";
+	public static String TDM_CLONING_DATA = "false";
 	@category("TDM")
 	public static String TDM_TASK_ID = "0";
 	@category("TDM")
@@ -113,13 +113,15 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String LOAD_MASKING_FLAG = "false";
 
-
+	@category("TDM")
+	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")
 	public static final String BUILD_TDMDB = "false";
-
 	@category("TDM_DEMO")
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	@category("TDM_DEMO")
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 	public static String TALI_TEST = "1";
+
+
 }

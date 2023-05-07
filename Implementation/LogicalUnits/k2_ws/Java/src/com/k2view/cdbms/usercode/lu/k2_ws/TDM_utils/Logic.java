@@ -19,7 +19,6 @@ import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.directory.*;
 import java.util.*;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -39,8 +38,12 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+
+
+@SuppressWarnings({"DefaultAnnotationParam", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 	
 	public static final String TDM = "TDM";
@@ -93,9 +96,24 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"maxRetentionPeriod\": 90,\r\n" +
-			"    \"defaultPeriod\": {\r\n" +
+			"    \"retentionDefaultPeriod\": {\r\n" +
+			"      \"unit\": \"Do Not Delete\",\r\n" +
+			"      \"value\": 0\r\n" +
+			"    },\r\n" +
+			"    \"maxReservationPeriod\": 90,\r\n" +
+			"    \"reservationDefaultPeriod\": {\r\n" +
 			"      \"unit\": \"Days\",\r\n" +
 			"      \"value\": 5\r\n" +
+			"    },\r\n" +
+			"    \"versioningRetentionPeriod\": {\r\n" +
+			"      \"unit\": \"Days\",\r\n" +
+			"      \"value\": 5,\r\n" +
+			"      \"allow_doNotDelete\": true\r\n" +
+			"    },\r\n" +
+			"    \"versioningRetentionPeriodForTesters\": {\r\n" +
+			"      \"unit\": \"Days\",\r\n" +
+			"      \"value\": 5,\r\n" +
+			"      \"allow_doNotDelete\": false\r\n" +
 			"    },\r\n" +
 			"    \"permissionGroups\": [\r\n" +
 			"      \"admin\",\r\n" +
@@ -122,8 +140,17 @@ public class Logic extends WebServiceUserCode {
 			"      {\r\n" +
 			"        \"name\": \"Years\",\r\n" +
 			"        \"units\": 365\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Do Not Delete\",\r\n" +
+			"        \"units\": -1\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Do Not Retain\",\r\n" +
+			"        \"units\": 0\r\n" +
 			"      }\r\n" +
-			"    ]\r\n" +
+			"    ],\r\n" +
+			"    \"enable_reserve_by_params\": false\r\n" +
 			"  },\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": \"\"\r\n" +
@@ -141,7 +168,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Get the version of the TDM")
-	@webService(path = "tdmVersion", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "tdmVersion", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.XML, example = "<HashMap>\r\n" +
 			"  <result>7.3.0</result>\r\n" +
 			"  <errorCode>SUCCESS</errorCode>\r\n" +
@@ -164,15 +191,23 @@ public class Logic extends WebServiceUserCode {
 	@webService(path = "retentionperiodinfo", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
-			"    \"maxRetentionPeriodForReserve\": {\r\n" +
-			"      \"units\": \"Days\",\r\n" +
-			"      \"value\": \"10\"\r\n" +
-			"    },\r\n" +
-			"    \"defaultPeriod\": {\r\n" +
+			"    \"reservationDefaultPeriod\": {\r\n" +
 			"      \"unit\": \"Days\",\r\n" +
 			"      \"value\": 5\r\n" +
 			"    },\r\n" +
-			"    \"retentionPeriodTypes\": [\r\n" +
+			"    \"retentionDefaultPeriod\": {\r\n" +
+			"      \"unit\": \"Do Not Delete\",\r\n" +
+			"      \"value\": 0\r\n" +
+			"    },\r\n" +
+			"    \"maxRetentionPeriodForTesters\": {\r\n" +
+			"      \"units\": \"Days\",\r\n" +
+			"      \"value\": \"10\"\r\n" +
+			"    },\r\n" +
+			"    \"maxRetentionPeriod\": {\r\n" +
+			"      \"units\": \"Days\",\r\n" +
+			"      \"value\": 90\r\n" +
+			"    },\r\n" +
+			"    \"periodTypes\": [\r\n" +
 			"      {\r\n" +
 			"        \"name\": \"Minutes\",\r\n" +
 			"        \"units\": 0.00069444444\r\n" +
@@ -192,9 +227,27 @@ public class Logic extends WebServiceUserCode {
 			"      {\r\n" +
 			"        \"name\": \"Years\",\r\n" +
 			"        \"units\": 365\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Do Not Delete\",\r\n" +
+			"        \"units\": 0\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"        \"name\": \"Do Not Retain\",\r\n" +
+			"        \"units\": -1\r\n" +
 			"      }\r\n" +
 			"    ],\r\n" +
-			"    \"maxRetentionPeriodForExtract\": {\r\n" +
+			"    \"versioningRetentionPeriodForTesters\": {\r\n" +
+			"      \"unit\": \"Days\",\r\n" +
+			"      \"value\": 5,\r\n" +
+			"      \"allow_doNotDelete\": \"False\"\r\n" +
+			"    },\r\n" +
+			"    \"versioningRetentionPeriod\": {\r\n" +
+			"      \"unit\": \"Days\",\r\n" +
+			"      \"value\": 5,\r\n" +
+			"      \"allow_doNotDelete\": \"True\"\r\n" +
+			"    },\r\n" +
+			"    \"maxReservationPeriod\": {\r\n" +
 			"      \"units\": \"Days\",\r\n" +
 			"      \"value\": 90\r\n" +
 			"    }\r\n" +
@@ -203,52 +256,21 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": \"\"\r\n" +
 			"}")
 	public static Object wsGetRetentionPeriodInfo() throws Exception {
-		try {
-			String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
-			
-			Object params = db(TDM).fetch(sql).firstRow().get("param_value");
-			Map result = Json.get().fromJson((String) params, Map.class);
-			
-			Map<String, Object> retentionMap = new HashMap<>();
-			
-			Object maxRetentionPeriod = result.get("maxRetentionPeriod");
-			if (maxRetentionPeriod != null) {
-				Map <String, Object> map = new HashMap<>();
-				map.put("units", "Days");
-				map.put("value", maxRetentionPeriod);
-				
-				retentionMap.put("maxRetentionPeriodForExtract", map);
-			}
-			
-			Object defaultPeriod = result.get("defaultPeriod");
-			if (defaultPeriod != null) {
-						
-				retentionMap.put("defaultPeriod", defaultPeriod);
-			}
-			
-			Object retentionPeriodTypes = result.get("availableOptions");
-			if(retentionPeriodTypes != null) {
-				retentionMap.put("retentionPeriodTypes", retentionPeriodTypes);
-			}
-			
-			sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
-			String maxReserveDays = "" + db(TDM).fetch(sql).firstValue();
-			if (maxReserveDays != null) {
-				Map<String, Object> map = new HashMap<>();
-		
-				map.put("units", "Days");
-				map.put("value", maxReserveDays);
-				
-				retentionMap.put("maxRetentionPeriodForReserve", map);
-			}
-			return wrapWebServiceResults("SUCCESS", "", retentionMap);
+		Map<String, Object> map;
+				try{
+		map = fnGetRetentionPeriod();
+		return wrapWebServiceResults("SUCCESS", "", map);
 		} catch (Throwable t) {
-			return wrapWebServiceResults("FAILED", t.getMessage(), null);
-		}
+		return wrapWebServiceResults("FAILED", t.getMessage(), null);
+				}  
 	}
 
-
 	@webService(path = "getDateTimeFormat", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"TimeFormat\": \"HH:mm:ss\",\r\n" +
+			"  \"DateFormat\": \"yyyy-MM-dd\",\r\n" +
+			"  \"DateTimeFormat\": \"yyyy-MM-dd HH:mm:ss.SSS\"\r\n" +
+			"}")
 	public static Object wsGetDateTimeFormat() throws Exception {
 		Map<String, Object> formats = new HashMap<>();
 		GlobalProperties gp = GlobalProperties.getInstance();

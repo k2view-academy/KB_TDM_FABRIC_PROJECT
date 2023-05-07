@@ -44,7 +44,7 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
 
 	public static final String TDM = "TDM";
@@ -468,7 +468,7 @@ public class SharedLogic {
 		Db ciTDM = db(TDM);
 		String uid = getInstanceID();
 		//log.info("Running - fnEnrichmentChildLink for instance: " + uid);
-		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
 		
 		//TDM 7.2 - divide the uid to instance Id and Parameters if the parameters exist.
@@ -476,20 +476,23 @@ public class SharedLogic {
 		
 		uid = "" + splitCloneId[0];
 		String params = "";
-		String cloneId = "";
-		String cloneIdPattern = "\\{\"clone_id\"=(.*?)\\}";
-		java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(cloneIdPattern);
+		//String cloneId = "";
+		//String cloneIdPattern = "\\{\"clone_id\" : (.*?)\\}";
+		//java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(cloneIdPattern);
 		
-		if (splitCloneId.length > 1) {
+		/*if (splitCloneId.length > 1) {
 			params = "" + splitCloneId[1];
-		
-			//log.info("fnEnrichmentChildLink - params: " + params);
+            log.info("fnEnrichmentChildLink - params: " + params);
+            Map<String,Object> paramsData = Json.get().fromJson(params, Map.class);
+            if (paramsData.get("clone_id") != null) {
+                cloneId = "" +  paramsData.get("clone_id");
+            }
 			
 			java.util.regex.Matcher matcher = pattern.matcher(params);
 			if (matcher.find()) {
 				cloneId = matcher.group(1);
 			}
-		}
+		}*/
 		//log.info("fnEnrichmentChildLink after removing params: " + uid);
 		//log.info("fnEnrichmentChildLink - cloneId: " + cloneId);
 		
@@ -499,12 +502,12 @@ public class SharedLogic {
 		//TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key
 		String verName = "" + splitUID[2];
 		String verDateTime = "" + splitUID[3];
-		Date verDateTimeDate = null;
+		/*Date verDateTimeDate = null;
 		
 		if (!"".equals(verDateTime)) {
 			verDateTimeDate = formatter.parse(verDateTime);
 			verDateTime = sdf.format(verDateTimeDate);
-		}
+		}*/
 		
 		//log.info("fnEnrichmentChildLink - srcEnv: " + srcEnv + ", instanceId: "  + instanceId + ", verName: " + verName + ", verDateTime: " + verDateTime);
 		String parentLU = getLuType().luName;
@@ -524,7 +527,7 @@ public class SharedLogic {
 		//Add the LU Name to the table name
 		// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key and are added to the where clause
 		//String DELETE_SQL = "delete from tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? ";
-		String verAddition = verName.equals("") ? "and version_name = ''" : "and version_name = ? and version_datetime = ?";
+		String verAddition = verName.equals("") ? "and version_name = ''" : "and version_name = ? and version_datetime = to_timestamp(?, 'yyyymmddhh24miss')";
 		String DELETE_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid where source_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?" + 
 					verAddition;
 		
@@ -532,8 +535,6 @@ public class SharedLogic {
 			// Fix the query- add the child LU to the condition
 		String DELETE_TAR_SQL = "delete from " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid where target_env = ? and lu_type_1 = ? and lu_type1_eid = ? and lu_type_2 = ?";
 		String targetEnv = "" + ludb().fetch("SET " + parentLU + ".TDM_TAR_ENV_NAME").firstValue();
-		
-		String currDate = sdf.format(new java.util.Date());
 		
 		//log.info("after the delete");
 		String taskExecID = "" + fabric().fetch("set TDM_TASK_EXE_ID").firstValue();
@@ -553,70 +554,71 @@ public class SharedLogic {
 				continue;
 			}
 		
-				//TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
-		// or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
-		// be done only once.
-		// For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
+		    //TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
+		    // or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
+		    // be done only once.
+		    // For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
 		
-		if ("".equals(cloneId) || "1".equals(cloneId)) {
-			if (verName.equals("")) {
-					ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, key);
-				} else {
-					ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, key, verName, verDateTime);
-			}
-		}
+		    //if ("".equals(cloneId) || "1".equals(cloneId)) {
+            //    log.info("Inside cloneId is empty or 1");
+		    if (verName.equals("")) {
+			    	ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, key);
+		    } else {
+			    ciTDM.execute(DELETE_SQL,srcEnv, parentLU, instanceId, key, verName, verDateTime);
+		    }
+		    //}
 		
-			//log.info ("fnEnrichmentChildLink - key: " + key + " for instance: " + uid);
-			Map<String, String> mapVal = trnChildLinkVals.get(key);
-			String sql = mapVal.get("child_lu_eid_sql");
-			String sqlTar = mapVal.get("child_lu_tar_eid_sql");
-		    
-			//log.info("Getting child EIDS for key: " + key + ", with sql: " + sql);
-			childEIDs = ludb().fetch(sql);
+		    //log.info ("fnEnrichmentChildLink - key: " + key + " for instance: " + uid);
+		    Map<String, String> mapVal = trnChildLinkVals.get(key);
+		    String sql = mapVal.get("child_lu_eid_sql");
+		    String sqlTar = mapVal.get("child_lu_tar_eid_sql");
+		   
+		    //log.info("Getting child EIDS for key: " + key + ", with sql: " + sql);
+		    childEIDs = ludb().fetch(sql);
 		
-			//TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
-			// or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
-			// be done only once.
-			// For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
+		    //TDM 7.2 - The tdm_lu_type_relation_eid table should be handled (delete old data and load new data) only if handling one instance (no cloning) 
+		    // or handling the first clone only - in case of cloning there is no need to delete and reinsert the same data per clone, it should
+		    // be done only once.
+		    // For tdm_lu_type_rel_tar_eid table, the data should be handled for each clone as it is based on target values.
 		
-			if ("".equals(cloneId) || "1".equals(cloneId)) {		
-				for (Db.Row row : childEIDs) {
+		    //if ("".equals(cloneId) || "1".equals(cloneId)) {		
+		    for (Db.Row row : childEIDs) {
 				
-					//log.info("Adding child record for instance: " + uid + " and LU Type: " + key + ". child instance: " + row.cell(0));
-		    	
-					// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-					Object[] values;
-					Object[] valuesLUDB;
-					if (verName.equals("")) {
-						values = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, currDate};
-					} else {
-						values = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, verName, verDateTime, currDate};
-					}
+			    //log.info("Adding child record for instance: " + uid + " and LU Type: " + key + ". child instance: " + row.cell(0));
+		   	
+			    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+			    Object[] values;
+			    Object[] valuesLUDB;
+			    if (verName.equals("")) {
+				    values = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", "now()"};
+			    } else {
+				    values = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", verName, verDateTime, "now()"};
+			    }
 		
-					// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-					if (verName.equals("")) {
-						valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, "''", "''"};
-					} else {
-						valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDate, verName, verDateTime};
-					}
+			    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+			    if (verName.equals("")) {
+				    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", "''", "''"};
+			    } else {
+				    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", verName, verDateTime};
+			    }
 					
-					// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-					//log.info("Inserting into Fabric to tdm_lu_type_relation_eid table for lu type: " + key);
-					ludb().execute("insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) values(?,?,?,?,?,?,?,?)",valuesLUDB);
-			
-					if (!inDebugMode()) {
-						// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
-						if (verName.equals("")) {
-							//log.info("Inserting into TDM - tdm_lu_type_relation_eid table for lu type: " + key);
-							ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
-						} else {
-							//log.info("Inserting into TDM - tdm_lu_type_relation_eid table with version Data for lu type: " + key);
-							ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) " +
-								"values(?,?,?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
-						}
-					}
-				}
-			}
+			    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+			    //log.info("Inserting into Fabric to tdm_lu_type_relation_eid table for lu type: " + key);
+			    ludb().execute("insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) values(?,?,?,?,?,?,?,?)",valuesLUDB);
+		
+			    if (!inDebugMode()) {
+				    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
+				    if (verName.equals("")) {
+    					//log.info("Inserting into TDM - tdm_lu_type_relation_eid table for lu type: " + key);
+	    				ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
+		    		} else {
+			    		//log.info("Inserting into TDM - tdm_lu_type_relation_eid table with version Data for lu type: " + key);
+				    	ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) " +
+					    	"values(?,?,?,?,?,?,?,to_timestamp(?, 'yyyymmddhh24miss')) ON CONFLICT ON CONSTRAINT tdm_lu_type_relation_eid_pk DO update set creation_date = ?", values);
+				    }
+			    }
+		    }
+	    //}
 			
 			//TDM 7 - In case of delete from target, the TDM_LU_TYPE_REL_TAR_EID table should be updated 
 			if (fnDecisionDeleteFromTarget()) {
@@ -626,7 +628,7 @@ public class SharedLogic {
 				childTarEIDs = ludb().fetch(sqlTar);
 				for (Db.Row row : childTarEIDs) {
 					
-		    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDate};
+		    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), "now()"};
 			
 					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
 		
@@ -1177,7 +1179,7 @@ public class SharedLogic {
 	@out(name = "targetSchemaName", type = String.class, desc = "")
 	@out(name = "targetInterfaceName", type = String.class, desc = "")
 	@out(name = "targetTablePK", type = String.class, desc = "")
-	@out(name = "truncateOrdelete", type = Boolean.class, desc = "")
+	@out(name = "truncateIndicator", type = Boolean.class, desc = "")
 	@out(name = "countIndicator", type = Boolean.class, desc = "")
 	@out(name = "countFlow", type = String.class, desc = "")
 	public static Object fnGetRefTableData(String luName, String refTableName) throws Exception {
@@ -1294,7 +1296,7 @@ public class SharedLogic {
 
 		@out(name = "result", type = Integer.class, desc = "")
 	public static Integer getRetention(String retentionPeriodType, Float retentionPeriodValue) throws Exception {
-		Integer retention_in_seconds = 0;
+		Integer retention_in_seconds ;
 		
 		switch (retentionPeriodType) {
 		    case "Minutes":
@@ -1312,6 +1314,12 @@ public class SharedLogic {
 		    case "Years":
 		        retention_in_seconds = Math.round(retentionPeriodValue * 60 * 60 * 24 * 365);
 		        break;
+            case "Do Not Delete" :
+				retention_in_seconds = -1;
+				break;
+			default :
+            	retention_in_seconds = 0;
+                break;
 		}
 		return retention_in_seconds;
 	}

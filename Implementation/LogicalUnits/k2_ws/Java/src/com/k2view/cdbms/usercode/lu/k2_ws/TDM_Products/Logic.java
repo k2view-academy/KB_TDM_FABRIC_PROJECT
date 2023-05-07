@@ -36,7 +36,7 @@ import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends WebServiceUserCode {
 	public static final String TDM = "TDM";
 	final static String schema = TDMDB_SCHEMA;
@@ -584,7 +584,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Gets active System (products) that have at least one LU. This API is called when adding a System (product) to a TDM environment.")
-	@webService(path = "productsWithLUs", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
+	@webService(path = "product/{envId}/productsWithLUs", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -603,11 +603,12 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsProductsWithLUs() throws Exception {
+	public static Object wsProductsWithLUs(Long envId) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String errorCode="";
 		String message=null;
-		
+        final String SYNTHETIC = "Synthetic";
+
 		try{
 			String sql="SELECT \"" + schema + "\".products.product_id,\"" + schema + "\".products.product_versions,\"" + schema + "\".products.product_name,COUNT(\"" + schema + "\".product_logical_units.lu_id) as lus " +
 					"FROM \"" + schema + "\".products " +
@@ -621,7 +622,11 @@ public class Logic extends WebServiceUserCode {
 			for(Db.Row row:rows) {
 				product=new HashMap<>();
 				product.put("product_id", Integer.parseInt(row.get("product_id").toString()));
-				product.put("product_versions", row.get("product_versions"));
+                if (envId != null && envId == -1) {
+                    product.put("product_versions", SYNTHETIC);
+                } else {
+				    product.put("product_versions", row.get("product_versions"));
+                }
 				product.put("product_name",row.get("product_name"));
 				product.put("lus", Integer.parseInt(row.get("lus").toString()));
 				result.add(product);

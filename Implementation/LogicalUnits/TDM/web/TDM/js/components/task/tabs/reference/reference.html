@@ -1,9 +1,9 @@
 <link href="js/components/task/tabs/reference/reference.css" rel="stylesheet" /> 
 
-<div class="k2-card" style="margin-top: 50px;">
-    <div class="k2-header">
+<div class="k2-card" style="margin-top: 15px;border: 0;">
+    <!-- <div class="k2-header" style="display: flex; justify-content: space-between;">
         <span class="k2-card-title" style="color:var(--secondary-text-color)">Reference</span>
-    </div>
+    </div> -->
     <hr >
     <div class="ReferenceTab k2-body">
         <div ng-show="form.$invalid && form.submitted" style="margin-bottom: 10px;color: red;" >
@@ -15,9 +15,11 @@
             </div>
         </div>
     </div>
-    <hr>    
+    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 20px" ></div>
+    <!-- <hr>    
     <span style="display: flex;justify-content: space-between;">
         <button type="button"  ng-click="back()" style="width:80px" class="btn k2-primary-btn">Back</button>
+        <div ng-include="'views/common/taskFooter.html'"></div>
         <button type="submit" style="width:80px" class="btn k2-primary-btn">Next</button>
-    </span>
+    </span> -->
 </div>

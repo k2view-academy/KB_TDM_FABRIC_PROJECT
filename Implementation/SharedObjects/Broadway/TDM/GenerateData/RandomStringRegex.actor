@@ -1,0 +1,13 @@
+{
+    "type": "RandomStringRegex",
+    "badge": "Ra",
+    "inputs": [
+        {
+            "name": "regex",
+            "const": "\\w{10,15}",
+            "final": true
+        }
+    ],
+    "outputs": [],
+    "parentType": "RandomRegexGenerator"
+}

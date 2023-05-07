@@ -1,0 +1,226 @@
+{
+    "type": "TDMSeqSrc2TrgMapping",
+    "badge": "TD",
+    "tags": [
+        "basic"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "const": [
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "customer",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "customer",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "contract",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "contract",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "contract",
+                    "TARGET_FIELD_NAME": "contract_id",
+                    "FABRIC_TABLE_NAME": "contract",
+                    "FABRIC_FIELD_NAME": "CONTRACT_ID",
+                    "SEQUENCE_NAME": "contract_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "address",
+                    "TARGET_FIELD_NAME": "address_id",
+                    "FABRIC_TABLE_NAME": "address",
+                    "FABRIC_FIELD_NAME": "ADDRESS_ID",
+                    "SEQUENCE_NAME": "address_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "address",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "address",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "activity",
+                    "TARGET_FIELD_NAME": "activity_id",
+                    "FABRIC_TABLE_NAME": "activity",
+                    "FABRIC_FIELD_NAME": "ACTIVITY_ID",
+                    "SEQUENCE_NAME": "activity_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "activity",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "activity",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "cases",
+                    "TARGET_FIELD_NAME": "activity_id",
+                    "FABRIC_TABLE_NAME": "cases",
+                    "FABRIC_FIELD_NAME": "ACTIVITY_ID",
+                    "SEQUENCE_NAME": "activity_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "cases",
+                    "TARGET_FIELD_NAME": "case_id",
+                    "FABRIC_TABLE_NAME": "cases",
+                    "FABRIC_FIELD_NAME": "CASE_ID",
+                    "SEQUENCE_NAME": "case_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "case_note",
+                    "TARGET_FIELD_NAME": "case_id",
+                    "FABRIC_TABLE_NAME": "case_note",
+                    "FABRIC_FIELD_NAME": "CASE_ID",
+                    "SEQUENCE_NAME": "case_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "case_note",
+                    "TARGET_FIELD_NAME": "note_id",
+                    "FABRIC_TABLE_NAME": "case_note",
+                    "FABRIC_FIELD_NAME": "NOTE_ID",
+                    "SEQUENCE_NAME": "note_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "recommendations",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "recommendations",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "score",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "score",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "payment_methods",
+                    "TARGET_FIELD_NAME": "customer_id",
+                    "FABRIC_TABLE_NAME": "payment_methods",
+                    "FABRIC_FIELD_NAME": "CUSTOMER_ID",
+                    "SEQUENCE_NAME": "customer_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "subscriber",
+                    "TARGET_FIELD_NAME": "subscriber_id",
+                    "FABRIC_TABLE_NAME": "subscriber",
+                    "FABRIC_FIELD_NAME": "SUBSCRIBER_ID",
+                    "SEQUENCE_NAME": "contract_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "balance",
+                    "TARGET_FIELD_NAME": "subscriber_id",
+                    "FABRIC_TABLE_NAME": "balance",
+                    "FABRIC_FIELD_NAME": "SUBSCRIBER_ID",
+                    "SEQUENCE_NAME": "contract_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "balance",
+                    "TARGET_FIELD_NAME": "balance_id",
+                    "FABRIC_TABLE_NAME": "balance",
+                    "FABRIC_FIELD_NAME": "BALANCE_ID",
+                    "SEQUENCE_NAME": "balance_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "invoice",
+                    "TARGET_FIELD_NAME": "invoice_id",
+                    "FABRIC_TABLE_NAME": "invoice",
+                    "FABRIC_FIELD_NAME": "INVOICE_ID",
+                    "SEQUENCE_NAME": "invoice_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "invoice",
+                    "TARGET_FIELD_NAME": "subscriber_id",
+                    "FABRIC_TABLE_NAME": "invoice",
+                    "FABRIC_FIELD_NAME": "SUBSCRIBER_ID",
+                    "SEQUENCE_NAME": "contract_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "payment",
+                    "TARGET_FIELD_NAME": "payment_id",
+                    "FABRIC_TABLE_NAME": "payment",
+                    "FABRIC_FIELD_NAME": "PAYMENT_ID",
+                    "SEQUENCE_NAME": "payment_id_seq"
+                },
+                {
+                    "LU_NAME": "Billing",
+                    "TARGET_TABLE_NAME": "payment",
+                    "TARGET_FIELD_NAME": "invoice_id",
+                    "FABRIC_TABLE_NAME": "payment",
+                    "FABRIC_FIELD_NAME": "INVOICE_ID",
+                    "SEQUENCE_NAME": "invoice_id_seq"
+                },
+                {
+                    "LU_NAME": "Asset",
+                    "TARGET_TABLE_NAME": "asset_transaction",
+                    "TARGET_FIELD_NAME": "subscriber_id",
+                    "FABRIC_TABLE_NAME": "asset_transaction",
+                    "FABRIC_FIELD_NAME": "SUBSCRIBER_ID",
+                    "SEQUENCE_NAME": "contract_id_seq"
+                },
+                {
+                    "LU_NAME": "CRM",
+                    "TARGET_TABLE_NAME": "asset_transaction",
+                    "TARGET_FIELD_NAME": "subscriber_id",
+                    "FABRIC_TABLE_NAME": "asset_transaction",
+                    "FABRIC_FIELD_NAME": "SUBSCRIBER_ID",
+                    "SEQUENCE_NAME": "contract_id_seq"
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "LU_NAME": {
+                            "type": "string"
+                        },
+                        "TARGET_TABLE_NAME": {
+                            "type": "string"
+                        },
+                        "TARGET_FIELD_NAME": {
+                            "type": "string"
+                        },
+                        "FABRIC_TABLE_NAME": {
+                            "type": "string"
+                        },
+                        "FABRIC_FIELD_NAME": {
+                            "type": "string"
+                        },
+                        "SEQUENCE_NAME": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

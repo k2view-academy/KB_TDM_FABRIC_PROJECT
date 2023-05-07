@@ -1,10 +1,10 @@
 <link href="js/components/task/tabs/general/general.css" rel="stylesheet" /> 
 
-<div class="k2-card" style="margin-top: 50px;">
-    <div class="k2-header">
+<div class="k2-card" style="margin-top: 15px;border: 0">
+    <!-- <div class="k2-header">
         <span class="k2-card-title" style="color:var(--secondary-text-color)">General</span>
 
-    </div>
+    </div> -->
     <hr >
     <div class="generalTab">
         <div class="fields-row" style="margin-top:0;">
@@ -23,16 +23,26 @@
         </div>
         <div class="fields-row" style="position: relative">
             <div>
-                <label>Task Type <span style="color: red">*</span></label>
+                <label>Task Actions <span style="color: red">*</span></label>
                 <div style="display: flex; gap: 45px;">
                     <div style="display: flex; align-items: center;">
                         <input name="extractMode" type="checkbox"
                             ng-change="generalTabCtrl.taskTypeChange()"
                             ng-model="generalTabCtrl.extract"
-                            ng-disabled="(generalTabCtrl.delete || generalTabCtrl.reserve) && !generalTabCtrl.load" />
+                            ng-disabled="(generalTabCtrl.delete || generalTabCtrl.reserve) && !generalTabCtrl.load || generalTabCtrl.generate" />
                         <label style="margin-top: 5px;margin-left: 6px;position: relative;">
                             Extract
                             <span class="sub-label">(from source)</span>
+                        </label>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <input name="extractMode" type="checkbox"
+                            ng-change="generalTabCtrl.taskTypeChange()"
+                            ng-model="generalTabCtrl.generate"
+                            ng-disabled="generalTabCtrl.extract || generalTabCtrl.delete || (!generalTabCtrl.load && generalTabCtrl.reserve)" />
+                        <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                            Generate
+                            <span class="sub-label">(synthetic entities)</span>
                         </label>
                     </div>
                     <div style="display: flex;
@@ -41,7 +51,8 @@
                             ng-model="generalTabCtrl.load"
                             ng-change="generalTabCtrl.reserve = (generalTabCtrl.load || generalTabCtrl.reserve);generalTabCtrl.taskTypeChange();"
                             ng-disabled="generalTabCtrl.extract && generalTabCtrl.load && (generalTabCtrl.delete || generalTabCtrl.reserve) || 
-                            (generalTabCtrl.load && generalTabCtrl.delete && generalTabCtrl.reserve)" />
+                            (generalTabCtrl.load && generalTabCtrl.delete && generalTabCtrl.reserve) || 
+                            (generalTabCtrl.load && generalTabCtrl.generate && generalTabCtrl.reserve)" />
                         <label style="margin-top: 5px;margin-left: 6px;position: relative;">
                             Load
                             <span class="sub-label">(to target)</span>
@@ -53,7 +64,7 @@
                             ng-model="generalTabCtrl.delete"
                             ng-change="generalTabCtrl.taskTypeChange()"
                             ng-disabled="generalTabCtrl.extract && !generalTabCtrl.load ||
-                            !generalTabCtrl.extract && !generalTabCtrl.load && generalTabCtrl.reserve" />
+                            !generalTabCtrl.extract && !generalTabCtrl.load && generalTabCtrl.reserve || generalTabCtrl.generate" />
                         <label style="margin-top: 5px;margin-left: 6px;position: relative;">
                             Delete
                             <span class="sub-label">(from target)</span>
@@ -65,6 +76,7 @@
                             ng-model="generalTabCtrl.reserve"
                             ng-change="generalTabCtrl.taskTypeChange()"
                             ng-disabled="generalTabCtrl.extract && !generalTabCtrl.load || 
+                            generalTabCtrl.generate && !generalTabCtrl.load || 
                             !generalTabCtrl.extract && !generalTabCtrl.load && generalTabCtrl.delete" />
                         <label style="margin-top: 5px;margin-left: 6px;position: relative;">
                             Reserve
@@ -73,11 +85,15 @@
                     </div>
                 </div>
             </div>
-            <div class="task-type-hints" ng-show="generalTabCtrl.TaskTypeHints['' + generalTabCtrl.extract* 1 +generalTabCtrl.load* 1 +generalTabCtrl.delete* 1 +generalTabCtrl.reserve* 1]">
+            <div class="task-type-hints" ng-show="generalTabCtrl.TaskTypeHints['' + generalTabCtrl.extract* 1 +generalTabCtrl.generate* 1 + generalTabCtrl.load* 1 +generalTabCtrl.delete* 1 +generalTabCtrl.reserve* 1]">
                 <ul >
                     <li
-                        ng-repeat="taskTypeHint in generalTabCtrl.TaskTypeHints['' + generalTabCtrl.extract* 1 +generalTabCtrl.load* 1 +generalTabCtrl.delete* 1 +generalTabCtrl.reserve* 1]">
+                        ng-repeat="taskTypeHint in generalTabCtrl.TaskTypeHints['' + generalTabCtrl.extract* 1 +generalTabCtrl.generate* 1 + generalTabCtrl.load* 1 +generalTabCtrl.delete* 1 +generalTabCtrl.reserve* 1]">
                             {{taskTypeHint}}
+                            
+                    </li>
+                    <li ng-if="generalTabCtrl.targetIsSynthetic">
+                            Load the synthetic entities to the target environment
                     </li>
                 </ul>
             </div>
@@ -86,7 +102,7 @@
                 <small class="text-danger" ng-show="generalForm.taskType.$error.required">Please Choose Task Type</small>
             </div>
         </div>
-        <div class="fields-row">
+        <div class="fields-row" ng-if="generalTabCtrl.businessEnttites">
             <div>
                 <label>Business Entity <span style="color: red">*</span></label>
                 <select tabindex="5"
@@ -101,7 +117,8 @@
                         !generalTabCtrl.extract &&
                         !generalTabCtrl.load &&
                         !generalTabCtrl.delete &&
-                        !generalTabCtrl.reserve"
+                        !generalTabCtrl.reserve && 
+                        !generalTabCtrl.generate"
                         ng-options="be.be_id as be.be_name for be in generalTabCtrl.businessEnttites | orderBy:'be_name'">
                     <option></option>
                 </select>
@@ -110,9 +127,9 @@
                 </div>
             </div>
         </div>
-        <div class="fields-row" style="display: flex;justify-content: space-between;gap: 30px;">
-            <div class="form-group" style="width: 100%;" ng-if="generalTabCtrl.taskData.task_type === 'EXTRACT' || generalTabCtrl.load">
-                <label>{{generalTabCtrl.load ? 'Extract From' : generalTabCtrl.sourceEnvType}} Environment <span style="color: red">*</span></label>
+        <div class="fields-row" style="display: flex;justify-content: space-between;gap: 30px;" ng-if="!(!generalTabCtrl.load && generalTabCtrl.generate)">
+            <div class="form-group" style="width: 100%;" ng-if="(generalTabCtrl.taskData.task_type === 'EXTRACT' || generalTabCtrl.load ) && !generalTabCtrl.generate && generalTabCtrl.sourceEnvironments">
+                <label>{{generalTabCtrl.load ? 'Extract from' : generalTabCtrl.sourceEnvType}} Environment <span style="color: red">*</span></label>
                 <select tabindex="4" width="'100%'" name="taskEnv" required class="form-control1" chosen 
                     ng-change="generalTabCtrl.environmentChange(null,'src');"
                         ng-model="generalTabCtrl.taskData.source_environment_id"
@@ -121,7 +138,7 @@
                         !generalTabCtrl.load &&
                         !generalTabCtrl.delete &&
                         !generalTabCtrl.reserve"
-                        ng-options="env.environment_id as env.environment_name for env in generalTabCtrl.sourceEnvironments | orderBy:'environment_name'">
+                        ng-options="env.environment_id as env.environment_name for env in generalTabCtrl.sourceEnvironments | filterEnvs:generalTabCtrl:'source'  | orderBy:'environment_name'">
                     <option></option>
                 </select>
                 <div class="m-t-xs" ng-show="generalForm.taskEnv.$invalid && generalForm.submitted">
@@ -131,7 +148,7 @@
                     <small class="text-danger">Note that changing the environment resets the Advanced Business Entity Options setting.</small>
                 </div>
             </div>
-            <div class="form-group" ng-if="generalTabCtrl.taskData.task_type !== 'EXTRACT'" style="width: 100%;">
+            <div class="form-group" ng-if="generalTabCtrl.taskData.task_type !== 'EXTRACT' && generalTabCtrl.targetEnvironments" style="width: 100%;">
                 <label>{{generalTabCtrl.sourceEnvType}} Environment <span style="color: red">*</span></label>
                 <select tabindex="4" width="'100%'" name="taskEnvProvision" required class="form-control1" chosen 
                         ng-change="generalTabCtrl.environmentChange(null,'target');"
@@ -141,7 +158,7 @@
                         !generalTabCtrl.load &&
                         !generalTabCtrl.delete &&
                         !generalTabCtrl.reserve"
-                        ng-options="env.environment_id as env.environment_name for env in generalTabCtrl.targetEnvironments | orderBy:'environment_name'">
+                        ng-options="env.environment_id as env.environment_name for env in (generalTabCtrl.targetEnvironments | filterEnvs:generalTabCtrl.taskData:'target') | orderBy:'environment_name'">
                     <option></option>
                 </select>
                 <div class="m-t-xs" ng-show="generalForm.taskEnvProvision.$invalid && generalForm.submitted">
@@ -158,7 +175,8 @@
                 !generalTabCtrl.extract &&
                 !generalTabCtrl.load &&
                 !generalTabCtrl.delete &&
-                !generalTabCtrl.reserve
+                !generalTabCtrl.reserve && 
+                !generalTabCtrl.generate
             ) ||
             !generalTabCtrl.taskData.be_id ||
             (
@@ -166,7 +184,7 @@
                 (!generalTabCtrl.taskData.environment_id || 
                 !generalTabCtrl.taskData.source_environment_id)) ||
             (
-                !generalTabCtrl.load && generalTabCtrl.taskData.task_type !== 'EXTRACT' && !generalTabCtrl.taskData.environment_id 
+                !generalTabCtrl.load && generalTabCtrl.taskData.task_type !== 'EXTRACT' && !generalTabCtrl.taskData.environment_id && !generalTabCtrl.generate
             ) ||
             (
                generalTabCtrl.taskData.task_type === 'EXTRACT' && !generalTabCtrl.taskData.source_environment_id 
@@ -197,8 +215,15 @@
             </div>
         </div>
     </div>
-    <hr>    
-    <span style="display: flex; flex-direction: row-reverse;">
-        <button type="submit" style="width:80px" class="btn k2-primary-btn">Next</button>
-    </span>
+    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 20px" ></div>
+    <!-- <div style="    
+    bottom: 15px;
+    width: 100%;
+    left: 0px;">
+        <hr>    
+        <span style="display: flex; flex-direction: row-reverse;">
+            <div ng-include="'views/common/taskFooter.html'"></div>
+            <button type="submit" style="width:80px" class="btn k2-primary-btn">Next</button>
+        </span>
+    </div> -->
 </div>

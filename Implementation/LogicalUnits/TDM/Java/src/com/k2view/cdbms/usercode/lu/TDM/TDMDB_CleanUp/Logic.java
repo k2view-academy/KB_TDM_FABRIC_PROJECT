@@ -29,7 +29,7 @@ import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import com.k2view.fabric.events.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends UserCode {
 	public static final String TDM = "TDM";
 

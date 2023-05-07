@@ -57,17 +57,19 @@
         </div>
         <div ng-switch-default="ng-switch-default">
           <div class="form-inline">
-            <select
-              required
-              name="paramsKey_{{$index}}_{{index}}"
-              ng-disabled="disablechange"
-              ng-init="field = rule.field"
-              style="margin-left: 5px;width: auto;"
-              ng-options="t.param_name as t.param_name for t in params | orderBy:'param_name'"
-              ng-model="field"
-              class="form-control1"
-              ng-change="changeParam(rule,field)"
-            ></select>
+            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 250px;">
+              <select
+                required
+                name="paramsKey_{{$index}}_{{index}}"
+                ng-disabled="disablechange"
+                chosen
+                ng-init="field = rule.field"
+                ng-options="t.param_name as t.param_name for t in params | orderBy:'param_name'"
+                ng-model="field"
+                class="form-control1"
+                ng-change="changeParam(rule,field)"
+              ></select>
+            </div>
 
             <select
               name="paramsOper_{{$index}}_{{index}}"
@@ -140,18 +142,22 @@
               class="form-control1"
               ng-change="changeData(rule,data)"
             />
-            <select
-              name="parametersField_{{$index}}_{{index}}"
-              required
-              ng-disabled="disablechange"
-              ng-if="rule.comboIndicator === 'true' && rule.disableThird === false "
-              ng-init="data = rule.data"
-              style="margin-left: 5px;width: auto;"
-              ng-options="t as t for t in rule.validValues"
-              ng-model="data"
-              class="form-control1"
-              ng-change="changeData(rule,data)"
-            ></select>
+            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 250px;">
+              <select
+                name="parametersField_{{$index}}_{{index}}"
+                required
+                chosen
+                ng-disabled="disablechange"
+                ng-if="rule.comboIndicator === 'true' && rule.disableThird === false "
+                ng-init="data = rule.data"
+                style="margin-left: 5px;width: auto;"
+                ng-options="t as t for t in rule.validValues"
+                ng-model="data"
+                style="margin-left: 5px;width: auto;"
+                class="form-control1"
+                ng-change="changeData(rule,data)"
+              ></select>
+            </div>
 
             <span
               ng-if="!disablechange"

@@ -100,6 +100,20 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "TDM_TASK_EXE_ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -567,6 +581,20 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "recordsCount",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TaskExeID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -589,7 +617,7 @@
                                 "inputs": [
                                     {
                                         "name": "functionName",
-                                        "const": "getDbTableColumns"
+                                        "const": "getDbTableColumnsAndTypes"
                                     },
                                     {
                                         "name": "dbInterfaceName",
@@ -615,21 +643,9 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "columns",
+                                        "name": "result",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "pks",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
+                                            "type": "object"
                                         }
                                     }
                                 ]
@@ -647,7 +663,48 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Create A List Of Fields",
+                            "name": "GetMapKeys",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetMapKeys"
+                                    },
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Group Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Concat",
                             "actorType": {
                                 "parentType": "Concat",
                                 "inputs": [],
@@ -794,20 +851,6 @@
                 "name": "parent_rows"
             },
             "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "table"
-            },
-            "iterate": "First",
-            "path": [
-                "table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
                 "actor": "reference_table",
                 "name": "table_name"
             },
@@ -828,20 +871,6 @@
             "iterate": "First",
             "path": [
                 "tdm_task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "fnGetTableInJson",
-                "name": "tableName"
-            },
-            "iterate": "First",
-            "path": [
-                "table_name"
             ]
         },
         {
@@ -879,42 +908,12 @@
         },
         {
             "leftPort": {
-                "actor": "Get Interface Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "dbInterfaceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Interface Name",
+                "actor": "TDM_TASK_EXE_ID",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "fnGetTableInJson",
-                "name": "interfaceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Schema Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "catalogSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Schema Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "fnGetTableInJson",
-                "name": "schemaName"
+                "name": "TaskExeID"
             }
         },
         {
@@ -979,6 +978,66 @@
         },
         {
             "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "dbInterfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "catalogSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "trnTableName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "interfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "schemaName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "trnTableName"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Count Method",
                 "name": "result"
             },
@@ -1019,6 +1078,16 @@
         },
         {
             "leftPort": {
+                "actor": "REF_TABLE_COUNT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "recordsCount"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "GET REF_TABLE_COUNT",
                 "name": "result"
             },
@@ -1039,12 +1108,32 @@
         },
         {
             "leftPort": {
+                "actor": "Records Ref Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "recordsCount"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Records Method Count",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "reference_table",
                 "name": "records_count"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Records Method Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "recordsCount"
             }
         },
         {
@@ -1060,16 +1149,26 @@
         {
             "leftPort": {
                 "actor": "getDbTableColumns",
-                "name": "columns"
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Create A List Of Fields",
+                "actor": "GetMapKeys",
+                "name": "map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GetMapKeys",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Concat",
                 "name": "elements"
             }
         },
         {
             "leftPort": {
-                "actor": "Create A List Of Fields",
+                "actor": "Concat",
                 "name": "string"
             },
             "rightPort": {

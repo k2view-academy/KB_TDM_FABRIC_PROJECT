@@ -1,0 +1,491 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "TASK_EXECUTION_ID",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SyncDeleteMode",
+                            "actorType": {
+                                "parentType": "SyncDeleteMode",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "deleteMode",
+                                        "const": "All"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Query",
+                            "actorType": {
+                                "parentType": "SourceDbQuery",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select Distinct te.task_execution_id,\r\n  t.task_id,\r\n  t.selection_method,\r\n  t.selection_param_value,\r\n  t.parameters,\r\n  t.load_entity,\r\n  t.delete_before_load,\r\n  t.task_type,\r\n  t.task_title As task_name,\r\n  t.source_env_name As source_env,\r\n  e.environment_name As target_env,\r\n  b.be_name,\r\n  Case When t.refresh_reference_data = False Then 'false' Else 'true'\r\n  End As refresh_reference_data,\r\n  Case When t.replace_sequences = False Then 'false' Else 'true'\r\n  End As replace_sequences,\r\n  t.scheduler,\r\n  t.task_created_by,\r\n  Case When t.version_ind = False Then 'false' Else 'true' End As version_ind,\r\n  t.selected_version_task_name,\r\n  t.selected_version_datetime,\r\n  t.selected_ref_version_task_name,\r\n  t.selected_ref_version_datetime,\r\n  t.retention_period_type,\r\n  t.retention_period_value,\r\n  t.sync_mode As task_sync_mode,\r\n  e.sync_mode As env_sync_mode,\r\n  t.scheduling_end_date,\r\n  Case\r\n    When t.task_type = 'LOAD' And t.load_entity = True And\r\n    t.delete_before_load = False Then 'Load entity'\r\n    When t.task_type = 'LOAD' And t.load_entity = True And\r\n    t.delete_before_load = True Then 'Load and delete entity'\r\n    When t.task_type = 'LOAD' And t.load_entity = False And\r\n    t.delete_before_load = True Then 'Delete entity'\r\n    When t.task_type = 'RESERVE' And t.reserve_ind = True Then 'Reserve entity'\r\n    Else 'Extract Task' End As operation_mode,\r\n  Case When t.reserve_ind = False Then 'false' Else 'true' End As reserve_ind,\r\n  reserve_retention_period_type,\r\n  reserve_retention_period_value\r\nFrom @TDMDB_SCHEMA@.tasks t,\r\n  @TDMDB_SCHEMA@.task_execution_list te,\r\n  @TDMDB_SCHEMA@.environments e,\r\n  @TDMDB_SCHEMA@.business_entities b\r\nWhere t.task_id = te.task_id And e.environment_id = t.environment_id And\r\n  b.be_id = t.be_id\r\nOrder By te.task_execution_id ;"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "task_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "selection_method": {
+                                                        "type": "string"
+                                                    },
+                                                    "selection_param_value": {
+                                                        "type": "string"
+                                                    },
+                                                    "parameters": {
+                                                        "type": "string"
+                                                    },
+                                                    "load_entity": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "delete_before_load": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "task_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "task_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "source_env": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_env": {
+                                                        "type": "string"
+                                                    },
+                                                    "be_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "refresh_reference_data": {
+                                                        "type": "string"
+                                                    },
+                                                    "replace_sequences": {
+                                                        "type": "string"
+                                                    },
+                                                    "scheduler": {
+                                                        "type": "string"
+                                                    },
+                                                    "task_created_by": {
+                                                        "type": "string"
+                                                    },
+                                                    "version_ind": {
+                                                        "type": "string"
+                                                    },
+                                                    "selected_version_task_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "selected_version_datetime": {
+                                                        "type": "string"
+                                                    },
+                                                    "selected_ref_version_task_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "selected_ref_version_datetime": {
+                                                        "type": "string"
+                                                    },
+                                                    "retention_period_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "retention_period_value": {
+                                                        "type": "integer"
+                                                    },
+                                                    "task_sync_mode": {
+                                                        "type": "string"
+                                                    },
+                                                    "env_sync_mode": {
+                                                        "type": "string"
+                                                    },
+                                                    "scheduling_end_date": {
+                                                        "type": "date"
+                                                    },
+                                                    "operation_mode": {
+                                                        "type": "string"
+                                                    },
+                                                    "reserve_ind": {
+                                                        "type": "string"
+                                                    },
+                                                    "reserve_retention_period_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "reserve_retention_period_value": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LU Table",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "tasks",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "task_execution_id",
+                                            "task_id",
+                                            "selection_method",
+                                            "selection_param_value",
+                                            "parameters",
+                                            "load_entity",
+                                            "delete_before_load",
+                                            "task_type",
+                                            "task_name",
+                                            "source_env",
+                                            "target_env",
+                                            "be_name",
+                                            "refresh_reference_data",
+                                            "replace_sequences",
+                                            "scheduler",
+                                            "task_created_by",
+                                            "version_ind",
+                                            "selected_version_task_name",
+                                            "selected_version_datetime",
+                                            "selected_ref_version_task_name",
+                                            "selected_ref_version_datetime",
+                                            "retention_period_type",
+                                            "retention_period_value",
+                                            "task_sync_mode",
+                                            "env_sync_mode",
+                                            "scheduling_end_date",
+                                            "operation_mode",
+                                            "reserve_ind",
+                                            "reserve_retention_period_type",
+                                            "reserve_retention_period_value"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "task_id"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selection_method",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selection_param_value",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "parameters",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "load_entity",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "delete_before_load",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_type",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "source_env",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "target_env",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "be_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "refresh_reference_data",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "replace_sequences",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "scheduler",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_created_by",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selected_version_task_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selected_version_datetime",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selected_ref_version_task_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "selected_ref_version_datetime",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "retention_period_type",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "retention_period_value",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_sync_mode",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "scheduling_end_date",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "operation_mode",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserve_ind",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserve_retention_period_type",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reserve_retention_period_value",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "version_ind",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "env_sync_mode",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "tasks",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TASK_EXECUTION_ID"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "TASK_EXECUTION_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "SyncDeleteMode",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "tasks",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "tasks",
+                "name": "table"
+            }
+        }
+    ]
+}

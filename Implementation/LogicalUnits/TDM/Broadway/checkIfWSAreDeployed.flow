@@ -163,16 +163,14 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript3",
+                            "name": "JavaScript4",
+                            "condition": "result",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
                                     {
                                         "name": "script",
-                                        "const": {
-                                            "userCode": "if (!flowArgs.wsDeployed) {\r\n    throw \"TDM WS are not Deployed yet!!\"\r\n}",
-                                            "script": "if (!flowArgs.wsDeployed) {\n  throw \"TDM WS are not Deployed yet!!\";\n}"
-                                        }
+                                        "const": "!flowArgs.wsDeployed"
                                     }
                                 ],
                                 "outputs": [
@@ -183,6 +181,23 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "TDM WS are not Deployed yet!!"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "warning"
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]

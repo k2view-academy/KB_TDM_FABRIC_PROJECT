@@ -16,7 +16,7 @@ import java.util.Map;
 import static com.k2view.fabric.common.Util.safeClose;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class StatsLoader implements Actor {
     private static final String QUERY_INSERT = "INSERT INTO " + TDMDB_SCHEMA + ".task_exe_stats_detailed (" +
             "task_execution_id, " +

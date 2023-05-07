@@ -1,6 +1,6 @@
 -- New Table task_exe_error_detailed, TDM 6.1.1
 
-CREATE TABLE IF NOT EXISTS public.task_exe_error_detailed
+CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_detailed
 (
         task_execution_id bigint NOT NULL,
         lu_name character varying(200) NOT NULL,
@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS public.task_exe_error_detailed
 
 -- Index: task_exe_error_detailed_1ix
 
--- DROP INDEX public.task_exe_error_detailed_1ix;
+-- DROP INDEX ${@schema}.task_exe_error_detailed_1ix;
 
-CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON public.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);
+CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON ${@schema}.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);

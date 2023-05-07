@@ -1,0 +1,15 @@
+<div>
+    <hr style="position: relative;z-index: 1000;">    
+    <div style="
+        background-color: white;
+        width: 100%;
+        height: 80px;
+        position: absolute;
+        top: 0;"></div>
+    <span style="display: flex;justify-content: space-between;">
+        <button type="button" ng-if="!blockBackButton"  ng-click="back()" style="width:80px;z-index: 100;" class="btn k2-primary-btn">Back</button>
+        <div ng-include="'views/common/taskFooter.html'"></div>
+        <button type="submit" style="width:80px;z-index: 100" class="btn k2-primary-btn">{{lastStep ? 'Finish' : 'Next'}}</button>
+    </span>
+
+</div>

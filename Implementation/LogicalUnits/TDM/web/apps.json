@@ -5,12 +5,6 @@
       "hidden": false
    },
    {
-      "name": "Studio",
-      "appId": "studio",
-      "disableFontInjection": true,
-      "hidden": true
-   },
-   {
       "name": "Graphit",
       "appId": "graphit",
       "hidden": true
@@ -38,12 +32,8 @@
    {
       "name": "Data Catalog",
       "appId": "dataCatalog",
-      "hidden": false
-   },
-   {
-      "name": "BI",
-      "appId": "BI",
       "hidden": true
+	  
    },
    {
       "name": "Documentation",

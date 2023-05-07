@@ -1,7 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>tasks</Name>
   <ID>tbl_tasks</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="task_execution_id" id="tblCol_fe1c717cdb8443928dfd0b701c836250" index="0" datatype="text" />
     <Column name="task_id" id="tblCol_0c3317c310dc40ad9b7e7ee39ecb04a1" index="1" datatype="Integer" mandatory="true" />
@@ -31,11 +33,16 @@
     <Column name="reserve_ind" id="reserve_ind" index="25" datatype="text" />
     <Column name="reserve_retention_period_type" id="reserve_retention_period_type" index="26" datatype="text" />
     <Column name="reserve_retention_period_value" id="reserve_retention_period_value" index="27" datatype="integer" />
+    <Column name="selection_param_value" id="selection_param_value" index="28" datatype="Text" />
+    <Column name="parameters" id="parameters" index="29" datatype="Text" />
   </Columns>
-  <IndexesList />
-  <EnrichmentList />
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
-  <TriggersList />
+  <TriggersList>
+  </TriggersList>
 </TableObject>

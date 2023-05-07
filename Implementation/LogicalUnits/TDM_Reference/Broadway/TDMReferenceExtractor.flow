@@ -102,7 +102,9 @@
                                     },
                                     {
                                         "name": "countFlow",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ]
                             }

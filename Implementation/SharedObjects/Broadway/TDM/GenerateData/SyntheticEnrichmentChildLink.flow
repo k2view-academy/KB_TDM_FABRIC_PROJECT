@@ -1,0 +1,1120 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Business Entity Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "BE name",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select be.be_name as be_name from public.business_entities be ,public.product_logical_units pl inner join public.tasks_logical_units tl \r\non tl.lu_id = pl.lu_id where tl.task_id=${task_id} and pl.lu_parent_name=${lu_name} and pl.be_id = be.be_id limit 1; "
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Lu Children",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Product Logical Unit",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select pl.lu_name as lu_child_name from public.product_logical_units pl inner join public.tasks_logical_units tl \r\non tl.lu_id = pl.lu_id where tl.task_id=${task_id} and pl.lu_parent_name=${lu_name}; "
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_child_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse Children Names",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Child Name",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "for(var p in input) {\r\n    if (p === 'lu_child_name'){\r\n        self.result = input[p]\r\n    }\r\n}",
+                                            "script": "for (var p in input) {\n  if (p === 'lu_child_name') {\n    self.result = input[p];\n  }\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lu_child_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Num Of Entities Per LU",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "GetNumOfEntitiesForLU",
+                            "actorType": {
+                                "parentType": "GetNumOfEntitiesForLU",
+                                "inputs": [
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "population_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "be_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "num_entities",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Generated IIDs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ReturnGeneratedIIDs",
+                            "actorType": {
+                                "parentType": "ReturnGeneratedIIDs",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Indication Of Delete Before Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDM_DELETE_BEFORE_LOAD",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_BEFORE_LOAD"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Delete Before Load",
+                    "dependsOnList": [
+                        "Indication Of Delete Before Load"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "True",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "False",
+                    "dependsOnList": [
+                        "Indication Of Delete Before Load"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert Into Tdm Relation Target Table ",
+                    "dependsOnList": [
+                        "Delete Before Load"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "tdm_lu_type_rel_tar_eid ",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "tdm_lu_type_rel_tar_eid"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "target_env",
+                                            "lu_type_1",
+                                            "lu_type_2",
+                                            "lu_type1_eid",
+                                            "lu_type2_eid",
+                                            "creation_date"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "target_env",
+                                            "lu_type_1",
+                                            "lu_type_2",
+                                            "lu_type1_eid",
+                                            "lu_type2_eid"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
+                                    },
+                                    {
+                                        "name": "target_env",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type_1",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type_2",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type1_eid",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type2_eid",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "creation_date",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Insert Into Tdm Relation Table ",
+                    "dependsOnList": [
+                        "False"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "tdm_lu_type_relation_eid",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "tdm_lu_type_relation_eid"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "source_env",
+                                            "lu_type_1",
+                                            "lu_type_2",
+                                            "lu_type1_eid",
+                                            "lu_type2_eid",
+                                            "creation_date",
+                                            "version_name",
+                                            "version_datetime"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "source_env",
+                                            "lu_type_1",
+                                            "lu_type_2",
+                                            "lu_type1_eid",
+                                            "lu_type2_eid",
+                                            "version_name",
+                                            "version_datetime"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
+                                    },
+                                    {
+                                        "name": "source_env",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type_1",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type_2",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type1_eid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type2_eid",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "creation_date",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "version_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "version_datetime",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert Into Fabric Relation Target Table ",
+                    "dependsOnList": [
+                        "Insert Into Tdm Relation Target Table "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "fabric tdm_lu_type_rel_tar_eid",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "tdm_lu_type_rel_tar_eid"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "TARGET_ENV",
+                                            "LU_TYPE_1",
+                                            "LU_TYPE_2",
+                                            "LU_TYPE1_EID",
+                                            "LU_TYPE2_EID",
+                                            "CREATION_DATE"
+                                        ]
+                                    },
+                                    {
+                                        "name": "LU_TYPE_1",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_TYPE_2",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_TYPE1_EID",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_TYPE2_EID",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "CREATION_DATE",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TARGET_ENV",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Insert Into Fabric Relation Table ",
+                    "dependsOnList": [
+                        "Insert Into Tdm Relation Table "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "fabric tdm_lu_type_relation_eid",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "tdm_lu_type_relation_eid"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "SOURCE_ENV",
+                                            "LU_TYPE_1",
+                                            "LU_TYPE_2",
+                                            "LU_TYPE1_EID",
+                                            "LU_TYPE2_EID",
+                                            "CREATION_DATE",
+                                            "VERSION_NAME",
+                                            "VERSION_DATETIME"
+                                        ]
+                                    },
+                                    {
+                                        "name": "LU_TYPE_1",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_TYPE_2",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_TYPE1_EID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_TYPE2_EID",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "currDate",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SOURCE_ENV",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "VERSION_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "VERSION_DATETIME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "BE name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GetNumOfEntitiesForLU",
+                "name": "be_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Product Logical Unit",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Child Name",
+                "name": "input"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Child Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GetNumOfEntitiesForLU",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Child Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_rel_tar_eid ",
+                "name": "lu_type_2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Child Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "lu_type_2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Child Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "LU_TYPE_2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Child Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "LU_TYPE_2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GetNumOfEntitiesForLU",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "num_iids"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_rel_tar_eid ",
+                "name": "lu_type2_eid"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "lu_type2_eid"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "LU_TYPE2_EID"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "LU_TYPE2_EID"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "TDM_DELETE_BEFORE_LOAD",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "True",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_id"
+            },
+            "rightPort": {
+                "actor": "BE name",
+                "name": "task_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "BE name",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "Product Logical Unit",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_id"
+            },
+            "rightPort": {
+                "actor": "Product Logical Unit",
+                "name": "task_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "srcEnv"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "source_env_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "ReturnGeneratedIIDs",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnv"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_rel_tar_eid ",
+                "name": "target_env"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_rel_tar_eid ",
+                "name": "lu_type_1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "instanceId"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_rel_tar_eid ",
+                "name": "lu_type1_eid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "currDate"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_rel_tar_eid ",
+                "name": "creation_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "srcEnv"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "source_env"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "lu_type_1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "instanceId"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "lu_type1_eid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "currDate"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "creation_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "verName"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "version_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "verDateTime"
+            },
+            "rightPort": {
+                "actor": "tdm_lu_type_relation_eid",
+                "name": "version_datetime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "LU_TYPE_1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "instanceId"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "LU_TYPE1_EID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "currDate"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "CREATION_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetEnv"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_rel_tar_eid",
+                "name": "TARGET_ENV"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parentLU"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "LU_TYPE_1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "instanceId"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "LU_TYPE1_EID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "currDate"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "currDate"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "srcEnv"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "SOURCE_ENV"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "verName"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "VERSION_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "verDateTime"
+            },
+            "rightPort": {
+                "actor": "fabric tdm_lu_type_relation_eid",
+                "name": "VERSION_DATETIME"
+            }
+        }
+    ]
+}

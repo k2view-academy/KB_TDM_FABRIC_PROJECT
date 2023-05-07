@@ -1,0 +1,38 @@
+{
+    "type": "GenerateIIDs",
+    "parentType": "InnerFlow",
+    "actorClass": null,
+    "inputs": [
+        {
+            "name": "task_execution_id",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "lu_name",
+            "schema": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "num_iids",
+            "schema": {
+                "type": "integer"
+            }
+        },
+        {
+            "name": "flowName",
+            "schema": {
+                "type": "string"
+            },
+            "const": "GenerateIIDs",
+            "mandatory": true
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "dm"
+    ],
+    "badge": "dm"
+}

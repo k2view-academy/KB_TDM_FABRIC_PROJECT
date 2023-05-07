@@ -21,13 +21,14 @@
     <Column name="fabric_get_time" id="tblCol_5b4ffed884c047b7aa17e074303f0c45" index="15" datatype="integer" />
     <Column name="total_processing_time" id="tblCol_c460ba21d3c04d999886af1512542d4f" index="16" datatype="integer" />
     <Column name="clone_no" id="tblCol_b9884a9b672f4ae8a3265d9e53e7bc14" index="17" datatype="text" />
+    <Column name="root_entity_id" id="root_entity_id" index="18" datatype="text" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_f65095098e244813b9ede85c264c9fcc,tblCol_459fafe389134000bd83d175fa47e334,tblCol_212eaafa09144124bb6ef9badf2ae750,tblCol_650a9fadfe0c4467a21b7d92ad4a22b7" />
   </IndexesList>
   <EnrichmentList />
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction />
   </LazyDataUpdate>
   <TriggersList />
 </TableObject>

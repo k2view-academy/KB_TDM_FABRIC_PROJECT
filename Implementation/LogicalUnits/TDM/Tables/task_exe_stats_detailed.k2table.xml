@@ -1,7 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>task_exe_stats_detailed</Name>
   <ID>tbl_task_exe_stats_detailed</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="task_execution_id" id="tblCol_61ada4a4d80a451992114103b8ad30e1" index="0" datatype="Integer" mandatory="true" />
     <Column name="lu_name" id="tblCol_823d7e374fd645709b0f68d94388e059" index="1" datatype="Text" mandatory="true" />
@@ -20,9 +22,11 @@
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_61ada4a4d80a451992114103b8ad30e1,tblCol_823d7e374fd645709b0f68d94388e059,tblCol_36f5bdf3a31d48f8a5a7a44467f9f5fa,tblCol_faad0ce69eee45d092f5fd32a8b5a40e" />
   </IndexesList>
-  <EnrichmentList />
+  <EnrichmentList>
+  </EnrichmentList>
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
-  <TriggersList />
+  <TriggersList>
+  </TriggersList>
 </TableObject>

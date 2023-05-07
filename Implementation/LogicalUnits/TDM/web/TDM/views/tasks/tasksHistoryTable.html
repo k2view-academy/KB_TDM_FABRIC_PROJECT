@@ -37,13 +37,12 @@
                                         Migrate Id : {{luExecution.migrateID}}
                                     </div> -->
                                     <div class="col-lg-1">
-                                        <div style="margin-top: 10px;">
-                                            {{luExecution.name}} 
-                                            <!-- <span ng-click="taskHistoryTableCtrl.openBatchMonitor(luExecution.migrateID)">
-                                                    <i style="font-size: 24px;
-                                                    color: #1483f3;" class="fa fa-info-circle"></i>
-                                                </span> -->
-                                        </div>
+                                            <div style="margin-top: 10px;white-space: nowrap">
+                                                    <span ng-click="taskHistoryTableCtrl.openBatchMonitor(luExecution.migrateID)">
+                                                            <i style="font-size: 17px; cursor: pointer;
+                                                            color: #1483f3;" title="Open batch monitor" class="fa fa-info-circle"></i>
+                                                     </span> {{luExecution.name}} 
+                                                </div>
 
                                         <div style="margin-top: 25px;">
                                             <div style="display: flex; flex-direction: column;">
@@ -81,7 +80,7 @@
                     <div class="col-lg-12">
                         <div class="col-lg-6 k2-card-title">Reference Tables Process</div>
                     <div class="col-lg-6" style="display:flex;justify-content: flex-end">
-                        <span ng-click="taskHistoryTableCtrl.stopExecution()" title="Stop execution">
+                        <span style="cursor: pointer;" ng-click="taskHistoryTableCtrl.stopExecution()" title="Stop execution">
                             <img src="icons/stop-circle.svg" 
                                 style="width:25px; height:25px"
                                 

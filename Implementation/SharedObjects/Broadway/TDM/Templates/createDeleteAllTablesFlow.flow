@@ -1,0 +1,296 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Project Directory",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "GetProjectFolder"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "PROJECT_FOLDER",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileRead1",
+                            "minHeight": 136,
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "SharedObjects/Templates/tdmDeleteAllTables.flow.template"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LuFunction1",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getLuTablesMappedByOrder"
+                                    },
+                                    {
+                                        "const": true,
+                                        "name": "reverseInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "res",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "flow folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/DeleteFlows"
+                                    },
+                                    {
+                                        "name": "PROJECT_DIRECTORY",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ApplyTemplate",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "transform"
+                                    },
+                                    {
+                                        "name": "templateContent",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "blob"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "data",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileWrite1",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "DeleteAllTables.flow"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Project Directory",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Project Directory",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "flow folder",
+                "name": "PROJECT_DIRECTORY"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FileRead1",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "ApplyTemplate",
+                "name": "templateContent"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuFunction1",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "ApplyTemplate",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flow folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ApplyTemplate",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "LuFunction1",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "flow folder",
+                "name": "LU_NAME"
+            }
+        }
+    ]
+}

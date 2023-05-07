@@ -1,0 +1,74 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Source Env Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM.TDM_SOURCE_ENVIRONMENT_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Source Env",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Source Env Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Source Env",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set Source Env",
+                "name": "affected"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "affected"
+            }
+        }
+    ]
+}

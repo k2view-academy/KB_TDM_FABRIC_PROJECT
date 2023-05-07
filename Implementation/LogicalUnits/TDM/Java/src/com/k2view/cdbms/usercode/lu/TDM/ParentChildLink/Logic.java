@@ -29,7 +29,7 @@ import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
 import com.k2view.fabric.events.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends UserCode {
 
 	public static final String TDM = "TDM";
@@ -78,7 +78,7 @@ public class Logic extends UserCode {
 				String insertSqlTar = "insert into TDM.tdm_lu_type_rel_tar_eid (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, creation_date) " +
 							"values(?,?,?,?,?,?)";
 				if (loadEntity == 1 && "load".equalsIgnoreCase(taskType) && 
-					("S".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSequences)))
+					("CLONE".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSequences)))
 				{
 					loadRelTar = true;
 				}
@@ -152,11 +152,11 @@ public class Logic extends UserCode {
 			//log.info("fnEncTaskExecutionLinkEntities - selection method: " + selectionMethod + " loadEntity: " + loadEntity + " deleteBeforeLoad: " + deleteBeforeLoad + " taskType: " + taskType);
 			
 			//if it is a load task, and it is one of the following cases, the data will be taken from tdm_lu_type_rel_tar_eid:
-			// 1. Synthetic Data
+			// 1. Clone Data
 			// 2. Replace Sequences
 			// 3. Delete only task
 			try {
-				if ("load".equalsIgnoreCase(taskType) && ("s".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSeq) ||
+				if ("load".equalsIgnoreCase(taskType) && ("CLONE".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSeq) ||
 					(loadEntity == 0 && deleteBeforeLoad == 1) ) ) {
 		
 					insertChildSql = "insert into TASK_EXECUTION_LINK_ENTITIES (LU_NAME,PARENT_LU_NAME,TARGET_ENTITY_ID,ENTITY_ID, " +

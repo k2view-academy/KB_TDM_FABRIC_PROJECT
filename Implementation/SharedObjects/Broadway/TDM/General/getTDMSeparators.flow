@@ -1,0 +1,321 @@
+{
+    "tags": [
+        "TDM",
+        "TDM_General"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get TDM_SEPARATORS_LOADED Indicator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get IID_SEPARATOR To Check If Already retrieved",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_SEPARATOR",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Separators",
+                    "dependsOnList": [
+                        "Get TDM_SEPARATORS_LOADED Indicator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Separators Not Retrieved?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Separators from TDMDB",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTDMSeparatorsFromTDMDB"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "IID_SEPARATOR",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "IID_OPEN_SEPARATOR",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "IID_CLOSE_SEPARATOR",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Separators From Session Variables",
+                    "dependsOnList": [
+                        "Get TDM_SEPARATORS_LOADED Indicator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Get IID_SEPARATOR",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_SEPARATOR",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get IID_OPEN_SEPARATOR",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_OPEN_SEPARATOR",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get IID_CLOSE_SEPARATOR",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_CLOSE_SEPARATOR",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Separators For Next Calls",
+                    "dependsOnList": [
+                        "Get Separators"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set IID_SEPARATOR",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_SEPARATOR",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set IID_OPEN_SEPARATOR",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_OPEN_SEPARATOR",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set IID_CLOSE_SEPARATOR",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_CLOSE_SEPARATOR",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "Get Separators From Session Variables"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get IID_SEPARATOR To Check If Already retrieved",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Separators Not Retrieved?",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Separators from TDMDB",
+                "name": "IID_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Set IID_SEPARATOR",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Separators from TDMDB",
+                "name": "IID_OPEN_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Set IID_OPEN_SEPARATOR",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Separators from TDMDB",
+                "name": "IID_CLOSE_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Set IID_CLOSE_SEPARATOR",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Separators from TDMDB",
+                "name": "IID_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IID_SEPARATOR"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Separators from TDMDB",
+                "name": "IID_OPEN_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IID_OPEN_SEPARATOR"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Separators from TDMDB",
+                "name": "IID_CLOSE_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IID_CLOSE_SEPARATOR"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID_SEPARATOR",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IID_SEPARATOR"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID_OPEN_SEPARATOR",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IID_OPEN_SEPARATOR"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID_CLOSE_SEPARATOR",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IID_CLOSE_SEPARATOR"
+            }
+        }
+    ]
+}

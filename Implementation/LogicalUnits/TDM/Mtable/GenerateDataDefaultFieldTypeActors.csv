@@ -1,0 +1,8 @@
+TYPE,ACTOR
+Text,RandomStringRegex.actor
+Integer,RandomNumber.actor
+Real,RandomNumber.actor
+Datetime,ConstDateTime.actor
+Date,ConstDate.actor
+Time,ConstTime.actor
+Blob,EmptyBlob.actor

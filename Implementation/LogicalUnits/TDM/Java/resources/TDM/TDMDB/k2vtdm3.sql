@@ -1,8 +1,8 @@
--- Table: public.activities.
+-- Table: ${@schema}.activities.
 
---DROP TABLE IF EXISTS public.activities;
+--DROP TABLE IF EXISTS ${@schema}.activities;
 
-CREATE TABLE IF NOT EXISTS public.activities
+CREATE TABLE IF NOT EXISTS ${@schema}.activities
 (
     date timestamp without time zone,
     action character varying(200),
@@ -12,11 +12,11 @@ CREATE TABLE IF NOT EXISTS public.activities
     user_id character varying(200)
 );
 
--- Table: public.business_entities
+-- Table: ${@schema}.business_entities
 
---DROP TABLE IF EXISTS public.business_entities;
+--DROP TABLE IF EXISTS ${@schema}.business_entities;
 
-CREATE TABLE IF NOT EXISTS public.business_entities
+CREATE TABLE IF NOT EXISTS ${@schema}.business_entities
 (
     be_name character varying(200) NOT NULL,
     be_description text,
@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS public.business_entities
 
 Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON Business_Entities (be_name) where be_status = 'Active';
 
--- Table: public.environment_owners
+-- Table: ${@schema}.environment_owners
 
---DROP TABLE IF EXISTS public.environment_owners;
+--DROP TABLE IF EXISTS ${@schema}.environment_owners;
 
-CREATE TABLE IF NOT EXISTS public.environment_owners
+CREATE TABLE IF NOT EXISTS ${@schema}.environment_owners
 (
     environment_id bigint NOT NULL,
     user_type character varying(10) NOT NULL,
@@ -44,11 +44,11 @@ CREATE TABLE IF NOT EXISTS public.environment_owners
     CONSTRAINT check_env_owner_type CHECK (user_type = 'ID' OR user_type = 'GROUP')
 );
 
--- Table: public.environment_products
+-- Table: ${@schema}.environment_products
 
---DROP TABLE IF EXISTS public.environment_products;
+--DROP TABLE IF EXISTS ${@schema}.environment_products;
 
-CREATE TABLE IF NOT EXISTS public.environment_products
+CREATE TABLE IF NOT EXISTS ${@schema}.environment_products
 (
     environment_product_id bigint NOT NULL DEFAULT nextval('environment_product_id_seq'::regclass),
     environment_id bigint NOT NULL,
@@ -65,11 +65,11 @@ CREATE TABLE IF NOT EXISTS public.environment_products
 
 Create UNIQUE INDEX IF NOT EXISTS ENV_PROD_FOR_ACTIVE_IX ON environment_products (environment_id, product_id) where status = 'Active';
 
--- Table: public.environment_role_users
+-- Table: ${@schema}.environment_role_users
 
---DROP TABLE IF EXISTS public.environment_role_users;
+--DROP TABLE IF EXISTS ${@schema}.environment_role_users;
 
-CREATE TABLE IF NOT EXISTS public.environment_role_users
+CREATE TABLE IF NOT EXISTS ${@schema}.environment_role_users
 (
     environment_id bigint NOT NULL,
     role_id bigint NOT NULL,
@@ -82,13 +82,13 @@ CREATE TABLE IF NOT EXISTS public.environment_role_users
    
 Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON environment_role_users (environment_id, user_id);
 
--- Table: public.environment_roles
+-- Table: ${@schema}.environment_roles
 
--- 31-Dec-18- add allow_read, allow_write, and allowed_number_of_entities_to_read fields to public.environment_roles 
+-- 31-Dec-18- add allow_read, allow_write, and allowed_number_of_entities_to_read fields to ${@schema}.environment_roles 
 
---DROP TABLE IF EXISTS public.environment_roles;
+--DROP TABLE IF EXISTS ${@schema}.environment_roles;
 
-CREATE TABLE IF NOT EXISTS public.environment_roles
+CREATE TABLE IF NOT EXISTS ${@schema}.environment_roles
 (
     environment_id bigint NOT NULL,
     role_name character varying(200) NOT NULL,
@@ -119,13 +119,13 @@ CREATE TABLE IF NOT EXISTS public.environment_roles
 
 Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_FOR_ACTIVE_IX ON environment_roles  (environment_id, role_name) where role_status = 'Active';
 
--- Table: public.environments
+-- Table: ${@schema}.environments
 
 -- 31-Dec-18- add fabric_environment_name field to environments
 
---DROP TABLE IF EXISTS public.environments;
+--DROP TABLE IF EXISTS ${@schema}.environments;
 
-CREATE TABLE IF NOT EXISTS public.environments
+CREATE TABLE IF NOT EXISTS ${@schema}.environments
 (
     environment_name character varying(200) NOT NULL,
     environment_description text,
@@ -149,11 +149,11 @@ CREATE TABLE IF NOT EXISTS public.environments
 
 Create UNIQUE INDEX IF NOT EXISTS ENV_NAME_FOR_ACTIVE_IX ON environments (environment_name) where environment_status = 'Active'; 
 
--- Table: public.parameters
+-- Table: ${@schema}.parameters
 
---DROP TABLE IF EXISTS public.parameters;
+--DROP TABLE IF EXISTS ${@schema}.parameters;
 
-CREATE TABLE IF NOT EXISTS public.parameters
+CREATE TABLE IF NOT EXISTS ${@schema}.parameters
 (
     be_id bigint NOT NULL,
     param_name character varying(200) NOT NULL,
@@ -164,11 +164,11 @@ CREATE TABLE IF NOT EXISTS public.parameters
     CONSTRAINT parameters_pkey PRIMARY KEY (be_id, param_name)
 );
 
--- Table: public.product_logical_units
+-- Table: ${@schema}.product_logical_units
 
---DROP TABLE IF EXISTS public.product_logical_units;
+--DROP TABLE IF EXISTS ${@schema}.product_logical_units;
 
-CREATE TABLE IF NOT EXISTS public.product_logical_units
+CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
 (
     lu_name character varying(200) NOT NULL,
     lu_description text,
@@ -183,11 +183,11 @@ CREATE TABLE IF NOT EXISTS public.product_logical_units
         --, CONSTRAINT product_logical_units_lu_name_key UNIQUE (lu_name)
 );
 
--- Table: public.products
+-- Table: ${@schema}.products
 
---DROP TABLE IF EXISTS public.products;
+--DROP TABLE IF EXISTS ${@schema}.products;
 
-CREATE TABLE IF NOT EXISTS public.products
+CREATE TABLE IF NOT EXISTS ${@schema}.products
 (
     product_name character varying(200) NOT NULL,
     product_description text,
@@ -205,14 +205,14 @@ CREATE TABLE IF NOT EXISTS public.products
 
 Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON products (product_name) where product_status = 'Active';
 
--- Table: public.task_execution_list
+-- Table: ${@schema}.task_execution_list
 
 -- 31-DEC-18- add new fields to task_execution_list- fabric_execution_id, version_datetime, and version_expiration_date
 -- 17-FEB-19- add task type field
 
---DROP TABLE IF EXISTS public.task_execution_list;
+--DROP TABLE IF EXISTS ${@schema}.task_execution_list;
 
-CREATE TABLE IF NOT EXISTS public.task_execution_list
+CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
 (
     task_id bigint NOT NULL, 
     task_type character varying(20),
@@ -254,14 +254,14 @@ CREATE TABLE IF NOT EXISTS public.task_execution_list
 --Create UNIQUE INDEX IF NOT EXISTS TASK_EXEC_IX on task_execution_list(task_id, lu_id, process_id) where upper(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED', 'STARTEXECUTIONREQUESTED');
 Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON task_execution_list (task_execution_id, process_id); 
 
--- Table: public.tasks
+-- Table: ${@schema}.tasks
 -- Tali E.- 10-May-17- remove limitation of 1000 chars from selection_param_value and exclusion_list fields
 
 -- 31-Dec-18- add task_type, version_ind, retention_period_type, retention_period_value, selected_version_task_name, selected_version_datetime, scheduling_end_date
 
---DROP TABLE IF EXISTS public.tasks;
+--DROP TABLE IF EXISTS ${@schema}.tasks;
 
-CREATE TABLE IF NOT EXISTS public.tasks
+CREATE TABLE IF NOT EXISTS ${@schema}.tasks
 (
     task_id bigint NOT NULL DEFAULT nextval('tasks_task_id_seq'::regclass),
     task_title character varying(200) NOT NULL,
@@ -309,11 +309,11 @@ CREATE TABLE IF NOT EXISTS public.tasks
 
 Create UNIQUE INDEX IF NOT EXISTS TASK_NAME_FOR_ACTIVE_IX on tasks (task_title) where task_status = 'Active';
 
--- Table: public.tdm_be_env_exclusion_list
+-- Table: ${@schema}.tdm_be_env_exclusion_list
 
---DROP TABLE IF EXISTS public.tdm_be_env_exclusion_list;
+--DROP TABLE IF EXISTS ${@schema}.tdm_be_env_exclusion_list;
 
-CREATE TABLE IF NOT EXISTS public.tdm_be_env_exclusion_list
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_env_exclusion_list
 (
   be_id bigint,
   environment_id bigint,
@@ -329,11 +329,11 @@ CREATE TABLE IF NOT EXISTS public.tdm_be_env_exclusion_list
 
 Create UNIQUE INDEX IF NOT EXISTS BE_ENV_EXCLUSION_LIST_IX on tdm_be_env_exclusion_list (BE_ID,ENVIRONMENT_ID,REQUESTED_BY);
 
--- Table: public.tdm_seq_mapping
+-- Table: ${@schema}.tdm_seq_mapping
 
---DROP TABLE IF EXISTS public.tdm_seq_mapping;
+--DROP TABLE IF EXISTS ${@schema}.tdm_seq_mapping;
 
-CREATE TABLE IF NOT EXISTS public.tdm_seq_mapping
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
 (task_execution_id      bigint NOT NULL,
 lu_type character varying(30) NOT NULL,
 source_env      character varying(100) NOT NULL,
@@ -347,11 +347,11 @@ is_instance_id  character varying(1),
 entity_sequence bigint)
 ;
 
--- Table: public.task_execution_entities
+-- Table: ${@schema}.task_execution_entities
 
--- DROP TABLE IF EXISTS public.task_execution_entities;
+-- DROP TABLE IF EXISTS ${@schema}.task_execution_entities;
 
-CREATE TABLE IF NOT EXISTS public.task_execution_entities
+CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
 (
   task_execution_id text NOT NULL,
   lu_name text NOT NULL,
@@ -363,24 +363,25 @@ CREATE TABLE IF NOT EXISTS public.task_execution_entities
   env_id text,
   execution_status text,
   id_type text,
-  fabric_execution_id character varying(200), -- TDM 6.1
-  iid character varying(50)  NOT NULL DEFAULT '', -- TDM 6.1
-  source_env character varying(50) NOT NULL DEFAULT '', -- TDM 6.1
-  version_name character varying(200) NOT NULL DEFAULT '', -- TDM 6.1
+  fabric_execution_id text, -- TDM 6.1
+  iid text  NOT NULL DEFAULT '', -- TDM 6.1
+  source_env text NOT NULL DEFAULT '', -- TDM 6.1
+  version_name text NOT NULL DEFAULT '', -- TDM 6.1
   version_datetime timestamp without time zone NOT NULL DEFAULT 'epoch', -- TDM 6.1
   fabric_get_time bigint,
   total_processing_time bigint,
-  clone_no character varying(50) DEFAULT '0',
+  clone_no text DEFAULT '0',
+  root_entity_id text,
   CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id)
 );
 
-CREATE INDEX IF NOT EXISTS task_execution_entities_2ix ON public.task_execution_entities (task_execution_id, lu_name, source_env, iid, version_name,version_datetime); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS task_execution_entities_2ix ON ${@schema}.task_execution_entities (task_execution_id, lu_name, source_env, iid, version_name,version_datetime); -- TDM 6.1
 
--- Table: public.tdm_lu_type_relation_eid
+-- Table: ${@schema}.tdm_lu_type_relation_eid
 
---DROP TABLE IF EXISTS public.tdm_lu_type_relation_eid;
+--DROP TABLE IF EXISTS ${@schema}.tdm_lu_type_relation_eid;
 
-CREATE TABLE IF NOT EXISTS public.tdm_lu_type_relation_eid
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_relation_eid
 (
   source_env character varying(200) NOT NULL,
   lu_type_1 character varying(200) NOT NULL,
@@ -393,14 +394,14 @@ CREATE TABLE IF NOT EXISTS public.tdm_lu_type_relation_eid
   CONSTRAINT tdm_lu_type_relation_eid_pk PRIMARY KEY (source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,version_name,version_datetime)
 );
 
-CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_1ix ON public.tdm_lu_type_relation_eid (source_env,lu_type_1,lu_type1_eid,version_name,version_datetime); -- TDM 6.1
-CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_2ix ON public.tdm_lu_type_relation_eid (source_env,lu_type_2,lu_type2_eid,version_name,version_datetime); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_1ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_1,lu_type1_eid,version_name,version_datetime); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_2ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_2,lu_type2_eid,version_name,version_datetime); -- TDM 6.1
 
- -- Table: public.tdm_lu_type_rel_tar_eid
+ -- Table: ${@schema}.tdm_lu_type_rel_tar_eid
 				  
---DROP TABLE IF EXISTS public.tdm_lu_type_rel_tar_eid;
+--DROP TABLE IF EXISTS ${@schema}.tdm_lu_type_rel_tar_eid;
 				  
-CREATE TABLE IF NOT EXISTS public.tdm_lu_type_rel_tar_eid
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_rel_tar_eid
 (
 	target_env character varying(200) NOT NULL,
 	lu_type_1 character varying(200) NOT NULL,
@@ -411,10 +412,10 @@ CREATE TABLE IF NOT EXISTS public.tdm_lu_type_rel_tar_eid
 	CONSTRAINT tdm_lu_type_rel_tar_eid_pk PRIMARY KEY (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid)
 );
 
-CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_2ix ON public.tdm_lu_type_rel_tar_eid (lu_type_1, lu_type1_eid); -- TDM 6.1
-CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_3ix ON public.tdm_lu_type_rel_tar_eid (lu_type_2, lu_type2_eid); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_2ix ON ${@schema}.tdm_lu_type_rel_tar_eid (lu_type_1, lu_type1_eid); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_rel_tar_eid_3ix ON ${@schema}.tdm_lu_type_rel_tar_eid (lu_type_2, lu_type2_eid); -- TDM 6.1
 
-CREATE TABLE IF NOT EXISTS public.tasks_logical_units
+CREATE TABLE IF NOT EXISTS ${@schema}.tasks_logical_units
 (
   task_id bigint NOT NULL,
   lu_id  bigint NOT NULL,
@@ -422,11 +423,11 @@ CREATE TABLE IF NOT EXISTS public.tasks_logical_units
   CONSTRAINT tasks_logical_units_pkey PRIMARY KEY (task_id, lu_name)
 );
 
--- Table: public.task_ref_tables
+-- Table: ${@schema}.task_ref_tables
 
---DROP TABLE IF EXISTS public.task_ref_tables;
+--DROP TABLE IF EXISTS ${@schema}.task_ref_tables;
 
-CREATE TABLE IF NOT EXISTS public.task_ref_tables
+CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
 (
   task_ref_table_id bigint NOT NULL DEFAULT nextval('tasks_ref_table_id_seq'::regclass),
   task_id bigint NOT NULL, 
@@ -438,11 +439,11 @@ CREATE TABLE IF NOT EXISTS public.task_ref_tables
 CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
 );
 
--- Table: public.task_ref_exe_stats
+-- Table: ${@schema}.task_ref_exe_stats
 
---DROP TABLE IF EXISTS public.task_ref_exe_stats;
+--DROP TABLE IF EXISTS ${@schema}.task_ref_exe_stats;
 
-CREATE TABLE IF NOT EXISTS public.task_ref_exe_stats
+CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
 (
   task_id bigint NOT NULL,
   task_execution_id bigint NOT NULL,
@@ -459,59 +460,59 @@ CREATE TABLE IF NOT EXISTS public.task_ref_exe_stats
   updated_by character varying(100)	
   );
 
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX1 on public.task_ref_exe_stats(task_execution_id);
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX2 on public.task_ref_exe_stats(task_execution_id, execution_status);
-Create INDEX IF NOT EXISTS task_ref_exe_stats_IX3 on public.task_ref_exe_stats(task_execution_id, task_ref_table_id, execution_status);
+Create INDEX IF NOT EXISTS task_ref_exe_stats_IX1 on ${@schema}.task_ref_exe_stats(task_execution_id);
+Create INDEX IF NOT EXISTS task_ref_exe_stats_IX2 on ${@schema}.task_ref_exe_stats(task_execution_id, execution_status);
+Create INDEX IF NOT EXISTS task_ref_exe_stats_IX3 on ${@schema}.task_ref_exe_stats(task_execution_id, task_ref_table_id, execution_status);
 
--- Table: public.tdm_general_parameters
+-- Table: ${@schema}.tdm_general_parameters
 
--- DROP TABLE IF EXISTS public.tdm_general_parameters
+-- DROP TABLE IF EXISTS ${@schema}.tdm_general_parameters
 
-CREATE TABLE IF NOT EXISTS public.tdm_general_parameters
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_general_parameters
 (
   param_name character varying(200) NOT NULL,
   param_value character varying(2000),
   CONSTRAINT tdm_general_parameters_pk PRIMARY KEY (param_name)
 );
 
-INSERT INTO public.tdm_general_parameters(
+INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
     select 'cleanup_retention_period', '2'  
-where not exists (select 1 from public.tdm_general_parameters where param_name = 'cleanup_retention_period');
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'cleanup_retention_period');
 
-INSERT INTO public.tdm_general_parameters(
+INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-     select 'tdm_gui_params', '{"maxRetentionPeriod":90,"defaultPeriod":{"unit":"Days","value":5},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}]}' 
-where not exists (select 1 from public.tdm_general_parameters where param_name = 'tdm_gui_params');
+     select 'tdm_gui_params','{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
     
-INSERT INTO public.tdm_general_parameters(
+INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '7.6' 
-where not exists (select 1 from public.tdm_general_parameters where param_name = 'TDM_VERSION');
+    select 'TDM_VERSION', '8.0' 
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
-insert into public.tdm_general_parameters(
+insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
 	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
-where not exists (select 1 from public.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
 
--- Table: public.task_globals
+-- Table: ${@schema}.task_globals
 
---DROP TABLE IF EXISTS public.task_globals;
+--DROP TABLE IF EXISTS ${@schema}.task_globals;
 
-CREATE TABLE IF NOT EXISTS public.task_globals
+CREATE TABLE IF NOT EXISTS ${@schema}.task_globals
 (
   task_id bigint NOT NULL,
   global_name character varying(200),
   global_value character varying(200)
 );
 
-Create INDEX IF NOT EXISTS task_globals_ix on public.task_globals(task_id);
+Create INDEX IF NOT EXISTS task_globals_ix on ${@schema}.task_globals(task_id);
 
--- Table: public.tdm_env_globals
+-- Table: ${@schema}.tdm_env_globals
 
---DROP TABLE IF EXISTS public.tdm_env_globals;
+--DROP TABLE IF EXISTS ${@schema}.tdm_env_globals;
 
-CREATE TABLE IF NOT EXISTS public.tdm_env_globals
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_env_globals
 (
    ENVIRONMENT_ID bigint ,
    GLOBAL_NAME character varying (200),
@@ -523,8 +524,8 @@ CREATE TABLE IF NOT EXISTS public.tdm_env_globals
 create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
 
 -- New Table task_execution_summary, TDM 6.1
---DROP TABLE IF EXISTS public.task_execution_summary;
-CREATE TABLE IF NOT EXISTS public.task_execution_summary
+--DROP TABLE IF EXISTS ${@schema}.task_execution_summary;
+CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
 (
   task_execution_id bigint NOT NULL,
   task_id bigint NOT NULL,
@@ -553,14 +554,14 @@ CREATE TABLE IF NOT EXISTS public.task_execution_summary
   tot_num_of_failed_post_executions numeric(10,0),
   CONSTRAINT task_execution_summary_pkey PRIMARY KEY (task_execution_id)
 );
--- DROP INDEX IF EXISTS public.task_exec_summary_ix1;
+-- DROP INDEX IF EXISTS ${@schema}.task_exec_summary_ix1;
 
 CREATE INDEX IF NOT EXISTS task_exec_summary_ix1
-  ON public.task_execution_summary  (task_id);
+  ON ${@schema}.task_execution_summary  (task_id);
 
 -- New Table task_exe_stats_summary, TDM 6.1
---DROP TABLE IF EXISTS public.task_exe_stats_summary;
---CREATE TABLE IF NOT EXISTS public.task_exe_stats_summary
+--DROP TABLE IF EXISTS ${@schema}.task_exe_stats_summary;
+--CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_summary
 --(
 --	task_execution_id bigint NOT NULL,
 --	lu_name character varying(200) NOT NULL,
@@ -574,8 +575,8 @@ CREATE INDEX IF NOT EXISTS task_exec_summary_ix1
 --);
 
 -- New Table task_exe_error_summary, TDM 6.1
---DROP TABLE IF EXISTS public.task_exe_error_summary;
-CREATE TABLE IF NOT EXISTS public.task_exe_error_summary
+--DROP TABLE IF EXISTS ${@schema}.task_exe_error_summary;
+CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_summary
 (
 	task_execution_id bigint NOT NULL,
 	etl_execution_id numeric(10,0),
@@ -590,8 +591,8 @@ CREATE TABLE IF NOT EXISTS public.task_exe_error_summary
 );
 
 -- New Table task_exe_error_detailed, TDM 6.1.1
---DROP TABLE IF EXISTS public.task_exe_error_detailed;
-CREATE TABLE IF NOT EXISTS public.task_exe_error_detailed
+--DROP TABLE IF EXISTS ${@schema}.task_exe_error_detailed;
+CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_detailed
 (
 	task_execution_id bigint NOT NULL,
 	lu_name character varying(200) NOT NULL,
@@ -610,14 +611,14 @@ CREATE TABLE IF NOT EXISTS public.task_exe_error_detailed
 
 -- Index: task_exe_error_detailed_1ix
 
--- DROP INDEX IF EXISTS public.task_exe_error_detailed_1ix;
+-- DROP INDEX IF EXISTS ${@schema}.task_exe_error_detailed_1ix;
 
-CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON public.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);
+CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON ${@schema}.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);
 
 -- Support Post Execution Process, TDM 7.0.1
--- Table public.tdm_be_post_exe_process
---DROP TABLE IF EXISTS public.tdm_be_post_exe_process;
-CREATE TABLE IF NOT EXISTS public.tdm_be_post_exe_process (
+-- Table ${@schema}.tdm_be_post_exe_process
+--DROP TABLE IF EXISTS ${@schema}.tdm_be_post_exe_process;
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_post_exe_process (
 	process_id bigint NOT NULL DEFAULT nextval('post_exe_process_id_seq'::regclass),
 	process_name text,
 	process_description text,
@@ -625,11 +626,11 @@ CREATE TABLE IF NOT EXISTS public.tdm_be_post_exe_process (
 	execution_order integer NOT NULL,
 	CONSTRAINT be_post_exe_process_pkey PRIMARY KEY (process_id)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_post_exe_process_ix1 ON public.tdm_be_post_exe_process (process_name, be_id);
+CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_post_exe_process_ix1 ON ${@schema}.tdm_be_post_exe_process (process_name, be_id);
 
--- Table public.tasks_post_exe_process
---DROP TABLE IF EXISTS public.tasks_post_exe_process;
-CREATE TABLE IF NOT EXISTS public.tasks_post_exe_process (
+-- Table ${@schema}.tasks_post_exe_process
+--DROP TABLE IF EXISTS ${@schema}.tasks_post_exe_process;
+CREATE TABLE IF NOT EXISTS ${@schema}.tasks_post_exe_process (
 	task_id bigint NOT NULL,
 	process_id bigint NOT NULL,
 	process_name text NOT NULL,
@@ -637,9 +638,9 @@ CREATE TABLE IF NOT EXISTS public.tasks_post_exe_process (
 	CONSTRAINT tasks_post_exe_process_pkey PRIMARY KEY (task_id, process_id)
 );
 
--- Table public.task_exe_stats_detailed
---DROP TABLE IF EXISTS public.task_exe_stats_detailed;
-CREATE TABLE IF NOT EXISTS public.task_exe_stats_detailed
+-- Table ${@schema}.task_exe_stats_detailed
+--DROP TABLE IF EXISTS ${@schema}.task_exe_stats_detailed;
+CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
 (
     task_execution_id bigint NOT NULL,
     lu_name character varying(200)  NOT NULL,
@@ -656,10 +657,10 @@ CREATE TABLE IF NOT EXISTS public.task_exe_stats_detailed
     results character varying(20)
 );
 
--- Table public.permission_groups_mapping; - TDM 7.1
--- DROP TABLE IF EXISTS public.permission_groups_mapping;
+-- Table ${@schema}.permission_groups_mapping; - TDM 7.1
+-- DROP TABLE IF EXISTS ${@schema}.permission_groups_mapping;
 
-CREATE TABLE IF NOT EXISTS public.permission_groups_mapping
+CREATE TABLE IF NOT EXISTS ${@schema}.permission_groups_mapping
 (
     description text,
     fabric_role character varying(100) NOT NULL,
@@ -672,7 +673,7 @@ CREATE TABLE IF NOT EXISTS public.permission_groups_mapping
 );
 
 -- Add initial mapping for admin user
-insert into public.permission_groups_mapping (
+insert into ${@schema}.permission_groups_mapping (
 	description,
 	fabric_role,
 	permission_group,
@@ -681,14 +682,14 @@ insert into public.permission_groups_mapping (
 	creation_date,
 	update_date) 
 select'Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW()  
-where not exists (select 1 from public.permission_groups_mapping where fabric_role = 'admin');
+where not exists (select 1 from ${@schema}.permission_groups_mapping where fabric_role = 'admin');
 
 
--- Table: public.task_execution_override_attrs - TDM 7.2
+-- Table: ${@schema}.task_execution_override_attrs - TDM 7.2
 
--- DROP TABLE IF EXISTS public.task_execution_override_attrs;
+-- DROP TABLE IF EXISTS ${@schema}.task_execution_override_attrs;
 
-CREATE TABLE IF NOT EXISTS public.task_execution_override_attrs
+CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_override_attrs
 (
 	task_id bigint NOT NULL,
 	task_execution_id bigint NOT NULL,
@@ -696,10 +697,10 @@ CREATE TABLE IF NOT EXISTS public.task_execution_override_attrs
 	CONSTRAINT task_execution_override_attrs_pkey PRIMARY KEY (task_execution_id, task_id)
 );
 
--- Table: public.tdm_reserved_entities - TDM 7.4
---DROP TABLE IF EXISTS public.tdm_reserved_entities;
+-- Table: ${@schema}.tdm_reserved_entities - TDM 7.4
+--DROP TABLE IF EXISTS ${@schema}.tdm_reserved_entities;
 
-CREATE TABLE IF NOT EXISTS public.tdm_reserved_entities
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_reserved_entities
 (
 	entity_id text NOT NULL,
 	be_id bigint NOT NULL,
@@ -715,10 +716,21 @@ CREATE TABLE IF NOT EXISTS public.tdm_reserved_entities
 	CONSTRAINT tdm_reserved_entities_pkey PRIMARY KEY (entity_id, be_id, env_id)
 );
 
+--- Table: ${@schema}.tdm_generate_task_field_mappings - TDM 8.0
+--DROP TABLE IF EXISTS ${@schema}.tdm_generate_task_field_mappings;
+
+CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
+(
+    task_id bigint NOT NULL,
+    param_name text COLLATE pg_catalog."default",
+    param_type text COLLATE pg_catalog."default" NOT NULL,
+    param_value text COLLATE pg_catalog."default",
+    CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
+);
 
 -- utils functions (working with parameters)
 -- json_cast function adds changes the format of the json data
-CREATE OR REPLACE FUNCTION json_cast(data json) RETURNS json IMMUTABLE AS 
+CREATE OR REPLACE FUNCTION ${@schema}.json_cast(data json) RETURNS json IMMUTABLE AS 
 $body$
     SELECT ('{'|| string_agg(to_json(UPPER(key)) || ':' || '"' || replace(regexp_split_to_array(replace(regexp_replace(value::text, '\[(.*)\]', '\1'), '"',''), ',')::text, '"','') || '"', ',') || '}')::json
     FROM (
@@ -728,7 +740,7 @@ $body$
 LANGUAGE sql;
 
 -- json_add_prefix function adds luName as prefix to json
-CREATE OR REPLACE FUNCTION json_add_prefix(luName text, data json = '{}') RETURNS json IMMUTABLE AS 
+CREATE OR REPLACE FUNCTION ${@schema}.json_add_prefix(luName text, data json = '{}') RETURNS json IMMUTABLE AS 
 $body$
 declare
   result json;
@@ -743,7 +755,7 @@ $body$
 LANGUAGE plpgsql;
 
 -- json_append function receives two jsons and merges them to one
-CREATE OR REPLACE FUNCTION json_append(data json, first_data json = '{}', second_data json = '{}') RETURNS json IMMUTABLE AS 
+CREATE OR REPLACE FUNCTION ${@schema}.json_append(data json, first_data json = '{}', second_data json = '{}') RETURNS json IMMUTABLE AS 
 $body$
     SELECT ('{'||string_agg(to_json(key)||':'||value, ',')||'}')::json
     FROM (
@@ -758,7 +770,7 @@ LANGUAGE sql;
 
 			     
 -- param_values function returns json with param names as keys and param values as values
-CREATE OR REPLACE FUNCTION public.param_values(
+CREATE OR REPLACE FUNCTION ${@schema}.param_values(
 parentlu text,
 entity_id text,
 table_name text,
@@ -773,7 +785,7 @@ RETURN QUERY EXECUTE
 CASE WHEN EXISTS(SELECT 1 FROM tdm_lu_type_relation_eid WHERE source_env = env AND lu_type_1 = parentlu) THEN
 '
 SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM public.' || lower(table_name) || ' WHERE entity_id in (
+SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
 SELECT rel_base.'|| select_col || ' FROM ' || lower(parentlu) || '_params
 LEFT JOIN ( SELECT * FROM tdm_lu_type_relation_eid
 WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
@@ -787,7 +799,7 @@ AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || 
 ELSE
 '
 SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM public.' || lower(table_name) || ' WHERE entity_id in (
+SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
 SELECT entity_id FROM ' || lower(parentlu) || '_params
 WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
 AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
@@ -798,10 +810,10 @@ $BODY$
 LANGUAGE plpgsql VOLATILE
 COST 100
 ROWS 1000;
---ALTER FUNCTION public.param_values(text, text, text, text, text, text, text)
+--ALTER FUNCTION ${@schema}.param_values(text, text, text, text, text, text, text)
 --OWNER TO tdm;
 			     
-CREATE OR REPLACE FUNCTION param_values(
+CREATE OR REPLACE FUNCTION ${@schema}.param_values(
 	parentlu text,
 	entity_id text,
 	table_name text,
@@ -858,7 +870,7 @@ $BODY$;
 --    OWNER TO tdm;
 
 -- eval function executes received string expression as query
-CREATE OR REPLACE FUNCTION eval(expression text) RETURNS void
+CREATE OR REPLACE FUNCTION ${@schema}.eval(expression text) RETURNS void
 as
 $body$
 declare
@@ -870,3 +882,15 @@ end;
 $body$
 LANGUAGE plpgsql;
 
+INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
+	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
+	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
+	allow_read, sync_mode) 
+	VALUES ('Synthetic','This is the synthetic environment.',NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE') ON CONFLICT DO NOTHING;;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;;
+INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, 
+	allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, allowed_number_of_entities_to_copy, role_id, role_created_by, 
+	role_creation_date, role_last_updated_date, role_expiration_date, role_last_updated_by, role_status, allowed_refresh_reference_data, allowed_replace_sequences, 
+	allow_read, allow_write, allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities)
+	VALUES (-1,'Synthetic','Role for Synethetic Environment',false,false,false,false,false,0,-1,'admin',NOW(),NOW(),NULL,'admin','Active',
+	false,false,true,false,1000,false,false,0) ON CONFLICT DO NOTHING;

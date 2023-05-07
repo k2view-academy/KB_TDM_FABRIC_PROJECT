@@ -1,0 +1,493 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Task Execution ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Parent LU Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "PARENT_LU"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "LU Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDM Version Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_VERSION_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TDM Version Datetime",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_VERSION_DATETIME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Env Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Child IID",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Concat1",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "."
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Parent LU Global Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Version date time formatting",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "InnerFlow1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "buildPGDateTimeStringFormat"
+                                    },
+                                    {
+                                        "name": "DatetTimeString",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "pgDateTimeStr",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get the parent LUI from the TDMDB",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchField1",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "\tSelect t.entity_id \r\nFrom task_execution_entities t, tdm_lu_type_relation_eid rel \r\nWhere t.task_execution_id = ? \r\nand t.lu_name = ? \r\nand t.lu_name = rel.lu_type_1 \r\nand t.source_env = rel.source_env \r\nand t.iid =  rel.lu_type1_eid\r\nand rel.lu_type_2 = ? \r\nand rel.lu_type2_eid = ?\r\nand rel.version_name = ?\r\nand rel.version_datetime = ? "
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IsNull1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchField2",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "\tSelect rel.lu_type1_eid\r\nFrom tdm_lu_type_relation_eid rel \r\nWhere rel.lu_type_1 = ?  \r\nand rel.source_env = ?\r\nand rel.lu_type_2 = ? \r\nand rel.lu_type2_eid = ?"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Task Execution ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Parent LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "params"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbFetchField2",
+                "name": "params"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "LU Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "TDM Version Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "params"
+            },
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "TDM Version Datetime",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "InnerFlow1",
+                "name": "DatetTimeString"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Env Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField2",
+                "name": "params"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Child IID",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "params"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "Child IID",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "DbFetchField2",
+                "name": "params"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "Concat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FabricSetRead1",
+                "name": "key"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "params"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchField2",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "InnerFlow1",
+                "name": "pgDateTimeStr"
+            },
+            "rightPort": {
+                "actor": "DbFetchField1",
+                "name": "params"
+            },
+            "arrayPosition": 5
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "LU Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "childIID"
+            },
+            "rightPort": {
+                "actor": "Child IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchField1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "parentLUI"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchField2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "parentLUI"
+            }
+        }
+    ]
+}

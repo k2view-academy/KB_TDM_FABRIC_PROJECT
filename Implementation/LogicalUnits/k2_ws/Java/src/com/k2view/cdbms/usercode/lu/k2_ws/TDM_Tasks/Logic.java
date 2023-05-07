@@ -5,23 +5,28 @@
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks;
 
 import com.k2view.cdbms.lut.LUType;
-import com.k2view.cdbms.lut.LudbJobs;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
-import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
-import com.k2view.fabric.common.Util;
+import com.k2view.fabric.common.Json;
+import com.k2view.fabric.common.ParamConvertor;
 
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
-import com.k2view.fabric.common.Json;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
+import org.json.JSONObject;
+
+import static com.k2view.cdbms.usercode.common.SharedGlobals.MAX_NUMBER_OF_ENTITIES_IN_LIST;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetReferenceSummaryData;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnSplitUID;
+import static com.k2view.cdbms.usercode.common.TaskExecutionUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.fnValidateSourceEnvForTask;
+import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.fnValidateTargetEnvForTask;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 import java.sql.*;
 import java.math.*;
@@ -37,12 +42,13 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 	public static String schema="public";
 	public static final String DB_FABRIC = "fabric";
+    public static final String TDM = "TDM";
+
 
 	@desc("Gets the list of available Business Entities that can be selected in the task based on the related Products of the task's environment. The API checks the source environment of Extract tasks and the target environment of Load tasks.")
 	@webService(path = "environment/{envId}/businessEntitiesForEnvProducts", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
@@ -345,7 +351,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		
 		try{
-			Db.Rows result = TaskExecutionUtils.fnGetTasks(task_ids);
+			Db.Rows result = fnGetTasks(task_ids);
 		
 			String q = "SELECT * FROM " + TDMDB_SCHEMA + ".ENVIRONMENT_ROLES";
 			Db.Rows rolesResult = db(TDM).fetch(q);
@@ -694,7 +700,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- selection_method: populated by the following values:\r\n" +
 			"  - Extract task: 'L' (entity list), 'REF' (reference only task),  or 'ALL' (all entities).\r\n" +
-			"  - Load task: 'L' (entity list), 'ALL', 'P' (Paramerers), 'PR' (Parameters with random selection), 'S' (Synthetic), or 'R' (Random).\r\n" +
+			"  - Load task: 'L' (entity list), 'ALL', 'P' (Paramerers), 'PR' (Parameters with random selection), 'CLONE' (Cloning), or 'R' (Random).\r\n" +
 			"\r\n" +
 			"- task_title: task name\r\n" +
 			"\r\n" +
@@ -791,7 +797,17 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved) throws Exception {
+	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, 
+            Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, 
+            String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, 
+            Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, 
+            String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, 
+            String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, 
+            Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, 
+            String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, 
+            List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, 
+            @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, 
+            Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String, Object> DataManParams) throws Exception {
 		Long taskId;
 		
 		if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !"REF".equals(selection_method) && num_of_entities == null) {
@@ -806,7 +822,7 @@ public class Logic extends WebServiceUserCode {
 				scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name,
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
 				selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference,
-				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved);
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, DataManParams);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
 				return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -843,125 +859,229 @@ public class Logic extends WebServiceUserCode {
 			"Example of a request body:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"   \"filterout_reserved\":false,\r\n" +
-			"   \"operationMode\":\"insert_entity_without_delete\",\r\n" +
-			"   \"task_type\":\"LOAD\",\r\n" +
-			"   \"task_title\":\"testapi2\",\r\n" +
-			"   \"extractSelected\":false,\r\n" +
-			"   \"load_entity\":true,\r\n" +
-			"   \"delete_before_load\":false,\r\n" +
-			"   \"reserve_ind\":true,\r\n" +
-			"   \"be_id\":4,\r\n" +
-			"   \"source_environment_id\":1,\r\n" +
-			"   \"environment_id\":2,\r\n" +
-			"   \"source_env_name\":\"SRC\",\r\n" +
-			"   \"environment_name\":\"TAR\",\r\n" +
-			"   \"allLogicalUnits\":[\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":null,\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"lu_id\":7,\r\n" +
-			"         \"product_name\":\"CRM\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Billing\",\r\n" +
-			"         \"lu_id\":9,\r\n" +
-			"         \"product_name\":\"FINANCE\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Collection\",\r\n" +
-			"         \"lu_id\":10,\r\n" +
-			"         \"product_name\":\"FINANCE\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Orders\",\r\n" +
-			"         \"lu_id\":8,\r\n" +
-			"         \"product_name\":\"ORDERS\"\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"selectedLogicalUnits\":[\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":null,\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"lu_id\":7,\r\n" +
-			"         \"product_name\":\"CRM\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Billing\",\r\n" +
-			"         \"lu_id\":9,\r\n" +
-			"         \"product_name\":\"FINANCE\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Collection\",\r\n" +
-			"         \"lu_id\":10,\r\n" +
-			"         \"product_name\":\"FINANCE\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Orders\",\r\n" +
-			"         \"lu_id\":8,\r\n" +
-			"         \"product_name\":\"ORDERS\"\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"missingRootLU\":[\r\n" +
-			"      \r\n" +
-			"   ],\r\n" +
-			"   \"num_of_entities\":2,\r\n" +
-			"   \"syncModeRadio\":null,\r\n" +
-			"   \"sync_mode\":null,\r\n" +
-			"   \"reserve_retention_period_value\":5,\r\n" +
-			"   \"reserve_retention_period_type\":\"Days\",\r\n" +
-			"   \"allPostExecutionProcess\":[\r\n" +
-			"      {\r\n" +
-			"         \"process_id\":1,\r\n" +
-			"         \"be_id\":4,\r\n" +
-			"         \"process_name\":\"PostExecFlow\",\r\n" +
-			"         \"process_description\":null,\r\n" +
-			"         \"execution_order\":1\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"postExecutionProcesses\":[\r\n" +
-			"      1\r\n" +
-			"   ],\r\n" +
-			"   \"reference\":\"both\",\r\n" +
-			"   \"versionsForLoad\":[\r\n" +
-			"      \r\n" +
-			"   ],\r\n" +
-			"   \"selection_method\":\"PR\",\r\n" +
-			"   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
-			"   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
-			"   \"refList\":[\r\n" +
-			"      {\r\n" +
-			"         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"interface_name\":\"CRM_DB\",\r\n" +
-			"         \"schema_name\":\"public\",\r\n" +
-			"         \"logical_unit_name\":\"Customer\",\r\n" +
-			"         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"ref_table_name\":\"devicestable2017\",\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"interface_name\":\"CRM_DB\",\r\n" +
-			"         \"schema_name\":\"public\",\r\n" +
-			"         \"logical_unit_name\":\"Customer\",\r\n" +
-			"         \"reference_table_name\":\"devicestable2017\",\r\n" +
-			"         \"selected\":true\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"refresh_reference_data\":false,\r\n" +
-			"   \"selected_version_task_name\":null,\r\n" +
-			"   \"selected_version_datetime\":null,\r\n" +
-			"   \"selected_version_task_exe_id\":null,\r\n" +
-			"   \"selected_ref_version_task_name\":null,\r\n" +
-			"   \"selected_ref_version_datetime\":null,\r\n" +
-			"   \"selected_ref_version_task_exe_id\":null,\r\n" +
-			"   \"scheduler\":\"immediate\"\r\n" +
+			"\t\"DataManParams\": {\r\n" +
+			"\t\t\"city\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"name\": \"city\",\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"string\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtable\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": \"addresses\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"city\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"city\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"state\": {\r\n" +
+			"\t\t\t\t\t\t\"external\": \"state\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableKey\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {}\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": null,\r\n" +
+			"\t\t\t\"description\": \"Select the City to select a random address\",\r\n" +
+			"\t\t\t\"type\": \"string\",\r\n" +
+			"\t\t\t\"mandatory\": false,\r\n" +
+			"\t\t\t\"value\": \"Dallas\",\r\n" +
+			"\t\t\t\"name\": \"city\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t\"contract_ref_id\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"name\": \"contract_ref_id\",\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"string\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtable\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": \"contract_reference\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"contract_ref_id\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"contract_ref_id\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableKey\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {}\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": null,\r\n" +
+			"\t\t\t\"description\": \"Select Reference ID to select random Contract Description\",\r\n" +
+			"\t\t\t\"type\": \"string\",\r\n" +
+			"\t\t\t\"mandatory\": false,\r\n" +
+			"\t\t\t\"name\": \"contract_ref_id\",\r\n" +
+			"\t\t\t\"value\": \"102\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t\"crm_cases_number_of_records\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"schema\": \"{}\",\r\n" +
+			"\t\t\t\t\"name\": \"crm_cases_number_of_records\",\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"crm_cases_number_of_records\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"distribution\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"distribution\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {\r\n" +
+			"\t\t\t\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\t\t\t\"minimum\": 1,\r\n" +
+			"\t\t\t\t\t\t\t\"maximum\": 3\r\n" +
+			"\t\t\t\t\t\t}\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.distribution\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": {\r\n" +
+			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\"minimum\": 1,\r\n" +
+			"\t\t\t\t\"maximum\": 3\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"description\": \"Distribution Of Records Of table cases\",\r\n" +
+			"\t\t\t\"type\": \"any\",\r\n" +
+			"\t\t\t\"mandatory\": \"false\",\r\n" +
+			"\t\t\t\"value\": {\r\n" +
+			"\t\t\t\t\"maximum\": 5,\r\n" +
+			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\"minimum\": 3\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"name\": \"crm_cases_number_of_records\"\r\n" +
+			"\t\t}\r\n" +
+			"\t},\r\n" +
+			"\t\"filterout_reserved\": false,\r\n" +
+			"\t\"operationMode\": \"insert_entity_without_delete\",\r\n" +
+			"\t\"task_type\": \"LOAD\",\r\n" +
+			"\t\"task_title\": \"testapi2\",\r\n" +
+			"\t\"extractSelected\": false,\r\n" +
+			"\t\"load_entity\": true,\r\n" +
+			"\t\"delete_before_load\": false,\r\n" +
+			"\t\"reserve_ind\": true,\r\n" +
+			"\t\"be_id\": 4,\r\n" +
+			"\t\"source_environment_id\": 1,\r\n" +
+			"\t\"environment_id\": 2,\r\n" +
+			"\t\"source_env_name\": \"SRC\",\r\n" +
+			"\t\"environment_name\": \"TAR\",\r\n" +
+			"\t\"allLogicalUnits\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": null,\r\n" +
+			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_id\": 7,\r\n" +
+			"\t\t\t\"product_name\": \"CRM\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
+			"\t\t\t\"lu_id\": 9,\r\n" +
+			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_name\": \"Collection\",\r\n" +
+			"\t\t\t\"lu_id\": 10,\r\n" +
+			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_name\": \"Orders\",\r\n" +
+			"\t\t\t\"lu_id\": 8,\r\n" +
+			"\t\t\t\"product_name\": \"ORDERS\"\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"selectedLogicalUnits\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": null,\r\n" +
+			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_id\": 7,\r\n" +
+			"\t\t\t\"product_name\": \"CRM\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
+			"\t\t\t\"lu_id\": 9,\r\n" +
+			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_name\": \"Collection\",\r\n" +
+			"\t\t\t\"lu_id\": 10,\r\n" +
+			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
+			"\t\t\t\"lu_name\": \"Orders\",\r\n" +
+			"\t\t\t\"lu_id\": 8,\r\n" +
+			"\t\t\t\"product_name\": \"ORDERS\"\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"missingRootLU\": [],\r\n" +
+			"\t\"num_of_entities\": 2,\r\n" +
+			"\t\"syncModeRadio\": null,\r\n" +
+			"\t\"sync_mode\": null,\r\n" +
+			"\t\"reserve_retention_period_value\": 5,\r\n" +
+			"\t\"reserve_retention_period_type\": \"Days\",\r\n" +
+			"\t\"allPostExecutionProcess\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"process_id\": 1,\r\n" +
+			"\t\t\t\"be_id\": 4,\r\n" +
+			"\t\t\t\"process_name\": \"PostExecFlow\",\r\n" +
+			"\t\t\t\"process_description\": null,\r\n" +
+			"\t\t\t\"execution_order\": 1\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"postExecutionProcesses\": [\r\n" +
+			"\t\t1\r\n" +
+			"\t],\r\n" +
+			"\t\"reference\": \"both\",\r\n" +
+			"\t\"versionsForLoad\": [],\r\n" +
+			"\t\"selection_method\": \"PR\",\r\n" +
+			"\t\"selection_param_value\": \"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
+			"\t\"parameters\": \"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
+			"\t\"refList\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"ref_table_name\": \"DEVICESTABLE2017\",\r\n" +
+			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
+			"\t\t\t\"interface_name\": \"CRM_DB\",\r\n" +
+			"\t\t\t\"schema_name\": \"public\",\r\n" +
+			"\t\t\t\"logical_unit_name\": \"Customer\",\r\n" +
+			"\t\t\t\"reference_table_name\": \"DEVICESTABLE2017\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"ref_table_name\": \"devicestable2017\",\r\n" +
+			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
+			"\t\t\t\"interface_name\": \"CRM_DB\",\r\n" +
+			"\t\t\t\"schema_name\": \"public\",\r\n" +
+			"\t\t\t\"logical_unit_name\": \"Customer\",\r\n" +
+			"\t\t\t\"reference_table_name\": \"devicestable2017\",\r\n" +
+			"\t\t\t\"selected\": true\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"refresh_reference_data\": false,\r\n" +
+			"\t\"selected_version_task_name\": null,\r\n" +
+			"\t\"selected_version_datetime\": null,\r\n" +
+			"\t\"selected_version_task_exe_id\": null,\r\n" +
+			"\t\"selected_ref_version_task_name\": null,\r\n" +
+			"\t\"selected_ref_version_datetime\": null,\r\n" +
+			"\t\"selected_ref_version_task_exe_id\": null,\r\n" +
+			"\t\"scheduler\": \"immediate\"\r\n" +
 			"}")
 	@webService(path = "task", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -971,7 +1091,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved) throws Exception {
+	public static Object wsCreateTaskV1(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String,Object> DataManParams) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
@@ -1030,15 +1150,20 @@ public class Logic extends WebServiceUserCode {
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
+		          if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
+				retention_period_value = -1;
+			}
 			Db.Row row = db(TDM).fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
-					scheduler, delete_before_load,
+					scheduler, 
+		                  ((delete_before_load != null) ? delete_before_load : false),
 					num_of_entities, selection_method,
 					selection_param_value, entity_exclusion_list, "Active",
 					username, now, now, username, "Active", task_title,
 					parameters, refresh_reference_data, replace_sequences, 
 					((source_environment_id != null) ? source_environment_id : environment_id),
 					((source_env_name != null) ? source_env_name : ""), 
-					load_entity, task_type, scheduling_end_date,
+					((load_entity != null) ? load_entity : false), 
+		                  task_type, scheduling_end_date,
 					(version_ind!=null? version_ind == true:false), retention_period_type, retention_period_value,
 					selected_version_task_name, selected_version_datetime,
 					selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id,
@@ -1048,7 +1173,7 @@ public class Logic extends WebServiceUserCode {
 		
 			if (refList!=null ) {
 				if(refList.size() > 0){
-					TaskExecutionUtils.fnSaveRefTablestoTask(taskId, refList);
+					fnSaveRefTablestoTask(taskId, refList);
 				}
 			}
 		
@@ -1062,7 +1187,7 @@ public class Logic extends WebServiceUserCode {
 							db(TDM).execute(insertGlobalSql,taskId, global.get("global_name").toString(), global.get("global_value").toString());
 						}*/
 						for(Map<String,Object> global:globals){
-							TaskExecutionUtils.createTaskGlobals(taskId, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
+							createTaskGlobals(taskId, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
 						}
 					} catch(Exception e){
 						log.error(e.getMessage());
@@ -1071,9 +1196,14 @@ public class Logic extends WebServiceUserCode {
 			}
 		
 			try {
+		               // TDM 8.0 - In case of Synthetic task, add the input parameters of the population flows to the TDMDB tdm_generate_task_field_mappings
+		               //log.info("wsCreateTaskV1 - params size: " + DataManParams.size());
+		              createTaskDMParams(taskId, DataManParams);
+		
 				String activityDesc = "Task " + task_title + " was created";
-				TaskExecutionUtils.fnInsertActivity("create", "Tasks", activityDesc);
+				fnInsertActivity("create", "Tasks", activityDesc);
 			} catch(Exception e){
+		              e.printStackTrace();
 				log.error(e.getMessage());
 			}
 		
@@ -1189,7 +1319,18 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved) throws Exception {
+	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, 
+            Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, 
+            String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, 
+            String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, 
+            @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, 
+            Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, 
+            Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, 
+            String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, 
+            List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, 
+            String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, 
+            Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, 
+            String reserve_note, Boolean filterout_reserved, HashMap<String, Object> DataManParams) throws Exception {
 		Long newTaskId = null;
 		
 		db(TDM).beginTransaction();
@@ -1200,7 +1341,7 @@ public class Logic extends WebServiceUserCode {
 				task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, 
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, 
 				selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference, task_created_by, task_creation_date,
-				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved);
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, DataManParams);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
 				return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -1237,206 +1378,257 @@ public class Logic extends WebServiceUserCode {
 			"Example of a request body:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"   \"task_last_updated_date\":\"2022-12-19 12:16:48.257\",\r\n" +
-			"   \"filterout_reserved\":false,\r\n" +
-			"   \"be_id\":4,\r\n" +
-			"   \"selected_version_task_name\":null,\r\n" +
-			"   \"reserve_retention_period_type\":\"Days\",\r\n" +
-			"   \"environment_id\":2,\r\n" +
-			"   \"selection_method\":\"PR\",\r\n" +
-			"   \"selected_ref_version_task_name\":null,\r\n" +
-			"   \"refresh_reference_data\":false,\r\n" +
-			"   \"tester\":\"tester2\",\r\n" +
-			"   \"be_last_updated_date\":\"2022-12-19 12:12:39.838\",\r\n" +
-			"   \"owners\":[\r\n" +
-			"      \r\n" +
-			"   ],\r\n" +
-			"   \"refcount\":1,\r\n" +
-			"   \"num_of_entities\":2,\r\n" +
-			"   \"tester_type\":\"ID\",\r\n" +
-			"   \"reserve_note\":null,\r\n" +
-			"   \"load_entity\":true,\r\n" +
-			"   \"selected_version_task_exe_id\":null,\r\n" +
-			"   \"task_created_by\":\"admin\",\r\n" +
-			"   \"be_last_updated_by\":\"admin\",\r\n" +
-			"   \"scheduling_end_date\":null,\r\n" +
-			"   \"environment_point_of_contact_phone1\":null,\r\n" +
-			"   \"processnames\":\"PostExecFlow\",\r\n" +
-			"   \"testers\":[\r\n" +
-			"      {\r\n" +
-			"         \"tester_type\":\"ID\",\r\n" +
-			"         \"role_id\":[\r\n" +
-			"            \"4\"\r\n" +
-			"         ],\r\n" +
-			"         \"tester\":\"tester2\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"tester_type\":\"ID\",\r\n" +
-			"         \"role_id\":[\r\n" +
-			"            \"3\"\r\n" +
-			"         ],\r\n" +
-			"         \"tester\":\"tester1\"\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
-			"   \"environment_status\":\"Active\",\r\n" +
-			"   \"be_status\":\"Active\",\r\n" +
-			"   \"selected_version_datetime\":null,\r\n" +
-			"   \"task_last_updated_by\":\"admin\",\r\n" +
-			"   \"selected_ref_version_task_exe_id\":null,\r\n" +
-			"   \"task_execution_status\":\"Active\",\r\n" +
-			"   \"sync_mode\":null,\r\n" +
-			"   \"replace_sequences\":false,\r\n" +
-			"   \"entity_exclusion_list\":null,\r\n" +
-			"   \"environment_point_of_contact_last_name\":null,\r\n" +
-			"   \"environment_point_of_contact_email\":null,\r\n" +
-			"   \"be_description\":\"\",\r\n" +
-			"   \"reserve_retention_period_value\":5,\r\n" +
-			"   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
-			"   \"environment_expiration_date\":null,\r\n" +
-			"   \"environment_point_of_contact_phone2\":null,\r\n" +
-			"   \"environment_created_by\":\"admin\",\r\n" +
-			"   \"roles\":[\r\n" +
-			"      [\r\n" +
-			"         {\r\n" +
-			"            \"role_id\":4,\r\n" +
-			"            \"allowed_test_conn_failure\":false\r\n" +
-			"         },\r\n" +
-			"         {\r\n" +
-			"            \"role_id\":3,\r\n" +
-			"            \"allowed_test_conn_failure\":false\r\n" +
-			"         }\r\n" +
-			"      ]\r\n" +
-			"   ],\r\n" +
-			"   \"environment_last_updated_by\":\"admin\",\r\n" +
-			"   \"be_creation_date\":\"2022-10-19 18:42:40.301\",\r\n" +
-			"   \"task_id\":87,\r\n" +
-			"   \"be_created_by\":\"admin\",\r\n" +
-			"   \"source_environment_id\":1,\r\n" +
-			"   \"role_id_orig\":4,\r\n" +
-			"   \"scheduler\":\"immediate\",\r\n" +
-			"   \"environment_description\":null,\r\n" +
-			"   \"selected_ref_version_datetime\":null,\r\n" +
-			"   \"source_env_name\":\"SRC\",\r\n" +
-			"   \"reserve_ind\":true,\r\n" +
-			"   \"task_title\":\"testapi2\",\r\n" +
-			"   \"fabric_environment_name\":null,\r\n" +
-			"   \"environment_name\":\"TAR\",\r\n" +
-			"   \"delete_before_load\":false,\r\n" +
-			"   \"allow_write\":true,\r\n" +
-			"   \"owner\":null,\r\n" +
-			"   \"task_status\":\"Active\",\r\n" +
-			"   \"executioncount\":0,\r\n" +
-			"   \"environment_last_updated_date\":\"2022-12-06 10:18:49.378\",\r\n" +
-			"   \"be_name\":\"Customer\",\r\n" +
-			"   \"version_ind\":false,\r\n" +
-			"   \"task_creation_date\":\"2022-12-19 12:16:48.257\",\r\n" +
-			"   \"task_globals\":false,\r\n" +
-			"   \"environment_point_of_contact_first_name\":null,\r\n" +
-			"   \"task_type\":\"LOAD\",\r\n" +
-			"   \"environment_creation_date\":\"2022-09-21 13:43:25.13\",\r\n" +
-			"   \"owner_type\":null,\r\n" +
-			"   \"creatorRoles\":[\r\n" +
-			"      \"admin\"\r\n" +
-			"   ],\r\n" +
-			"   \"selection_method2\":\"Parameters with Random Entity Selection\",\r\n" +
-			"   \"task_type2\":\"LOAD\",\r\n" +
-			"   \"operation_mode\":\"Load entity\",\r\n" +
-			"   \"data_type\":\"Entities and Reference\",\r\n" +
-			"   \"disabled\":false,\r\n" +
-			"   \"onHold\":false,\r\n" +
-			"   \"reference\":\"both\",\r\n" +
-			"   \"operationMode\":\"insert_entity_without_delete\",\r\n" +
-			"   \"extractSelected\":true,\r\n" +
-			"   \"postExecutionProcesses\":[\r\n" +
-			"      1\r\n" +
-			"   ],\r\n" +
-			"   \"refList\":[\r\n" +
-			"      {\r\n" +
-			"         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"interface_name\":\"CRM_DB\",\r\n" +
-			"         \"schema_name\":\"public\",\r\n" +
-			"         \"logical_unit_name\":\"Customer\",\r\n" +
-			"         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"ref_table_name\":\"devicestable2017\",\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"interface_name\":\"CRM_DB\",\r\n" +
-			"         \"schema_name\":\"public\",\r\n" +
-			"         \"logical_unit_name\":\"Customer\",\r\n" +
-			"         \"reference_table_name\":\"devicestable2017\",\r\n" +
-			"         \"selected\":true\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"globals\":[\r\n" +
-			"      \r\n" +
-			"   ],\r\n" +
-			"   \"selectedLogicalUnits\":[\r\n" +
-			"      {\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"lu_id\":7,\r\n" +
-			"         \"task_id\":87\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_name\":\"Billing\",\r\n" +
-			"         \"lu_id\":9,\r\n" +
-			"         \"task_id\":87\r\n" +
-			"      {\r\n" +
-			"         \"lu_name\":\"Collection\",\r\n" +
-			"         \"lu_id\":10,\r\n" +
-			"         \"task_id\":87\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_name\":\"Orders\",\r\n" +
-			"         \"lu_id\":8,\r\n" +
-			"         \"task_id\":87\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"allLogicalUnits\":[\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":null,\r\n" +
-			"         \"lu_name\":\"Customer\",\r\n" +
-			"         \"lu_id\":7,\r\n" +
-			"         \"product_name\":\"CRM\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Billing\",\r\n" +
-			"         \"lu_id\":9,\r\n" +
-			"         \"product_name\":\"FINANCE\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Collection\",\r\n" +
-			"         \"lu_id\":10,\r\n" +
-			"         \"product_name\":\"FINANCE\"\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"         \"lu_parent_name\":\"Customer\",\r\n" +
-			"         \"lu_name\":\"Orders\",\r\n" +
-			"         \"lu_id\":8,\r\n" +
-			"         \"product_name\":\"ORDERS\"\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"missingRootLU\":[\r\n" +
-			"      \r\n" +
-			"   ],\r\n" +
-			"   \"syncModeRadio\":null,\r\n" +
-			"   \"allPostExecutionProcess\":[\r\n" +
-			"      {\r\n" +
-			"         \"process_id\":1,\r\n" +
-			"         \"be_id\":4,\r\n" +
-			"         \"process_name\":\"PostExecFlow\",\r\n" +
-			"         \"process_description\":null,\r\n" +
-			"         \"execution_order\":1\r\n" +
-			"      }\r\n" +
-			"   ],\r\n" +
-			"   \"versionsForLoad\":[\r\n" +
-			"      \r\n" +
-			"   ]\r\n" +
-			"}=-}")
+			"\t\"task_last_updated_date\": \"2023-05-03 07:16:42.066\",\r\n" +
+			"\t\"filterout_reserved\": true,\r\n" +
+			"\t\"be_id\": 1,\r\n" +
+			"\t\"selected_version_task_name\": null,\r\n" +
+			"\t\"reserve_retention_period_type\": null,\r\n" +
+			"\t\"environment_id\": -1,\r\n" +
+			"\t\"selection_method\": \"GENERATE\",\r\n" +
+			"\t\"selected_ref_version_task_name\": null,\r\n" +
+			"\t\"refresh_reference_data\": false,\r\n" +
+			"\t\"tester\": \"ALL\",\r\n" +
+			"\t\"be_last_updated_date\": \"2022-12-01 13:38:25.987\",\r\n" +
+			"\t\"owners\": [],\r\n" +
+			"\t\"refcount\": 0,\r\n" +
+			"\t\"num_of_entities\": 3,\r\n" +
+			"\t\"tester_type\": \"ID\",\r\n" +
+			"\t\"reserve_note\": null,\r\n" +
+			"\t\"load_entity\": false,\r\n" +
+			"\t\"selected_version_task_exe_id\": null,\r\n" +
+			"\t\"task_created_by\": \"Tahata@k2view.com\",\r\n" +
+			"\t\"be_last_updated_by\": \"admin\",\r\n" +
+			"\t\"scheduling_end_date\": null,\r\n" +
+			"\t\"retention_period_type\": \"Do Not Delete\",\r\n" +
+			"\t\"environment_point_of_contact_phone1\": null,\r\n" +
+			"\t\"processnames\": null,\r\n" +
+			"\t\"testers\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"tester_type\": \"ID\",\r\n" +
+			"\t\t\t\"role_id\": [\r\n" +
+			"\t\t\t\t\"-1\"\r\n" +
+			"\t\t\t],\r\n" +
+			"\t\t\t\"tester\": \"ALL\"\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"selection_param_value\": null,\r\n" +
+			"\t\"environment_status\": \"Active\",\r\n" +
+			"\t\"be_status\": \"Active\",\r\n" +
+			"\t\"selected_version_datetime\": null,\r\n" +
+			"\t\"task_last_updated_by\": \"Tahata@k2view.com\",\r\n" +
+			"\t\"selected_ref_version_task_exe_id\": null,\r\n" +
+			"\t\"task_execution_status\": \"Active\",\r\n" +
+			"\t\"sync_mode\": null,\r\n" +
+			"\t\"replace_sequences\": false,\r\n" +
+			"\t\"entity_exclusion_list\": null,\r\n" +
+			"\t\"environment_point_of_contact_last_name\": null,\r\n" +
+			"\t\"environment_point_of_contact_email\": null,\r\n" +
+			"\t\"be_description\": \"This is a Business Entity created for the TDM GUI for free trail.\",\r\n" +
+			"\t\"reserve_retention_period_value\": null,\r\n" +
+			"\t\"parameters\": null,\r\n" +
+			"\t\"environment_expiration_date\": null,\r\n" +
+			"\t\"environment_point_of_contact_phone2\": null,\r\n" +
+			"\t\"environment_created_by\": \"admin\",\r\n" +
+			"\t\"roles\": [\r\n" +
+			"\t\t[\r\n" +
+			"\t\t\t{\r\n" +
+			"\t\t\t\t\"role_id\": -1,\r\n" +
+			"\t\t\t\t\"allowed_test_conn_failure\": false\r\n" +
+			"\t\t\t}\r\n" +
+			"\t\t]\r\n" +
+			"\t],\r\n" +
+			"\t\"environment_last_updated_by\": \"Tahata@k2view.com\",\r\n" +
+			"\t\"be_creation_date\": \"2022-12-01 13:27:20.522\",\r\n" +
+			"\t\"task_id\": 6,\r\n" +
+			"\t\"be_created_by\": \"admin\",\r\n" +
+			"\t\"source_environment_id\": -1,\r\n" +
+			"\t\"role_id_orig\": -1,\r\n" +
+			"\t\"scheduler\": \"immediate\",\r\n" +
+			"\t\"environment_description\": \"This is the synthetic environment.\",\r\n" +
+			"\t\"selected_ref_version_datetime\": null,\r\n" +
+			"\t\"source_env_name\": \"Synthetic\",\r\n" +
+			"\t\"reserve_ind\": false,\r\n" +
+			"\t\"task_title\": \"g1\",\r\n" +
+			"\t\"fabric_environment_name\": null,\r\n" +
+			"\t\"environment_name\": \"Synthetic\",\r\n" +
+			"\t\"delete_before_load\": false,\r\n" +
+			"\t\"allow_write\": false,\r\n" +
+			"\t\"owner\": null,\r\n" +
+			"\t\"task_status\": \"Active\",\r\n" +
+			"\t\"retention_period_value\": \"-1\",\r\n" +
+			"\t\"executioncount\": 0,\r\n" +
+			"\t\"environment_last_updated_date\": \"2023-05-01 10:57:38.421\",\r\n" +
+			"\t\"be_name\": \"Customer\",\r\n" +
+			"\t\"version_ind\": false,\r\n" +
+			"\t\"task_creation_date\": \"2023-05-03 07:16:42.066\",\r\n" +
+			"\t\"task_globals\": false,\r\n" +
+			"\t\"environment_point_of_contact_first_name\": null,\r\n" +
+			"\t\"task_type\": \"GENERATE\",\r\n" +
+			"\t\"environment_creation_date\": \"2023-05-01 07:03:31.469007\",\r\n" +
+			"\t\"owner_type\": null,\r\n" +
+			"\t\"selection_method2\": \"Generate Synthetic Entities\",\r\n" +
+			"\t\"task_type2\": \"GENERATE\",\r\n" +
+			"\t\"operation_mode\": \"\",\r\n" +
+			"\t\"data_type\": \"Entities\",\r\n" +
+			"\t\"disabled\": false,\r\n" +
+			"\t\"onHold\": false,\r\n" +
+			"\t\"operationMode\": \"insert_entity_without_delete\",\r\n" +
+			"\t\"generateTask\": true,\r\n" +
+			"\t\"globals\": [],\r\n" +
+			"\t\"postExecutionProcesses\": [],\r\n" +
+			"\t\"selectedLogicalUnits\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_name\": \"Asset\",\r\n" +
+			"\t\t\t\"lu_id\": 3,\r\n" +
+			"\t\t\t\"task_id\": 6,\r\n" +
+			"\t\t\t\"$$hashKey\": \"object:246\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
+			"\t\t\t\"lu_id\": 2,\r\n" +
+			"\t\t\t\"task_id\": 6,\r\n" +
+			"\t\t\t\"$$hashKey\": \"object:247\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_name\": \"CRM\",\r\n" +
+			"\t\t\t\"lu_id\": 1,\r\n" +
+			"\t\t\t\"task_id\": 6,\r\n" +
+			"\t\t\t\"$$hashKey\": \"object:248\"\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"source_synthetic\": true,\r\n" +
+			"\t\"allLogicalUnits\": [\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": null,\r\n" +
+			"\t\t\t\"lu_name\": \"CRM\",\r\n" +
+			"\t\t\t\"lu_id\": 1,\r\n" +
+			"\t\t\t\"product_name\": \"CRM\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"CRM\",\r\n" +
+			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
+			"\t\t\t\"lu_id\": 2,\r\n" +
+			"\t\t\t\"product_name\": \"BILLING\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t{\r\n" +
+			"\t\t\t\"lu_parent_name\": \"CRM\",\r\n" +
+			"\t\t\t\"lu_name\": \"Asset\",\r\n" +
+			"\t\t\t\"lu_id\": 3,\r\n" +
+			"\t\t\t\"product_name\": \"ASSET\"\r\n" +
+			"\t\t}\r\n" +
+			"\t],\r\n" +
+			"\t\"missingRootLU\": [],\r\n" +
+			"\t\"versionsForLoad\": [],\r\n" +
+			"\t\"DataManParams\": {\r\n" +
+			"\t\t\"city\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"name\": \"city\",\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"string\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtable\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": \"addresses\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"city\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"city\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"state\": {\r\n" +
+			"\t\t\t\t\t\t\"external\": \"state\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableKey\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {}\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": null,\r\n" +
+			"\t\t\t\"description\": \"Select the City to select a random address\",\r\n" +
+			"\t\t\t\"type\": \"string\",\r\n" +
+			"\t\t\t\"mandatory\": false,\r\n" +
+			"\t\t\t\"value\": \"Dallas\",\r\n" +
+			"\t\t\t\"name\": \"city\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t\"contract_ref_id\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"name\": \"contract_ref_id\",\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"string\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtable\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": \"contract_reference\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"contract_ref_id\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"contract_ref_id\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableKey\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {}\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": null,\r\n" +
+			"\t\t\t\"description\": \"Select Reference ID to select random Contract Description\",\r\n" +
+			"\t\t\t\"type\": \"string\",\r\n" +
+			"\t\t\t\"mandatory\": false,\r\n" +
+			"\t\t\t\"name\": \"contract_ref_id\",\r\n" +
+			"\t\t\t\"value\": \"102\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t\"crm_cases_number_of_records\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"schema\": \"{}\",\r\n" +
+			"\t\t\t\t\"name\": \"crm_cases_number_of_records\",\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"crm_cases_number_of_records\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"distribution\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"distribution\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {\r\n" +
+			"\t\t\t\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\t\t\t\"minimum\": 1,\r\n" +
+			"\t\t\t\t\t\t\t\"maximum\": 3\r\n" +
+			"\t\t\t\t\t\t}\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.distribution\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": {\r\n" +
+			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\"minimum\": 1,\r\n" +
+			"\t\t\t\t\"maximum\": 3\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"description\": \"Distribution Of Records Of table cases\",\r\n" +
+			"\t\t\t\"type\": \"any\",\r\n" +
+			"\t\t\t\"mandatory\": \"false\",\r\n" +
+			"\t\t\t\"value\": {\r\n" +
+			"\t\t\t\t\"maximum\": 5,\r\n" +
+			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\"minimum\": 3\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"name\": \"crm_cases_number_of_records\"\r\n" +
+			"\t\t}\r\n" +
+			"\t},\r\n" +
+			"\t\"refList\": []\r\n" +
+			"}")
 	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
@@ -1445,7 +1637,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved) throws Exception {
+	public static Object wsUpdateTaskV1(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String,Object> DataManParams) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		Map<String,Object> result=new HashMap<>();
 		String message=null;
@@ -1503,9 +1695,12 @@ public class Logic extends WebServiceUserCode {
 					"reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING task_id";
 			String username=sessionUser().name();
+		          if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
+				retention_period_value = -1;
+			}
 			Db.Row row = db(TDM).fetch(sql, be_id, environment_id!=null?environment_id:source_environment_id,
 					scheduler,
-					delete_before_load,
+					((delete_before_load != null) ? delete_before_load : false),
 					num_of_entities,
 					selection_method,
 					selection_param_value,
@@ -1517,8 +1712,9 @@ public class Logic extends WebServiceUserCode {
 							.withZone(ZoneOffset.UTC)
 							.format(Instant.now()),
 					username, "Active", task_title, parameters, refresh_reference_data, replace_sequences,
-					source_environment_id, source_env_name, load_entity, task_type,
-					scheduling_end_date, version_ind, retention_period_type,
+					source_environment_id, source_env_name, 
+		                  ((load_entity != null) ? load_entity : false),
+		                  task_type, scheduling_end_date, version_ind, retention_period_type,
 					retention_period_value, selected_version_task_name, selected_version_datetime,
 					selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id,
 					selected_ref_version_datetime, selected_ref_version_task_name, sync_mode,
@@ -1528,7 +1724,7 @@ public class Logic extends WebServiceUserCode {
 		
 			if (refList!=null ) {
 				if(refList.size() > 0){
-					TaskExecutionUtils.fnSaveRefTablestoTask(id, refList);
+					fnSaveRefTablestoTask(id, refList);
 				}
 			}
 		
@@ -1541,18 +1737,25 @@ public class Logic extends WebServiceUserCode {
 						db(TDM).execute(insertGlobalSql,id, global.get("global_name").toString(), global.get("global_value").toString());
 					}*/
 					for(Map<String,Object> global:globals){
-							TaskExecutionUtils.createTaskGlobals(id, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
+							createTaskGlobals(id, global.get("lu_name").toString(), global.get("global_name").toString(), global.get("global_value").toString());
 					}
+		
 				} catch(Exception e){
+		                  e.printStackTrace();
 					log.error(e.getMessage());
 				}
 			}
 		
 		
 			try {
-				String activityDesc = "Task " + task_title + " was updated";
-				TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+		              // TDM 8.0 - In case of Synthetic task, load the input parameters of the population flows into the TDMDB tdm_generate_task_field_mappings
+		              //log.info("wsUpdateTaskV1 - params size: " + DataManParams.size());
+		              createTaskDMParams(id, DataManParams);
+		
+		              String activityDesc = "Task " + task_title + " was updated";
+				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
+		              e.printStackTrace();
 				log.error(e.getMessage());
 			}
 		
@@ -1584,7 +1787,7 @@ public class Logic extends WebServiceUserCode {
 	public static Object wsGetAnalysiscountForBusinessEntity(@param(required=true) Long beId, @param(required=true) String src_env_name, String tar_env_name, String where, Boolean filterout_reserved) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		try {
-			Object result = TaskExecutionUtils.fnGetNumberOfMatchingEntities(where, src_env_name, tar_env_name, beId, filterout_reserved); //TDM
+			Object result = fnGetNumberOfMatchingEntities(where, src_env_name, tar_env_name, beId, filterout_reserved); //TDM
 			response.put("result",((Map<String,Object>)result).get("result"));
 			response.put("errorCode","SUCCESS");
 		} catch (Exception e){
@@ -1621,10 +1824,10 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			TaskExecutionUtils.fnPostTaskLogicalUnits(taskId,logicalUnits);
+			fnPostTaskLogicalUnits(taskId,logicalUnits);
 			try {
 				String activityDesc = "LogicalUnits of task " + taskName + " was updated";
-				TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
@@ -1677,10 +1880,10 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			TaskExecutionUtils.fnAddTaskPostExecutionProcess(postexecutionprocesses,taskId);
+			fnAddTaskPostExecutionProcess(postexecutionprocesses,taskId);
 			try {
 				String activityDesc = "Post Execution Processes of task " + taskName + " was updated";
-				TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
@@ -1911,7 +2114,7 @@ public class Logic extends WebServiceUserCode {
 		
 			}
 			else if (task_type.equals("LOAD") && version_ind != null && version_ind){
-				List<Map<String,Object>> resultList = TaskExecutionUtils.fnGetRefTableForLoadWithVersion(logicalUnits);
+				List<Map<String,Object>> resultList = fnGetRefTableForLoadWithVersion(logicalUnits);
 				response.put("result", resultList);
 			}
 			errorCode="SUCCESS";
@@ -2166,9 +2369,9 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		try {
 			//TDM 7.4 - 26/01/2022 - In addition to the returned versions, the inner function and the API will return the resevation info of the requested entities.
-			//Db.Rows rows = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
+			//Db.Rows rows = fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
 			entitiesList = entitiesList.replaceAll("\\s+","");
-			Map<String, Object> versions = TaskExecutionUtils.fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
+			Map<String, Object> versions = fnGetVersionsForLoad(entitiesList, be_id, source_env_name, fromDate, toDate, lu_list, target_env_name);
 
 			Map<String, Object> validations = (Map<String, Object>)versions.get("EntityReservationValidations");
 			message = (String) validations.get("message");
@@ -2351,7 +2554,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 			if (lu_name == null) {
-				List<Map<String, Object>> tree = TaskExecutionUtils.fnGetRootLUs(taskExecutionId.toString());
+				List<Map<String, Object>> tree = fnGetRootLUs(taskExecutionId.toString());
 				if (tree == null || tree.size() == 0) {
 					response.put("errorCode", "SUCCESS");
 					response.put("message", null);
@@ -2382,7 +2585,7 @@ public class Logic extends WebServiceUserCode {
 					if(stats_Data!=null) statsDataFailedEntities = (Map<String, Object>)stats_Data.get("Failed entities per execution");
 					if (stats_Data != null && statsDataFailedEntities != null
 							&& Long.parseLong(statsDataFailedEntities.get("NoOfEntities").toString()) > 0){
-								tree = TaskExecutionUtils.fnUpdateFailedLUsInTree(tree, statsDataFailedEntities);
+								tree = fnUpdateFailedLUsInTree(tree, statsDataFailedEntities);
 					} else {
 						for (Map<String, Object> node : tree) {
 							if (node.get("count")!=null && Long.parseLong(node.get("count").toString()) > 0) {
@@ -2441,7 +2644,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Returns the list children LUs of a parent LU in a task execution. This API is invoked when navigating the Logical Units Hierarchy  tab of a selected task execution.")
-	@webService(path = "luChildren", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "luChildren", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -2463,13 +2666,13 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		try {
 			String query = "select t.task_execution_id, l.lu_id, lu_name, " +
-					"(select count(*) from " + TDMDB_SCHEMA + ".task_Execution_list t where parent_lu_id = l.lu_id and " +
-					"t.task_execution_id = " + taskExecutionId + "), " +
-					"case when (num_of_failed_entities > 0 or num_of_failed_ref_tables > 0) " +
-					"then 'failed' else 'completed' end lu_status from task_Execution_list t, " +
-					"(select lu_id, lu_name, lu_parent_name from product_logical_units) l " +
-					"where t.task_execution_id =" + taskExecutionId + " and " +
-					"l.lu_parent_name = '" + lu_name + "' and t.lu_id = l.lu_id ";
+		            "(select count(*) from " + TDMDB_SCHEMA + ".task_Execution_list t where parent_lu_id = l.lu_id and " +
+		            "t.task_execution_id = " + taskExecutionId + "), " +
+		            "case when (num_of_failed_entities > 0 or num_of_failed_ref_tables > 0) " +
+		            "then 'failed' else 'completed' end lu_status from " + TDMDB_SCHEMA + ".task_Execution_list t, " +
+		            "(select lu_id, lu_name, lu_parent_name from " + TDMDB_SCHEMA + ".product_logical_units) l " +
+		            "where t.task_execution_id =" + taskExecutionId + " and " +
+		            "l.lu_parent_name = '" + lu_name + "' and t.lu_id = l.lu_id ";
 			Db.Rows rows = db(TDM).fetch(query);
 		
 			//if(true) return rows;
@@ -3280,7 +3483,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode="";
 		
 		try {
-			Object data = TaskExecutionUtils.fnExecutionSummaryReport(executionId,luName!=null?luName:"ALL");
+			Object data = fnExecutionSummaryReport(executionId,luName!=null?luName:"ALL");
 			response.put("result",((Map<String,Object>)data).get("result"));
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -3446,7 +3649,7 @@ public class Logic extends WebServiceUserCode {
 				String batchID = ((List<String>)migrateIds).get(i);
 				//log.info("wsMigrateStatusWs - batchID: " + batchID);
 				if (batchID != null && !"".equals(batchID)) {
-					results.add(TaskExecutionUtils.fnMigrateStatusWs(batchID, runModes));
+					results.add(fnMigrateStatusWs(batchID, runModes));
 				}
 			}
 		
@@ -3537,7 +3740,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			Object data = TaskExecutionUtils.fnExtractRefStats(taskExecutionId, type);
+			Object data = fnExtractRefStats(taskExecutionId, type);
 			response.put("result",((Map<String,Object>)data).get("result"));
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -3572,7 +3775,7 @@ public class Logic extends WebServiceUserCode {
 		fabric().execute( "get TDM." + taskExecutionId);
 		
 		//Get the Hierarchy starting from the given entity and below
-		childHierarchyDetails = TaskExecutionUtils.fnGetChildHierarchy(luName, targetId);
+		childHierarchyDetails = fnGetChildHierarchy(luName, targetId);
 		
 		String parentLuName = "";
 		String parentTargetId = "";
@@ -3590,7 +3793,7 @@ public class Logic extends WebServiceUserCode {
 			//log.info("wsGetTaskExeStatsForEntity - parent Rec: Lu Name: " + parentLuName + ", Parent target ID: " + parentTargetId);
 			//Starting for the parent as the details of the input entity is already included in the children part
 			//Sending the chilren hierarchy in order to add it to the ancestors as child hierarchy
-			parentHierarchyDetails = TaskExecutionUtils.fnGetParentHierarchy(parentLuName, parentTargetId, childHierarchyDetails);
+			parentHierarchyDetails = fnGetParentHierarchy(parentLuName, parentTargetId, childHierarchyDetails);
 		} else {// Given inputs are of a root entity
 			//log.info("The given LU is a root");
 			parentHierarchyDetails =  childHierarchyDetails;
@@ -3633,7 +3836,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			Object data = TaskExecutionUtils.fnResumeTaskExecution(taskExecutionId);
+			Object data = fnResumeTaskExecution(taskExecutionId);
 			response.put("result", ((Map<String,Object>)data).get("result"));
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -3653,7 +3856,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			Object data = TaskExecutionUtils.fnStopTaskExecution(taskExecutionId);
+			Object data = fnStopTaskExecution(taskExecutionId);
 			response.put("result", ((Map<String,Object>)data).get("result"));
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -3729,7 +3932,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"- versioningRetentionPeriod\r\n" +
 			"\r\n" +
-			"- reverseRetentionPeriod\r\n" +
+			"- reserveRetentionPeriod\r\n" +
 			"\r\n" +
 			"\r\n" +
 			"If the validations pass successfully, start the task execution.\r\n" +
@@ -3786,371 +3989,8 @@ public class Logic extends WebServiceUserCode {
 			"    \"message\": \"validation failure\"\r\n" +
 			"}")
 	public static Object wsStartTask(@param(required=true) Long taskId, @param(description="true or false", required=true) Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, @param(description="Only relevant for Load tasks") Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,String> reserveRetention, String executionNote) throws Exception {
-		HashMap<String, Object> response = new HashMap<>();
-		String message = null;
-		String errorCode;
-		
-		boolean sourceEnvValidation = false;
-		boolean targetEnvValidation = false;
-		boolean srcEnvFound = false;
-		boolean trgEnvFound = false;
-		
-		LUType luType = LUType.getTypeByName("TDM");
-				
-		List<LudbJobs.LudbJob> jobList = luType.ludbUserJobs;
-		String downJobsList = "";
-		
-		Map<String, String> jobDownError = new HashMap<>();
-		
-		for (LudbJobs.LudbJob job : jobList) {
-			String executionMode = Util.rte(() -> "" + job.executionMode);
-			String activeInd = Util.rte(() -> "" + job.active);
-			String functionName = Util.rte(() -> "" + job.functionName);
-			String uid = Util.rte(() -> "" + job.uid);
-			String affinity = Util.rte(() -> "" + job.affinity);
-			if ("null".equals(affinity)) {
-				affinity = "";
-			}
-			
-			String jobStatus = "";
-			if ("true".equalsIgnoreCase(activeInd) && "automatically".equalsIgnoreCase(executionMode)) {
-		
-				Db.Row jobDetails = fabric().fetch("jobstatus user_job 'TDM." + 
-						functionName + "' WITH UID='" + uid + "'").firstRow();
-				jobStatus = "" + jobDetails.get("Status");
-				//log.info("Job Status: " + jobStatus);
-				
-				// if the cluster ID is define, add it to the name of the keyspace.
-				String clusterID = "" + ludb().fetch("clusterid").firstValue();
-				String tableName = "k2system.k2_jobs";
-				if (!"IN_PROCESS".equalsIgnoreCase(jobStatus) && !"SCHEDULED".equalsIgnoreCase(jobStatus) && !"WAITING".equalsIgnoreCase(jobStatus)) {
-					if ("tdmExecuteTask".equalsIgnoreCase(functionName) || "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
-						String errMsg = "" + jobDetails.get("Notes");
-						log.error("Job " + functionName + " is down, cannot run task. The Error Messge: " + errMsg);		
-						String jobDownMsg = "Job " + functionName + " is down, cannot run task! The Error is: " + errMsg;
-						jobDownError.put(functionName, jobDownMsg);
-						if ("".equals(downJobsList)) {
-							downJobsList = functionName;
-						} else {
-							downJobsList += ", " + functionName;
-						}
-					} else {
-						log.warn("Job " + functionName + " is down, and it is an automatic job, please check why it is down");
-					}
-				}
-							
-			}
-		}
-		if (jobDownError.size() > 0) {
-			return wrapWebServiceResults("FAILED", "Mandatory Job(s): " + downJobsList + " Down!", jobDownError);
-		}
-		
-		//Map<String, Object> taskData;
-		Db.Rows taskRows;
-		try {
-			//taskData = ((List<Map<String, Object>>) ((Map<String, Object>) wsGetTasks(taskId.toString())).get("result")).get(0);
-			
-			taskRows = (TaskExecutionUtils.fnGetTasks(taskId.toString()));
-			
-		} catch(Exception e) {
-			throw new Exception("Task is not found");
-		}
-		for (Db.Row taskRow : taskRows) {
-			ResultSet taskData = taskRow.resultSet();
-			if(!TaskExecutionUtils.fnIsTaskActive(taskId)) throw new Exception("Task is not active");
-			String taskType = "" + taskData.getString("task_type");
-			Boolean deleteBeforeLoad = taskData.getBoolean("delete_before_load");
-			Boolean insertToTarget = taskData.getBoolean("load_entity");
-			Boolean entityListInd = false;
-			Integer entityListSize = 0;
-			Boolean versionInd = taskData.getBoolean("version_ind");
-			if (entitieslist != null) {
-				entityListSize = (entitieslist.split(",")).length;
-				entityListInd = true;
-			} else if (taskData.getString("selection_param_value") != null && "L".equalsIgnoreCase(taskData.getString("selection_method"))) {
-				String[] entityList = ((String) taskData.getString("selection_param_value")).split(",");
-				entityListSize = entityList.length;
-			}
-			//log.info("Entity list is given?: " + entityListInd);
-			Map<String,Object> overrideParams=new HashMap<>();
-			String selectionMethodOrig = "" + taskData.getString("selection_method");
-			String selectionMethod = selectionMethodOrig;
-			if (entitieslist!=null) {
-				if ("S".equalsIgnoreCase(selectionMethodOrig)) {
-					if (entityListSize > 1) {
-						throw new Exception("This is a Synthetic Data Task, only one entity can be in the entity list");
-					} 
-				} else {
-					selectionMethod = "L";
-				}
-			}
-			
-			if (sourceEnvironmentName!=null) overrideParams.put("SOURCE_ENVIRONMENT_NAME",sourceEnvironmentName);
-			if (targetEnvironmentName!=null) overrideParams.put("TARGET_ENVIRONMENT_NAME",targetEnvironmentName);
-			if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
-			if (!selectionMethod.equals(selectionMethodOrig)) overrideParams.put("SELECTION_METHOD",selectionMethod);
-			// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
-			if (numberOfEntities!=null && (!entityListInd  || ("S".equalsIgnoreCase(selectionMethod)))) {
-				//log.info("setting the number of entities to: " + numberOfEntities);
-				overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
-			}
-			if (taskGlobals!=null) overrideParams.put("TASK_GLOBALS",taskGlobals);
-			
-			if(overrideParams.get("ENTITY_LIST")!=null){
-				String[] entityList=((String)overrideParams.get("ENTITY_LIST")).split(",");
-				Arrays.sort(entityList);
-				overrideParams.put("ENTITY_LIST",String.join(",",entityList));
-			}
-			
-			//TDM 7.4 - Support override for reserved entities
-			if(reserveInd!=null) overrideParams.put("RESERVE_IND", reserveInd);
-			
-			if (!TaskValidationsUtils.fnValidateParallelExecutions(taskId, overrideParams)) {
-				throw new Exception("Task already running");
-			}
-			
-			List<String> taskLogicalUnitsIds=new ArrayList<>();
-			
-			Db.Rows rows = db(TDM).fetch("SELECT lu_id FROM " + TDMDB_SCHEMA + ".tasks_logical_units WHERE task_id = ?", taskId);
-			for (Db.Row row : rows) {
-				taskLogicalUnitsIds.add("" + row.get("lu_id"));
-			}
-			
-			Map<String,Object> be_lus=new HashMap<>();
-			be_lus.put("be_id",taskData.getString("be_id"));
-			be_lus.put("LU List",taskLogicalUnitsIds);
-			//log.info("selectionMethod: " + selectionMethod);
-			//String sourceEnvName = sourceEnvironmentName != null ? sourceEnvironmentName : taskData.getString("source_env_name");
-			String sourceEnvName = (sourceEnvironmentName != null && !sourceEnvironmentName .trim().isEmpty()) ? sourceEnvironmentName : taskData.getString("source_env_name");
-			//log.info("Source Env: " + sourceEnvName);
-			
-			if (dataVersionExecId!=null) {
-				Map<String, String> validateVersionID = TaskValidationsUtils.fnValidateVersionExecIdAndGetDetails(dataVersionExecId, be_lus, sourceEnvName);
-				if (validateVersionID.get("errorMessage") == null) {
-					overrideParams.put("SELECTED_VERSION_TASK_EXE_ID", dataVersionExecId);
-					overrideParams.put("SELECTED_VERSION_TASK_NAME", validateVersionID.get("versionName"));
-					overrideParams.put("SELECTED_VERSION_DATETIME", validateVersionID.get("versionDatetime"));
-				} else {
-					return wrapWebServiceResults("FAILED", "versioningtask", validateVersionID.get("errorMessage"));
-				}
-			}
-			Integer numberOfRequestedEntites = 0;
-			if (numberOfEntities != null) {
-				if (entityListInd && !"S".equalsIgnoreCase(selectionMethod) && numberOfEntities != entityListSize) {
-					numberOfRequestedEntites = entityListSize;
-					message = "The number of entities for execution is set based on the entity list";
-					overrideParams.put("NO_OF_ENTITIES",numberOfRequestedEntites);
-				} else {
-					numberOfRequestedEntites = numberOfEntities;
-					entityListSize = numberOfEntities;
-				}
-			} else {
-				if (entityListInd && !"S".equalsIgnoreCase(selectionMethod)) {
-					numberOfRequestedEntites = entityListSize;
-				} else {
-					numberOfRequestedEntites =  (taskData.getInt("num_of_entities"));
-				}
-			}
-			if ("S".equalsIgnoreCase(selectionMethod) && numberOfRequestedEntites > 0) {
-				entityListSize = numberOfRequestedEntites;
-			}
-			
-			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
-			String targetExeEnvName = (targetEnvironmentName != null &&  !targetEnvironmentName .trim().isEmpty())? targetEnvironmentName : taskData.getString("environment_name");
-			
-			if (dataVersionRetentionPeriod!=null) {
-				Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(dataVersionRetentionPeriod, 
-						"versioning", targetExeEnvName);
-				if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-					return wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
-				}
-				overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
-			}
-			
-			if(reserveRetention!=null) {
-				Map<String, String> validateDFMessages = TaskValidationsUtils.fnValidateRetentionPeriodParams(reserveRetention, 
-					"reverse", targetExeEnvName);
-				if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-					return wrapWebServiceResults("FAILED", "reverseRetentionPeriod", validateDFMessages.get("retention"));
-				}
-				overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
-			}
-			
-			List<Map<String,Object>> sourceRolesList = new ArrayList<>();
-			List<Map<String,Object>> targetRolesList = new ArrayList<>();
-			List<Map<String,Object>> rolesList = fnGetUserEnvs();
-			//log.info("------- Size: " + rolesList.size());
-			for (Map<String, Object> envType : rolesList) {
-				if (envType.get("source environments") != null) {
-					sourceRolesList = (List<Map<String, Object>>) (envType.get("source environments"));
-				}
-				if (envType.get("target environments") != null) {
-					targetRolesList = (List<Map<String, Object>>) (envType.get("target environments"));
-				}
-			}
-			//log.info("------- Size of sourceRolesList: " + sourceRolesList.size());
-			//log.info("------- Size of targetRolesList: " + targetRolesList.size());
-			
-			List<Map<String, String>> validationsErrorMesssagesByRole = new ArrayList<>();
-			
-			if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
-				if (sourceRolesList == null || sourceRolesList.isEmpty()) {
-					throw new Exception("Environment does not exist or user has no read permission on this environment");
-				}
-			
-				for (Map<String, Object> role : sourceRolesList) {
-					//Check if the current role is related to input environment, and not to other environment
-					//log.info("environment_name: " + role.get("environment_name"));
-					if (sourceEnvName.equals(role.get("environment_name"))) {
-						srcEnvFound = true;
-						int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-						int validateNumber = TaskValidationsUtils.fnValidateNumberOfReadEntities(allowedEntitySize, role.get("role_id").toString(), sourceEnvName);
-					
-						Map<String, String> sourceValidationsErrorMesssages = TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, taskData.getInt("refcount"),
-								selectionMethod != null ? selectionMethod : taskData.getString("selection_method"),
-								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role);
-						//log.info("validateNumber: " + validateNumber);
-			
-						if (validateNumber == -1) {
-							sourceValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the read permission");
-						} else {
-							if ("extract".equalsIgnoreCase(taskType) && validateNumber > 0 && 
-								(numberOfEntities!=null || entityListInd))
-							{
-								overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-							}
-							
-							if (sourceValidationsErrorMesssages.isEmpty()) {
-								sourceEnvValidation = true;
-								break;
-							}
-						}
-			
-						validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
-					}
-				}
-			} else {// No Source validation
-				sourceEnvValidation = true;
-			}
-			
-			if("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType)) {
-				
-				if(targetRolesList == null || targetRolesList.isEmpty()) {
-					throw new Exception("Environment does not exist or user has no write permission on this environment");
-				}
-			
-				for (Map<String, Object> role : targetRolesList) {
-					if (targetExeEnvName.equals(role.get("environment_name"))) {
-						trgEnvFound = true;
-						Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
-						//String  entityTest = false;
-			
-						int allowedEntitySize = TaskExecutionUtils.getAllowedEntitySize(entityListSize, numberOfRequestedEntites);
-						//entityTest = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetEnvironmentName);
-						int validateNumber = TaskValidationsUtils.fnValidateNumberOfCopyEntities(allowedEntitySize, role.get("role_id").toString(), targetExeEnvName);
-					
-						// End of fix
-					
-						targetValidationsErrorMesssages = TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, taskData.getInt("refcount"),
-								selectionMethod != null ? selectionMethod : taskData.getString("selection_method"),
-								taskData.getBoolean("version_ind"), 
-								taskData.getBoolean("replace_sequences"), taskData.getBoolean("delete_before_load"), taskType, 
-								reserveInd != null ? reserveInd : taskData.getBoolean("reserve_ind"), allowedEntitySize, role);
-						//log.info("targetValidationsErrorMesssages: " + targetValidationsErrorMesssages);
-						if (validateNumber == -1) {
-							targetValidationsErrorMesssages.put("Number of entity", "The number of entities exceeds the number of entities in the write permission");
-						} else if ( targetValidationsErrorMesssages.isEmpty()) { 
-							if ( validateNumber > 0  && (numberOfEntities!=null || entityListInd)) {
-								overrideParams.put("NO_OF_ENTITIES",allowedEntitySize);
-							}			
-							targetEnvValidation = true;
-							break; 
-						}
-						validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
-					}
-				}
-				
-			} else{
-				//In case of Extract task, there are not target Env validations
-				targetEnvValidation = true;
-			}
-			//log.info("wsStartTask - targetEnvValidation: " + targetEnvValidation + ", sourceEnvValidation: " + sourceEnvValidation);
-			if (!sourceEnvValidation && !srcEnvFound) {
-				Map<String, String> sourceValidationsErrorMesssages=new HashMap<>();
-				sourceValidationsErrorMesssages.put("SourceEnvironment", "No Source Environment was found For User");
-				validationsErrorMesssagesByRole.add(sourceValidationsErrorMesssages);
-			}
-			
-			if (!targetEnvValidation && !trgEnvFound) {
-				Map<String, String> targetValidationsErrorMesssages=new HashMap<>();
-				targetValidationsErrorMesssages.put("TargetEnvironment", "No Target Environment was found For User");
-				validationsErrorMesssagesByRole.add(targetValidationsErrorMesssages);
-			}
-			
-			if (!targetEnvValidation || !sourceEnvValidation) {
-				return wrapWebServiceResults("FAILED", "validation failure", validationsErrorMesssagesByRole);
-			}
-			try {
-				String envIdByName_sql= "select environment_id from " + TDMDB_SCHEMA + ".environments where environment_name=(?) and environment_status = 'Active'";
-				Long overridenSrcEnvId=(Long)db(TDM).fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
-				Long overridenTarEnvId=(Long)db(TDM).fetch(envIdByName_sql,targetEnvironmentName).firstValue();
-			
-				TaskExecutionUtils.fnTestTaskInterfaces(taskId,forced,overridenSrcEnvId,overridenTarEnvId);
-			
-				List<Map<String,Object>> taskExecutions = TaskExecutionUtils.fnGetActiveTaskForActivation(taskId);
-				if (taskExecutions == null || taskExecutions.size() == 0) {
-					throw new Exception("Failed to execute Task");
-				}
-			
-				Long taskExecutionId = (Long) TaskExecutionUtils.fnGetNextTaskExecution(taskId);
-				if ((taskExecutions.get(0).get("selection_method") != null && (Long) taskExecutions.get(0).get("refcount") != null) && taskExecutions.get(0).get("selection_method").toString().equals("REF") ||
-						(Long) taskExecutions.get(0).get("refcount") > 0) {
-					TaskExecutionUtils.fnSaveRefExeTablestoTask((Long) taskExecutions.get(0).get("task_id"), taskExecutionId);
-				}
-			
-				TaskExecutionUtils.fnStartTaskExecutions(taskExecutions,taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
-						overridenTarEnvId!=null?overridenTarEnvId:null,
-						overridenSrcEnvId!=null?overridenSrcEnvId:null,
-						executionNote);
-			
-				if(!overrideParams.isEmpty()){
-					try{
-						TaskExecutionUtils.fnSaveTaskOverrideParameters(taskId,overrideParams,taskExecutionId);
-					}catch(Exception e){
-						throw new Exception ("A problem occurs when trying to save override parameters: " + e.getMessage());
-					}
-				}
-			
-				TaskExecutionUtils.fnCreateSummaryRecord(taskExecutions.get(0), taskExecutionId,sourceEnvironmentName!=null?sourceEnvironmentName:null,
-						overridenTarEnvId!=null?overridenTarEnvId:null,
-						overridenSrcEnvId!=null?overridenSrcEnvId:null);
-			
-				try {
-					String activityDesc = "Execution list of task " + taskData.getString("task_title");
-					TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
-				} catch(Exception e){
-					log.error(e.getMessage());
-				}
-			
-			
-				Map<String,Object> map=new HashMap<>();
-				map.put("taskExecutionId",taskExecutionId);
-				response.put("result",map);
-				errorCode="SUCCESS";
-			} catch(Exception e){
-				message=e.getMessage();
-				log.error(message);
-				errorCode="FAILED";
-			}
-				
-			response.put("errorCode",errorCode);
-			response.put("message", message);
-			// The function TaskExecutionUtils.fnGetTasks can return more then one record for given task ID, 
-			// when the env has more than one permission set (entries in environment_role_users table)
-			// We should handle only one record	
-			break;
-		}
-		return response;
+        return  fnStartTask(taskId, forced, entitieslist, sourceEnvironmentName, targetEnvironmentName, taskGlobals, numberOfEntities, dataVersionExecId, dataVersionRetentionPeriod, reserveInd, reserveRetention, executionNote);
+
 	}
 
 	@desc("Holds (pause) the execution of the input task")
@@ -4165,7 +4005,7 @@ public class Logic extends WebServiceUserCode {
 			Object task_name = row.cell(0);
 			try {
 				String activityDesc = "task # " + task_name + " was Holded";
-				TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
@@ -4194,7 +4034,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			Object data = TaskExecutionUtils.fnCheckMigrateStatusForEntitiesList(entitlesList, taskExecutionId, luList).get("result");
+			Object data = fnCheckMigrateStatusForEntitiesList(entitlesList, taskExecutionId, luList).get("result");
 			response.put("result",data);
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -4222,7 +4062,7 @@ public class Logic extends WebServiceUserCode {
 		
 			try {
 				String activityDesc = "task # " + taskTitle + " was activated";
-				TaskExecutionUtils.fnInsertActivity("update", "Tasks", activityDesc);
+				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
@@ -4251,7 +4091,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try {
-			List<Map<String,Object>> referenceData = TaskExecutionUtils.fnGetVersionForLoadRef(refList, source_env_name, fromDate, toDate);
+			List<Map<String,Object>> referenceData = fnGetVersionForLoadRef(refList, source_env_name, fromDate, toDate);
 			response.put("result",referenceData);
 			errorCode="SUCCESS";
 		} catch(Exception e){
@@ -5279,7 +5119,7 @@ public class Logic extends WebServiceUserCode {
 			db(TDM).execute(sql,"Inactive", "Inactive", now, username);
 			try {
 				String activityDesc = "Task " + taskName + " was deleted";
-				TaskExecutionUtils.fnInsertActivity("delete", "Tasks", activityDesc);
+				fnInsertActivity("delete", "Tasks", activityDesc);
 			} catch(Exception e){
 				log.error(e.getMessage());
 			}
@@ -5382,7 +5222,7 @@ public class Logic extends WebServiceUserCode {
 		
 		try {
 		
-			List<Map<String, Object>> allUserEnvsTypes = fnGetUserEnvs();
+			List<Map<String, Object>> allUserEnvsTypes = fnGetUserEnvs("");
 			int i=0;
 			for (Map<String, Object> envType : allUserEnvsTypes) {
 				List<Map<String, Object>> allSourceEnvs = (List<Map<String, Object>>) (envType.get("source environments"));
@@ -5397,7 +5237,7 @@ public class Logic extends WebServiceUserCode {
 						env_name = "" + sourceEnvMap.get("environment_name");
 		
 						//check if source env satisfies all relevant cases
-						if (TaskValidationsUtils.fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap).isEmpty()) {
+						if (fnValidateSourceEnvForTask(be_lus, refcount, selection_method, sync_mode, version_ind, task_type, sourceEnvMap).isEmpty()) {
 							Map<String, Object> envData = new HashMap<>();
 							envData.put("environment_id", env_id);
 							envData.put("environment_name", env_name);
@@ -5417,7 +5257,7 @@ public class Logic extends WebServiceUserCode {
 						env_name = "" + targetEnvMap.get("environment_name");
 						int noOfEntities = -1;
 						//check if target env satisfies all relevant cases
-						if (TaskValidationsUtils.fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap).isEmpty()) {
+						if (fnValidateTargetEnvForTask(be_lus, refcount, selection_method, version_ind, replace_sequences, delete_before_load, task_type, reserve_ind, noOfEntities, targetEnvMap).isEmpty()) {
 							Map<String, Object> envData = new HashMap<>();
 							envData.put("environment_id", env_id);
 							envData.put("environment_name", env_name);
@@ -5583,22 +5423,58 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"name\": \"luName\",\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"date\"\r\n" +
+			"        },\r\n" +
+			"        \"name\": \"param1\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"level\": {\r\n" +
+			"            \"const\": \"error\"\r\n" +
+			"          },\r\n" +
+			"          \"message\": {\r\n" +
+			"            \"const\": \"${param1}, ${param2}\"\r\n" +
+			"          },\r\n" +
+			"          \"param1\": {\r\n" +
+			"            \"self\": \"param1\"\r\n" +
+			"          },\r\n" +
+			"          \"param2\": {\r\n" +
+			"            \"external\": \"param2\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.default\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"array\",\r\n" +
+			"      \"type\": \"date\",\r\n" +
 			"      \"mandatory\": false\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"name\": \"syncMode\",\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"integer\"\r\n" +
+			"        },\r\n" +
+			"        \"name\": \"param2\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"level\": {\r\n" +
+			"            \"const\": \"error\"\r\n" +
+			"          },\r\n" +
+			"          \"message\": {\r\n" +
+			"            \"const\": \"${param1}, ${param2}\"\r\n" +
+			"          },\r\n" +
+			"          \"param1\": {\r\n" +
+			"            \"external\": \"param1\"\r\n" +
+			"          },\r\n" +
+			"          \"param2\": {\r\n" +
+			"            \"self\": \"param2\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.default\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
+			"      \"type\": \"integer\",\r\n" +
 			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"name\": \"iid\",\r\n" +
-			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": true\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -5606,26 +5482,37 @@ public class Logic extends WebServiceUserCode {
 			"}")
 	public static Object wsGetCustomLogicParam(String luName, String flowName) throws Exception {
 		List<HashMap<String,Object>> result = new ArrayList<>();
-		
 		if ("ALL".equalsIgnoreCase(luName)) {
 			luName = "TDM";
 		}
 		try {
 			Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName +"'");
-			
 			for (Db.Row row : rows) {
 				if ( !"LU_NAME".equalsIgnoreCase("" + row.get("name")) 
 					&& !"NUM_OF_ENTITIES".equalsIgnoreCase("" + row.get("name"))
 					&& "input".equalsIgnoreCase("" + row.get("param")) ) {
 					HashMap<String, Object> map = new HashMap<>();
-					map.put("name", row.get("name"));
+					HashMap<Object, Object> editorMap = new HashMap<>();
+					Map<?, ?> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
+					Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
+					if (editor.isEmpty()) {
+						editorMap.put("id","com.k2view.default");
+					} else {
+						editorMap.putAll(editor);
+					}
+					editorMap.put("name", row.get("name"));
+					editorMap.put("schema",Json.get().fromJson((String) row.get("schema")));
+					editorMap.put("mandatory", row.get("mandatory"));
+					editorMap.put("context", context);
+					map.put("editor", editorMap);
+					map.put("default", row.get("default"));
 					map.put("type", row.get("type"));
-					//map.put("schema", row.get("schema"));
-					map.put("mandatory", row.get("mandatory"));
-					map.put("description", row.get("remark"));
-					result.add(map);
+						
+					String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+					map.put("description", description);
+		
+							result.add(map);
 				}
-				
 			}
 		} catch (Exception e) {
 			return wrapWebServiceResults("FAILED", e.getMessage(), null);
@@ -5633,5 +5520,907 @@ public class Logic extends WebServiceUserCode {
 		
 		return wrapWebServiceResults("SUCCESS", null, result);
 	}
-
+	@desc("Get the list of parameters of the given custom Flow")
+	@webService(path = "getDMPopParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
+			"  \"result\": {\r\n" +
+			"    \"city\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"city\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"mtableRandomRow\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          },\r\n" +
+			"          \"mtable\": {\r\n" +
+			"            \"const\": \"addresses\"\r\n" +
+			"          },\r\n" +
+			"          \"city\": {\r\n" +
+			"            \"self\": \"city\"\r\n" +
+			"          },\r\n" +
+			"          \"state\": {\r\n" +
+			"            \"external\": \"state\"\r\n" +
+			"          },\r\n" +
+			"          \"mtableKey\": {\r\n" +
+			"            \"const\": {}\r\n" +
+			"          },\r\n" +
+			"          \"mtableCaseSensitive\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
+			"      \"description\": \"Select the City to select a random address\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false,\r\n" +
+			"      \"value\": \"Dallas\"\r\n" +
+			"    },\r\n" +
+			"    \"contract_ref_id\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"contract_ref_id\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"mtableRandomRow\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          },\r\n" +
+			"          \"mtable\": {\r\n" +
+			"            \"const\": \"contract_reference\"\r\n" +
+			"          },\r\n" +
+			"          \"contract_ref_id\": {\r\n" +
+			"            \"self\": \"contract_ref_id\"\r\n" +
+			"          },\r\n" +
+			"          \"mtableKey\": {\r\n" +
+			"            \"const\": {}\r\n" +
+			"          },\r\n" +
+			"          \"mtableCaseSensitive\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
+			"      \"description\": \"Select Reference ID to select random Contract Description\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_cases_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_cases_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_cases_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table cases\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\",\r\n" +
+			"      \"value\": {\r\n" +
+			"        \"maximum\": 5,\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 3\r\n" +
+			"      }\r\n" +
+			"    },\r\n" +
+			"    \"contract_from_date\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"contract_from_date\",\r\n" +
+			"        \"schema\": {},\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"contract_from_date\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": false,\r\n" +
+			"              \"type\": \"date\",\r\n" +
+			"              \"minimum\": \"2023-01-01 17:21:08.991\",\r\n" +
+			"              \"maximum\": \"2023-04-03 19:21:18.493\"\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": false,\r\n" +
+			"        \"type\": \"date\",\r\n" +
+			"        \"minimum\": \"2023-01-01 17:21:08.991\",\r\n" +
+			"        \"maximum\": \"2023-04-03 19:21:18.493\"\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Set distribution for Contract start date\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"station_city\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"station_city\",\r\n" +
+			"        \"schema\": {},\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"station_city\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"weighted\",\r\n" +
+			"              \"round\": false,\r\n" +
+			"              \"type\": \"string\",\r\n" +
+			"              \"weights\": [\r\n" +
+			"                [\r\n" +
+			"                  50,\r\n" +
+			"                  \"New York\"\r\n" +
+			"                ],\r\n" +
+			"                [\r\n" +
+			"                  30,\r\n" +
+			"                  \"Los Angeles\"\r\n" +
+			"                ],\r\n" +
+			"                [\r\n" +
+			"                  20,\r\n" +
+			"                  \"Miami\"\r\n" +
+			"                ]\r\n" +
+			"              ]\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"weighted\",\r\n" +
+			"        \"round\": false,\r\n" +
+			"        \"type\": \"string\",\r\n" +
+			"        \"weights\": [\r\n" +
+			"          [\r\n" +
+			"            50,\r\n" +
+			"            \"New York\"\r\n" +
+			"          ],\r\n" +
+			"          [\r\n" +
+			"            30,\r\n" +
+			"            \"Los Angeles\"\r\n" +
+			"          ],\r\n" +
+			"          [\r\n" +
+			"            20,\r\n" +
+			"            \"Miami\"\r\n" +
+			"          ]\r\n" +
+			"        ]\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Set distribution of the cities of the stations\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_recommendations_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_recommendations_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_recommendations_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table recommendations\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"activity_date\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"activity_date\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"date\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"activity_date\": {\r\n" +
+			"            \"self\": \"value\"\r\n" +
+			"          },\r\n" +
+			"          \"value\": {\r\n" +
+			"            \"const\": \"2023-03-21 14:01:44.663\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"syncOutput\": true,\r\n" +
+			"        \"id\": \"com.k2view.default\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": \"2023-03-21 14:01:44.663\",\r\n" +
+			"      \"description\": \"A constant value\",\r\n" +
+			"      \"type\": \"date\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_address_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_address_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_address_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table address\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"cc_company\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"cc_company\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"mtableRandomRow\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          },\r\n" +
+			"          \"mtable\": {\r\n" +
+			"            \"const\": \"cc_company\"\r\n" +
+			"          },\r\n" +
+			"          \"cc_company\": {\r\n" +
+			"            \"self\": \"cc_company\"\r\n" +
+			"          },\r\n" +
+			"          \"mtableKey\": {\r\n" +
+			"            \"const\": {}\r\n" +
+			"          },\r\n" +
+			"          \"mtableCaseSensitive\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
+			"      \"description\": \"Select Credit Card Company\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_case_note_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_case_note_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_case_note_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table case_note\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"score_type\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"score_type\",\r\n" +
+			"        \"schema\": {},\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"weighted\",\r\n" +
+			"              \"round\": false,\r\n" +
+			"              \"type\": \"string\",\r\n" +
+			"              \"weights\": [\r\n" +
+			"                [\r\n" +
+			"                  10,\r\n" +
+			"                  \"UpSell\"\r\n" +
+			"                ],\r\n" +
+			"                [\r\n" +
+			"                  10,\r\n" +
+			"                  \"Technical\"\r\n" +
+			"                ],\r\n" +
+			"                [\r\n" +
+			"                  10,\r\n" +
+			"                  \"Marketing\"\r\n" +
+			"                ]\r\n" +
+			"              ]\r\n" +
+			"            }\r\n" +
+			"          },\r\n" +
+			"          \"score_type\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"weighted\",\r\n" +
+			"        \"round\": false,\r\n" +
+			"        \"type\": \"string\",\r\n" +
+			"        \"weights\": [\r\n" +
+			"          [\r\n" +
+			"            10,\r\n" +
+			"            \"UpSell\"\r\n" +
+			"          ],\r\n" +
+			"          [\r\n" +
+			"            10,\r\n" +
+			"            \"Technical\"\r\n" +
+			"          ],\r\n" +
+			"          [\r\n" +
+			"            10,\r\n" +
+			"            \"Marketing\"\r\n" +
+			"          ]\r\n" +
+			"        ]\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Set distribution of score types\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_payment_methods_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_payment_methods_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_payment_methods_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table payment_methods\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"event_type\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"event_type\",\r\n" +
+			"        \"schema\": {},\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"event_type\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"weighted\",\r\n" +
+			"              \"round\": false,\r\n" +
+			"              \"type\": \"string\",\r\n" +
+			"              \"weights\": [\r\n" +
+			"                [\r\n" +
+			"                  10,\r\n" +
+			"                  \"User Issue\"\r\n" +
+			"                ],\r\n" +
+			"                [\r\n" +
+			"                  10,\r\n" +
+			"                  \"Station Issue\"\r\n" +
+			"                ],\r\n" +
+			"                [\r\n" +
+			"                  10,\r\n" +
+			"                  \"Station Availability\"\r\n" +
+			"                ]\r\n" +
+			"              ]\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"weighted\",\r\n" +
+			"        \"round\": false,\r\n" +
+			"        \"type\": \"string\",\r\n" +
+			"        \"weights\": [\r\n" +
+			"          [\r\n" +
+			"            10,\r\n" +
+			"            \"User Issue\"\r\n" +
+			"          ],\r\n" +
+			"          [\r\n" +
+			"            10,\r\n" +
+			"            \"Station Issue\"\r\n" +
+			"          ],\r\n" +
+			"          [\r\n" +
+			"            10,\r\n" +
+			"            \"Station Availability\"\r\n" +
+			"          ]\r\n" +
+			"        ]\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Set distribution of event type\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"score_value\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"score_value\",\r\n" +
+			"        \"schema\": {},\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"score_value\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"normal\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"mean\": 75,\r\n" +
+			"              \"stddev\": 3,\r\n" +
+			"              \"minimum\": 10,\r\n" +
+			"              \"maximum\": 100\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"normal\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"mean\": 75,\r\n" +
+			"        \"stddev\": 3,\r\n" +
+			"        \"minimum\": 10,\r\n" +
+			"        \"maximum\": 100\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Set distribution of score values\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_asset_transaction_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_asset_transaction_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_asset_transaction_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table asset_transaction\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"activity_note\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"activity_note\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"activity_note\": {\r\n" +
+			"            \"self\": \"value\"\r\n" +
+			"          },\r\n" +
+			"          \"value\": {\r\n" +
+			"            \"const\": \"My Note\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"syncOutput\": true,\r\n" +
+			"        \"id\": \"com.k2view.default\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": \"My Note\",\r\n" +
+			"      \"description\": \"NTE DEC\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"state\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"state\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"mtableRandomRow\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          },\r\n" +
+			"          \"mtable\": {\r\n" +
+			"            \"const\": \"addresses\"\r\n" +
+			"          },\r\n" +
+			"          \"city\": {\r\n" +
+			"            \"external\": \"city\"\r\n" +
+			"          },\r\n" +
+			"          \"state\": {\r\n" +
+			"            \"self\": \"state\"\r\n" +
+			"          },\r\n" +
+			"          \"mtableKey\": {\r\n" +
+			"            \"const\": {}\r\n" +
+			"          },\r\n" +
+			"          \"mtableCaseSensitive\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
+			"      \"description\": \"Select State to set the address\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false,\r\n" +
+			"      \"value\": \"TX\"\r\n" +
+			"    },\r\n" +
+			"    \"note_date\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"note_date\",\r\n" +
+			"        \"schema\": {},\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"note_date\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": false,\r\n" +
+			"              \"type\": \"date\",\r\n" +
+			"              \"minimum\": \"2023-03-01 19:17:17.998\",\r\n" +
+			"              \"maximum\": \"2023-04-03 22:17:27.344\"\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": false,\r\n" +
+			"        \"type\": \"date\",\r\n" +
+			"        \"minimum\": \"2023-03-01 19:17:17.998\",\r\n" +
+			"        \"maximum\": \"2023-04-03 22:17:27.344\"\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Set the distribution of the notes dates\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"paypal_id\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"paypal_id\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"mtableRandomRow\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          },\r\n" +
+			"          \"mtable\": {\r\n" +
+			"            \"const\": \"paypal_id\"\r\n" +
+			"          },\r\n" +
+			"          \"paypal_id\": {\r\n" +
+			"            \"self\": \"paypal_id\"\r\n" +
+			"          },\r\n" +
+			"          \"mtableKey\": {\r\n" +
+			"            \"const\": {}\r\n" +
+			"          },\r\n" +
+			"          \"mtableCaseSensitive\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
+			"      \"description\": \"Select the paypal id\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_activity_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_activity_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_activity_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table activity\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"note_text\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"name\": \"note_text\",\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"string\"\r\n" +
+			"        },\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"mtableRandomRow\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          },\r\n" +
+			"          \"mtable\": {\r\n" +
+			"            \"const\": \"note_text\"\r\n" +
+			"          },\r\n" +
+			"          \"note_text\": {\r\n" +
+			"            \"self\": \"note_text\"\r\n" +
+			"          },\r\n" +
+			"          \"mtableKey\": {\r\n" +
+			"            \"const\": {}\r\n" +
+			"          },\r\n" +
+			"          \"mtableCaseSensitive\": {\r\n" +
+			"            \"const\": true\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
+			"      \"description\": \"Select a text for the note\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    \"crm_contract_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_contract_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_contract_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table contract\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    },\r\n" +
+			"    \"crm_score_number_of_records\": {\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": \"{}\",\r\n" +
+			"        \"name\": \"crm_score_number_of_records\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"crm_score_number_of_records\": {\r\n" +
+			"            \"self\": \"distribution\"\r\n" +
+			"          },\r\n" +
+			"          \"distribution\": {\r\n" +
+			"            \"const\": {\r\n" +
+			"              \"distribution\": \"uniform\",\r\n" +
+			"              \"round\": true,\r\n" +
+			"              \"type\": \"integer\",\r\n" +
+			"              \"minimum\": 1,\r\n" +
+			"              \"maximum\": 3\r\n" +
+			"            }\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.distribution\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": {\r\n" +
+			"        \"distribution\": \"uniform\",\r\n" +
+			"        \"round\": true,\r\n" +
+			"        \"type\": \"integer\",\r\n" +
+			"        \"minimum\": 1,\r\n" +
+			"        \"maximum\": 3\r\n" +
+			"      },\r\n" +
+			"      \"description\": \"Distribution Of Records Of table score\",\r\n" +
+			"      \"type\": \"any\",\r\n" +
+			"      \"mandatory\": \"false\"\r\n" +
+			"    }\r\n" +
+			"  },\r\n" +
+			"  \"errorCode\": \"SUCCESS\",\r\n" +
+			"  \"message\": null\r\n" +
+			"}")
+	public static Object wsGetDMPopParams(List<String> luList, Long taskId) throws Exception {
+		      
+		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		
+		try {
+		          for (String luName : luList) {
+		              String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
+				Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Data Manufacturing'");
+		
+				for (Db.Row flow : flows) {
+					String flowName = flow.get("Flow").toString();
+					//log.info("wsGetDMPopParams - Flow Name: " + flowName);
+					Db.Rows rows = fabric().fetch("list BF lu_name = '" + luName + "' flow='" + flowName + "'");
+					for (Db.Row row : rows) {
+						String name = "" + row.get("name");
+						//log.info("wsGetDMPopParams - Parameter Name: " + name + " param: " + row.get("param"));
+						if (!"LU_NAME".equalsIgnoreCase(name)
+								&& !"NUM_OF_ENTITIES".equalsIgnoreCase(name)
+								&& !"total".equalsIgnoreCase(name)
+								&& !"count".equalsIgnoreCase(name)
+								&& !"parent_row".equalsIgnoreCase(name)
+								&& !"parent_rows".equalsIgnoreCase(name)
+								&& !"table".equalsIgnoreCase(name)
+								&& "input".equalsIgnoreCase("" + row.get("param"))) {
+							//log.info("Adding Param: " + name);
+							HashMap<String, Object> map = new HashMap<>();
+							HashMap<Object, Object> editorMap = new HashMap<>();
+							Map<?, ?> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
+		                          Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
+		
+							if (editor.isEmpty()) {
+		                              editorMap.put("id","com.k2view.default");
+		                          } else {
+		                              editorMap.putAll(editor);
+		                          }
+		
+							editorMap.put("name", name);
+							editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
+		                          editorMap.put("context", context);
+							map.put("editor", editorMap);
+							map.put("type", row.get("type"));
+							map.put("mandatory", row.get("mandatory"));
+							map.put("default", row.get("default"));
+		
+		                          String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+							map.put("description", description);
+		                          
+							result.put(name, map);
+						}
+					}
+				}
+		
+		              // Add the distribution of each table in the LU
+		              List<String> tablesList = getLuTalesList(luName);
+		              for (String tableName : tablesList) {
+		                  if (!rootTableName.equalsIgnoreCase(tableName)) {
+		                      HashMap<String, Object> map = new HashMap<>();
+				        HashMap<Object, Object> editorMap = new HashMap<>();
+		                      String distParamName = luName.toLowerCase() + "_" + tableName.toLowerCase() + "_number_of_records";
+		                      String contextString = "{" + distParamName + 
+		                          "={self=distribution},distribution={const={distribution=uniform,round=true,type=integer,minimum=1,maximum=3}}}";
+		                      Map<?, ?> distDefault = Json.get().fromJson("{distribution=uniform,round=true,type=integer,minimum=1,maximum=3}");
+		                      Map<?, ?> context = Json.get().fromJson(contextString);
+		                      editorMap.put("id","com.k2view.distribution");
+		                      editorMap.put("name", distParamName);
+					    editorMap.put("schema", "{}");
+		                      editorMap.put("context", context);
+		                      map.put("editor", editorMap);
+				        map.put("type", "any");
+				        map.put("mandatory", "false");
+				        map.put("default", distDefault);
+				        map.put("description", "Distribution Of Records Of table " + tableName);
+				        result.put(distParamName, map);
+		                  }
+		              }
+			}
+		          
+		          //log.info("wsGetDMPopParams - taskId: " + taskId);
+		          if (taskId != null && taskId > 0) {
+		                String luName = getLuType().luName;
+		                String selectSql = "broadway " + luName + ".GetDMParamsByTaskId task_id=?" + ", RESULT_STRUCTURE=ROW";
+		              //log.info("wsGetDMPopParams - sql: " + selectSql);
+		              Db.Rows taskParamss = fabric().fetch(selectSql, taskId);
+		              
+		              Db.Row taskParams = taskParamss.firstRow();
+		              
+		              Map<String, Object> taskParamsMap = (HashMap)taskParams.get("value");
+		              if (taskParamsMap != null && !taskParamsMap.isEmpty()) {
+		                  for (String paramName : taskParamsMap.keySet()) {
+		                      //log.info("wsGetDMPopParams - paramName: " + paramName);
+		                      HashMap<String,Object> paramMap  = result.get(paramName);
+		                      if (paramMap != null) {
+		                          Object newValue = null;
+		                          //log.info("wsGetDMPopParams - paramValue: " + taskParamsMap.get(paramName));
+		                          try {
+		                              JSONObject JSONObject = new JSONObject("" + taskParamsMap.get(paramName));
+		                              newValue = JSONObject;
+		                          } catch (Exception e) {
+		                              newValue = taskParamsMap.get(paramName);
+		                          }
+		
+		                          paramMap.put("value", newValue);
+		                      }   
+		                  }
+		              }
+		          }
+		} catch (Exception e) {
+		          //log.error
+		          e.printStackTrace();
+		          log.error(e.getMessage());
+			return wrapWebServiceResults("FAILED", e.getMessage(), null);
+		}
+		
+		return wrapWebServiceResults("SUCCESS", null, result);
+	}
 }

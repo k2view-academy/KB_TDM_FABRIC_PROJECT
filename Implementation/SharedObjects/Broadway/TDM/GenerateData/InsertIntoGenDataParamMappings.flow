@@ -1,0 +1,112 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "DbCommand1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "insert into public.tdm_generate_task_field_mappings (task_id, param_name, param_type, param_value) \r\nvalues (${task_id}, ${param_name}, ${param_type},${param_value})"
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "param_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "param_type",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "param_value",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_id"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "task_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "param_name"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "param_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "param_type"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "param_type"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "param_value"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "param_value"
+            }
+        }
+    ]
+}

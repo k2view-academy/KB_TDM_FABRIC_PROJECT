@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
@@ -26,8 +27,25 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.UserJo
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import java.util.Date;
+import java.sql.*;
+import java.math.*;
+import java.io.*;
+import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.shared.Globals;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
+import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends UserCode {
 
 	public static final String CASSANDRA_TEXT_TYPE = "TEXT";
@@ -107,7 +125,7 @@ public class Logic extends UserCode {
 				String taskID = "";
 				String taskExecutionID = "";
 				String updateTaskExecutionListSql = "UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status = ?, num_of_processed_entities = ?, " +
-					"num_of_copied_entities = ?, num_of_failed_entities = ?, start_execution_time = ?, end_execution_time = ?, " +
+					"num_of_copied_entities = ?, num_of_failed_entities = ?, end_execution_time = ?, " +
 					"num_of_processed_ref_tables = ?, num_of_copied_ref_tables = ?, num_of_failed_ref_tables = ? " +
 					"WHERE task_id = ? AND task_execution_id = ? and ((lu_id > 0 and lu_id = ?) or (process_id > 0 and process_id = ?) )";
 				String status = COMPLETED;
@@ -186,7 +204,7 @@ public class Logic extends UserCode {
 		
 									// TDM 5.1- change the start and end date parameters and add the parameters for the reference tables
 									//log.info("Updating task status to failed as no reference table was copied");
-									db(TDM).execute(updateTaskExecutionListSql, status, 0, 0, 0, refMinDate.toString(), 
+									db(TDM).execute(updateTaskExecutionListSql, status, 0, 0, 0, //refMinDate.toString(), -- No need to update the start time
 										refMaxDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, 
 										num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID);
 								}
@@ -199,7 +217,7 @@ public class Logic extends UserCode {
 						}else if(processID != null && processID > 0){
 							String finalTaskExecutionID = taskExecutionID;
 							Long finalProcessID = processID;
-							Util.rte(()-> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?, start_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "completed", finalTaskExecutionID, finalProcessID));
+							Util.rte(()-> db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?, end_execution_time = (now() at time zone 'utc') WHERE task_execution_id=? and process_id=?", "completed", finalTaskExecutionID, finalProcessID));
 						}
 					}// if(selectionMethod != null && selectionMethod.equals(REF))
 					else // the task contains entities (but can still have reference tables in addition to the entities)
@@ -358,7 +376,7 @@ public class Logic extends UserCode {
 								//log.info("numOfCopiedRefTables: " + num_of_copied_ref_tables + ", numOfFailedRefTables: " + num_of_failed_ref_tables);
 								
 								
-								db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, taskStartDate.toString(), 
+								db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, total, copied, failed, //taskStartDate.toString(),  -- no need to set the start time
 										taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, 
 										taskID, taskExecutionID, luID, processID});
 								//log.info("fnCheckMigrateAndUpdateTDMDB - Updated the status");
@@ -369,7 +387,8 @@ public class Logic extends UserCode {
 					log.error("Task Failed");
 					log.error(e.getMessage(),e);
 					status = FAILED;
-					db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, "0", "0", "0", taskStartDate.toString(), taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID});
+					db(TDM).execute(updateTaskExecutionListSql, new Object[]{status, "0", "0", "0", //taskStartDate.toString(), -- No need to set the start time
+							taskEndDate.toString(), num_of_processed_ref_tables, num_of_copied_ref_tables, num_of_failed_ref_tables, taskID, taskExecutionID, luID, processID});
 					throw e;
 				}
 			} // end of for loop on the task_execution_list
@@ -486,78 +505,79 @@ public class Logic extends UserCode {
 	}
 
 	@out(name = "result", type = Object.class, desc = "")
-	public static Object typeCheck(Object val) throws Exception {
+    public static Object typeCheck(Object val) throws Exception {
 
-		try {
+        try {
 
-			if (val instanceof Utils.NullType || val == null) {
-				return null;
-			}
+            if (val instanceof Utils.NullType || val == null) {
+                return null;
+            }
 
-			// Check first for the commonly used types to save all other 'instanceof'.
-			if (isCommonlyUsedType(val)) {
-				//Class cls = val.getClass();
-				//log.info("val instanceof " + cls.getName());
-				if (val instanceof java.math.BigDecimal){
-					return  ((BigDecimal) val).doubleValue();
-				}else{
-					return val;
-				}
-			}
+            // Check first for the commonly used types to save all other 'instanceof'.
+            if (isCommonlyUsedType(val)) {
+                Class cls = val.getClass();
+                //log.info("val instanceof " + cls.getName());
+                if (val instanceof java.math.BigDecimal){
+                    return  ((BigDecimal) val).doubleValue();
+                }else{
+                    return val;
+                }
+            }
 
-			if (val instanceof K2TimestampWithTimeZone) {
-				//log.info("val " + val + "instanceof K2TimestampWithTimeZone ");
-				//return ((Date) val).getTime();
+            if (val instanceof K2TimestampWithTimeZone) {
+                //log.info("val " + val + "instanceof K2TimestampWithTimeZone ");
+                //return ((Date) val).getTime();
 				/*return StringUtils.isBlank(TypeConversion.DATETIME_WITH_TIMEZONE_FORMAT) ? val.toString()
 						:((K2TimestampWithTimeZone) val).formatWithTZ(TypeConversion.DATETIME_WITH_TIMEZONE_FORMAT);*/
-				return ((Date) val).toString();
-			}
+                return ((Date) val).toString();
+            }
 
-			if (val instanceof java.sql.Timestamp) {
-				//return ((Date) val).getTime();
-				return ((Date) val).toString();
-			}
+            if (val instanceof java.sql.Timestamp) {
+                //return ((Date) val).getTime();
+                return ((Date) val).toString();
+            }
 
-			if (val instanceof java.sql.Date) {
-				//return ((Date) val).getTime();
+            if (val instanceof java.sql.Date) {
+                //return ((Date) val).getTime();
 				/*return StringUtils.isBlank(DATE_FORMAT) ? val.toString()
 						: new SimpleDateFormat(DATE_FORMAT).format((java.sql.Date) val);*/
-				return ((Date) val).toString();
-			}
+                return ((Date) val).toString();
+            }
 
-			if (val instanceof java.sql.Time) {
-				//return ((Date) val).getTime();
+            if (val instanceof java.sql.Time) {
+                //return ((Date) val).getTime();
 				/*return StringUtils.isBlank(TIME_FORMAT) ? val.toString()
 						: new SimpleDateFormat(TIME_FORMAT).format((java.sql.Time) val);*/
-				return ((Date) val).toString();
-			}
+                return ((Date) val).toString();
+            }
 
-			if (val instanceof java.util.Date) {
-				//log.info("val " + val + " instanceof java.util.Date");
-				//return ((Date) val).getTime();
+            if (val instanceof java.util.Date) {
+                //log.info("val " + val + " instanceof java.util.Date");
+                //return ((Date) val).getTime();
 				/*return StringUtils.isBlank(DATETIME_FORMAT) ? val.toString()
 						: new SimpleDateFormat(DATETIME_FORMAT).format((java.util.Date) val);*/
-				return ((Date) val).toString();
-			}
+                return ((Date) val).toString();
+            }
 
-			if (val instanceof Blob) {
-				//return ((Blob) val).getBytes(1, (int) ((Blob) val).length());
-				return ((ByteBuffer)val).array();
-			}
+            if (val instanceof Blob) {
+                //return ((Blob) val).getBytes(1, (int) ((Blob) val).length());
+                return ((ByteBuffer)val).array();
+            }
 
-			if (val instanceof Clob) {
-				return Utils.clobToString(((Clob) val));
-			}
+            if (val instanceof Clob) {
+                return Utils.clobToString(((Clob) val));
+            }
 
-			if (val instanceof ByteBuffer){
-				return ((ByteBuffer)val).array();
-			}
+            if (val instanceof ByteBuffer){
+                return ((ByteBuffer)val).array();
+            }
 
-			return val;
-		} catch (Exception e) {
-			log.warn(e);
-			return null;
-		}
+            return val;
+        } catch (Exception e) {
+            log.warn(e);
+            return null;
+        }
+    
 	}
 
 
@@ -997,7 +1017,7 @@ public class Logic extends UserCode {
 	@desc("Execute TDM pending tasks and update the tasks status.")
 	@type(UserJob)
 	public static void tdmExecuteTask() throws Exception {
-		TdmExecuteTask.fnTdmExecuteTask();
+        	TdmExecuteTask.fnTdmExecuteTask();
 	}
 
 

@@ -3,6 +3,7 @@ package com.k2view.cdbms.usercode.lu.TDM;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
+import com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.Logic;
 import com.k2view.fabric.common.Log;
 import com.k2view.fabric.common.Util;
 
@@ -15,42 +16,38 @@ import java.time.ZonedDateTime;
 
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.shared.user.UserCode.getLuType;
-import static com.k2view.cdbms.shared.user.UserCode.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnStartTask;
 
 public class TdmTaskScheduler {
-
     public static final Log log = Log.a(TdmTaskScheduler.class);
-    public static final String TDM = "TDM";
 
+    public static final String TDM = "TDM";
     public static void fnTdmTaskScheduler() throws IOException, SQLException {
         log.info("----------------- Starting tdmTaskScheduler -------------------");
-        String activeTasksQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/query_get_active_tasks.sql"));
-        String productQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/query_get_product_lus.sql"));
-        String insertToTaskExecutionQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/insert_to_task_execution.sql"));
-        String insertToTaskExecutionDFQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/insert_to_task_execution_df.sql"));
-        String insertPostToTaskExecutionQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/insert_post_to_task_execution.sql"));
-        String insertToSummaryQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/insert_to_summary.sql"));
-        String insertToRefQuery = new String(getLuType().loadResource("TDM/fnTdmTaskScheduler/insert_to_ref.sql"));
+
+        String activeTasksQuery = " WITH task_max_execution_id "+
+                "AS(SELECT task_id AS max_task_id,lu_id AS max_lu_id,max(task_execution_id) AS max_task_execution_id " +
+                "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST GROUP BY task_id,lu_id) " +
+                "SELECT  task_id, scheduler, be_id, environment_id, num_of_entities, scheduling_end_date, "+
+                "source_env_name, task_type, version_ind, source_environment_id, task_created_by " +
+                "FROM " + TDMDB_SCHEMA + ".TASKS WHERE UPPER(task_status) = 'ACTIVE' "+
+                "AND UPPER(task_execution_status) = 'ACTIVE' AND UPPER(scheduler) != 'IMMEDIATE' AND task_id NOT IN " +
+                "(SELECT task_id FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST,task_max_execution_id " +
+                "WHERE task_id = max_task_id AND task_execution_id = max_task_execution_id AND lu_id = max_lu_id AND UPPER(execution_status) " +
+                "IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') OR " +
+                "(end_execution_time >= (current_timestamp at time zone 'utc' + '-1 minute')));";
 
         db(TDM).fetch(activeTasksQuery).forEach(row -> {
             ResultSet resultSet = row.resultSet();
             Long taskID = Util.rte(() -> resultSet.getLong("task_id"));
-            Long beID = Util.rte(() -> resultSet.getLong("be_id"));
-            String taskType = Util.rte(() -> resultSet.getString("task_type"));
             String cronExpression = Util.rte(() -> resultSet.getString("scheduler"));
-            String environmentID = Util.rte(() -> resultSet.getString("environment_id"));
-            String sourceEnvName = Util.rte(() -> resultSet.getString("source_env_name"));
-            String sourceEnvID = Util.rte(() -> resultSet.getString("source_environment_id"));
-            String versionInd = Util.rte(() -> resultSet.getString("version_ind"));
-            //Long numOfProcessedEntities = Util.rte(() -> resultSet.getLong("num_of_entities"));
             Timestamp schedulingEndDate = Util.rte(() -> resultSet.getTimestamp("scheduling_end_date"));
             Timestamp localTime = (Timestamp) Util.rte(() -> db(TDM).fetch("SELECT localtimestamp").firstValue());
-			String taskCreatedBy = Util.rte(() -> resultSet.getString("task_created_by"));
-            //log.info("task with id: " + taskID + " beid: " + beID + " tasktype: " + taskType + " cronexpression: " + cronExpression);
+
             if(schedulingEndDate != null && localTime.compareTo(schedulingEndDate) > 0){
-                //log.info(" updating task to immediate.....");
+                log.info(" ----------------- updating task to immediate ----------------- ");
+
                 Util.rte(() ->db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".TASKS SET scheduler = ?, scheduling_end_date = ?, task_last_updated_by = ? WHERE  task_id = ?", "immediate", null, "TDM scheduler", taskID));
                 return;
             }
@@ -61,71 +58,15 @@ public class TdmTaskScheduler {
             //log.info("time to next execution " + timeToNextExecution.getSeconds() + " to minutes " + timeToNextExecution.toMinutes());
             // Check if the task is due to run now
             if(executionTime.isMatch(now) || (timeToNextExecution.toMinutes() == 0 && timeToNextExecution.getSeconds() <= 10)){
-                log.info(" ----------------- adding task to task_execution_list table ----------------- ");
-
-                Long taskExecutionID = (Long) Util.rte(() -> db(TDM).fetch("SELECT NEXTVAL('" + TDMDB_SCHEMA + ".tasks_task_execution_id_seq')").firstValue());
-                //log.info("running product query with: taskID: " + taskID + " envID: "  + environmentID + "sourseEnvName: " + sourceEnvName);
-                Util.rte(() -> db(TDM).fetch(productQuery, taskID, environmentID).forEach(r ->
-                {
-                    ResultSet luRow = r.resultSet();
-                    String productVersion = Util.rte(() -> luRow.getString( "product_version"));
-                    String dataCenterName = Util.rte(() -> luRow.getString("data_center_name"));
-                    Long luID   = Util.rte(() -> luRow.getLong("lu_id"));
-                    String luName   = Util.rte(() -> luRow.getString("lu_name"));
-                    Long productID   = Util.rte(() -> luRow.getLong("product_id"));
-
-                    Long parentLuID = (Long) Util.rte(() -> db(TDM).fetch("SELECT lu_parent_id FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE be_id=? AND lu_id=?", beID, luID)).firstValue();
-                    log.info(" ----------------- adding task  ----------------- " + taskExecutionID + " luID: " + luID);
-                    String insertQuery = versionInd.equals("t") ? insertToTaskExecutionDFQuery : insertToTaskExecutionQuery;
-
-                    Util.rte(() ->
-                            db(TDM).execute(insertQuery,
-                                    taskID,
-                                    taskExecutionID,
-                                    beID,
-                                    environmentID,
-                                    productID,
-                                    productVersion,
-                                    luID,
-                                    dataCenterName,
-                                    0,
-                                    parentLuID,
-                                    sourceEnvID,
-                                    sourceEnvName,
-                                    taskType,
-									taskCreatedBy));
-
-                    //post execution
-                    Util.rte(() -> db(TDM).fetch("select * from " + TDMDB_SCHEMA + ".tasks_post_exe_process where task_id = ?", taskID).forEach( s -> {
-                        log.info(" ----------------- adding post execution task to task_execution_list table ----------------- ");
-                        ResultSet res = s.resultSet();
-                        String processID = Util.rte(() -> res.getString("process_id"));
-                        Util.rte(() ->
-                                db(TDM).execute(insertPostToTaskExecutionQuery,
-                                        taskID,
-                                        taskExecutionID,
-                                        beID,
-                                        environmentID,
-                                        productID,
-                                        productVersion,
-                                        0,
-                                        dataCenterName,
-                                        0,
-                                        parentLuID,
-                                        sourceEnvID,
-                                        sourceEnvName,
-                                        taskType,
-                                        processID
-                                ));
-                    }));
-
-                    //insert to ref
-                    Util.rte(() -> db(TDM).execute(insertToRefQuery, taskExecutionID, taskID, luName));
-
-                    // insert to summary
-                    Util.rte(() -> db(TDM).execute(insertToSummaryQuery, taskID, taskExecutionID, 0, 0, 0, 0, 0, 0, environmentID, taskType, beID, sourceEnvName, sourceEnvID, taskCreatedBy));
-                }));
+                log.info(" ----------------- calling wsStartTask ----------------- ");
+                try {
+                    fnStartTask(taskID,true,null,null,null,null,null,null,null,null,null,null);
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                    throw new RuntimeException(e);
+                }
             }
+
         });
     }
 }

@@ -1,0 +1,31 @@
+{
+  "type": "GetDMParamsFromTable",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "GetDMParamsFromTable",
+      "mandatory": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "result",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": null
+        }
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

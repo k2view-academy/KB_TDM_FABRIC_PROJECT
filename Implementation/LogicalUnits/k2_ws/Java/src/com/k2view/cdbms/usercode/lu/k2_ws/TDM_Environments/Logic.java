@@ -36,7 +36,7 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Permissions.Logic.wsGetFabricRolesByUser;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserEnvs;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 
 	public static final String TDM = "TDM";
@@ -1599,7 +1599,6 @@ public class Logic extends WebServiceUserCode {
 					"ON (u.role_id = r.role_id AND r.role_status = 'Active') " +
 					"WHERE u.environment_id = ? " + 
 					"AND  u.user_id = '-1' AND u.username = 'ALL' ";
-					//"AND  u.user_id = '-1' AND u.user_type = 'ALL' ";
 					
 					//log.info("wsGetRoleForUserInEnv - sqlAll: " + sqlAll);
 					
@@ -1733,32 +1732,22 @@ public class Logic extends WebServiceUserCode {
 	@webService(path = "environment/getAllGlobals", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "\"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"CLONE_CLEANUP_RETENTION_PERIOD_VALUE\",\r\n" +
+			"      \"globalName\": \"LOAD_MASKING_FLAG\",\r\n" +
 			"      \"Description\": \"\",\r\n" +
 			"      \"luList\": [\r\n" +
 			"        {\r\n" +
 			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"1\"\r\n" +
+			"          \"defaultValue\": \"false\"\r\n" +
 			"        }\r\n" +
 			"      ]\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"globalName\": \"MASK_FLAG\",\r\n" +
+			"      \"globalName\": \"EXTRACT_MASKING_FLAG\",\r\n" +
 			"      \"Description\": \"\",\r\n" +
 			"      \"luList\": [\r\n" +
 			"        {\r\n" +
 			"          \"luName\": \"ALL\",\r\n" +
 			"          \"defaultValue\": \"true\"\r\n" +
-			"        }\r\n" +
-			"      ]\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"globalName\": \"CLONE_CLEANUP_RETENTION_PERIOD_TYPE\",\r\n" +
-			"      \"Description\": \"\",\r\n" +
-			"      \"luList\": [\r\n" +
-			"        {\r\n" +
-			"          \"luName\": \"ALL\",\r\n" +
-			"          \"defaultValue\": \"Days\"\r\n" +
 			"        }\r\n" +
 			"      ]\r\n" +
 			"    },\r\n" +
@@ -1844,7 +1833,7 @@ public class Logic extends WebServiceUserCode {
 						!"TDM_VERSION_DATETIME".equals(keyParts[2]) &&
 						!"TDM_VERSION_NAME".equals(keyParts[2]) &&
 						!"COMBO_MAX_COUNT".equals(keyParts[2]) &&
-						!"TDM_SYNTHETIC_DATA".equals(keyParts[2]) &&
+						!"TDM_CLONING_DATA".equals(keyParts[2]) &&
 						!"TDM_DATAFLUX_TASK".equals(keyParts[2]) &&
 						!"TDM_EXTERNAL_ENTITY_LIST_TTL".equals(keyParts[2]) &&
 						!"MAX_NUMBER_OF_ENTITIES_IN_LIST".equals(keyParts[2]) &&
@@ -2833,7 +2822,7 @@ public class Logic extends WebServiceUserCode {
 		String errorCode = "";
 		String message = null;
 		try{
-			List<Map<String, Object>> result = fnGetUserEnvs();
+			List<Map<String, Object>> result = fnGetUserEnvs("");
 			
 			errorCode="SUCCESS";
 			response.put("result",result);
@@ -2922,10 +2911,16 @@ public class Logic extends WebServiceUserCode {
 						"AND ep.product_id = plu.product_id AND be.be_status = 'Active'";
 				
 				Object res = db(TDM).fetch(sql, envID, be_name).firstValue();
-				//log.info("res: " + res);
+				String environment_name = "" + env.get("environment_name");
+				String environment_id = "" + env.get("environment_id");
+				String synthetic_environment_name = "" + fabric().fetch("set TDM.SYNTHETIC_ENVIRONMENT").firstValue();
+		
 				if (res != null) {
-					//log.info("Found env: "  + envID);
 					Map<String, Object> map = new HashMap<>();
+					if (environment_name.equalsIgnoreCase(synthetic_environment_name)){
+						map.put("synthetic_indicator",true);}
+					else{
+						map.put("synthetic_indicator",false);}
 					map.put("environment_id", env.get("environment_id"));
 					map.put("environment_name", env.get("environment_name"));
 					map.put("environment_type", env.get("environment_type"));

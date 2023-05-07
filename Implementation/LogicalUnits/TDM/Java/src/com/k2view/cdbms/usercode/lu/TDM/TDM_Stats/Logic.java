@@ -27,7 +27,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+@SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends UserCode {
 
     public static final String TDM = "TDM";

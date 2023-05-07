@@ -1,0 +1,173 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The instances",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Get the entity list",
+                            "remark": "It is better to use the NoOfEntities limit in the flow that retrieves the list of entities from performance POV.",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "CRM_DB"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select Distinct public.contract.customer_id As SOURCE_IID\r\nFrom public.contract\r\nWhere public.contract.contract_description Like '%Scooter%'\r\nLimit 1000"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "source_iid": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Init Record Count",
+                            "actorType": {
+                                "parentType": "InitRecordCount",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set the IID to a String",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "ToString1",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if the instance is not reserved and load it",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Check Reserve And Load To Entity List Table",
+                            "actorType": {
+                                "parentType": "CheckReserveAndLoadToEntityList",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if enough Entities were loaded",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Check And Stop Loop If enough records were added",
+                            "actorType": {
+                                "parentType": "CheckAndStopLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get the entity list",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ToString1",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "source_iid"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ToString1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Check Reserve And Load To Entity List Table",
+                "name": "SOURCE_IID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check Reserve And Load To Entity List Table",
+                "name": "recordLoaded"
+            },
+            "rightPort": {
+                "actor": "Check And Stop Loop If enough records were added",
+                "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Check Reserve And Load To Entity List Table",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "Check And Stop Loop If enough records were added",
+                "name": "NUM_OF_ENTITIES"
+            }
+        }
+    ]
+}

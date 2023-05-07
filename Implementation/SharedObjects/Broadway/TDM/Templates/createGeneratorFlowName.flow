@@ -1,0 +1,214 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get List of Populations",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "List Population Flows",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getPopulationsList"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "populationName": {
+                                                        "type": "string"
+                                                    },
+                                                    "tableName": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "lower Input Table Name ",
+                            "actorType": {
+                                "parentType": "Lowercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Ignore Case",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lower Table Name from Population List",
+                            "actorType": {
+                                "parentType": "Lowercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Generator Flow Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Population Of Table Found?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Build Generator Name",
+                            "minHeight": 101,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${0}.${1}.generator.flow"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Loop Stop",
+                            "actorType": {
+                                "parentType": "LoopStop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "lower Input Table Name ",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Population Of Table Found?",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lower Table Name from Population List",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Build Generator Name",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Lower Table Name from Population List",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Population Of Table Found?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuFunction1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Lower Table Name from Population List",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "tableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LuFunction1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Generator Name",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "populationName"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "List Population Flows",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "lower Input Table Name ",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build Generator Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "generatorFlow"
+            }
+        }
+    ]
+}

@@ -883,405 +883,106 @@
                                     {
                                         "name": "object",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "tac": {
-                                                    "type": "number"
-                                                },
-                                                "brandmodel": {
-                                                    "type": "string"
-                                                },
-                                                "manufacturer": {
-                                                    "type": "string"
-                                                },
-                                                "frequencies_band": {
-                                                    "type": "string"
-                                                },
-                                                "radiointerface": {
-                                                    "type": "string"
-                                                },
-                                                "brandname": {
-                                                    "type": "string"
-                                                },
-                                                "modelname": {
-                                                    "type": "string"
-                                                },
-                                                "os": {
-                                                    "type": "string"
-                                                },
-                                                "chipnfc": {
-                                                    "type": "string"
-                                                },
-                                                "chipbluetooth": {
-                                                    "type": "string"
-                                                },
-                                                "chipwlan": {
-                                                    "type": "string"
-                                                },
-                                                "devicetype": {
-                                                    "type": "string"
-                                                },
-                                                "removableuicc": {
-                                                    "type": "string"
-                                                },
-                                                "removableeuicc": {
-                                                    "type": "string"
-                                                },
-                                                "nonremovableuicc": {
-                                                    "type": "string"
-                                                },
-                                                "nonremovableeuicc": {
-                                                    "type": "string"
-                                                },
-                                                "deviceatlasid": {
-                                                    "type": "string"
-                                                },
-                                                "standardisedfull": {
-                                                    "type": "string"
-                                                },
-                                                "standardised_device_model": {
-                                                    "type": "string"
-                                                },
-                                                "standardisedmarketing": {
-                                                    "type": "string"
-                                                },
-                                                "interlmodel": {
-                                                    "type": "string"
-                                                },
-                                                "allocationdate": {
-                                                    "type": "string"
-                                                },
-                                                "countrycode": {
-                                                    "type": "number"
-                                                },
-                                                "fixedcode": {
-                                                    "type": "string"
-                                                },
-                                                "manufacturercode": {
-                                                    "type": "string"
-                                                },
-                                                "year_released": {
-                                                    "type": "string"
-                                                },
-                                                "mobile_device": {
-                                                    "type": "number"
-                                                },
-                                                "hardwaretype": {
-                                                    "type": "string"
-                                                },
-                                                "touchscreen": {
-                                                    "type": "number"
-                                                },
-                                                "screenwidth": {
-                                                    "type": "number"
-                                                },
-                                                "screenheight": {
-                                                    "type": "number"
-                                                },
-                                                "diagolscreensize": {
-                                                    "type": "number"
-                                                },
-                                                "displayppi": {
-                                                    "type": "number"
-                                                },
-                                                "devicepixelratio": {
-                                                    "type": "number"
-                                                },
-                                                "screencolordepth": {
-                                                    "type": "number"
-                                                },
-                                                "nfc": {
-                                                    "type": "number"
-                                                },
-                                                "camera": {
-                                                    "type": "number"
-                                                },
-                                                "ismobilephone": {
-                                                    "type": "number"
-                                                },
-                                                "istablet": {
-                                                    "type": "number"
-                                                },
-                                                "isereader": {
-                                                    "type": "number"
-                                                },
-                                                "isgamesconsole": {
-                                                    "type": "number"
-                                                },
-                                                "istv": {
-                                                    "type": "number"
-                                                },
-                                                "issettupbox": {
-                                                    "type": "number"
-                                                },
-                                                "ismediaplayer": {
-                                                    "type": "number"
-                                                },
-                                                "chipsetvendor": {
-                                                    "type": "string"
-                                                },
-                                                "chipset": {},
-                                                "chipsetmodel": {
-                                                    "type": "string"
-                                                },
-                                                "cpu": {
-                                                    "type": "string"
-                                                },
-                                                "cpu_cores": {
-                                                    "type": "string"
-                                                },
-                                                "cpu_maximum_frequency": {
-                                                    "type": "string"
-                                                },
-                                                "gpu": {
-                                                    "type": "string"
-                                                },
-                                                "sim_slots": {
-                                                    "type": "number"
-                                                },
-                                                "sim_size": {
-                                                    "type": "string"
-                                                },
-                                                "interl_storage_capacity": {
-                                                    "type": "string"
-                                                },
-                                                "expandable_storage": {
-                                                    "type": "number"
-                                                },
-                                                "total_ram": {
-                                                    "type": "string"
-                                                },
-                                                "os_me": {
-                                                    "type": "string"
-                                                },
-                                                "os_version": {
-                                                    "type": "string"
-                                                },
-                                                "os_android": {
-                                                    "type": "number"
-                                                },
-                                                "os_bada": {
-                                                    "type": "number"
-                                                },
-                                                "os_ios": {
-                                                    "type": "number"
-                                                },
-                                                "os_rim": {
-                                                    "type": "number"
-                                                },
-                                                "os_symbian": {
-                                                    "type": "number"
-                                                },
-                                                "os_windows_mobile": {
-                                                    "type": "number"
-                                                },
-                                                "os_windows_phone": {
-                                                    "type": "number"
-                                                },
-                                                "os_windows_rt": {
-                                                    "type": "number"
-                                                },
-                                                "os_web_os": {
-                                                    "type": "number"
-                                                },
-                                                "browser_me": {
-                                                    "type": "string"
-                                                },
-                                                "browser_version": {},
-                                                "browser_rendering_engine": {
-                                                    "type": "string"
-                                                },
-                                                "markup_xhtml_basic_1v0": {
-                                                    "type": "number"
-                                                },
-                                                "markup_xhtml_mp_1v0": {
-                                                    "type": "number"
-                                                },
-                                                "markup_xhtml_mp_1v1": {
-                                                    "type": "number"
-                                                },
-                                                "markup_xhtml_mp_1v2": {
-                                                    "type": "number"
-                                                },
-                                                "markup_wml1": {},
-                                                "vcard_download": {
-                                                    "type": "number"
-                                                },
-                                                "image__gif87": {
-                                                    "type": "number"
-                                                },
-                                                "image__gif89a": {},
-                                                "image__jpg": {
-                                                    "type": "number"
-                                                },
-                                                "image__png": {
-                                                    "type": "number"
-                                                },
-                                                "uri_scheme_tel": {
-                                                    "type": "number"
-                                                },
-                                                "uri_scheme_sms": {
-                                                    "type": "number"
-                                                },
-                                                "uri_scheme_sms_to": {},
-                                                "cookie": {
-                                                    "type": "number"
-                                                },
-                                                "https": {
-                                                    "type": "number"
-                                                },
-                                                "memory_limit_markup": {
-                                                    "type": "number"
-                                                },
-                                                "memory_limit_embedded_media": {
-                                                    "type": "number"
-                                                },
-                                                "memory_limit_download": {
-                                                    "type": "number"
-                                                },
-                                                "flash_capable": {
-                                                    "type": "number"
-                                                },
-                                                "js_support_basic_java_script": {
-                                                    "type": "number"
-                                                },
-                                                "js_modify_dom": {
-                                                    "type": "number"
-                                                },
-                                                "js_modify_css": {
-                                                    "type": "number"
-                                                },
-                                                "js_support_events": {
-                                                    "type": "number"
-                                                },
-                                                "js_support_event_listener": {
-                                                    "type": "number"
-                                                },
-                                                "js_xhr": {
-                                                    "type": "number"
-                                                },
-                                                "js_support_console_log": {
-                                                    "type": "number"
-                                                },
-                                                "js_json": {
-                                                    "type": "number"
-                                                },
-                                                "supports_client_side": {
-                                                    "type": "number"
-                                                },
-                                                "csd": {},
-                                                "hscsd": {},
-                                                "gprs": {
-                                                    "type": "number"
-                                                },
-                                                "edge": {
-                                                    "type": "number"
-                                                },
-                                                "hsdpa": {
-                                                    "type": "number"
-                                                },
-                                                "umts": {
-                                                    "type": "number"
-                                                },
-                                                "hspa": {
-                                                    "type": "number"
-                                                },
-                                                "lte": {
-                                                    "type": "number"
-                                                },
-                                                "lte_category": {
-                                                    "type": "number"
-                                                },
-                                                "lte_advanced": {
-                                                    "type": "number"
-                                                },
-                                                "volte": {
-                                                    "type": "number"
-                                                },
-                                                "wifi": {
-                                                    "type": "number"
-                                                },
-                                                "vowifi": {
-                                                    "type": "number"
-                                                },
-                                                "html_audio": {
-                                                    "type": "number"
-                                                },
-                                                "html_canvas": {
-                                                    "type": "number"
-                                                },
-                                                "html_inline_svg": {
-                                                    "type": "number"
-                                                },
-                                                "html_svg": {
-                                                    "type": "number"
-                                                },
-                                                "html_video": {
-                                                    "type": "number"
-                                                },
-                                                "css_animations": {
-                                                    "type": "number"
-                                                },
-                                                "css_columns": {
-                                                    "type": "number"
-                                                },
-                                                "css_transforms": {
-                                                    "type": "number"
-                                                },
-                                                "css_transitions": {
-                                                    "type": "number"
-                                                },
-                                                "js_application_cache": {
-                                                    "type": "number"
-                                                },
-                                                "js_geo_location": {
-                                                    "type": "number"
-                                                },
-                                                "js_indexeddb": {},
-                                                "js_local_storage": {},
-                                                "js_session_storage": {
-                                                    "type": "number"
-                                                },
-                                                "js_web_gl": {
-                                                    "type": "number"
-                                                },
-                                                "js_web_sockets": {
-                                                    "type": "number"
-                                                },
-                                                "js_web_sql_database": {},
-                                                "js_web_workers": {
-                                                    "type": "number"
-                                                },
-                                                "js_device_orientation": {
-                                                    "type": "number"
-                                                },
-                                                "js_device_motion": {
-                                                    "type": "number"
-                                                },
-                                                "js_touch_events": {
-                                                    "type": "number"
-                                                },
-                                                "js_query_selector": {
-                                                    "type": "number"
-                                                },
-                                                "wmv": {},
-                                                "midi_monophonic": {
-                                                    "type": "number"
-                                                },
-                                                "midi_polyphonic": {
-                                                    "type": "number"
-                                                },
-                                                "amr": {},
-                                                "mp3": {
-                                                    "type": "number"
-                                                },
-                                                "aac": {
-                                                    "type": "number"
-                                                }
-                                            }
+                                            "type": "array"
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "getDbTableColumns",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getDbTableColumnsAndTypes"
+                                    },
+                                    {
+                                        "name": "dbInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "catalogSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "DBconnector",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetDBConnector"
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "EqualsIgnoreCase1",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Cassandra"
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -1326,6 +1027,36 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "IfElse",
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": false
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -1338,17 +1069,6 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get List of Records",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": true,
                     "actors": [
                         {
                             "name": "Records",
@@ -1360,7 +1080,14 @@
                                         "const": null
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "strings",
+                                        "schema": {
+                                            "type": "array"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -1370,18 +1097,7 @@
         {
             "stages": [
                 {
-                    "name": "Inter loop",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Strip The record's values",
+                    "name": "Get List of Records",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": true,
@@ -1412,7 +1128,7 @@
                                         "schema": {
                                             "type": "array",
                                             "items": {
-                                                "type": "string"
+                                                "type": "integer"
                                             }
                                         }
                                     }
@@ -1420,6 +1136,111 @@
                             }
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Inter loop",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler2",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Transform Data",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "DataTransformer"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "connector",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Strip The record's values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": []
                 }
             ]
         },
@@ -1479,7 +1300,6 @@
                         },
                         {
                             "name": "Insert Data To Target Table",
-                            "minHeight": 260,
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -1501,7 +1321,7 @@
                                     },
                                     {
                                         "name": "batch",
-                                        "const": true
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -1566,7 +1386,7 @@
                     "isTransactional": true,
                     "actors": [
                         {
-                            "name": "Error Handler Of Updating number of records",
+                            "name": "Error Handler Of Updating number of records__2",
                             "onError": "result",
                             "actorType": {
                                 "parentType": "ErrorHandler",
@@ -1652,6 +1472,32 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Error Handler Of Updating number of records__1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsForRef"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Count Method",
                             "actorType": {
@@ -2040,16 +1886,6 @@
         {
             "leftPort": {
                 "actor": "Get Details of Reference Table",
-                "name": "targetInterfaceName"
-            },
-            "rightPort": {
-                "actor": "Insert Data To Target Table",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
                 "name": "targetSchemaName"
             },
             "rightPort": {
@@ -2185,6 +2021,56 @@
             "rightPort": {
                 "actor": "Get Ref Table Count",
                 "name": "table_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "DBconnector",
+                "name": "interfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "dbInterfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetSchemaName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "catalogSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetRefTableName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Details of Reference Table",
+                "name": "targetInterfaceName"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "interface"
             }
         },
         {
@@ -2371,6 +2257,46 @@
         },
         {
             "leftPort": {
+                "actor": "getDbTableColumns",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Transform Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DBconnector",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Transform Data",
+                "name": "connector"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DBconnector",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EqualsIgnoreCase1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "EqualsIgnoreCase1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IfElse",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Group The Data",
                 "name": "result"
             },
@@ -2379,6 +2305,16 @@
                 "name": "strings"
             },
             "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "IfElse",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert Data To Target Table",
+                "name": "batch"
+            }
         },
         {
             "leftPort": {
@@ -2395,6 +2331,16 @@
             "leftPort": {
                 "actor": "Get the values of the record",
                 "name": "result"
+            },
+            "rightPort": {
+                "actor": "Transform Data",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Transform Data",
+                "name": "map"
             },
             "rightPort": {
                 "actor": "Insert Data To Target Table",

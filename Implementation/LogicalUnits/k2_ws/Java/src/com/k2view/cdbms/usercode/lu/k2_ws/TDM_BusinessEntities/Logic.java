@@ -36,7 +36,7 @@ import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 	
 	public static final String TDM = "TDM";
@@ -254,7 +254,7 @@ public class Logic extends WebServiceUserCode {
 				String beName="";
 				if (!firstRec.isEmpty()) beName = "" + firstRec.get("be_name");
 
-				String updateEnvironmentProductsSql = "UPDATE \"public\".environment_products " +
+				String updateEnvironmentProductsSql = "UPDATE \"" + schema + "\".environment_products " +
 						"SET status= (?) " +
 						"from ( " +
 						"select product_id, count(product_id) " +
@@ -303,7 +303,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Gets a list of deployed Logical Units.")
-	@webService(path = "logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    \"luName1\",\r\n" +
@@ -317,7 +317,7 @@ public class Logic extends WebServiceUserCode {
 		List luList = (List) getFabricResponse("list lut;");
 		for(Object e : luList) {
 			Object luName = ((Map) e).get("LU_NAME");
-			if (!"TDM".equals(luName)) {
+			if (!(luName.equals("TDM")||luName.equals("TDM_Reference")||luName.equals("TDM_LIBRARY"))){
 				result.add((String)luName);
 			}
 		}
@@ -1186,7 +1186,8 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetActiveBusinessentities() throws Exception {
-		String sql = "SELECT be_id, be_name FROM " + schema + ".business_entities WHERE be_status = 'Active'";
+		String sql = "SELECT be_id, be_name FROM "+ TDMDB_SCHEMA +".business_entities be WHERE EXISTS"+ 
+        "(SELECT be_id FROM "+ TDMDB_SCHEMA +".product_logical_units plu WHERE plu.be_id=be.be_id) AND be_status = 'Active'";
 		String errorCode="";
 		String message=null;
 		
@@ -1321,7 +1322,7 @@ public class Logic extends WebServiceUserCode {
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);
 	}
-	public static boolean isNumeric(String string) {
+	private static boolean isNumeric(String string) {
 		int intValue;
 		System.out.printf("Parsing string: \"%s\"%n", string);
 		if(string == null || string.equals("")) {

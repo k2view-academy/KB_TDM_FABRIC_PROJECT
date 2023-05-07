@@ -29,9 +29,9 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.Logic.wsGetTasks;
-import static com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks.TaskExecutionUtils.*;
+import static com.k2view.cdbms.usercode.common.TaskExecutionUtils.SharedLogic.*;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class Logic extends WebServiceUserCode {
 	public static final String TDM = "TDM";
 	
@@ -52,7 +52,7 @@ public class Logic extends WebServiceUserCode {
 			"\r\n" +
 			"Load Tasks:\r\n" +
 			"\r\n" +
-			"- Get all active tasks that do not require special permissions (that is, tasks that do not include reference tables, do not include Synthetic or Random selection methods, tasks that do not have Sequence replacement, or tasks that do not include a delete of entities from the target system) if the user or their group has a Read TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs, and a Write TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs.\r\n" +
+			"- Get all active tasks that do not require special permissions (that is, tasks that do not include reference tables, do not include Cloning or Random selection methods, tasks that do not have Sequence replacement, or tasks that do not include a delete of entities from the target system) if the user or their group has a Read TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs, and a Write TDM Environment permission set on at least one TDM environment with the task's Business Entity (BE) and LUs.\r\n" +
 			"- Get all active tasks that require special permissions if the user or their group has at least one Read TDM Environment permission set, and one Write TDM Environment permission set with these permissions and the source and target environments have the task's Business Entity (BE) and LUs.\r\n" +
 			"\r\n" +
 			"Delete Tasks:\r\n" +
@@ -293,7 +293,8 @@ public class Logic extends WebServiceUserCode {
 			"The entity’s selection method:\r\n" +
 			"\t- 'L' (Entity list)\r\n" +
 			"\t- 'P' or 'PR' (Parameters)\r\n" +
-			"\t- 'S' (Entity Clone)\r\n" +
+			"\t- 'CLONE' (Entity Clone)\r\n" +
+            "\t- 'GEN' (Generate Synthetic)\r\n" +
 			"\t- 'R' (Random)\r\n" +
 			"\t- 'C' (Custom Logic)\r\n" +
 			"\t- 'ALL' (Extract tasks: select a predefined entity list. Load Data Versioning tasks: select all entities of the selected version)\r\n" +

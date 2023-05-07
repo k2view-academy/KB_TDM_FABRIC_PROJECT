@@ -47,6 +47,30 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Split",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
                             "name": "Create TDMDB Error Handler",
                             "onError": "result",
                             "actorType": {
@@ -92,16 +116,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
         }
     ],
     "connections": [
@@ -111,9 +125,20 @@
                 "name": "result"
             },
             "rightPort": {
+                "actor": "Split",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split",
+                "name": "strings"
+            },
+            "rightPort": {
                 "actor": "Create TDMDB User and Schema",
                 "name": "sql"
-            }
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

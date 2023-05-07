@@ -1,11 +1,11 @@
 -- Update TDM version
-update tdm_general_parameters set param_value = '7.5.2' where param_name = 'TDM_VERSION';
+update ${@schema}.tdm_general_parameters set param_value = '7.5.2' where param_name = 'TDM_VERSION';
 
-alter table TASK_EXECUTION_LIST add COLUMN IF NOT EXISTS source_product_version character varying(50);
-alter table TASKS add COLUMN IF NOT EXISTS reserve_note text;
+alter table ${@schema}.TASK_EXECUTION_LIST add COLUMN IF NOT EXISTS source_product_version character varying(50);
+alter table ${@schema}.TASKS add COLUMN IF NOT EXISTS reserve_note text;
 
 -- Update param_values function
-CREATE OR REPLACE FUNCTION param_values(
+CREATE OR REPLACE FUNCTION ${@schema}.param_values(
 	parentlu text,
 	entity_id text,
 	table_name text,
@@ -58,5 +58,5 @@ END;
 END;
 $BODY$;
 
-ALTER FUNCTION param_values(text, text, text, text, text, text, text, text, text)
+ALTER FUNCTION ${@schema}.param_values(text, text, text, text, text, text, text, text, text)
     OWNER TO tdm;

@@ -19,6 +19,7 @@ import com.k2view.cdbms.shared.Globals;
 import com.k2view.cdbms.shared.user.UserCode;
 import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.lut.LUType.BroadwayFiles;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 //import com.k2view.cdbms.usercode.*;										 
@@ -26,6 +27,7 @@ import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.events.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import com.k2view.broadway.model.*;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
@@ -35,7 +37,7 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked"})
+@SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
 
 
@@ -49,6 +51,11 @@ public class SharedLogic {
 			}
 		});
 		
+		      handlebars.registerHelper("increase", new Helper<Integer>() {
+			public Integer apply(Integer number, Options options) {
+				return number + (Integer)options.hash.get("inc");
+			}
+		});
 		
 		handlebars.registerHelper("getTableName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
@@ -63,6 +70,26 @@ public class SharedLogic {
 			}
 		});
 		
+		      handlebars.registerHelper("getFabricFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				//log.info(map.get("TARGET_FIELD_NAME"));
+				return map.get("FABRIC_FIELD_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getLUFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				//log.info(map.get("FIELD_NAME"));
+				return map.get("FIELD_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getDMActorName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				//log.info(map.get("FIELD_NAME"));
+				return map.get("ACTOR");
+			}
+		});
 		handlebars.registerHelper("getSourceTableName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
 				return map.get("FABRIC_TABLE_NAME");
@@ -87,15 +114,28 @@ public class SharedLogic {
 			}
 		});
 		
-		handlebars.registerHelper("getLUName", new Helper<Map<String, String>>() {
-			public String apply(Map<String, String> map, Options options) {
-				return getLuType().luName;
+		
+		handlebars.registerHelper("if_even", new Helper<Integer>(){
+			public Boolean apply(Integer index, Options options) {
+				return ((index % 2) == 0);
 			}
 		});
 		
+		handlebars.registerHelper("getParentFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("PARENT_FIELD_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getChildFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("FIELD_NAME").toUpperCase();
+			}
+		});
+		
+		
 		handlebars.registerHelper("eq", ConditionalHelpers.eq);
 		handlebars.registerHelper("neq", ConditionalHelpers.neq);
-		
 		
 		Template template = handlebars.compileInline(templateContent);
 		
@@ -109,7 +149,7 @@ public class SharedLogic {
 		if (luName == null || Util.isEmpty(luName)) {
 			luName = getLuType().luName;
 		}
-
+		
 		
 		List<String> luTableColumns = getLuTableColumns(luName, luTable);
 		Object[] targetTableData = getDbTableColumns(targetDbInterface, targetDbSchema, targetDbTable);
@@ -120,6 +160,7 @@ public class SharedLogic {
 		luTableColumns.replaceAll(String::toUpperCase);
 		
 		Map<String, Object> map = new TreeMap<>();
+		map.put("LU_NAME", luName);
 		map.put("LU_TABLE", luTable);
 		map.put("LU_TABLE_COLUMNS", luTableColumns);
 		map.put("TARGET_INTERFACE", targetDbInterface);
@@ -142,7 +183,7 @@ public class SharedLogic {
 		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = '" + luTable + "', RESULT_STRUCTURE=ROW";
 		//log.info("buildTemplateData - cmd: " + cmd);
 		
-		LinkedList<Object> tableSeq = (LinkedList<Object>)fabric().fetch(cmd).firstRow().get("value");
+		List<Object> tableSeq = (List<Object>)fabric().fetch(cmd).firstRow().get("value");
 		//log.info("buildTemplateData - tableSeq: " + tableSeq);
 		
 		if (tableSeq != null) {
@@ -227,8 +268,9 @@ public class SharedLogic {
 					break;
 				}
 			}
-			Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName=', RESULT_STRUCTURE=ROW" +
-					originalTableName + "', luName=" + luType.luName);
+			Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+			    originalTableName + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW");
+			
 			String tableFiltered = "";
 			if (checkTable != null && checkTable.firstValue() != null) {
 				tableFiltered = "" + checkTable.firstValue();
@@ -252,7 +294,7 @@ public class SharedLogic {
 	}
 
 
-private static String[] getDBCollection(DatabaseMetaData md, String catalogSchema) throws Exception {
+public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema) throws Exception {
 	String catalog = null;
 	String schema = null;
 	
@@ -284,6 +326,8 @@ private static String[] getDBCollection(DatabaseMetaData md, String catalogSchem
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String catalogSchema, String table) throws Exception {
 		ResultSet rs = null;
+        ResultSet rs1 = null;
+        ResultSet rs2 = null;
 		String[] types = {"TABLE"};
 		String targetTableName = table;
 		
@@ -304,24 +348,28 @@ private static String[] getDBCollection(DatabaseMetaData md, String catalogSchem
 				}
 			}
 						
-			rs = md.getColumns(catalog, schema, targetTableName, null);
+			rs1 = md.getColumns(catalog, schema, targetTableName, null);
 			List<String> al = new ArrayList<>();
-			while (rs.next()) {
-				al.add(rs.getString("COLUMN_NAME"));
+			while (rs1.next()) {
+				al.add(rs1.getString("COLUMN_NAME"));
 			}
-			//result[0] = al;
+					
 		
 			// get PKs
-			rs = md.getPrimaryKeys(catalog, schema, targetTableName);
+			rs2 = md.getPrimaryKeys(catalog, schema, targetTableName);
 			List<String> al2 = new ArrayList<>();
-			while (rs.next()) {
-				al2.add(rs.getString("COLUMN_NAME"));
+			while (rs2.next()) {
+				al2.add(rs2.getString("COLUMN_NAME"));
 			}
-			//result[1] = al2;
+					 
 			return new Object[]{al,al2};
 		} finally {
 			if (rs != null)
 				rs.close();
+                if (rs1 != null)
+				rs1.close();
+                if (rs2 != null)
+				rs2.close();
 		}
 	}
 
@@ -383,5 +431,100 @@ private static String[] getDBCollection(DatabaseMetaData md, String catalogSchem
 		
 		return output;
 	}
+
+    @out(name = "result", type = List.class, desc = "")
+	public static List<HashMap<String, String>> getLuTableColumnsAndTypes(String luName, String table) throws Exception {
+		LUType luType = null;
+        List<HashMap<String, String>> tableData = new ArrayList<HashMap<String, String>>();
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+		if(luType == null || !luType.ludbObjects.containsKey(table)) 
+			return tableData;
+			
+        HashMap<String, LudbColumn> m1 = new HashMap<>(luType.ludbObjects.get(table).getLudbColumnMap());
+        for (Map.Entry<String, LudbColumn> entry : m1.entrySet()) {
+            HashMap<String, String> map = new HashMap<String, String>();
+            String columnName = entry.getKey();
+            LudbColumn columnData = entry.getValue();
+            String columnType = columnData.columnType;
+            map.put("columnName", columnName.toUpperCase());
+            map.put("columnType",columnType);
+            
+            tableData.add(map);
+            
+        }
+		
+		return tableData;
+	}
+
+    @out(name = "result", type = List.class, desc = "")
+    public static  List<Map<String, String>>  getPopulationsList(String luName) throws Exception {
+        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        final LUType luType = LUType.getTypeByName(luName);
+
+
+        luType.getPopulationCollection().forEach((tableEntry) -> {
+            String table = tableEntry.getLudbObjectName();
+            String popName =  tableEntry.getPopulationName();
+
+            try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+            table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
+                String tableFiltered = "";
+                if (checkTable != null && checkTable.firstValue() != null) {
+                	tableFiltered = "" + checkTable.firstValue();
+                }
+                
+                if(  !Util.isEmpty(tableFiltered)) {
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("tableName", table);
+                    map.put("populationName", popName.substring(0, popName.lastIndexOf(".flow")));
+                	result.add(map);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            
+        });                  
+        return result;
+    }
+
+    @out(name = "result", type = List.class, desc = "")
+    public static  List<Map<String, String>>  getPopArgumenList(String luName, String tableName) throws Exception {
+        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+        LUType luType = LUType.getTypeByName(luName);
+		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        for (Object key : rel.keySet()) {
+            log.info("Rel Key: " + key + ", from: " + rel.get(key));
+            for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
+                log.info("Rel Key - from: " + ri.from);
+                log.info("Rel Key - to: " + ri.to);
+                Map<String, String> map = new HashMap<>();
+                map.put("PARENT_TABLE", key.toString());
+                map.put("PARENT_FIELD_NAME", ri.to.get("column"));
+                map.put("FIELD_NAME", ri.to.get("column").toUpperCase());
+                result.add(map);
+            }
+        }
+        return result;
+    }
+    @out(name = "result", type = List.class, desc = "")
+    public static  List<Map<String, String>>  filerOutSequences(List<Map<String, String>> Sequences, List<Map<String, String>> parentRec) throws Exception {
+        List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);
+
+		for (Map<String, String> parentMap : parentRec) {
+			for (Map<String, String> seqMap : Sequences) {
+				if (seqMap.get("TARGET_FIELD_NAME").equalsIgnoreCase(parentMap.get("FIELD_NAME"))) {
+					result.remove(seqMap);
+                    break;
+				}
+			}
+		}
+       
+	
+        return result;
+    }
 
 }
