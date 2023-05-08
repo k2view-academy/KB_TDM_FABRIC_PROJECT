@@ -3,126 +3,6 @@
   <Name>ItemsProperties</Name>
   <ProjectItemPropList>
     <ProjectItemProp>
-      <NodeName>query_get_tasks_properties.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;fnTdmExecuteTask&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\fnTdmExecuteTask\query_get_tasks_properties.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@fnTdmExecuteTask</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>query_get_tasks.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;fnTdmExecuteTask&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\fnTdmExecuteTask\query_get_tasks.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@fnTdmExecuteTask</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>query_get_load_globals.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;fnTdmExecuteTask&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\fnTdmExecuteTask\query_get_load_globals.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@fnTdmExecuteTask</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>query_get_extract_globals.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;fnTdmExecuteTask&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\fnTdmExecuteTask\query_get_extract_globals.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@fnTdmExecuteTask</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.6_to_v8.0.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.6_to_v8.0.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.5.2_to_v7.6.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.5.2_to_v7.6.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.5.1_to_v7.5.2.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.5.1_to_v7.5.2.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.5.0_to_v7.5.1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.5.0_to_v7.5.1.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.4_to_v7.5.0.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.4_to_v7.5.0.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.3_to_v7.4.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.3_to_v7.4.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.2_to_v7.3.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.2_to_v7.3.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.1_to_v7.2.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.1_to_v7.2.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v7.0_to_v7.1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v7.0_to_v7.1.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v6.2_to_v7.0.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v6.2_to_v7.0.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v6.1_to_v6.1.1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v6.1_to_v6.1.1.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v6.1.1_to_v6.2.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v6.1.1_to_v6.2.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v5.5_to_v6.1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v5.5_to_v6.1.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v5.1_to_v5.5.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v5.1_to_v5.5.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v5.0_to_v5.1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v5.0_to_v5.1.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v4.2_to_v5.0.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v4.2_to_v5.0.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>update_tdmdb_from_v4.1_to_v4.2.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB_Upgrade&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB_Upgrade\update_tdmdb_from_v4.1_to_v4.2.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB_Upgrade</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>k2vtdm1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB\k2vtdm1.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>k2vtdm2.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB\k2vtdm2.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>k2vtdm3.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDMDB&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDMDB\k2vtdm3.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDMDB</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>setSourceEnv_Actor.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\setSourceEnv_Actor.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@General</CategoryKey>
@@ -603,81 +483,6 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@TDM@Reference@Upgrade</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>DBS_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\DBS_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ROLES_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ROLES_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_BILLING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_BILLING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_COLLECTION_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_COLLECTION_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_CRM_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_CRM_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TAR_ORDERING_CREATE.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TAR_ORDERING_CREATE.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>TDM_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\TDM_INSERT.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>BILLING_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>COLLECTION_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>CRM_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ORDERING_INSERT.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_INSERT.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>TDMFilterOutTargetTables.actor</NodeName>
       <RelativePath>Implementation\SharedObjects\Broadway\TDMFilterOutTargetTables.actor</RelativePath>
       <CategoryKey>Implementation\SharedObjects\Broadway@ScriptsForTemplates</CategoryKey>
@@ -968,24 +773,29 @@
       <CategoryKey>Implementation\SharedObjects\Broadway@Sequences</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>BILLING_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\BILLING_INSERT.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+      <NodeName>get5GCustomers.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\get5GCustomers.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>COLLECTION_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\COLLECTION_INSERT.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+      <NodeName>getAll5GCustomers.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getAll5GCustomers.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>CRM_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\CRM_INSERT.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+      <NodeName>getCustomersByAddress.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getCustomersByAddress.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>ORDERING_INSERT.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TRAINING&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TRAINING\ORDERING_INSERT.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TDM_Training@TRAINING</CategoryKey>
+      <NodeName>getCustomersBySQL.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getCustomersBySQL.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>getCustomersBySQL2.flow</NodeName>
+      <RelativePath>Implementation\SharedObjects\Broadway\getCustomersBySQL2.flow</RelativePath>
+      <CategoryKey>Implementation\SharedObjects\Broadway@TDM</CategoryKey>
     </ProjectItemProp>
   </ProjectItemPropList>
   <ProjectItemsCategoryList>

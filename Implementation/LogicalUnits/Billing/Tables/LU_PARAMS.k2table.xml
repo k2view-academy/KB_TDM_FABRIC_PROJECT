@@ -1,25 +1,20 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>LU_PARAMS</Name>
   <ID>tbl_LU_PARAMS</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="ENTITY_ID" id="tblCol_12cb4021e87c4145a589a0eccb73e00c" index="0" datatype="text" />
     <Column name="SOURCE_ENVIRONMENT" id="tblCol_e0f660d06137442c96afaf0508a33bd9" index="1" datatype="text" />
-    <Column name="TOTAL_BALANCE_AMOUNT" id="tblCol_97528326180a454ea8756cd32c73ad0b" index="2" datatype="text" />
-    <Column name="NO_OF_OPEN_INVOICES" id="tblCol_e4cb8c8a807b428fa9d8bb9413f27e46" index="3" datatype="text" />
-    <Column name="VIP_STATUS" id="tblCol_5aa997b6b3a340099786d7ada11749d1" index="4" datatype="text" />
-    <Column name="TOTAL_PAYMENT_AMOUNT" id="tblCol_bb183c2dc93c467f824edf5329fc1377" index="5" datatype="text" />
-    <Column name="SUBSCRIBER_TYPE" id="tblCol_3b74c24f576144968a90ec155595d1e9" index="6" datatype="text" />
   </Columns>
-  <IndexesList />
+  <IndexesList>
+  </IndexesList>
   <EnrichmentList>
-    <Enrichment>
-      <Name>fnEnrichmentLuParams</Name>
-      <Type>Function</Type>
-    </Enrichment>
   </EnrichmentList>
   <LazyDataUpdate syncMethod="None" performEvery="00:00:05">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction></DecisionFunction>
   </LazyDataUpdate>
-  <TriggersList />
+  <TriggersList>
+  </TriggersList>
 </TableObject>

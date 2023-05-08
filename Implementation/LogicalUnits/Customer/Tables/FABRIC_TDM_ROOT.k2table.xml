@@ -11,12 +11,7 @@
     <Column name="timestamp" id="tblCol_2b3824d9700e4f788970ffb7e1603e00" index="4" datatype="text" />
   </Columns>
   <IndexesList />
-  <EnrichmentList>
-    <Enrichment>
-      <Name>fnEnrichmentChildLink</Name>
-      <Type>Function</Type>
-    </Enrichment>
-  </EnrichmentList>
+  <EnrichmentList />
   <LazyDataUpdate syncMethod="TimeInterval" performEvery="00:00:00">
     <TruncateBeforeSync>true</TruncateBeforeSync>
   </LazyDataUpdate>
