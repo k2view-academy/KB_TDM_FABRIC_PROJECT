@@ -1,20 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>LU_PARAMS</Name>
   <ID>tbl_LU_PARAMS</ID>
-  <ColumnsCollation>BINARY</ColumnsCollation>
-  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="ENTITY_ID" id="tblCol_12cb4021e87c4145a589a0eccb73e00c" index="0" datatype="text" />
     <Column name="SOURCE_ENVIRONMENT" id="tblCol_e0f660d06137442c96afaf0508a33bd9" index="1" datatype="text" />
+    <Column name="FIRST_NAME" id="FIRST_NAME" index="2" datatype="text" />
+    <Column name="LAST_NAME" id="LAST_NAME" index="3" datatype="text" />
+    <Column name="LINE_NUMBER" id="LINE_NUMBER" index="4" datatype="text" />
+    <Column name="NO_OF_OPEN_CASES" id="NO_OF_OPEN_CASES" index="5" datatype="text" />
+    <Column name="OPEN_CASE_DATE" id="OPEN_CASE_DATE" index="6" datatype="text" />
+    <Column name="NO_OF_SUBSCRIBERS" id="NO_OF_SUBSCRIBERS" index="7" datatype="text" />
   </Columns>
-  <IndexesList>
-  </IndexesList>
-  <EnrichmentList>
-  </EnrichmentList>
+  <IndexesList />
+  <EnrichmentList />
   <LazyDataUpdate syncMethod="None" performEvery="00:00:05">
-    <DecisionFunction></DecisionFunction>
+    <DecisionFunction />
   </LazyDataUpdate>
-  <TriggersList>
-  </TriggersList>
+  <TriggersList />
 </TableObject>

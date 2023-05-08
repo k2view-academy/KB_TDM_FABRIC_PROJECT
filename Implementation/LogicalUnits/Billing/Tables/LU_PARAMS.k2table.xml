@@ -1,20 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>LU_PARAMS</Name>
   <ID>tbl_LU_PARAMS</ID>
-  <ColumnsCollation>BINARY</ColumnsCollation>
-  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="ENTITY_ID" id="tblCol_12cb4021e87c4145a589a0eccb73e00c" index="0" datatype="text" />
     <Column name="SOURCE_ENVIRONMENT" id="tblCol_e0f660d06137442c96afaf0508a33bd9" index="1" datatype="text" />
+    <Column name="NO_OF_OPEN_INVOICES" id="NO_OF_OPEN_INVOICES" index="2" datatype="text" />
+    <Column name="VIP_STATUS" id="VIP_STATUS" index="3" datatype="text" />
+    <Column name="TOTAL_PAYMENT_AMOUNT" id="TOTAL_PAYMENT_AMOUNT" index="4" datatype="text" />
+    <Column name="SUBSCRIBER_TYPE" id="SUBSCRIBER_TYPE" index="6" datatype="text" />
   </Columns>
-  <IndexesList>
-  </IndexesList>
-  <EnrichmentList>
-  </EnrichmentList>
+  <IndexesList />
+  <EnrichmentList />
   <LazyDataUpdate syncMethod="None" performEvery="00:00:05">
-    <DecisionFunction></DecisionFunction>
+    <DecisionFunction />
   </LazyDataUpdate>
-  <TriggersList>
-  </TriggersList>
+  <TriggersList />
 </TableObject>
