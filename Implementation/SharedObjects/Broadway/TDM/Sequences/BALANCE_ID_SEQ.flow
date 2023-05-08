@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -75,16 +78,16 @@
                                         "const": "DB_CASSANDRA"
                                     },
                                     {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
                                         "name": "sequenceInterface",
-                                        "const": "FabricRedis"
+                                        "const": "IN-MEMORY"
                                     },
                                     {
                                         "name": "initialValue",
                                         "const": "BalanceIdInit"
-                                    },
-									{
-                                        "name": "TTL",
-                                        "const": 0
                                     }
                                 ],
                                 "outputs": [
@@ -92,12 +95,12 @@
                                         "name": "value",
                                         "schema": {
                                             "type": "string"
-										}
-									}
-								]
-							}
-                        }						 
-					]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
