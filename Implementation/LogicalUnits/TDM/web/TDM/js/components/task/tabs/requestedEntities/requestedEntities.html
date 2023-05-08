@@ -60,7 +60,8 @@
                         </div>
                     </div>
                     <div ng-if="
-                        requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind">
+                        requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind || 
+                        (requestedEntitiesCtrl.taskData.task_type === 'RESERVE' && requestedEntitiesCtrl.enableReserveByParams)">
                         <div style="display: flex; align-items: center;">
                             <input type="radio"
                                 ng-click="requestedEntitiesCtrl.parametersRandom = true" 
@@ -360,7 +361,7 @@
                             name="custom_logic_{{customLogicParam.name}}" 
                             ng-required="customLogicParam.mandatory"
                             ng-model="customLogicParam.value" />
-                    <div style="width: 535px;z-index: 7;position: relative;"
+                    <div style="width: 535px;z-index: 0;position: relative;"
                          ng-if="customLogicParam.editor"
                          data="customLogicParam"
                          editor="customLogicParam.editor" 
@@ -487,7 +488,7 @@
             </div> 
         </div>
     </div>
-    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 20px" ></div>
+    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 56px" ></div>
     <!-- <hr>    
     <span style="display: flex;justify-content: space-between;">
         <button type="button"  ng-click="back()" style="width:80px" class="btn k2-primary-btn">Back</button>

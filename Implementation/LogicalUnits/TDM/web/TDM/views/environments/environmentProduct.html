@@ -8,7 +8,7 @@
             <div class="col-lg-4 pull-right">
                 <a uib-tooltip="Remove System" tooltip-placement="left" type="button" role-handler role="1"
                    ng-if="!environmentCtrl.disableChangeProduct && !environmentCtrl.productData.taskcount" class="pull-right"
-                   mwl-confirm message="Are you sure you want to Delete System?"
+                   mwl-confirm message="Active tasks associated with the deleted System will be deleted. Are you sure you want to delete the System?"
                    confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>" cancel-text="No <i class='glyphicon glyphicon-remove'></i>" placement="left"
                    on-confirm="environmentCtrl.deleteProduct()" on-cancel="cancelClicked = true" confirm-button-type="danger" cancel-button-type="default">
                    <img src="icons/delete-icon-2.svg">

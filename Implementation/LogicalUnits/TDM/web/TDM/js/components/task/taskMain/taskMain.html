@@ -1,10 +1,10 @@
 <link href="js/components/task/taskMain/taskMain.css" rel="stylesheet" /> 
 
-<div class="col-lg-12 mainWrapper">
+<div class="col-lg-12 mainWrapper task">
     <div class="ibox float-e-margins k2-card" style="min-height: calc(100vh - 66px);position: relative;">
       <div class="k2-header">
-        <div class="row">
-          <div class="col-lg-6">
+        <div class="row" style="display: flex;">
+          <div class="col-lg-6"  style="display: flex;justify-content: flex-start;gap: 15px;align-items: center">
             <div class="k2-card-title" ng-show="taskMainCtrl.editTask">{{ 'TASK' | translate }} {{taskMainCtrl.taskData.task_title}} <span style="color: var(--secondary-text-color);"> / {{taskMainCtrl.stepsNames[taskMainCtrl.step] | translate}}</span></div>
             <div class="k2-card-title" ng-show="!taskMainCtrl.editTask">{{ 'NEW_TASK' | translate }} <span style="color: var(--secondary-text-color);"> / {{taskMainCtrl.stepsNames[taskMainCtrl.step] | translate}}</span></div>
             <h5 ng-show="taskMainCtrl.editTask" style="padding-left: 1em; font-weight: 300" ng-if="taskMainCtrl.taskData.task_status == 'Inactive'">
