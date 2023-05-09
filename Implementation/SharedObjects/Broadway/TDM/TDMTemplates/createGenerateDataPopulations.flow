@@ -1,7 +1,6 @@
 {
     "tags": [
-        "TDM",
-        "TDM_Templates"
+        "TDM"
     ],
     "levels": [
         {
@@ -139,6 +138,24 @@
                                     {
                                         "name": "path",
                                         "const": "SharedObjects/Templates/tdmCreateGenerateDataPop.pop.flow.template"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Indicator For Generate Flow",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "GENERATE_FLOW",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true"
                                     }
                                 ],
                                 "outputs": []

@@ -99,7 +99,7 @@ public class TdmExecuteTask {
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             String parentLUStatus = PARENT_LU_STATUS.get(taskProperties);
             if(isChildLU(taskProperties) && !parentLUStatus.toUpperCase().equals("COMPLETED")) {
-                updateTaskExecutionStatus(parentLUStatus, taskExecutionID,luID, null, "0", "0", "0", startTime);
+                updateTaskExecutionStatus(parentLUStatus, taskExecutionID,luID,null, startTime, "0", "0", "0");
                 return;
             }
 			
@@ -825,7 +825,7 @@ public class TdmExecuteTask {
 			globals.put("enable_sequences", "false");
 		}
 
-		if ("Synthetic".equalsIgnoreCase("" + globals.get("TDM_SOURCE_ENVIRONMENT_NAME"))) {
+		if (getGlobal("SYNTHETIC_ENVIRONMENT").equalsIgnoreCase("" + globals.get("TDM_SOURCE_ENVIRONMENT_NAME"))) {
             globals.put("enable_sequences", "true");
             globals.put("TDM_REPLACE_SEQUENCES", "true");
         }
@@ -1269,7 +1269,7 @@ public class TdmExecuteTask {
 				db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
 								"execution_status=?, " +
 								"fabric_execution_id=?, " +
-								"start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else start_execution_time end), " +
+								"start_execution_time = ?, " +
 								"end_execution_time = current_timestamp at time zone 'utc', " +
 								"num_of_processed_entities = ?," +
 								"num_of_copied_entities = ?," +
@@ -1280,7 +1280,7 @@ public class TdmExecuteTask {
             db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
                             "execution_status=?, " +
                             "fabric_execution_id=?, " +
-                            "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else start_execution_time end), " +
+                            "start_execution_time = ?, " +
                             "num_of_processed_entities = ?," +
                             "num_of_copied_entities = ?," +
                             "num_of_failed_entities = ? " +

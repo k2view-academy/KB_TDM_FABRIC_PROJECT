@@ -1,11 +1,13 @@
 -- Update TDM version
-update ${@schema}.tdm_general_parameters set param_value = '8.0' where param_name = 'TDM_VERSION' ;
+UPDATE ${@schema}.tdm_general_parameters SET param_value = '8.0' WHERE param_name = 'TDM_VERSION' ;
 
 -- Change the default retention period to 'Do Not Delete'
-update ${@schema}.tdm_general_parameters
-set param_value = '{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
-where param_name = 'tdm_gui_params';
+UPDATE ${@schema}.tdm_general_parameters
+SET param_value = '{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
+WHERE param_name = 'tdm_gui_params';
 
+-- Change the selection method from synthetic to clone 
+UPDATE ${@schema}.tasks SET selection_method='CLONE' WHERE selection_method='S';
 
 --- Table: ${@schema}.tdm_generate_task_field_mappings - TDM 8.0
 --DROP TABLE IF EXISTS ${@schema}.tdm_generate_task_field_mappings;

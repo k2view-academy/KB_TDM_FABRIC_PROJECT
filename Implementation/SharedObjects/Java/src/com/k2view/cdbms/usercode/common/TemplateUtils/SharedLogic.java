@@ -104,7 +104,17 @@ public class SharedLogic {
 		
 		handlebars.registerHelper("getSequenceName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
-				return map.get("SEQUENCE_NAME");
+                String seqeunceName = map.get("SEQUENCE_NAME");
+                try {
+                    Object generateFlow = fabric().fetch("set GENERATE_FLOW").firstValue();
+                    if (generateFlow != null && "true".equalsIgnoreCase(generateFlow.toString())) {
+                        seqeunceName = "Gen_" + seqeunceName;
+                    }
+
+                } catch (Exception e) {
+                    log.error("Failed to get Sequence Name");
+                }
+				return seqeunceName;
 			}
 		});
 		
@@ -183,7 +193,7 @@ public class SharedLogic {
 		String cmd = "broadway " + luName + ".getTableSequenceMapping LU_NAME=" + luName + ", FABRIC_TABLE_NAME = '" + luTable + "', RESULT_STRUCTURE=ROW";
 		//log.info("buildTemplateData - cmd: " + cmd);
 		
-		List<Object> tableSeq = (List<Object>)fabric().fetch(cmd).firstRow().get("value");
+		ArrayList<Object> tableSeq = (ArrayList<Object>)fabric().fetch(cmd).firstRow().get("value");
 		//log.info("buildTemplateData - tableSeq: " + tableSeq);
 		
 		if (tableSeq != null) {

@@ -5442,12 +5442,12 @@ public class Logic extends WebServiceUserCode {
 			"            \"external\": \"param2\"\r\n" +
 			"          }\r\n" +
 			"        },\r\n" +
-			"        \"id\": \"com.k2view.default\"\r\n" +
+			"        \"id\": \"com.k2view.default\",\r\n" +
+			"\t\t\"mandatory\": false\r\n" +
 			"      },\r\n" +
 			"      \"default\": null,\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"date\",\r\n" +
-			"      \"mandatory\": false\r\n" +
+			"      \"type\": \"date\"\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
 			"      \"editor\": {\r\n" +
@@ -5470,11 +5470,11 @@ public class Logic extends WebServiceUserCode {
 			"          }\r\n" +
 			"        },\r\n" +
 			"        \"id\": \"com.k2view.default\"\r\n" +
+			"\t\t\"mandatory\": false\r\n" +
 			"      },\r\n" +
 			"      \"default\": null,\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"integer\",\r\n" +
-			"      \"mandatory\": false\r\n" +
+			"      \"type\": \"integer\"\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -6315,7 +6315,7 @@ public class Logic extends WebServiceUserCode {
 		try {
 		          for (String luName : luList) {
 		              String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
-				Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Data Manufacturing'");
+				Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
 		
 				for (Db.Row flow : flows) {
 					String flowName = flow.get("Flow").toString();

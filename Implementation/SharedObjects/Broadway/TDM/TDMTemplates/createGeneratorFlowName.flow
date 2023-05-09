@@ -122,6 +122,35 @@
     "connections": [
         {
             "leftPort": {
+                "actor": "List Population Flows",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Lower Table Name from Population List",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "tableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "List Population Flows",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Generator Name",
+                "name": "params"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "populationName"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
                 "actor": "lower Input Table Name ",
                 "name": "string"
             },
@@ -150,35 +179,6 @@
                 "actor": "Population Of Table Found?",
                 "name": "a"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Lower Table Name from Population List",
-                "name": "string"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "tableName"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "LuFunction1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Build Generator Name",
-                "name": "params"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "populationName"
-            ],
-            "arrayPosition": 1
         },
         {
             "leftPort": {

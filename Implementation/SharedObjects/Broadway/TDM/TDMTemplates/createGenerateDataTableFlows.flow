@@ -24,6 +24,10 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        },
                                         "mandatory": false
                                     }
                                 ],
@@ -53,6 +57,10 @@
                                         "name": "LU_NAME",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         },
                                         "mandatory": false
                                     },
@@ -112,6 +120,10 @@
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         },
                                         "mandatory": false
                                     },
@@ -173,7 +185,15 @@
                             "name": "Check If Flow Exists",
                             "actorType": {
                                 "parentType": "CheckIfFlowExists",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "LU_NAME",
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        }
+                                    }
+                                ],
                                 "outputs": [
                                     {
                                         "name": "SKIP_TABLE",
@@ -208,6 +228,10 @@
                                         "name": "luType",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         }
                                     },
                                     {
@@ -270,6 +294,10 @@
                                         "name": "luType",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         }
                                     },
                                     {

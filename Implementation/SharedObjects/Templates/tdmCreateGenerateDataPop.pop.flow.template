@@ -6,59 +6,144 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+									{{#if TABLE_PARENT_FIELDS}}
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties":
+												{
+												{{#each TABLE_PARENT_FIELDS~}}
+                                                "{{getParentFieldName this}}": {
+                                                    "type": "any"
+                                                {{#if @last}} } {{else}} }, {{/if}}
+												{{/each}}
+												{{/if}}
+                                            }
+										}
+									}
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {{#if TABLE_SEQ_DATA}}
-                        {
-                            "name": "Transformation Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": false,
-                                                    "flowName": "PopulateTableErrorsWithFailed"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-						{{#each TABLE_SEQ_DATA~}}
+ 						{{#each TABLE_SEQ_DATA~}}
                         {
                             "name": "{{getFabricFieldName this}}",
                             "actorType": {
-                                "parentType": "{{getSequenceActorName this}}",
+                                "parentType": "Masking",
                                 "inputs": [
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "{{getTableName this}}"
+                                     {
+                                        "name": "maskingId",
+                                        "const": "{{getFabricFieldName this}}"
                                     },
                                     {
-                                        "name": "columName",
+                                        "name": "flowName",
+                                        "const": "Sequence.actor"
+                                    },
+                                    {
+                                        "name": "category",
+                                        "const": "enable_sequences"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "sequenceId",
+                                        "const": "{{getSequenceName this}}",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "{{getFabricFieldName this}}"
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceInterface",
+                                        "const": "TDM",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "REDIS",
+                                                "database"
+                                            ],
+                                            "interfaces": [
+                                                "IN-MEMORY"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "initialValue",
+                                        "const": "1",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "increment",
+                                        "const": 1,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
 							}
                         {{#if @last}} } {{else}} }, {{/if}}
 						{{/each}}
@@ -71,37 +156,40 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Set Outputs",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {{#if TABLE_FIELDS}}
-                        {
-                            "name": "Transformation Error Handler",
-                            "onError": "result",
+						{{#if TABLE_PARENT_FIELDS}}
+						{{#each TABLE_PARENT_FIELDS~}}
+						{
+                            "name": "{{getChildFieldName this}}",
                             "actorType": {
-                                "parentType": "ErrorHandler",
+                                "parentType": "Const",
                                 "inputs": [
                                     {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": false,
-                                                    "flowName": "PopulateTableErrorsWithFailed"
-                                                }
-                                            }
-                                        ]
+                                        "name": "value",
+                                        "const": null
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
                             }
-                        },
+						{{#if @last}} } {{else}} }, {{/if}}
+						{{/each}}
+						{{/if}}
+						
+                        {{#if TABLE_FIELDS}}
+						
+						{{#if TABLE_PARENT_FIELDS}}
+						,
+						{{/if}}
 						{{#each TABLE_FIELDS~}}
                         {
                             "name": "{{getLUFieldName this}}",
@@ -111,22 +199,8 @@
                                     {
                                         "name": "flowName",
                                         "const": "{{getDMActorName this}}"
-                                    },
-                                    {
-                                        "name": "maxLength",
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "minLength",
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
                                     }
-                                ],
+								],
                                 "outputs": [
                                     {
                                         "name": "value",
@@ -146,22 +220,54 @@
         }
     ],
     "connections": [
+		{{#if TABLE_PARENT_FIELDS}}
+		{{#each TABLE_PARENT_FIELDS~}}
+		{
+			"leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "{{getChildFieldName this}}",
+                "name": "value"
+            },
+            "path": [
+                "{{getParentFieldName this}}"
+            ]
+		},
+        {
+            "leftPort": {
+                "actor": "{{getChildFieldName this}}",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "{{getChildFieldName this}}"
+            }
+        },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+        {{#if @last}} } {{else}} }, {{/if}}
+		{{/each}}
+        {{/if}}
+
+		
         {{#if TABLE_SEQ_DATA}}
+		{{#if TABLE_PARENT_FIELDS}}
+		,
+		{{/if}}
         {{#each TABLE_SEQ_DATA~}}
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
                 "actor": "{{getFabricFieldName this}}",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "{{getFabricFieldName this}}",
-                "name": "NewSeqValue"
+                "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
@@ -172,7 +278,13 @@
         {{/if}}
 
         {{#if TABLE_FIELDS}}
+		{{#if TABLE_SEQ_DATA}}
          ,
+         {{else}} 
+         {{#if TABLE_PARENT_FIELDS}}
+		 ,
+		 {{/if}}
+		 {{/if}}
 		{{#each TABLE_FIELDS~}}
         {
             "leftPort": {
