@@ -23,11 +23,18 @@
                             }
                         },
                         {
-                            "name": "Check If Delete Only Task",
+                            "name": "CheckIfDeleteOnlyTask1",
                             "actorType": {
-                                "parentType": "CheckIfDeleteOnlyTask_Actor",
+                                "parentType": "CheckIfDeleteOnlyTask",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "deleteOnlyInd",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -105,10 +112,6 @@
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "Collection"
-                                    },
                                     {
                                         "name": "functionName",
                                         "const": "fnIsFirstSync"
@@ -247,10 +250,6 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "Collection"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "getLuTableColumns"
                                     },
@@ -260,6 +259,11 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -449,7 +453,7 @@
         },
         {
             "leftPort": {
-                "actor": "Check If Delete Only Task",
+                "actor": "CheckIfDeleteOnlyTask1",
                 "name": "deleteOnlyInd"
             },
             "rightPort": {
