@@ -83,7 +83,7 @@
                                     },
                                     {
                                         "name": "sequenceInterface",
-                                        "const": "IN-MEMORY"
+                                        "const": "CRM_DB"
                                     },
                                     {
                                         "name": "initialValue",

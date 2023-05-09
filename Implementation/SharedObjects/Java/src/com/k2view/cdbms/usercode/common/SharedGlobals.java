@@ -116,7 +116,7 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")
-	public static final String BUILD_TDMDB = "false";
+	public static String BUILD_TDMDB = "true";
 	@category("TDM_DEMO")
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	@category("TDM_DEMO")

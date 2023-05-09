@@ -83,7 +83,7 @@
                                     },
                                     {
                                         "name": "sequenceInterface",
-                                        "const": "IN-MEMORY"
+                                        "const": "BILLING_DB"
                                     },
                                     {
                                         "name": "initialValue",

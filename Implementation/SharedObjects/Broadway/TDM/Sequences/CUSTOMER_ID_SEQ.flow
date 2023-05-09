@@ -75,7 +75,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": "CRM_DB"
                                     },
                                     {
                                         "name": "TTL",

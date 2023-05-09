@@ -83,7 +83,7 @@
                                     },
                                     {
                                         "name": "sequenceInterface",
-                                        "const": "IN-MEMORY"
+                                        "const": "ORDERS_DB"
                                     },
                                     {
                                         "name": "initialValue",
