@@ -5,9 +5,10 @@
   <Columns>
     <Column name="ENTITY_ID" id="tblCol_12cb4021e87c4145a589a0eccb73e00c" index="0" datatype="text" />
     <Column name="SOURCE_ENVIRONMENT" id="tblCol_e0f660d06137442c96afaf0508a33bd9" index="1" datatype="text" />
-    <Column name="NO_OF_OPEN_INVOICES" id="NO_OF_OPEN_INVOICES" index="2" datatype="text" />
-    <Column name="VIP_STATUS" id="VIP_STATUS" index="3" datatype="text" />
+    <Column name="TOTAL_BALANCE_AMOUNT" id="TOTAL_BALANCE_AMOUNT" index="2" datatype="text" />
+    <Column name="NO_OF_OPEN_INVOICES" id="NO_OF_OPEN_INVOICES" index="3" datatype="text" />
     <Column name="TOTAL_PAYMENT_AMOUNT" id="TOTAL_PAYMENT_AMOUNT" index="4" datatype="text" />
+    <Column name="VIP_STATUS" id="VIP_STATUS" index="5" datatype="text" />
     <Column name="SUBSCRIBER_TYPE" id="SUBSCRIBER_TYPE" index="6" datatype="text" />
   </Columns>
   <IndexesList />

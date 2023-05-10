@@ -163,27 +163,37 @@
                                     },
                                     {
                                         "name": "K2_TDM_EID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "SOURCE_ENV",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "IID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "TASK_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "TIMESTAMP",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
