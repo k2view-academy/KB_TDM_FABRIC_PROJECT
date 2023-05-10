@@ -329,10 +329,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>BILLING_DB</dbScheme>
-          <dbUser>BILLING_USER</dbUser>
-          <dbPasswordEncrypted>f/ORA071McKBb0MYX0sddSHKR/R7EoIrGIusmlJ6fxs=:5Um+IwprLyv4eEBg8mxF2/YB3DiO5VlbZ243J33nr3g=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/BILLING_DB?stringtype=unspecified</connString>
+          <dbScheme>TAR_BILLING_DB</dbScheme>
+          <dbUser>TAR_BILLING_USER</dbUser>
+          <dbPasswordEncrypted>xW3rdFtCkBf/yYx39QPDq8p/spBB2TzGngCV2OxtPiw=:PCLwZUMQA4jYNeL2V5z/dHGJ8tau9nhE2qVgvFkgeK8=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -340,10 +340,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>COLLECTION_DB</dbScheme>
-          <dbUser>COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>UmoDGzoF9M4oNtwy1F4RT/+/lqVXhdv6sL8RR95gD6g=:RBquLnEIfgB85AheO2dagcynNTusiPCl+rnZ25dAcxE=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <dbScheme>TAR_COLLECTION</dbScheme>
+          <dbUser>TAR_COLLECTION_USER</dbUser>
+          <dbPasswordEncrypted>8GkuYaWe7yCugB0SmGEG+9asqwFJuL4MzJOwimg41mU=:lPzSD6uTKP5tZ/x6ucBbrBeykNDl+qeG6RZYbPu4THM=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_COLLECTION?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -351,10 +351,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>+tjuP7D4cNedXzlC+zB/eQv5h3BSoJ249KmsVbi5CMI=:7kcbVMQDqMrzk0yr844K80pBExLbFDO74pZetmtWTXo=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/CRM_DB?stringtype=unspecified</connString>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>v4632VfuExM84dq+LkFqMmgEwen35SEnaqJsVExokL4=:XXpo0Zv46xP8EEjQMZFVjPc+B9+kq8b2g5J+4XnlInM=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -372,10 +372,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>ORDERING_DB</dbScheme>
-          <dbUser>ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>UxrG5/Gwtpwx8GkJfBfJOeBwJfwAk2ilCVHS0uOlMy0=:CE4lEp0y0uZjwkTeC0tmPWVf111iNXvMpHuzY/aEkLQ=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <dbScheme>TAR_ORDERING</dbScheme>
+          <dbUser>TAR_ORDERING_USER</dbUser>
+          <dbPasswordEncrypted>GPUF2jh6+3X4CP9WdRiHvg+zFHnVEJQNoYax3tSej34=:neK1998noqwmt7b4Lh/POgfLOsdSCrxuWBAQBXh1HLk=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_ORDERING?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>

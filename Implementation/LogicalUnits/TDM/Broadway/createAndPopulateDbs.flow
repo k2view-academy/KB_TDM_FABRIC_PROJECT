@@ -545,7 +545,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/CRM_TAR.sql",
+                                        "const": "TDM/TRAINING/TAR_CRM_CREATE.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -573,7 +573,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/BILLING_TAR.sql",
+                                        "const": "TDM/TRAINING/TAR_BILLING_CREATE.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -601,7 +601,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/COLLECTION_TAR.sql",
+                                        "const": "TDM/TRAINING/TAR_COLLECTION_CREATE.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -629,7 +629,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/ORDERS_TAR.sql",
+                                        "const": "TDM/TRAINING/TAR_ORDERING_CREATE.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"

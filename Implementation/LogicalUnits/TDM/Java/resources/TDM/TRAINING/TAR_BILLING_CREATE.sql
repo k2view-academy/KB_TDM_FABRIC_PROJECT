@@ -108,7 +108,13 @@ CREATE TABLE IF NOT EXISTS public.payment (
 
 ALTER TABLE public.payment OWNER TO "TAR_BILLING_USER";
 
+CREATE TABLE IF NOT EXISTS public.contract_offer_mapping (
+contract_ref_id bigint,
+ offer_ref_id bigint,
+ offer_contract_description character varying(200) DEFAULT NULL::character varying);
 
+
+ALTER TABLE public.contract_offer_mapping OWNER TO "TAR_BILLING_USER";
 -- Completed on 2022-12-08 17:41:58
 --
 -- PostgreSQL database dump complete
