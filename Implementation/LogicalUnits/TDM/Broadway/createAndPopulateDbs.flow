@@ -751,19 +751,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "FabricSetRead",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -777,16 +764,10 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "TDM_SOURCE_PRODUCT_VERSION",
+                            "name": "setSourceEnv",
                             "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_SOURCE_PRODUCT_VERSION",
-                                        "isDefault": false
-                                    }
-                                ],
+                                "parentType": "setSourceEnv_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -1047,16 +1028,6 @@
             "rightPort": {
                 "actor": "CREATE TAR ORDERS DB TABLES",
                 "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TDM_SOURCE_PRODUCT_VERSION",
-                "name": "value"
             }
         },
         {
