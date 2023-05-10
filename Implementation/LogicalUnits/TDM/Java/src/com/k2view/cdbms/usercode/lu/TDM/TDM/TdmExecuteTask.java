@@ -210,7 +210,7 @@ public class TdmExecuteTask {
                      try {
                          String executionId = executeGenerateBatch(taskProperties);
                          if (!executionId.isEmpty()) {
-                             updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0");
+                             updateTaskExecutionStatus("running", taskExecutionID, luID, executionId,startTime, "0", "0", "0");
                          } else {
                              // rollback LU and task status
                              updatedFailedStatus(taskExecutionID, luID,startTime);

@@ -24,7 +24,7 @@
       <Format />
       <Index>0</Index>
       <AllowNULL>true</AllowNULL>
-      <GridColumnProperties width="36" />
+      <GridColumnProperties width="69" />
     </Column>
     <Column>
       <Title>CLEANUP_IND</Title>
@@ -72,7 +72,7 @@
       <Index>1</Index>
       <DefaultValue />
       <AllowNULL>true</AllowNULL>
-      <GridColumnProperties width="59" />
+      <GridColumnProperties width="78" />
     </Column>
   </SchemaColumns>
   <IsImportFromSQL>false</IsImportFromSQL>
@@ -322,6 +322,14 @@
           <CLEANUP_STATEMENT>DELETE FROM @TDMDB_SCHEMA@.TDM_LU_TYPE_RELATION_EID r where version_name &lt;&gt; '' and version_name||''||to_char(version_datetime, 'YYYYMMDDHH24MISS')||''||source_env in (select t.task_title||''||to_char(l.version_datetime, 'YYYYMMDDHH24MISS')||''||l.source_env_name from @TDMDB_SCHEMA@.tasks t,@TDMDB_SCHEMA@. task_Execution_list l where t.task_id = l.task_id and l.version_expiration_date &lt;= now())</CLEANUP_STATEMENT>
           <CLEANUP_LOGIC></CLEANUP_LOGIC>
           <SEQ>30</SEQ>
+        </trnTDMCleanUp>
+        <trnTDMCleanUp diffgr:id="trnTDMCleanUp26" msdata:rowOrder="25">
+          <TABLE_NAME>TDM_GENERATE_TASK_FIELD_MAPPINGS</TABLE_NAME>
+          <CLEANUP_ORDER>5</CLEANUP_ORDER>
+          <CLEANUP_IND>true</CLEANUP_IND>
+          <CLEANUP_STATEMENT>DELETE FROM @TDMDB_SCHEMA@.TDM_GENERATE_TASK_FIELD_MAPPINGS WHERE TASK_ID IN (SELECT TASK_ID FROM @TDMDB_SCHEMA@.TASKS WHERE UPPER(TASK_STATUS) = 'INACTIVE' AND TASK_LAST_UPDATED_DATE &lt; ?)</CLEANUP_STATEMENT>
+          <CLEANUP_LOGIC>A Generate task parameters records belong to tasks that need to be cleaned</CLEANUP_LOGIC>
+          <SEQ>32</SEQ>
         </trnTDMCleanUp>
       </DocumentElement>
     </diffgr:diffgram>
