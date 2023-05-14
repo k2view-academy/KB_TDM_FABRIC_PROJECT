@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS public.payment (
     issued_date timestamp without time zone,
     status character varying(200) DEFAULT NULL::character varying,
     amount character varying(200) DEFAULT NULL::character varying,
+	payment_method character varying(200) DEFAULT NULL::character varying,
 	CONSTRAINT payment_fk1 FOREIGN KEY (invoice_id) REFERENCES public.invoice(invoice_id)
 );
 
