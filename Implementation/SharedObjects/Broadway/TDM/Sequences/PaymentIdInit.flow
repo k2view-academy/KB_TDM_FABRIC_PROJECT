@@ -21,7 +21,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select Max(payment_id) + 100000 As init_payment_id\r\nFrom payment"
+                                        "const": "Select COALESCE(Max(payment_id),0) + 100000 As init_payment_id\r\nFrom payment"
                                     }
                                 ],
                                 "outputs": []

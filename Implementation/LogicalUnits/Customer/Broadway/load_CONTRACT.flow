@@ -62,16 +62,33 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {"type": "Any"},
-													"CONTRACT_ID": {"type": "Any"},
-													"CONTRACT_REF_ID": {"type": "Any"},
-													"ASSOCIATED_LINE": {"type": "Any"},
-													"CONTRACT_DESCRIPTION": {"type": "Any"},
-													"FROM_DATE": {"type": "Any"},
-													"TO_DATE": {"type": "Any"},
-													"MYMSISDN": {"type": "Any"},
-													"ASSOCIATED_LINE_FMT": {"type": "Any"}
-													
+                                                    "CUSTOMER_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "CONTRACT_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "CONTRACT_REF_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ASSOCIATED_LINE": {
+                                                        "type": "Any"
+                                                    },
+                                                    "CONTRACT_DESCRIPTION": {
+                                                        "type": "Any"
+                                                    },
+                                                    "FROM_DATE": {
+                                                        "type": "Any"
+                                                    },
+                                                    "TO_DATE": {
+                                                        "type": "Any"
+                                                    },
+                                                    "MYMSISDN": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ASSOCIATED_LINE_FMT": {
+                                                        "type": "Any"
+                                                    }
                                                 }
                                             }
                                         }
@@ -97,13 +114,11 @@
         {
             "stages": [
                 {
-					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
+                    "remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",
                     "actors": [
-						
                         {
                             "name": "Transformation Error Handler",
                             "onError": "result",
@@ -130,59 +145,42 @@
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "Get Sequence for contract_id",
                             "actorType": {
                                 "parentType": "CONTRACT_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "contract"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "contract_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         }, 
-						{
+                            }
+                        },
+                        {
                             "name": "Get Sequence for customer_id",
                             "actorType": {
                                 "parentType": "CUSTOMER_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "contract"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "customer_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
-
                 }
-				
             ]
         },
         {
@@ -228,7 +226,6 @@
                                 "outputs": []
                             }
                         },
-						
                         {
                             "name": "Load CONTRACT Table",
                             "actorType": {
@@ -238,7 +235,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "public"
                                     },
@@ -250,56 +247,58 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-											"contract_id",
-											"contract_ref_id",
-											"associated_line",
-											"contract_description",
-											"from_date",
-											"to_date",
-											"associated_line_fmt"
-											
+                                            "contract_id",
+                                            "contract_ref_id",
+                                            "associated_line",
+                                            "contract_description",
+                                            "from_date",
+                                            "to_date",
+                                            "associated_line_fmt"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "contract_id"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "customer_id",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
-									{
+                                    {
                                         "name": "contract_id",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "integer"
+                                        }
                                     },
-									{
+                                    {
                                         "name": "contract_ref_id",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "associated_line",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "contract_description",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "from_date",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "to_date",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "associated_line_fmt",
                                         "schema": {}
                                     }
@@ -333,7 +332,66 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.CONTRACT": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.CONTRACT": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.ACTIVITY": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.ADDRESS": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.CONTRACT": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.ACTIVITY": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.ADDRESS": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.CONTRACT": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -387,7 +445,7 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
@@ -403,16 +461,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Sequence for contract_id",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load CONTRACT Table",
-                "name": "contract_id"
-            }
-        },
-		{
-            "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
@@ -427,6 +475,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Sequence for contract_id",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CONTRACT Table",
+                "name": "contract_id"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Sequence for customer_id",
                 "name": "NewSeqValue"
             },
@@ -435,11 +493,9 @@
                 "name": "customer_id"
             }
         },
-		
-		
         {
             "leftPort": {
-               "actor": "Read Stats",
+                "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -450,11 +506,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "luName"
+                "name": "syncMode"
             }
         },
         {
@@ -469,12 +525,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
-                "name": "syncMode"
+                "actor": "flowArgs",
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "syncMode"
+                "name": "luName"
             }
         }
     ]

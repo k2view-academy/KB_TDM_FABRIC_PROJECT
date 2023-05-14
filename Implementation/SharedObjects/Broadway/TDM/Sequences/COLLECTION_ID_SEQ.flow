@@ -82,6 +82,10 @@
                                         "const": 0
                                     },
                                     {
+                                        "name": "sequenceId",
+                                        "const": "COLLECTION_ID_SEQ"
+                                    },
+                                    {
                                         "name": "sequenceInterface",
                                         "const": "COLLECTION_DB"
                                     },

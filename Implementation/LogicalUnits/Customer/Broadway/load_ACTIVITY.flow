@@ -62,11 +62,18 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {"type": "Any"},
-													"ACTIVITY_ID": {"type": "Any"},
-													"ACTIVITY_DATE": {"type": "Any"},
-													"ACTIVITY_NOTE": {"type": "Any"}
-													
+                                                    "CUSTOMER_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ACTIVITY_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ACTIVITY_DATE": {
+                                                        "type": "Any"
+                                                    },
+                                                    "ACTIVITY_NOTE": {
+                                                        "type": "Any"
+                                                    }
                                                 }
                                             }
                                         }
@@ -92,13 +99,11 @@
         {
             "stages": [
                 {
-					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
+                    "remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",
                     "actors": [
-						
                         {
                             "name": "Transformation Error Handler",
                             "onError": "result",
@@ -125,59 +130,42 @@
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "Get Sequence for activity_id",
                             "actorType": {
                                 "parentType": "ACTIVITY_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "activity"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "activity_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         }, 
-						{
+                            }
+                        },
+                        {
                             "name": "Get Sequence for customer_id",
                             "actorType": {
                                 "parentType": "CUSTOMER_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "activity"
                                     },
                                     {
                                         "name": "columName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
                                         "const": "customer_id"
                                     }
                                 ],
                                 "outputs": []
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
-
                 }
-				
             ]
         },
         {
@@ -223,7 +211,6 @@
                                 "outputs": []
                             }
                         },
-						
                         {
                             "name": "Load ACTIVITY Table",
                             "actorType": {
@@ -233,7 +220,7 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "public"
                                     },
@@ -245,36 +232,38 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-											"activity_id",
-											"activity_date",
-											"activity_note"
-											
+                                            "activity_id",
+                                            "activity_date",
+                                            "activity_note"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "activity_id"
-											
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "oracle"
                                     },
-									{
+                                    {
                                         "name": "customer_id",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
-									{
+                                    {
                                         "name": "activity_id",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "integer"
+                                        }
                                     },
-									{
+                                    {
                                         "name": "activity_date",
                                         "schema": {}
                                     },
-									{
+                                    {
                                         "name": "activity_note",
                                         "schema": {}
                                     }
@@ -308,7 +297,54 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.ACTIVITY": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.ACTIVITY": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.ACTIVITY": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.ACTIVITY": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -362,7 +398,7 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
@@ -378,16 +414,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Sequence for activity_id",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load ACTIVITY Table",
-                "name": "activity_id"
-            }
-        },
-		{
-            "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
@@ -402,6 +428,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Sequence for activity_id",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load ACTIVITY Table",
+                "name": "activity_id"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Sequence for customer_id",
                 "name": "NewSeqValue"
             },
@@ -410,11 +446,9 @@
                 "name": "customer_id"
             }
         },
-		
-		
         {
             "leftPort": {
-               "actor": "Read Stats",
+                "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -425,11 +459,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "luName"
+                "name": "syncMode"
             }
         },
         {
@@ -444,12 +478,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
-                "name": "syncMode"
+                "actor": "flowArgs",
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "syncMode"
+                "name": "luName"
             }
         }
     ]

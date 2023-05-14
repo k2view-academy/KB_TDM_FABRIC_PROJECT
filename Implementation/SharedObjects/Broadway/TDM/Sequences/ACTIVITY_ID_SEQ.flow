@@ -82,6 +82,10 @@
                                         "const": 0
                                     },
                                     {
+                                        "name": "sequenceId",
+                                        "const": "ACTIVITY_ID_SEQ"
+                                    },
+                                    {
                                         "name": "sequenceInterface",
                                         "const": "CRM_DB"
                                     },

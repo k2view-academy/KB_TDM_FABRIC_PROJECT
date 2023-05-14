@@ -21,7 +21,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select Max(offer_id) + 100000 As init_offer_id\r\nFrom offer"
+                                        "const": "Select COALESCE(Max(offer_id),0) + 100000 As init_offer_id\r\nFrom offer"
                                     }
                                 ],
                                 "outputs": []
