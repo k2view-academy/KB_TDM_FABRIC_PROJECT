@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -18,7 +21,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select Max(customer_id) + 1000 As init_customer_id\r\nFrom customer"
+                                        "const": "Select Max(customer_id) + 100000 As init_customer_id\r\nFrom customer"
                                     }
                                 ],
                                 "outputs": []

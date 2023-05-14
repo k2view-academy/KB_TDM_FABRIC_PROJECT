@@ -75,7 +75,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "CRM_DB"
+                                        "const": "DB_CASSANDRA"
                                     },
                                     {
                                         "name": "TTL",
@@ -83,7 +83,7 @@
                                     },
                                     {
                                         "name": "sequenceInterface",
-                                        "const": "IN-MEMORY"
+                                        "const": "CRM_DB"
                                     },
                                     {
                                         "name": "initialValue",

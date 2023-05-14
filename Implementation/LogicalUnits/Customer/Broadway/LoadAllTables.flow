@@ -10,14 +10,13 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Load Tables Level 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
                         {
                             "name": "load_CUSTOMER",
                             "actorType": {
@@ -26,6 +25,39 @@
                                     {
                                         "name": "flowName",
                                         "const": "load_CUSTOMER"
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.dropdown",
+                                            "options": [
+                                                "ON",
+                                                "OFF",
+                                                "FORCE"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -49,15 +81,14 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Load Tables Level 2",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "Check if Entity has not failed 1",
                             "condition": "result",
                             "actorType": {
@@ -73,7 +104,7 @@
                                 ],
                                 "outputs": []
                             }
-						},
+                        },
                         {
                             "name": "load_ACTIVITY",
                             "actorType": {
@@ -131,15 +162,14 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Load Tables Level 3",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "Check if Entity has not failed 2",
                             "condition": "result",
                             "actorType": {
@@ -155,7 +185,7 @@
                                 ],
                                 "outputs": []
                             }
-						},
+                        },
                         {
                             "name": "load_CASES",
                             "actorType": {
@@ -187,15 +217,14 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Load Tables Level 4",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "Check if Entity has not failed 3",
                             "condition": "result",
                             "actorType": {
@@ -211,7 +240,7 @@
                                 ],
                                 "outputs": []
                             }
-						},
+                        },
                         {
                             "name": "load_CASE_NOTE",
                             "actorType": {
@@ -255,9 +284,7 @@
         }
     ],
     "connections": [
-		
-		
-		{
+        {
             "leftPort": {
                 "actor": "Get Entity Status 1",
                 "name": "result"
@@ -267,8 +294,7 @@
                 "name": "a"
             }
         },
-		
-		{
+        {
             "leftPort": {
                 "actor": "Get Entity Status 2",
                 "name": "result"
@@ -278,8 +304,7 @@
                 "name": "a"
             }
         },
-		
-		{
+        {
             "leftPort": {
                 "actor": "Get Entity Status 3",
                 "name": "result"
@@ -289,5 +314,5 @@
                 "name": "a"
             }
         }
-	]
+    ]
 }
