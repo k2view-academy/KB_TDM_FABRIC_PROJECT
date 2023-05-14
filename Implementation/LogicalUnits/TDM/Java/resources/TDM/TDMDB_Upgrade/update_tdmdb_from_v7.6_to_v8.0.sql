@@ -6,6 +6,9 @@ UPDATE ${@schema}.tdm_general_parameters
 SET param_value = '{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
 WHERE param_name = 'tdm_gui_params';
 
+-- Change the default cleanup_retention_period to 7 days
+UPDATE ${@schema}.tdm_general_parameters SET param_value ='0.25' WHERE param_name='cleanup_retention_period';
+
 -- Change the selection method from synthetic to clone 
 UPDATE ${@schema}.tasks SET selection_method='CLONE' WHERE selection_method='S';
 

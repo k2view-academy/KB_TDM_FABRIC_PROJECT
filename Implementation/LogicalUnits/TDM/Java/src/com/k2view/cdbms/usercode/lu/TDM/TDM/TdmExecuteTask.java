@@ -106,6 +106,9 @@ public class TdmExecuteTask {
             //updateTaskExecutionStatus("running", taskExecutionID,luID, "", "0", "0", "0", null);
             // Update task execution summary
             updateTaskExecutionSummary(taskExecutionID, "running",startTime);
+			//updateLuExecutionStatus(taskExecutionID,luID,"running"," "," ",startTime);
+			//updateTaskExecutionStatus("running",taskExecutionID,luID,null,startTime,"0", "0", "0");
+
 
 			String selectionMethod = SELECTION_METHOD.get(taskProperties);
             String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();

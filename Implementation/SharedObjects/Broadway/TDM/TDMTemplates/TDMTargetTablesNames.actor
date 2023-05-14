@@ -7,18 +7,7 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "LU_NAME": "CU",
-                    "FABRIC_TABLE_NAME": "Customer",
-                    "TARGET_TABLE_NAME": "Customer_2"
-                },
-                {
-                    "LU_NAME": "CU",
-                    "FABRIC_TABLE_NAME": "Activity",
-                    "TARGET_TABLE_NAME": "ACT"
-                }
-            ],
+            "const": [],
             "schema": {
                 "type": "array",
                 "items": {

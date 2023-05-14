@@ -477,7 +477,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_general_parameters
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-    select 'cleanup_retention_period', '2'  
+    select 'cleanup_retention_period', '0.25'  
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'cleanup_retention_period');
 
 INSERT INTO ${@schema}.tdm_general_parameters(

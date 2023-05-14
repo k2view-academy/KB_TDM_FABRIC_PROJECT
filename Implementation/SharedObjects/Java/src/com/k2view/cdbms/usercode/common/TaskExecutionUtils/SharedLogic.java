@@ -124,15 +124,21 @@ public class SharedLogic {
                     "('RUNNING','EXECUTING','STARTED','PENDING','PAUSED','STARTEXECUTIONREQUESTED') " +
                     "and l.task_id = u.task_id and l.lu_id = u.lu_id and l.task_id = t.task_id", task_execution_id);
 
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
+							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
+							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
                     task_execution_id);
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
 
-            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='stopped', number_of_processed_records = 0 where task_execution_id = ? " +
-                    "and execution_status not in ('completed', 'failed')", task_execution_id);
+            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='stopped', end_time=current_timestamp at time zone 'utc', number_of_processed_records = 0," +
+					" start_time = CASE WHEN start_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_time END" +
+					" WHERE task_execution_id = ?" +
+                    " AND execution_status NOT IN ('completed', 'failed')", task_execution_id);
 
             // TDM 7, set the execution summary to stopped also
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped' where task_execution_id = ? and execution_status not in ('completed', 'failed')",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped', end_execution_time=current_timestamp at time zone 'utc'," +
+							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
+							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
                     task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
@@ -250,13 +256,13 @@ public class SharedLogic {
                     "where task_execution_id = ? and l.task_id = t.task_id " +
                     "and (fabric_execution_id is not null or  selection_method = 'REF') and UPPER(execution_status)= 'STOPPED'", task_execution_id);
 
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running' where " + 
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', end_execution_time=null where " +
 							"(fabric_execution_id is not null or task_id in (select task_id from tasks where selection_method = 'REF')) " +
                             "and lower(execution_status) = 'stopped' and task_execution_id = ?",
                     task_execution_id);
 
             // TDM 7, set the status in execution summary to running
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running' where task_execution_id = ? and execution_status = 'stopped'",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running',end_execution_time=null where task_execution_id = ? and execution_status = 'stopped'",
                     task_execution_id);
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
                             "and lower(execution_status) = 'stopped' and task_id in (select task_id from tasks where lower(selection_method) <>'ref')",
@@ -264,7 +270,7 @@ public class SharedLogic {
 
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'resume'.
 
-            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume' where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
+            db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status= 'resume', end_time=null where task_execution_id = ? and lower(execution_status) = 'stopped'", task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
