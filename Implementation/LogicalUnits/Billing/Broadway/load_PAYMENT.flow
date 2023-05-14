@@ -63,21 +63,18 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "INVOICE_ID": {
-                                                        "type": "string"
+                                                        "type": "integer"
                                                     },
                                                     "PAYMENT_ID": {
-                                                        "type": "string"
+                                                        "type": "integer"
                                                     },
                                                     "ISSUED_DATE": {
-                                                        "type": "string"
+                                                        "type": "date"
                                                     },
                                                     "STATUS": {
                                                         "type": "string"
                                                     },
                                                     "AMOUNT": {
-                                                        "type": "number"
-                                                    },
-                                                    "PAYMENT_METHOD": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -368,7 +365,14 @@
                             "actorType": {
                                 "parentType": "IfElse",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -430,6 +434,10 @@
                                         "const": "BILLING_DB"
                                     },
                                     {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
                                         "name": "table",
                                         "const": "PAYMENT"
                                     },
@@ -449,10 +457,6 @@
                                         "const": [
                                             "PAYMENT_ID"
                                         ]
-                                    },
-                                    {
-                                        "name": "dialect",
-                                        "const": "oracle"
                                     },
                                     {
                                         "name": "INVOICE_ID",

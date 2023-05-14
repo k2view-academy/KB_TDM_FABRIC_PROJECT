@@ -21,7 +21,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(ADDRESS.ADDRESS_ID) + 100000 As init_address_id\r\nFrom ADDRESS"
+                                        "const": "Select COALESCE(max(address_id),0) + 100000 As init_address_id\r\nFrom address"
                                     }
                                 ],
                                 "outputs": [

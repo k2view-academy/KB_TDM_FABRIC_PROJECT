@@ -10,14 +10,13 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Load Tables Level 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
                         {
                             "name": "load_orders",
                             "actorType": {
@@ -25,21 +24,40 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "load_orders"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Entity Status 1",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
+                                        "const": "load_ORDERS"
+                                    },
                                     {
-                                        "name": "key",
-                                        "const": "ENTITY_STATUS",
-                                        "isDefault": false
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.dropdown",
+                                            "options": [
+                                                "ON",
+                                                "OFF",
+                                                "FORCE"
+                                            ]
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -60,7 +78,5 @@
             ]
         }
     ],
-    "connections": [
-		
-	]
+    "connections": []
 }

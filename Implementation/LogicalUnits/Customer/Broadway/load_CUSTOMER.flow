@@ -24,7 +24,21 @@
                             "name": "Initiate TDM Load",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "syncMode",
+                                        "editor": {
+                                            "id": "com.k2view.dropdown",
+                                            "options": [
+                                                "",
+                                                "ON",
+                                                "OFF",
+                                                "FORCE",
+                                                "DELTA"
+                                            ]
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }

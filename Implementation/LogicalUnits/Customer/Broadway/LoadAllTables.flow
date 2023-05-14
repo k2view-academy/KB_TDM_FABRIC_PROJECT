@@ -34,9 +34,11 @@
                                         "editor": {
                                             "id": "com.k2view.dropdown",
                                             "options": [
+                                                "",
                                                 "ON",
                                                 "OFF",
-                                                "FORCE"
+                                                "FORCE",
+                                                "DELTA"
                                             ]
                                         },
                                         "mandatory": false

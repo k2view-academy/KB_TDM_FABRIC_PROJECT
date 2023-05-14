@@ -62,11 +62,18 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {"type": "Any"},
-													"COLLECTION_ID": {"type": "Any"},
-													"LAST_UPDATE": {"type": "Any"},
-													"COLLECTION_STATUS": {"type": "Any"}
-													
+                                                    "CUSTOMER_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "COLLECTION_ID": {
+                                                        "type": "Any"
+                                                    },
+                                                    "LAST_UPDATE": {
+                                                        "type": "Any"
+                                                    },
+                                                    "COLLECTION_STATUS": {
+                                                        "type": "Any"
+                                                    }
                                                 }
                                             }
                                         }
@@ -92,17 +99,12 @@
         {
             "stages": [
                 {
-					
                     "name": "Transformation",
                     "dependsOnList": [],
                     "isLast": 0,
-					"remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",	
-                    "actors": [
-						
-                    ]
-
+                    "remark": "Transformation of special fields. Fields that need to be changed/replaced before loading to target table. \nFor example, replace sequence or masking the field's value",
+                    "actors": []
                 }
-				
             ]
         },
         {
@@ -148,7 +150,6 @@
                                 "outputs": []
                             }
                         },
-						
                         {
                             "name": "Load collection Table",
                             "actorType": {
@@ -158,25 +159,13 @@
                                         "name": "interface",
                                         "const": "CRM_DB"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": "public"
                                     },
                                     {
                                         "name": "table",
                                         "const": "collection"
-                                    },
-                                    {
-                                        "name": "fields",
-                                        "const": [
-                                            
-                                        ]
-                                    },
-									{
-                                        "name": "keys",
-                                        "const": [
-                                            
-                                        ]
                                     }
                                 ],
                                 "outputs": []
@@ -262,11 +251,9 @@
             },
             "iterate": "Iterate"
         },
-		
-		
         {
             "leftPort": {
-               "actor": "Read Stats",
+                "actor": "Read Stats",
                 "name": "flow"
             },
             "rightPort": {
@@ -277,11 +264,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luName"
+                "name": "syncMode"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "luName"
+                "name": "syncMode"
             }
         },
         {
@@ -296,12 +283,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",							 
-                "name": "syncMode"
+                "actor": "flowArgs",
+                "name": "luName"
             },
             "rightPort": {
                 "actor": "Initiate TDM Load",
-                "name": "syncMode"
+                "name": "luName"
             }
         }
     ]
