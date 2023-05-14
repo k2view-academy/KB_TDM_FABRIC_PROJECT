@@ -1,0 +1,225 @@
+{
+    "tags": [
+        "Generate Data"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+									
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties":
+												{
+												"contract_id": {
+                                                    "type": "any"
+                                                 } 
+												
+												
+                                            }
+										}
+									}
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Sequence Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+						
+						{
+                            "name": "CONTRACT_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
+                            "name": "ORDER_DATE",
+                            "actorType": {
+                                "parentType": "ConstDate",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "ORDER_STATUS",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "ORDER_ID",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "ORDER_TYPE",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+
+						
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+		
+		{
+			"leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CONTRACT_ID",
+                "name": "value"
+            },
+            "path": [
+                "contract_id"
+            ]
+		},
+        {
+            "leftPort": {
+                "actor": "CONTRACT_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_ID"
+            }
+        },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+
+        
+		 
+         
+		 ,
+		 
+		 
+		{
+            "leftPort": {
+                "actor": "ORDER_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_DATE"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "ORDER_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_STATUS"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "ORDER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_ID"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "ORDER_TYPE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_TYPE"
+            }
+         } 
+		
+        
+
+    ]
+}

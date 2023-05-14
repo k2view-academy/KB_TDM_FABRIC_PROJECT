@@ -1,0 +1,352 @@
+{
+    "tags": [
+        "Generate Data"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+									
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties":
+												{
+												"subscriber_id": {
+                                                    "type": "any"
+                                                 } 
+												
+												
+                                            }
+										}
+									}
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Sequence Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+ 						{
+                            "name": "balance_id",
+                            "actorType": {
+                                "parentType": "Masking",
+                                "inputs": [
+                                     {
+                                        "name": "maskingId",
+                                        "const": "balance_id"
+                                    },
+                                    {
+                                        "name": "flowName",
+                                        "const": "Sequence.actor"
+                                    },
+                                    {
+                                        "name": "category",
+                                        "const": "enable_sequences"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "sequenceId",
+                                        "const": "Gen_BALANCE_ID_SEQ",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sequenceInterface",
+                                        "const": "TDM",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "REDIS",
+                                                "database"
+                                            ],
+                                            "interfaces": [
+                                                "IN-MEMORY"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "initialValue",
+                                        "const": "1",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "increment",
+                                        "const": 1,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+							}
+                         } 
+						
+
+						
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+						
+						{
+                            "name": "SUBSCRIBER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
+                            "name": "BALANCE_ID",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "RESET_DATE",
+                            "actorType": {
+                                "parentType": "ConstDateTime",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "BALANCE_REF_ID",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "AVAILABLE_AMOUNT",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "RESET_AMOUNT",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+
+						
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+		
+		{
+			"leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "path": [
+                "subscriber_id"
+            ]
+		},
+        {
+            "leftPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "SUBSCRIBER_ID"
+            }
+        },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+		
+		,
+		
+        {
+            "leftPort": {
+                "actor": "balance_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "balance_id"
+            }
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
+            "leftPort": {
+                "actor": "BALANCE_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "BALANCE_ID"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "RESET_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "RESET_DATE"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "BALANCE_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "BALANCE_REF_ID"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "AVAILABLE_AMOUNT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "AVAILABLE_AMOUNT"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "RESET_AMOUNT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "RESET_AMOUNT"
+            }
+         } 
+		
+        
+
+    ]
+}

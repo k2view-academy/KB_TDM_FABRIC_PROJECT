@@ -1,0 +1,279 @@
+{
+    "tags": [
+        "Generate Data"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+									
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties":
+												{
+												"subscriber_id": {
+                                                    "type": "any"
+                                                 } 
+												
+												
+                                            }
+										}
+									}
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Sequence Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+						
+						{
+                            "name": "SUBSCRIBER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
+                            "name": "MSISDN",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "SIM",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "SUBSCRIBER_TYPE",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "IMSI",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "VIP_STATUS",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "LAST_NAME",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "FIRST_NAME",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+
+						
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+		
+		{
+			"leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "path": [
+                "subscriber_id"
+            ]
+		},
+        {
+            "leftPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "SUBSCRIBER_ID"
+            }
+        },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+
+        
+		 
+         
+		 ,
+		 
+		 
+		{
+            "leftPort": {
+                "actor": "MSISDN",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "MSISDN"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "SIM",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "SIM"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "SUBSCRIBER_TYPE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "SUBSCRIBER_TYPE"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "IMSI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IMSI"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "VIP_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "VIP_STATUS"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "LAST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "LAST_NAME"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "FIRST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "FIRST_NAME"
+            }
+         } 
+		
+        
+
+    ]
+}
