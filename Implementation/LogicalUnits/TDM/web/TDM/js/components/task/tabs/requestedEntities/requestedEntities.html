@@ -222,7 +222,7 @@
                         <div ng-if="!requestedEntitiesCtrl.taskData.replace_sequences && requestedEntitiesCtrl.taskData.task_type !== 'EXTRACT'">
                             <div style="padding: 0px;">
                             <label class="option-button">
-                                <input id="checkbox2" type="checkbox"
+                                <input id="checkbox2" type="checkbox" ng-change="getEntitesCount()"
                                     ng-model="requestedEntitiesCtrl.taskData.filterout_reserved" />
                                 <label for="checkbox2" class="option-button-label">
                                 Filter out Reserved Entities

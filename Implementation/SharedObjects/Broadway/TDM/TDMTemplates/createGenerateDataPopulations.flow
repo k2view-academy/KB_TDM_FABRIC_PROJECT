@@ -275,7 +275,17 @@
                     "name": "Write Flow",
                     "dependsOnList": [],
                     "isLast": 0,
+                    "remark": "Only Populations based on Broadway Flows will have equivalent Generator flow",
                     "actors": [
+                        {
+                            "name": "Check if Table has BF Population",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Write Flow to Folder",
                             "actorType": {
@@ -353,6 +363,16 @@
             "rightPort": {
                 "actor": "Write Flow to Folder",
                 "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "create Generator Flow Name",
+                "name": "generatorFlow"
+            },
+            "rightPort": {
+                "actor": "Check if Table has BF Population",
+                "name": "value"
             }
         },
         {

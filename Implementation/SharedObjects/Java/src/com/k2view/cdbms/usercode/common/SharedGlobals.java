@@ -29,10 +29,10 @@ public class SharedGlobals {
 
 	@desc("Target product version to override by task execution process")
 	@category("TDM")
-	public static String TDM_TARGET_PRODUCT_VERSION = "DEV";
+	public static String TDM_TARGET_PRODUCT_VERSION = "false";
 	@desc("Source product version to override by task execution process")
 	@category("TDM")
-	public static String TDM_SOURCE_PRODUCT_VERSION = "PROD";
+	public static String TDM_SOURCE_PRODUCT_VERSION = "false";
 
 	@category("TDM")
 	public static String TDM_REPLACE_SEQUENCES = "false";
@@ -41,9 +41,9 @@ public class SharedGlobals {
 	public static String TDM_TASK_EXE_ID = "0";
 
 	@category("TDM")
-	public static String TDM_SOURCE_ENVIRONMENT_NAME = "SRCLocalDebug";
+	public static String TDM_SOURCE_ENVIRONMENT_NAME = "";
 	@category("TDM")
-	public static String TDM_TAR_ENV_NAME = "TARLocalDebug";
+	public static String TDM_TAR_ENV_NAME = "";
 	@category("TDM")
 	public static String TDM_CLONING_DATA = "false";
 	@category("TDM")

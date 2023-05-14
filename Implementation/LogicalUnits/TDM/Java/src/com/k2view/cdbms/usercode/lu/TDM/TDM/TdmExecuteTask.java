@@ -94,21 +94,19 @@ public class TdmExecuteTask {
 
             Long taskExecutionID = (Long) taskProperties.get("task_execution_id");
 			Long luID = (Long) LU_ID.get(taskProperties);
-            Timestamp startTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
 
             // Check for child LU- if the parent LU execution failed- do not execute the child LU. Instead- update the execution_status of the child LU by the status of the parent LU and continue to the next LU
             String parentLUStatus = PARENT_LU_STATUS.get(taskProperties);
             if(isChildLU(taskProperties) && !parentLUStatus.toUpperCase().equals("COMPLETED")) {
-                updateTaskExecutionStatus(parentLUStatus, taskExecutionID,luID,null, startTime, "0", "0", "0");
+                String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
+                updateTaskExecutionStatus(parentLUStatus, taskExecutionID,luID, null, "0", "0", "0", startTime);
                 return;
             }
 			
+			String startTime = "" + Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
             //updateTaskExecutionStatus("running", taskExecutionID,luID, "", "0", "0", "0", null);
             // Update task execution summary
-            updateTaskExecutionSummary(taskExecutionID, "running",startTime);
-			//updateLuExecutionStatus(taskExecutionID,luID,"running"," "," ",startTime);
-			//updateTaskExecutionStatus("running",taskExecutionID,luID,null,startTime,"0", "0", "0");
-
+            updateTaskExecutionSummary(taskExecutionID, "running");
 
 			String selectionMethod = SELECTION_METHOD.get(taskProperties);
             String taskType = TASK_TYPE.get(taskProperties).toString().toLowerCase();
@@ -127,21 +125,20 @@ public class TdmExecuteTask {
 						
         	            	if (!Util.isEmpty(fabricExecutionId)) {
 								versionExpDate = migrationStatus.get("version_expiration_date");
-                                updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId,versionExpDate,startTime);
-
+                	        	updateLuExecutionStatus(taskExecutionID, luID, "running", fabricExecutionId, versionExpDate);
 								try {
 									//log.info("TdmExecuteTask - Calling fnTdmReference");
                                     fnTdmReference(String.valueOf(taskExecutionID), taskType);
 								} catch (Exception e) {
 									log.error("TdmExecuteTask - Update extract task status to failed");
 		                        	updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
-    		                    	updateTaskExecutionSummary(taskExecutionID, "failed",startTime);
+    		                    	updateTaskExecutionSummary(taskExecutionID, "failed");
 								}
             		        } else {
                 		        // rollback LU and task status
-                    		    updateLuExecutionStatus(taskExecutionID, luID, "failed", fabricExecutionId, versionExpDate,startTime);
+                    		    updateLuExecutionStatus(taskExecutionID, luID, "failed", fabricExecutionId, versionExpDate);
 								updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
-	                        	updateTaskExecutionSummary(taskExecutionID, "failed",startTime);
+	                        	updateTaskExecutionSummary(taskExecutionID, "failed");
     	                	}
 						} else {
 							try {
@@ -150,9 +147,9 @@ public class TdmExecuteTask {
 								updateTaskExecutionBatchID(taskExecutionID, luID, batchId);
 							} catch (Exception e) {
 								log.error("TdmExecuteTask - Update extract task status to failed");
-								updateLuExecutionStatus(taskExecutionID, luID, "failed", null, versionExpDate,startTime);
+								updateLuExecutionStatus(taskExecutionID, luID, "failed", null, versionExpDate);
 								updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
-								updateTaskExecutionSummary(taskExecutionID, "failed", startTime);
+								updateTaskExecutionSummary(taskExecutionID, "failed");
 							}
 						}
         	            break;
@@ -162,12 +159,12 @@ public class TdmExecuteTask {
 							if (!selectionMethod.equalsIgnoreCase("ref")) {
         	        	        String executionId = executeLoadBatch(taskProperties);
             	        	    if (!executionId.isEmpty()) {
-                	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, startTime, "0", "0", "0");
+                	        	    updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
 									//log.info("TdmExecuteTask - Calling fnTdmReference");
                                     fnTdmReference(String.valueOf(taskExecutionID), taskType);
 		                        } else {
     		                        // rollback LU and task status
-        		                    updatedFailedStatus(taskExecutionID, luID,startTime);
+        		                    updatedFailedStatus(taskExecutionID, luID);
             		                log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
                 		        }
 							} else {
@@ -177,7 +174,7 @@ public class TdmExecuteTask {
 							}
         	            } catch (Exception e) {
              	       	// rollback LU and task status
-                            updatedFailedStatus(taskExecutionID, luID,startTime);
+                 	       updatedFailedStatus(taskExecutionID, luID);
 							updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
                         	log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                     	}
@@ -191,42 +188,42 @@ public class TdmExecuteTask {
 							if (!executionId.isEmpty()) {
 								// In case of reserve only one LU (root) will be executed, any other LU will be ignored
 								if ("NA".equals(executionId)) {
-              					  updateTaskExecutionStatus("completed", taskExecutionID,luID, null, startTime, "0", "0", "0");
+              					  updateTaskExecutionStatus("completed", taskExecutionID,luID, null, "0", "0", "0", startTime);
 					                return;
 								}
-								updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, startTime, "0", "0", "0");
+								updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
 							} else {
 								// rollback LU and task status
-								updatedFailedStatus(taskExecutionID, luID, startTime);
+								updatedFailedStatus(taskExecutionID, luID);
 								log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
 							}
         	            } catch (Exception e) {
              	       	// rollback LU and task status
-							updatedFailedStatus(taskExecutionID, luID, startTime);
+							updatedFailedStatus(taskExecutionID, luID);
 							updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
 							log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
                     	}
 						break;
 	                 // TDM 8.0 - Support new task type generate synthetic entites
-                     case "generate":
-                     log.info("----------------- generate synthetic task -------------------");
-                     try {
-                         String executionId = executeGenerateBatch(taskProperties);
-                         if (!executionId.isEmpty()) {
-                             updateTaskExecutionStatus("running", taskExecutionID, luID, executionId,startTime, "0", "0", "0");
-                         } else {
-                             // rollback LU and task status
-                             updatedFailedStatus(taskExecutionID, luID,startTime);
-                             log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
-                         }
-                         
-                     } catch (Exception e) {
-                         // rollback LU and task status
-                         updatedFailedStatus(taskExecutionID, luID,startTime);
-                         updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
-                         log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
-                     }
-                     break;
+					case "generate":
+						log.info("----------------- generate synthetic task -------------------");
+						try {
+							String executionId = executeGenerateBatch(taskProperties);
+							if (!executionId.isEmpty()) {
+								updateTaskExecutionStatus("running", taskExecutionID, luID, executionId, "0", "0", "0", null);
+							} else {
+								// rollback LU and task status
+								updatedFailedStatus(taskExecutionID, luID);
+								log.error("Execution failed for task execution: " + taskExecutionID + ", LU ID: " + luID);
+							}
+							
+						} catch (Exception e) {
+							// rollback LU and task status
+							updatedFailedStatus(taskExecutionID, luID);
+							updateLuRefExeFailedStatus(taskExecutionID, LU_NAME.get(taskProperties), "failed");
+							log.error("Execution failed for task execution: " + taskExecutionID + " due to " + e.getMessage(), e);
+						}
+						break;
     	            default:
         	            log.error("Unknown task type '" + taskType + "'");
             	}
@@ -302,9 +299,10 @@ public class TdmExecuteTask {
         }
     }
 
-    private static void updatedFailedStatus(Long taskExecutionID, Long luID, Timestamp startTime) {
-        updateTaskExecutionStatus("failed", taskExecutionID, luID, null, startTime,"0", "0", "0");
-        updateTaskExecutionSummary(taskExecutionID, "failed", startTime);
+    private static void updatedFailedStatus(Long taskExecutionID, Long luID) {
+        Timestamp endTime = (Timestamp) Util.rte(() -> db(TDM).fetch("select current_timestamp at time zone 'utc' ").firstValue());
+        updateTaskExecutionStatus("failed", taskExecutionID, luID, null, "0", "0", "0", endTime);
+        updateTaskExecutionSummary(taskExecutionID, "failed");
     }
 
     private static boolean isChildLU(Map<String, Object> taskProperties) {
@@ -766,7 +764,22 @@ public class TdmExecuteTask {
         globals.put("TDM_REPLACE_SEQUENCES", selectionMethod.equals("CLONE") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
 		globals.put("enable_sequences", selectionMethod.equals("CLONE") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
 		globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());
-		
+        Object minDist = Util.rte(() -> db(TDM).fetch("SELECT param_value FROM " + TDMDB_SCHEMA + 
+            ".tdm_general_parameters WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MIN'").firstValue());
+
+        if (minDist != null) {
+            globals.put("TABLE_DEFAULT_DISTRIBUTION_MIN", minDist);
+        } else {
+            globals.put("TABLE_DEFAULT_DISTRIBUTION_MIN", "1");
+        }
+        Object maxDist = Util.rte(() -> db(TDM).fetch("SELECT param_value FROM " + TDMDB_SCHEMA + 
+        ".tdm_general_parameters WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MAX'").firstValue());
+
+    if (minDist != null) {
+        globals.put("TABLE_DEFAULT_DISTRIBUTION_MAX", maxDist);
+    } else {
+        globals.put("TABLE_DEFAULT_DISTRIBUTION_MAX", "3");
+    }
         globals.putAll(args);
 
         Util.rte(() -> db(TDM).fetch(globalsQuery, params).forEach(res ->Util.rte(() -> globals.put(res.resultSet().getString("global_name"), res.resultSet().getString("global_value")))));
@@ -1243,13 +1256,13 @@ public class TdmExecuteTask {
         return db(TDM).fetch("SELECT lu_name, lu_dc_name FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE lu_id = ?", luId).firstRow();
     }
 
-    private static void updateLuExecutionStatus(Long taskExecutionId, Long luID, String status, String fabricExecutionId, String versionExpDate, Timestamp startTime) {
+    private static void updateLuExecutionStatus(Long taskExecutionId, Long luID, String status, String fabricExecutionId, String versionExpDate) {
         try {
-            db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?, fabric_execution_id=?, " +
-					"start_execution_time = ?, " +
-					"version_expiration_date=TO_TIMESTAMP(?, 'YYYYMMDDHH24MISS') " +
-					"WHERE task_execution_id=? AND lu_id=?"
-                    , status, fabricExecutionId, startTime, versionExpDate, taskExecutionId, luID);
+            db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET execution_status=?, fabric_execution_id=?," + 
+					"start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else start_execution_time end)," +
+					"version_expiration_date=TO_TIMESTAMP(?, 'YYYYMMDDHH24MISS')" +
+					" WHERE task_execution_id=? AND lu_id=?"
+                    , status, fabricExecutionId, versionExpDate, taskExecutionId, luID);
         } catch (SQLException e) {
             log.error("Can't update status in task_execution_list for task_execution_id=" + taskExecutionId, e);
         }
@@ -1268,29 +1281,17 @@ public class TdmExecuteTask {
 
     private static void updateTaskExecutionStatus(String status, Long taskExecutionID, Long luID, Object... params) {
         try {
-			if("failed".equalsIgnoreCase(status)) {
-				db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
-								"execution_status=?, " +
-								"fabric_execution_id=?, " +
-								"start_execution_time = ?, " +
-								"end_execution_time = current_timestamp at time zone 'utc', " +
-								"num_of_processed_entities = ?," +
-								"num_of_copied_entities = ?," +
-								"num_of_failed_entities = ? " +
-								"WHERE task_execution_id=? and lu_id = ?"
-						, status, params[0], params[1], params[2], params[3], params[4], taskExecutionID, luID);
-			} else {
             db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list SET " +
                             "execution_status=?, " +
                             "fabric_execution_id=?, " +
-                            "start_execution_time = ?, " +
+                            "start_execution_time = (case when start_execution_time is null then current_timestamp at time zone 'utc' else start_execution_time end),\n" +
                             "num_of_processed_entities = ?," +
                             "num_of_copied_entities = ?," +
-                            "num_of_failed_entities = ? " +
+                            "num_of_failed_entities = ?," +
+                            "end_execution_time = ? " +
                             "WHERE task_execution_id=? and lu_id = ?"
                     , status, params[0], params[1], params[2], params[3], params[4], taskExecutionID, luID);
-            }
-		}catch (SQLException e) {
+        } catch (SQLException e) {
             log.error("Can't update status in task_execution_list table for task_execution_id=" + taskExecutionID + ", lu_id: " + luID, e);
         }
     }
@@ -1305,13 +1306,9 @@ public class TdmExecuteTask {
             log.error("Can't update batch ID in task_execution_list table for task_execution_id=" + taskExecutionID + ", lu_id: " + luID, e);
         }
     }
-    private static void updateTaskExecutionSummary(Long taskExecutionId, String status, Timestamp start) {
+    private static void updateTaskExecutionSummary(Long taskExecutionId, String status) {
         try {
-			if("failed".equalsIgnoreCase(status)) {
-				db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_summary SET execution_status=?, start_execution_time=?, end_execution_time=current_timestamp at time zone 'utc' WHERE task_execution_id = ?",status, start, taskExecutionId);
-			} else {
-			db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_summary SET execution_status=?, start_execution_time=? WHERE task_execution_id = ?", status, start, taskExecutionId);
-            }
+            db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_summary SET execution_status=? WHERE task_execution_id = ?", status, taskExecutionId);
         } catch (SQLException e) {
             log.error("Can't update status in task summary table for task_execution_id=" + taskExecutionId, e);
         }

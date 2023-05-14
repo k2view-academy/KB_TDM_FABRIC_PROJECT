@@ -84,10 +84,14 @@ public class SharedLogic {
 			}
 		});
 		
-		handlebars.registerHelper("getDMActorName", new Helper<Map<String, String>>() {
+		handlebars.registerHelper("getGDActorName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
-				//log.info(map.get("FIELD_NAME"));
-				return map.get("ACTOR");
+                String actorName = map.get("ACTOR");
+				int actorNameEnd = actorName.lastIndexOf(".actor");
+                if (actorNameEnd > 0) {
+                    actorName = actorName.substring(0, actorNameEnd);
+                }
+				return actorName;
 			}
 		});
 		handlebars.registerHelper("getSourceTableName", new Helper<Map<String, String>>() {
@@ -470,56 +474,60 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		return tableData;
 	}
 
-    @out(name = "result", type = List.class, desc = "")
-    public static  List<Map<String, String>>  getPopulationsList(String luName) throws Exception {
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
-        final LUType luType = LUType.getTypeByName(luName);
+	@out(name = "result", type = List.class, desc = "")
+	public static List<Map<String,String>> getPopulationsList(String luName) throws Exception {
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+		final LUType luType = LUType.getTypeByName(luName);
+		
+		
+		luType.getPopulationCollection().forEach((tableEntry) -> {
+		    String table = tableEntry.getLudbObjectName();
+		    String popName =  tableEntry.getPopulationName();
+		    
+		    try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+		    table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
+		        String tableFiltered = "";
+		        if (checkTable != null && checkTable.firstValue() != null) {
+		        	tableFiltered = "" + checkTable.firstValue();
+		        }
+		        
+		        if(  !Util.isEmpty(tableFiltered)) {
+		            int flowNameEnd = popName.lastIndexOf(".flow");
+		            if (flowNameEnd > 0) {
+		                Map<String, String> map = new HashMap<String, String>();
+		                map.put("tableName", table);
+		                map.put("populationName", popName.substring(0, flowNameEnd));
+		        	    result.add(map);
+		            } else {
+		                log.warn("Table " + table + " has a population that is not a Broadway Flow, No Generator will be created for such population");
+		            }
+		        }
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+		    
+		});                  
+		return result;
+	}
 
-
-        luType.getPopulationCollection().forEach((tableEntry) -> {
-            String table = tableEntry.getLudbObjectName();
-            String popName =  tableEntry.getPopulationName();
-
-            try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
-            table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
-                String tableFiltered = "";
-                if (checkTable != null && checkTable.firstValue() != null) {
-                	tableFiltered = "" + checkTable.firstValue();
-                }
-                
-                if(  !Util.isEmpty(tableFiltered)) {
-                    Map<String, String> map = new HashMap<String, String>();
-                    map.put("tableName", table);
-                    map.put("populationName", popName.substring(0, popName.lastIndexOf(".flow")));
-                	result.add(map);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            
-        });                  
-        return result;
-    }
-
-    @out(name = "result", type = List.class, desc = "")
-    public static  List<Map<String, String>>  getPopArgumenList(String luName, String tableName) throws Exception {
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>();
-        LUType luType = LUType.getTypeByName(luName);
+	@out(name = "result", type = List.class, desc = "")
+	public static List<Map<String,String>> getPopArgumenList(String luName, String tableName) throws Exception {
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+		LUType luType = LUType.getTypeByName(luName);
 		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
-        for (Object key : rel.keySet()) {
-            log.info("Rel Key: " + key + ", from: " + rel.get(key));
-            for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
-                log.info("Rel Key - from: " + ri.from);
-                log.info("Rel Key - to: " + ri.to);
-                Map<String, String> map = new HashMap<>();
-                map.put("PARENT_TABLE", key.toString());
-                map.put("PARENT_FIELD_NAME", ri.to.get("column"));
-                map.put("FIELD_NAME", ri.to.get("column").toUpperCase());
-                result.add(map);
-            }
-        }
-        return result;
-    }
+		if (rel != null) {
+			for (Object key : rel.keySet()) {
+			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
+			        Map<String, String> map = new HashMap<>();
+		    	    map.put("PARENT_TABLE", key.toString());
+		        	map.put("PARENT_FIELD_NAME", ri.to.get("column"));
+			        map.put("FIELD_NAME", ri.to.get("column").toUpperCase());
+		    	    result.add(map);
+		    	}
+			}
+		}
+		return result;
+	}
     @out(name = "result", type = List.class, desc = "")
     public static  List<Map<String, String>>  filerOutSequences(List<Map<String, String>> Sequences, List<Map<String, String>> parentRec) throws Exception {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);

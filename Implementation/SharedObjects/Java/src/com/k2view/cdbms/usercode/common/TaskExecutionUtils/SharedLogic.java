@@ -46,6 +46,10 @@ import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
 
+    public static final String TDM = "TDM";
+    private static final String DB_FABRIC = "fabric";
+    private static String schema = TDMDB_SCHEMA;
+
 	public static void fnAddTaskPostExecutionProcess(List<Map<String, Object>> postExecutionProcesses, Long taskId) throws Exception {
 		String sql = "DELETE FROM \"" + schema + "\".TASKS_POST_EXE_PROCESS WHERE \"" + schema + "\".TASKS_POST_EXE_PROCESS.task_id = " + taskId;
 		db(TDM).execute(sql);
@@ -125,9 +129,9 @@ public class SharedLogic {
                     "and l.task_id = u.task_id and l.lu_id = u.lu_id and l.task_id = t.task_id", task_execution_id);
 
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='stopped',end_execution_time=current_timestamp at time zone 'utc'," +
-							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
-							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
-                    task_execution_id);
+                            " start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
+                            " WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
+                            task_execution_id);
             // TDM 5.1- add a reference handling- update the status of the reference tables to 'stopped'.
 
             db(TDM).execute("UPDATE " + schema + ".task_ref_exe_stats set execution_status='stopped', end_time=current_timestamp at time zone 'utc', number_of_processed_records = 0," +
@@ -138,8 +142,7 @@ public class SharedLogic {
             // TDM 7, set the execution summary to stopped also
             db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='stopped', end_execution_time=current_timestamp at time zone 'utc'," +
 							" start_execution_time = CASE WHEN start_execution_time is NULL THEN current_timestamp at time zone 'utc' ELSE start_execution_time END" +
-							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",
-                    task_execution_id);
+							" WHERE task_execution_id = ? AND execution_status NOT IN ('completed', 'failed')",task_execution_id);
 
             // TDM 5.1- cancel the migrate only if the input migration id is not null
             //TDM 6.0 - Loop over the list of migrate IDs
@@ -256,13 +259,13 @@ public class SharedLogic {
                     "where task_execution_id = ? and l.task_id = t.task_id " +
                     "and (fabric_execution_id is not null or  selection_method = 'REF') and UPPER(execution_status)= 'STOPPED'", task_execution_id);
 
-            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', end_execution_time=null where " +
+            db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='running', end_execution_time=null where " + 
 							"(fabric_execution_id is not null or task_id in (select task_id from tasks where selection_method = 'REF')) " +
                             "and lower(execution_status) = 'stopped' and task_execution_id = ?",
                     task_execution_id);
 
             // TDM 7, set the status in execution summary to running
-            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running',end_execution_time=null where task_execution_id = ? and execution_status = 'stopped'",
+            db(TDM).execute("UPDATE " + schema + ".task_execution_summary SET execution_status='running', end_execution_time=null where task_execution_id = ? and execution_status = 'stopped'",
                     task_execution_id);
             db(TDM).execute("UPDATE " + schema + ".task_execution_list SET execution_status='pending' where fabric_execution_id is null and task_execution_id = ? " +
                             "and lower(execution_status) = 'stopped' and task_id in (select task_id from tasks where lower(selection_method) <>'ref')",
@@ -1489,6 +1492,12 @@ public class SharedLogic {
                     value = df1.format(date);
                 }
 
+                if (paramValue.has("default")) {
+                    Object defaultVal = paramValue.get("default");
+                    if(value.toString().equals(defaultVal.toString())) {
+                        continue;
+                    }
+                }
                 Map<String, Object> paramData = new LinkedHashMap<String, Object>();
                 paramData.put(paramName, value);
                 //log.info("createTaskDMParams - paramName: " + paramName + ", ParamValue: <" + value + ">");
@@ -1674,9 +1683,4 @@ public class SharedLogic {
 		//Return the parent, so eventually return the root record with the whole hierarchy data
 		return upperParent;
 	}
-
-
-	public static final String TDM = "TDM";
-    private static final String DB_FABRIC = "fabric";
-    private static String schema = TDMDB_SCHEMA;
 }

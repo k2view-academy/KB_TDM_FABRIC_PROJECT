@@ -34,11 +34,13 @@ public class Logic extends UserCode {
 
 	@desc("Add JMX statistics per loaded table of the task")
 	public static void fnTDMJMXStats() throws Exception {
-		fnTableStats();
-		fnBEStats();
+
+        fnTableStats();
+        fnBEStats();
 		fnBEAndStatusStats();
-		fnTotalExecutions();
-		fnTotalStatusExecutions();
+        fnTotalExecutions();
+        fnTotalStatusExecutions();
+
 	}
 
 	private static void fnTableStats() throws Exception {

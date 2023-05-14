@@ -1577,7 +1577,7 @@ public class SharedLogic {
 
     @desc("Get the tables of give LU without TDM Tables add to LU for TDM mechanisms")
     @out(name="result", type = List.class, desc = "")
-    public static List<String> getLuTalesList(String luName) throws Exception {
+    public static List<String> getLuTablesList(String luName) throws Exception {
         List<String> tablesList = new ArrayList<>();
 
         LUType luType = LUType.getTypeByName(luName);

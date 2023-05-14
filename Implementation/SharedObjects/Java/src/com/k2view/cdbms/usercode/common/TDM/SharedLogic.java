@@ -1056,7 +1056,7 @@ public class SharedLogic {
 		String versionDateTime = "";
 		
 		String iidSeparator = "" + db(TDM).fetch("Select param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'iid_separator'").firstValue();
-		      //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
+        //separator = !Util.isEmpty(iidSeparator) ? iidSeparator : "_";
 		if ( !Util.isEmpty(iidSeparator) && !"null".equals(iidSeparator) ) {
 			separator = iidSeparator;
 		} else {

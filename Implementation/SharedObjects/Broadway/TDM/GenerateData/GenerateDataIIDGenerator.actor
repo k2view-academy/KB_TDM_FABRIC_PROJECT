@@ -7,20 +7,7 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "Lu_name": "CRM",
-                    "Generator_actor": ""
-                },
-                {
-                    "Lu_name": "Billing",
-                    "Generator_actor": ""
-                },
-                {
-                    "Lu_name": "Asset",
-                    "Generator_actor": ""
-                }
-            ],
+            "const": [],
             "schema": {
                 "type": "array",
                 "items": {

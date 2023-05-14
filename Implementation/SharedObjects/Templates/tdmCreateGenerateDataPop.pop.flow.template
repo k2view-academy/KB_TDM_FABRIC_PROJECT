@@ -194,21 +194,9 @@
                         {
                             "name": "{{getLUFieldName this}}",
                             "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "{{getDMActorName this}}"
-                                    }
-								],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "parentType": "{{getGDActorName this}}",
+                                "inputs": [],
+                                "outputs": []
                             }
                         {{#if @last}} } {{else}} }, {{/if}}
 						{{/each}}
