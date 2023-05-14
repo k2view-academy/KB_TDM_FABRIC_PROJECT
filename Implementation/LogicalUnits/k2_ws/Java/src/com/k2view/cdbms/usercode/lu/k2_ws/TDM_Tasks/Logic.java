@@ -6308,13 +6308,15 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsGetDMPopParams(List<String> luList, Long taskId) throws Exception {
-		      
+	public static Object wsGetDMPopParams(String luList, Long taskId) throws Exception {
+        
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 		
 		try {
-		          for (String luName : luList) {
-		              String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
+            luList = luList.replaceAll("\\s+", "");
+		    String[] lus = luList.split(",");
+		     for (String luName : lus) {
+		        String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
 				Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
 		
 				for (Db.Row flow : flows) {
@@ -6361,7 +6363,7 @@ public class Logic extends WebServiceUserCode {
 				}
 		
 		              // Add the distribution of each table in the LU
-		              List<String> tablesList = getLuTalesList(luName);
+		              List<String> tablesList = getLuTablesList(luName);
 		              for (String tableName : tablesList) {
 		                  if (!rootTableName.equalsIgnoreCase(tableName)) {
 		                      HashMap<String, Object> map = new HashMap<>();
