@@ -482,7 +482,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-     select 'tdm_gui_params','{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
+     select 'tdm_gui_params','{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":"True"},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":"False"},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
     
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -494,6 +494,16 @@ insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
 	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
+
+insert into ${@schema}.tdm_general_parameters (
+        param_name, param_value) 
+    select 'TABLE_DEFAULT_DISTRIBUTION_MIN', 1 
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TABLE_DEFAULT_DISTRIBUTION_MIN');
+
+insert into ${@schema}.tdm_general_parameters (
+        param_name, param_value)
+    select 'TABLE_DEFAULT_DISTRIBUTION_MAX', 3
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TABLE_DEFAULT_DISTRIBUTION_MAX');
 
 -- Table: ${@schema}.task_globals
 

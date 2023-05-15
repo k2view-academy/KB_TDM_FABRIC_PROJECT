@@ -1,7 +1,6 @@
 {
     "tags": [
-        "TDM",
-        "TDM_Templates"
+        "TDM"
     ],
     "levels": [
         {
@@ -133,6 +132,32 @@
                                                         "type": "string"
                                                     },
                                                     "columnName": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Default Actor Per Field Type",
+                            "actorType": {
+                                "parentType": "GenerateDataDefaultFieldTypeActors",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "ACTOR": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -277,15 +302,24 @@
                         {
                             "name": "Get Actor By Field Type",
                             "actorType": {
-                                "parentType": "MTableLookup",
+                                "parentType": "Lookup",
                                 "inputs": [
                                     {
-                                        "name": "mtable",
-                                        "const": "GenerateDataDefaultFieldTypeActors"
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "TYPE"
+                                        ]
                                     },
                                     {
-                                        "name": "mtableCaseSensitive",
-                                        "const": false
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
                                     },
                                     {
                                         "name": "TYPE",
@@ -299,19 +333,13 @@
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "TYPE": {
-                                                        "type": "string"
-                                                    },
-                                                    "ACTOR": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARAMETERS": {
-                                                        "type": "string"
-                                                    }
+                                            "type": "object",
+                                            "properties": {
+                                                "TYPE": {
+                                                    "type": "string"
+                                                },
+                                                "ACTOR": {
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -971,20 +999,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Get Actor By Field Type",
-                "name": "TYPE"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "columnType"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "get Lu Table Columns And Types",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "Add Field Name",
                 "name": "value"
             },
@@ -1023,6 +1037,30 @@
         },
         {
             "leftPort": {
+                "actor": "get Lu Table Columns And Types",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Actor By Field Type",
+                "name": "TYPE"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "columnType"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Default Actor Per Field Type",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Get Actor By Field Type",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Check If Field is an Input Argument",
                 "name": "result"
             },
@@ -1050,7 +1088,6 @@
                 "actor": "Marge Name with Actor",
                 "name": "maps"
             },
-            "iterate": "First",
             "arrayPosition": 0
         },
         {
