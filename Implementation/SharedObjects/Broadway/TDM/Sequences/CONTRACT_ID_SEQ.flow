@@ -82,6 +82,10 @@
                                         "const": 0
                                     },
                                     {
+                                        "name": "onEmpty",
+                                        "const": "MASK_AND_CACHE"
+                                    },
+                                    {
                                         "name": "sequenceId",
                                         "const": "CONTRACT_ID_SEQ"
                                     },
