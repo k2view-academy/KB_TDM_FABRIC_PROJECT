@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,17 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "collection_id": {
+                                            "properties":
+												{
+												"collection_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         }
@@ -40,19 +43,20 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+                        
+ 						{
                             "name": "customer_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                    {
+                                     {
                                         "name": "maskingId",
                                         "const": "customer_id"
                                     },
@@ -88,16 +92,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "const": "Gen_CUSTOMER_ID_SEQ",
                                         "name": "sequenceId",
+                                        "const": "Gen_CUSTOMER_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM",
                                         "name": "sequenceInterface",
+                                        "const": "TDM",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -114,16 +118,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "1",
                                         "name": "initialValue",
+                                        "const": "1",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": 1,
                                         "name": "increment",
+                                        "const": 1,
                                         "schema": {
                                             "type": "number"
                                         },
@@ -138,8 +142,11 @@
                                         }
                                     }
                                 ]
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
                 }
             ]
@@ -151,7 +158,8 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "COLLECTION_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -170,39 +178,51 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
                             "name": "COLLECTION_STATUS",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
+                         }, 
+						{
                             "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
+                         }, 
+						{
                             "name": "LAST_UPDATE",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                        }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -213,27 +233,7 @@
             "path": [
                 "collection_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "customer_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "customer_id"
-            }
-        },
+		},
         {
             "leftPort": {
                 "actor": "COLLECTION_ID",
@@ -244,7 +244,42 @@
                 "name": "COLLECTION_ID"
             }
         },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+		
+		,
+		
         {
+            "leftPort": {
+                "actor": "customer_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "customer_id"
+            }
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
             "leftPort": {
                 "actor": "COLLECTION_STATUS",
                 "name": "value"
@@ -253,8 +288,8 @@
                 "actor": "flowArgs",
                 "name": "COLLECTION_STATUS"
             }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "CUSTOMER_ID",
                 "name": "value"
@@ -263,8 +298,8 @@
                 "actor": "flowArgs",
                 "name": "CUSTOMER_ID"
             }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "LAST_UPDATE",
                 "name": "value"
@@ -273,6 +308,9 @@
                 "actor": "flowArgs",
                 "name": "LAST_UPDATE"
             }
-        }
+         } 
+		
+        
+
     ]
 }
