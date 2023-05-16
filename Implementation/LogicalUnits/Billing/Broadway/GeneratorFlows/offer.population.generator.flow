@@ -139,6 +139,29 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "DESCRIPTION",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "450 min",
+                                            "100 text",
+                                            "5G LTE",
+                                            "5G tether",
+                                            "Unlimited text",
+                                            "10G 3G",
+                                            "10G LTE",
+                                            "Unlimited call",
+                                            "Roaming special"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -207,14 +230,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "OFFER_DESCRIPTION",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
                             }
                         },
                         {
@@ -288,6 +303,14 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "OFFER_DESCRIPTION",
+                            "actorType": {
+                                "parentType": "RandomFromCollection",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -307,6 +330,16 @@
             "path": [
                 "subscriber_id"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "DESCRIPTION",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "OFFER_DESCRIPTION",
+                "name": "collection"
+            }
         },
         {
             "leftPort": {
@@ -350,16 +383,6 @@
         },
         {
             "leftPort": {
-                "actor": "OFFER_DESCRIPTION",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "OFFER_DESCRIPTION"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "flowArgs",
                 "name": "from_date"
             },
@@ -396,6 +419,16 @@
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "TO_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "OFFER_DESCRIPTION",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "OFFER_DESCRIPTION"
             }
         }
     ]

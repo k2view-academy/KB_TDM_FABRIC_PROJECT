@@ -48,7 +48,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "activity_id",
+                            "name": "ACTIVITY_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -139,6 +139,29 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "NOTES",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "I'm afraid I still don't understand, sir. Well, that's certainly good to know.",
+                                            "I'll alert the crew. When has justice ever been as simple as a rule book?",
+                                            "Travel time to the nearest starbase? The Federation's gone; the Borg is everywhere!",
+                                            "Fate. It protects fools, little children, and ships named Enterprise.",
+                                            "I suggest you drop it, Mr. Data. Mr. Worf, you sound like a man who's asking his friend if he can start dating his sister.",
+                                            "Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.",
+                                            "For an android with no feelings, he sure managed to evoke them in others.",
+                                            "Flair is what marks the difference between artistry and mere competence.",
+                                            "I've had twelve years to think about it. And if I had it to do over again, I would have grabbed the phaser and pointed it at you instead of them."
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -172,27 +195,47 @@
                             }
                         },
                         {
-                            "name": "ACTIVITY_DATE",
-                            "actorType": {
-                                "parentType": "ConstDateTime",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "ACTIVITY_ID",
-                            "actorType": {
-                                "parentType": "RandomNumber",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "ACTIVITY_NOTE",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "RandomFromCollection",
                                 "inputs": [],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ACTIVITY_DATE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -216,42 +259,22 @@
         },
         {
             "leftPort": {
+                "actor": "NOTES",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "ACTIVITY_NOTE",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "parent_row"
             },
             "rightPort": {
                 "actor": "parent_row",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "activity_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "activity_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CUSTOMER_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ACTIVITY_DATE",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "ACTIVITY_DATE"
             }
         },
         {
@@ -266,12 +289,42 @@
         },
         {
             "leftPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CUSTOMER_ID"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "ACTIVITY_NOTE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "ACTIVITY_NOTE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "activity_date"
+            },
+            "rightPort": {
+                "actor": "ACTIVITY_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ACTIVITY_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ACTIVITY_DATE"
             }
         }
     ]

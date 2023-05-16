@@ -142,19 +142,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "RandomRegexGenerator1",
-                            "actorType": {
-                                "parentType": "RandomRegexGenerator",
-                                "inputs": [
-                                    {
-                                        "name": "regex",
-                                        "const": "([1-9]|[1-9][0-9]{1,2}|1000)"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
