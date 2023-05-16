@@ -35,6 +35,48 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "MTable of Names",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "Names"
+                                    },
+                                    {
+                                        "name": "first_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "last_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "firstname": {
+                                                    "type": "string"
+                                                },
+                                                "lastname": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -80,16 +122,39 @@
                         {
                             "name": "MSISDN",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{10}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "IMSI",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{15}$"
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
                         {
                             "name": "SIM",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{16}$"
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -145,14 +210,6 @@
                             }
                         },
                         {
-                            "name": "IMSI",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "VIP_STATUS",
                             "actorType": {
                                 "parentType": "RandomDistribution",
@@ -204,18 +261,28 @@
                             }
                         },
                         {
-                            "name": "LAST_NAME",
+                            "name": "FIRST_NAME",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "FIRST_NAME",
+                            "name": "LAST_NAME",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -250,6 +317,26 @@
         },
         {
             "leftPort": {
+                "actor": "flowArgs",
+                "name": "first_name"
+            },
+            "rightPort": {
+                "actor": "MTable of Names",
+                "name": "first_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "last_name"
+            },
+            "rightPort": {
+                "actor": "MTable of Names",
+                "name": "last_name"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "SUBSCRIBER_ID",
                 "name": "value"
             },
@@ -266,6 +353,16 @@
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "MSISDN"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IMSI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "IMSI"
             }
         },
         {
@@ -300,16 +397,6 @@
         },
         {
             "leftPort": {
-                "actor": "IMSI",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "IMSI"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "flowArgs",
                 "name": "vip_status"
             },
@@ -330,22 +417,22 @@
         },
         {
             "leftPort": {
-                "actor": "LAST_NAME",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "LAST_NAME"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "FIRST_NAME",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "FIRST_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LAST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "LAST_NAME"
             }
         }
     ]

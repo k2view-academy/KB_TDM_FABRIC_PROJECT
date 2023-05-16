@@ -10,7 +10,6 @@
     {
       "name": "result",
       "sessionProvider": "fabric",
-      "collapsed": true,
       "children": [
         {
           "name": "General Info",

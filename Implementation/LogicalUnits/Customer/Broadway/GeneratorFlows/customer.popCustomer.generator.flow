@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,24 +22,62 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"CUSTOMER_ID": {
+                                            "properties": {
+                                                "CUSTOMER_ID": {
                                                     "type": "any"
-                                                 }, 
-												"customer_id": {
+                                                },
+                                                "customer_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MTable of Names",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "Names"
+                                    },
+                                    {
+                                        "name": "first_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "last_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "firstname": {
+                                                    "type": "string"
+                                                },
+                                                "lastname": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -46,15 +85,13 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -65,8 +102,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -85,71 +121,54 @@
                                     }
                                 ]
                             }
-						 }, 
-						{
-                            "name": "CUSTOMER_ID",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "any"
-                                        }
-                                    }
-                                ]
-                            }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
-                            "name": "LAST_NAME",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
-                            "name": "FIRST_NAME",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
+                        },
+                        {
                             "name": "SSN",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^\\d{3}-?\\d{2}-?\\d{4}$"
+                                    }
+                                ],
                                 "outputs": []
                             }
-                         } 
-						
-
-						
+                        },
+                        {
+                            "name": "FIRST_NAME",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LAST_NAME",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -160,29 +179,9 @@
             "path": [
                 "CUSTOMER_ID"
             ]
-		},
+        },
         {
             "leftPort": {
-                "actor": "CUSTOMER_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
-            }
-        },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         }, 
-		{
-			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -193,7 +192,63 @@
             "path": [
                 "customer_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "MTable of Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FIRST_NAME",
+                "name": "value"
+            },
+            "path": [
+                "firstname"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable of Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LAST_NAME",
+                "name": "value"
+            },
+            "path": [
+                "lastname"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "first_name"
+            },
+            "rightPort": {
+                "actor": "MTable of Names",
+                "name": "first_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "last_name"
+            },
+            "rightPort": {
+                "actor": "MTable of Names",
+                "name": "last_name"
+            }
+        },
         {
             "leftPort": {
                 "actor": "CUSTOMER_ID",
@@ -204,49 +259,7 @@
                 "name": "CUSTOMER_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-
-        
-		 
-         
-		 ,
-		 
-		 
-		{
-            "leftPort": {
-                "actor": "LAST_NAME",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "LAST_NAME"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "FIRST_NAME",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "FIRST_NAME"
-            }
-         }, 
-		{
+        {
             "leftPort": {
                 "actor": "SSN",
                 "name": "value"
@@ -255,9 +268,26 @@
                 "actor": "flowArgs",
                 "name": "SSN"
             }
-         } 
-		
-        
-
+        },
+        {
+            "leftPort": {
+                "actor": "FIRST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "FIRST_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LAST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "LAST_NAME"
+            }
+        }
     ]
 }
