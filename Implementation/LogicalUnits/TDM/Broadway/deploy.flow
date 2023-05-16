@@ -127,6 +127,7 @@
                     "actors": [
                         {
                             "name": "Deploy Environments",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [

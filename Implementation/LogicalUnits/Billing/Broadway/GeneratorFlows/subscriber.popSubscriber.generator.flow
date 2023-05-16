@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"subscriber_id": {
+                                            "properties": {
+                                                "subscriber_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,15 +40,13 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -62,8 +57,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -82,83 +76,157 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
+                        },
+                        {
                             "name": "MSISDN",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "SIM",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "SUBSCRIBER_TYPE",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "1"
+                                                ],
+                                                [
+                                                    40,
+                                                    "2"
+                                                ],
+                                                [
+                                                    50,
+                                                    "3"
+                                                ],
+                                                [
+                                                    40,
+                                                    "4"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "IMSI",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "VIP_STATUS",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Bronze"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Silver"
+                                                ],
+                                                [
+                                                    50,
+                                                    "Platinum"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Gold"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "LAST_NAME",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "FIRST_NAME",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         } 
-						
-
-						
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -169,7 +237,17 @@
             "path": [
                 "subscriber_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
         {
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
@@ -180,29 +258,7 @@
                 "name": "SUBSCRIBER_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-
-        
-		 
-         
-		 ,
-		 
-		 
-		{
+        {
             "leftPort": {
                 "actor": "MSISDN",
                 "name": "value"
@@ -211,8 +267,8 @@
                 "actor": "flowArgs",
                 "name": "MSISDN"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "SIM",
                 "name": "value"
@@ -221,8 +277,18 @@
                 "actor": "flowArgs",
                 "name": "SIM"
             }
-         }, 
-		{
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "subscriber_type"
+            },
+            "rightPort": {
+                "actor": "SUBSCRIBER_TYPE",
+                "name": "distribution"
+            }
+        },
+        {
             "leftPort": {
                 "actor": "SUBSCRIBER_TYPE",
                 "name": "value"
@@ -231,8 +297,8 @@
                 "actor": "flowArgs",
                 "name": "SUBSCRIBER_TYPE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "IMSI",
                 "name": "value"
@@ -241,8 +307,18 @@
                 "actor": "flowArgs",
                 "name": "IMSI"
             }
-         }, 
-		{
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "vip_status"
+            },
+            "rightPort": {
+                "actor": "VIP_STATUS",
+                "name": "distribution"
+            }
+        },
+        {
             "leftPort": {
                 "actor": "VIP_STATUS",
                 "name": "value"
@@ -251,8 +327,8 @@
                 "actor": "flowArgs",
                 "name": "VIP_STATUS"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "LAST_NAME",
                 "name": "value"
@@ -261,8 +337,8 @@
                 "actor": "flowArgs",
                 "name": "LAST_NAME"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "FIRST_NAME",
                 "name": "value"
@@ -271,9 +347,6 @@
                 "actor": "flowArgs",
                 "name": "FIRST_NAME"
             }
-         } 
-		
-        
-
+        }
     ]
 }

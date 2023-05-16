@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"customer_id": {
+                                            "properties": {
+                                                "customer_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
+                        {
                             "name": "address_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "address_id"
                                     },
@@ -92,16 +88,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_ADDRESS_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -118,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -142,14 +138,14 @@
                                         }
                                     }
                                 ]
-							}
-                         }, 
-						{
+                            }
+                        },
+                        {
                             "name": "address_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "address_id"
                                     },
@@ -185,16 +181,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_ADDRESS_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -211,16 +207,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -235,11 +231,8 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
                 }
             ]
@@ -251,8 +244,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -271,83 +263,71 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
+                        },
+                        {
                             "name": "ZIP",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "COUNTRY",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "CITY",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "ADDRESS_ID",
                             "actorType": {
                                 "parentType": "RandomNumber",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "STREET_ADDRESS_1",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "STATE",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "STREET_ADDRESS_2",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         } 
-						
-
-						
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -358,7 +338,37 @@
             "path": [
                 "customer_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "address_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "address_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "address_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "address_id"
+            }
+        },
         {
             "leftPort": {
                 "actor": "CUSTOMER_ID",
@@ -369,52 +379,7 @@
                 "name": "CUSTOMER_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
-            "leftPort": {
-                "actor": "address_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "address_id"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "address_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "address_id"
-            }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
             "leftPort": {
                 "actor": "ZIP",
                 "name": "value"
@@ -423,8 +388,8 @@
                 "actor": "flowArgs",
                 "name": "ZIP"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "COUNTRY",
                 "name": "value"
@@ -433,8 +398,8 @@
                 "actor": "flowArgs",
                 "name": "COUNTRY"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "CITY",
                 "name": "value"
@@ -443,8 +408,8 @@
                 "actor": "flowArgs",
                 "name": "CITY"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "ADDRESS_ID",
                 "name": "value"
@@ -453,8 +418,8 @@
                 "actor": "flowArgs",
                 "name": "ADDRESS_ID"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "STREET_ADDRESS_1",
                 "name": "value"
@@ -463,8 +428,8 @@
                 "actor": "flowArgs",
                 "name": "STREET_ADDRESS_1"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "STATE",
                 "name": "value"
@@ -473,8 +438,8 @@
                 "actor": "flowArgs",
                 "name": "STATE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "STREET_ADDRESS_2",
                 "name": "value"
@@ -483,9 +448,6 @@
                 "actor": "flowArgs",
                 "name": "STREET_ADDRESS_2"
             }
-         } 
-		
-        
-
+        }
     ]
 }

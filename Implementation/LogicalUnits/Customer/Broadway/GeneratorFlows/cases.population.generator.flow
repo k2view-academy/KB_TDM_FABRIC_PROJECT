@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"activity_id": {
+                                            "properties": {
+                                                "activity_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
+                        {
                             "name": "case_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "case_id"
                                     },
@@ -92,16 +88,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_CASE_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -118,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -142,14 +138,14 @@
                                         }
                                     }
                                 ]
-							}
-                         }, 
-						{
+                            }
+                        },
+                        {
                             "name": "case_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "case_id"
                                     },
@@ -185,16 +181,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_CASE_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -211,16 +207,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -235,11 +231,8 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
                 }
             ]
@@ -251,8 +244,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "ACTIVITY_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -271,59 +263,47 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
+                        },
+                        {
                             "name": "CASE_ID",
                             "actorType": {
                                 "parentType": "RandomNumber",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "CASE_TYPE",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "CASE_DATE",
                             "actorType": {
                                 "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "STATUS",
                             "actorType": {
                                 "parentType": "RandomStringRegex",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         } 
-						
-
-						
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -334,7 +314,37 @@
             "path": [
                 "activity_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "case_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "case_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "case_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "case_id"
+            }
+        },
         {
             "leftPort": {
                 "actor": "ACTIVITY_ID",
@@ -345,52 +355,7 @@
                 "name": "ACTIVITY_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
-            "leftPort": {
-                "actor": "case_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "case_id"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "case_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "case_id"
-            }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
             "leftPort": {
                 "actor": "CASE_ID",
                 "name": "value"
@@ -399,8 +364,8 @@
                 "actor": "flowArgs",
                 "name": "CASE_ID"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "CASE_TYPE",
                 "name": "value"
@@ -409,8 +374,8 @@
                 "actor": "flowArgs",
                 "name": "CASE_TYPE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "CASE_DATE",
                 "name": "value"
@@ -419,8 +384,8 @@
                 "actor": "flowArgs",
                 "name": "CASE_DATE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "STATUS",
                 "name": "value"
@@ -429,9 +394,6 @@
                 "actor": "flowArgs",
                 "name": "STATUS"
             }
-         } 
-		
-        
-
+        }
     ]
 }
