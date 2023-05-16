@@ -6309,11 +6309,10 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetDMPopParams(String luList, Long taskId) throws Exception {
-        
 		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
 		
 		try {
-            luList = luList.replaceAll("\\s+", "");
+		          luList = luList.replaceAll("\\s+", "");
 		    String[] lus = luList.split(",");
 		     for (String luName : lus) {
 		        String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
@@ -6422,7 +6421,6 @@ public class Logic extends WebServiceUserCode {
 		          log.error(e.getMessage());
 			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
-		
 		return wrapWebServiceResults("SUCCESS", null, result);
 	}
 }

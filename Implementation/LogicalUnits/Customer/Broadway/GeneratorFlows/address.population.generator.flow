@@ -150,17 +150,15 @@
                                         "const": "Addresses"
                                     },
                                     {
-                                        "name": "state",
+                                        "name": "city",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "city",
-                                        "schema": {
-                                            "type": "string"
-                                        },
+                                        "name": "state",
+                                        "schema": {},
                                         "mandatory": false
                                     }
                                 ],
@@ -410,21 +408,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "state"
+                "name": "city"
             },
             "rightPort": {
                 "actor": "MTable of Addresses",
-                "name": "state"
+                "name": "city"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "city"
+                "name": "state"
             },
             "rightPort": {
                 "actor": "MTable of Addresses",
-                "name": "city"
+                "name": "state"
             }
         },
         {
