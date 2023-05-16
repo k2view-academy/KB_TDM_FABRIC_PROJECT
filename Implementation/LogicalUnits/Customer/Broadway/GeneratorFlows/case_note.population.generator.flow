@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"case_id": {
+                                            "properties": {
+                                                "case_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
-                            "name": "note_id",
+                        {
+                            "name": "NOTE_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "note_id"
                                     },
@@ -92,16 +88,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_NOTE_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -118,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -142,11 +138,31 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        },
+                        {
+                            "name": "NOTES",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "I'm afraid I still don't understand, sir. Well, that's certainly good to know.",
+                                            "I'll alert the crew. When has justice ever been as simple as a rule book?",
+                                            "Travel time to the nearest starbase? The Federation's gone; the Borg is everywhere!",
+                                            "Fate. It protects fools, little children, and ships named Enterprise.",
+                                            "I suggest you drop it, Mr. Data. Mr. Worf, you sound like a man who's asking his friend if he can start dating his sister.",
+                                            "Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.",
+                                            "For an android with no feelings, he sure managed to evoke them in others.",
+                                            "Flair is what marks the difference between artistry and mere competence.",
+                                            "I've had twelve years to think about it. And if I had it to do over again, I would have grabbed the phaser and pointed it at you instead of them."
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
                     ]
                 }
             ]
@@ -158,8 +174,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "CASE_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -178,51 +193,59 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
-                            "name": "NOTE_ID",
-                            "actorType": {
-                                "parentType": "RandomNumber",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
-                            "name": "NOTE_DATE",
-                            "actorType": {
-                                "parentType": "ConstDateTime",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
+                        },
+                        {
                             "name": "NOTE_TEXT",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
+                                "parentType": "RandomFromCollection",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         } 
-						
-
-						
+                        },
+                        {
+                            "name": "NOTE_DATE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -233,7 +256,37 @@
             "path": [
                 "case_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "NOTES",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "NOTE_TEXT",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "NOTE_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "NOTE_ID"
+            }
+        },
         {
             "leftPort": {
                 "actor": "CASE_ID",
@@ -244,62 +297,7 @@
                 "name": "CASE_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
-            "leftPort": {
-                "actor": "note_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "note_id"
-            }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
-            "leftPort": {
-                "actor": "NOTE_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "NOTE_ID"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "NOTE_DATE",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "NOTE_DATE"
-            }
-         }, 
-		{
             "leftPort": {
                 "actor": "NOTE_TEXT",
                 "name": "value"
@@ -308,9 +306,26 @@
                 "actor": "flowArgs",
                 "name": "NOTE_TEXT"
             }
-         } 
-		
-        
-
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "note_date"
+            },
+            "rightPort": {
+                "actor": "NOTE_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "NOTE_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "NOTE_DATE"
+            }
+        }
     ]
 }

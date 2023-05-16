@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"customer_id": {
+                                            "properties": {
+                                                "customer_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
-                            "name": "contract_id",
+                        {
+                            "name": "CONTRACT_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "contract_id"
                                     },
@@ -92,16 +88,16 @@
                                         "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_CONTRACT_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -118,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -142,11 +138,59 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        },
+                        {
+                            "name": "DESCRIPTION",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "450 min",
+                                            "100 text",
+                                            "5G LTE",
+                                            "5G tether",
+                                            "Unlimited text",
+                                            "10G 3G",
+                                            "10G LTE",
+                                            "Unlimited call",
+                                            "Roaming special"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MTable Associtaed Line",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "Associated_line"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
                     ]
                 }
             ]
@@ -158,8 +202,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -178,83 +221,159 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
-                            "name": "ASSOCIATED_LINE_FMT",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
-                            "name": "CONTRACT_DESCRIPTION",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
+                        },
+                        {
                             "name": "FROM_DATE",
                             "actorType": {
-                                "parentType": "ConstDateTime",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "TO_DATE",
                             "actorType": {
-                                "parentType": "ConstDateTime",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
-                            "name": "CONTRACT_ID",
+                        },
+                        {
+                            "name": "CONTRACT_DESCRIPTION",
                             "actorType": {
-                                "parentType": "RandomNumber",
+                                "parentType": "RandomFromCollection",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "CONTRACT_REF_ID",
                             "actorType": {
-                                "parentType": "RandomNumber",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "RandomNumber.actor"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": 101,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": 110,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "ASSOCIATED_LINE",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
                                 "outputs": []
                             }
-                         } 
-						
-
-						
+                        },
+                        {
+                            "name": "ASSOCIATED_LINE_FMT",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -265,7 +384,63 @@
             "path": [
                 "customer_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "DESCRIPTION",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "CONTRACT_DESCRIPTION",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Associtaed Line",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ASSOCIATED_LINE",
+                "name": "value"
+            },
+            "path": [
+                "associated_line"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Associtaed Line",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ASSOCIATED_LINE_FMT",
+                "name": "value"
+            },
+            "path": [
+                "associated_line_fmt"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_ID"
+            }
+        },
         {
             "leftPort": {
                 "actor": "CUSTOMER_ID",
@@ -276,62 +451,17 @@
                 "name": "CUSTOMER_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
             "leftPort": {
-                "actor": "contract_id",
-                "name": "value"
+                "actor": "flowArgs",
+                "name": "from_date"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "contract_id"
+                "actor": "FROM_DATE",
+                "name": "distribution"
             }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
-            "leftPort": {
-                "actor": "ASSOCIATED_LINE_FMT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "ASSOCIATED_LINE_FMT"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "CONTRACT_DESCRIPTION",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CONTRACT_DESCRIPTION"
-            }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "FROM_DATE",
                 "name": "value"
@@ -340,8 +470,18 @@
                 "actor": "flowArgs",
                 "name": "FROM_DATE"
             }
-         }, 
-		{
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "to_date"
+            },
+            "rightPort": {
+                "actor": "TO_DATE",
+                "name": "distribution"
+            }
+        },
+        {
             "leftPort": {
                 "actor": "TO_DATE",
                 "name": "value"
@@ -350,18 +490,18 @@
                 "actor": "flowArgs",
                 "name": "TO_DATE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
-                "actor": "CONTRACT_ID",
+                "actor": "CONTRACT_DESCRIPTION",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CONTRACT_ID"
+                "name": "CONTRACT_DESCRIPTION"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "CONTRACT_REF_ID",
                 "name": "value"
@@ -370,8 +510,8 @@
                 "actor": "flowArgs",
                 "name": "CONTRACT_REF_ID"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "ASSOCIATED_LINE",
                 "name": "value"
@@ -380,9 +520,16 @@
                 "actor": "flowArgs",
                 "name": "ASSOCIATED_LINE"
             }
-         } 
-		
-        
-
+        },
+        {
+            "leftPort": {
+                "actor": "ASSOCIATED_LINE_FMT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ASSOCIATED_LINE_FMT"
+            }
+        }
     ]
 }
