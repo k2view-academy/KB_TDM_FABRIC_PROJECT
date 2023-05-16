@@ -134,6 +134,28 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "STREET_ADDRESS_2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -163,12 +185,12 @@
         },
         {
             "leftPort": {
-                "actor": "OFFER_DESCRIPTION",
+                "actor": "STREET_ADDRESS_2",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "OFFER_DESCRIPTION"
+                "name": "STREET_ADDRESS_2"
             }
         }
     ]

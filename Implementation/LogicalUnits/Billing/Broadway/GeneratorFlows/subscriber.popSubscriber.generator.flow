@@ -307,6 +307,32 @@
         },
         {
             "leftPort": {
+                "actor": "MTable of Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FIRST_NAME",
+                "name": "value"
+            },
+            "path": [
+                "firstname"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable of Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "LAST_NAME",
+                "name": "value"
+            },
+            "path": [
+                "lastname"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "parent_row"
             },
