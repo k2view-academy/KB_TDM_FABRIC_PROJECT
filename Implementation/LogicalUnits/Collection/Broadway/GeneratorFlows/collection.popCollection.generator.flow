@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"collection_id": {
+                                            "properties": {
+                                                "collection_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
-                            "name": "customer_id",
+                        {
+                            "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "customer_id"
                                     },
@@ -87,112 +83,21 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "const": null
-                                        }
-                                    },
-                                    {
-                                        "name": "sequenceId",
-                                        "const": "Gen_CUSTOMER_ID_SEQ",
-                                        "schema": {
-                                            "type": "string"
+                                            "type": "integer"
                                         },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "sequenceInterface",
-                                        "const": "TDM",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "REDIS",
-                                                "database"
-                                            ],
-                                            "interfaces": [
-                                                "IN-MEMORY"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "initialValue",
-                                        "const": "1",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "increment",
-                                        "const": 1,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-							}
-                         }, 
-						{
-                            "name": "collection_id",
-                            "actorType": {
-                                "parentType": "Masking",
-                                "inputs": [
-                                     {
-                                        "name": "maskingId",
-                                        "const": "collection_id"
-                                    },
-                                    {
-                                        "name": "flowName",
-                                        "const": "Sequence.actor"
-                                    },
-                                    {
-                                        "name": "category",
-                                        "const": "enable_sequences"
-                                    },
-                                    {
-                                        "name": "useEnvironment",
-                                        "const": true
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "DB_CASSANDRA"
-                                    },
-                                    {
-                                        "name": "TTL",
                                         "const": 0
                                     },
                                     {
-                                        "name": "onEmpty",
-                                        "const": "MASK_NO_CACHE"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "const": null
-                                        }
-                                    },
-                                    {
+                                        "const": "Gen_CUSTOMER_ID_SEQ",
                                         "name": "sequenceId",
-                                        "const": "Gen_COLLECTION_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -209,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -233,11 +138,8 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
                 }
             ]
@@ -249,8 +151,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "COLLECTION_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -269,51 +170,106 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
-                            "name": "COLLECTION_STATUS",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
-                            "name": "CUSTOMER_ID",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
+                        },
+                        {
                             "name": "LAST_UPDATE",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
-                         } 
-						
-
-						
+                        },
+                        {
+                            "name": "COLLECTION_STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "1"
+                                                ],
+                                                [
+                                                    40,
+                                                    "2"
+                                                ],
+                                                [
+                                                    50,
+                                                    "3"
+                                                ],
+                                                [
+                                                    30,
+                                                    "4"
+                                                ],
+                                                [
+                                                    40,
+                                                    "5"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -324,7 +280,27 @@
             "path": [
                 "collection_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CUSTOMER_ID"
+            }
+        },
         {
             "leftPort": {
                 "actor": "COLLECTION_ID",
@@ -335,72 +311,17 @@
                 "name": "COLLECTION_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
             "leftPort": {
-                "actor": "customer_id",
-                "name": "value"
+                "actor": "flowArgs",
+                "name": "last_update"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "customer_id"
+                "actor": "LAST_UPDATE",
+                "name": "distribution"
             }
-         }, 
-		{
-            "leftPort": {
-                "actor": "collection_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "collection_id"
-            }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
-            "leftPort": {
-                "actor": "COLLECTION_STATUS",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "COLLECTION_STATUS"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "CUSTOMER_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
-            }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "LAST_UPDATE",
                 "name": "value"
@@ -409,9 +330,26 @@
                 "actor": "flowArgs",
                 "name": "LAST_UPDATE"
             }
-         } 
-		
-        
-
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "collection_status"
+            },
+            "rightPort": {
+                "actor": "COLLECTION_STATUS",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "COLLECTION_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "COLLECTION_STATUS"
+            }
+        }
     ]
 }

@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"order_id": {
+                                            "properties": {
+                                                "order_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
-                            "name": "contract_id",
+                        {
+                            "name": "CONTRACT_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "contract_id"
                                     },
@@ -87,20 +83,21 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "const": null
-                                        }
+                                            "type": "integer"
+                                        },
+                                        "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_CONTRACT_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -117,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -141,11 +138,8 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
                 }
             ]
@@ -157,8 +151,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "ORDER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -177,59 +170,145 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
-                            "name": "ORDER_DATE",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
-                            "name": "ORDER_STATUS",
-                            "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
+                        },
+                        {
                             "name": "ORDER_TYPE",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Device"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Network"
+                                                ],
+                                                [
+                                                    50,
+                                                    "Billing"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
-                            "name": "CONTRACT_ID",
+                        },
+                        {
+                            "name": "ORDER_DATE",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
-                         } 
-						
-
-						
+                        },
+                        {
+                            "name": "ORDER_STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Closed"
+                                                ],
+                                                [
+                                                    40,
+                                                    "In Progress"
+                                                ],
+                                                [
+                                                    50,
+                                                    "New"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -240,7 +319,27 @@
             "path": [
                 "order_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_ID"
+            }
+        },
         {
             "leftPort": {
                 "actor": "ORDER_ID",
@@ -251,62 +350,17 @@
                 "name": "ORDER_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
             "leftPort": {
-                "actor": "contract_id",
-                "name": "value"
+                "actor": "flowArgs",
+                "name": "order_type"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "contract_id"
+                "actor": "ORDER_TYPE",
+                "name": "distribution"
             }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
-            "leftPort": {
-                "actor": "ORDER_DATE",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "ORDER_DATE"
-            }
-         }, 
-		{
-            "leftPort": {
-                "actor": "ORDER_STATUS",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "ORDER_STATUS"
-            }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "ORDER_TYPE",
                 "name": "value"
@@ -315,19 +369,46 @@
                 "actor": "flowArgs",
                 "name": "ORDER_TYPE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
-                "actor": "CONTRACT_ID",
+                "actor": "flowArgs",
+                "name": "order_date"
+            },
+            "rightPort": {
+                "actor": "ORDER_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDER_DATE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CONTRACT_ID"
+                "name": "ORDER_DATE"
             }
-         } 
-		
-        
-
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "order_status"
+            },
+            "rightPort": {
+                "actor": "ORDER_STATUS",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDER_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_STATUS"
+            }
+        }
     ]
 }

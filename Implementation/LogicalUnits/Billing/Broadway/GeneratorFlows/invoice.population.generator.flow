@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Generate Data"
+        "Generate Data",
+        "GeneratorFlows"
     ],
     "levels": [
         {
@@ -21,21 +22,17 @@
                                     }
                                 ],
                                 "outputs": [
-									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties":
-												{
-												"subscriber_id": {
+                                            "properties": {
+                                                "subscriber_id": {
                                                     "type": "any"
-                                                 } 
-												
-												
+                                                }
                                             }
-										}
-									}
+                                        }
+                                    }
                                 ]
                             }
                         }
@@ -43,20 +40,19 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        
- 						{
-                            "name": "invoice_id",
+                        {
+                            "name": "INVOICE_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                     {
+                                    {
                                         "name": "maskingId",
                                         "const": "invoice_id"
                                     },
@@ -87,20 +83,21 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "const": null
-                                        }
+                                            "type": "integer"
+                                        },
+                                        "const": 0
                                     },
                                     {
-                                        "name": "sequenceId",
                                         "const": "Gen_INVOICE_ID_SEQ",
+                                        "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "sequenceInterface",
                                         "const": "TDM",
+                                        "name": "sequenceInterface",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -117,16 +114,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "initialValue",
                                         "const": "1",
+                                        "name": "initialValue",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "increment",
                                         "const": 1,
+                                        "name": "increment",
                                         "schema": {
                                             "type": "number"
                                         },
@@ -141,11 +138,8 @@
                                         }
                                     }
                                 ]
-							}
-                         } 
-						
-
-						
+                            }
+                        }
                     ]
                 }
             ]
@@ -157,8 +151,7 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-						
-						{
+                        {
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -177,75 +170,180 @@
                                     }
                                 ]
                             }
-						 } 
-						
-						
-						
-                        
-						
-						
-						,
-						
-						{
+                        },
+                        {
                             "name": "BALANCE",
                             "actorType": {
-                                "parentType": "RandomNumber",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "RandomNumber.actor"
+                                    },
+                                    {
+                                        "name": "minimum",
+                                        "const": 10,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "maximum",
+                                        "const": 200,
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
-                            "name": "ISSUED_DATE",
-                            "actorType": {
-                                "parentType": "ConstDateTime",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                         }, 
-						{
+                        },
+                        {
                             "name": "DUE_DATE",
                             "actorType": {
-                                "parentType": "ConstDateTime",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
-                            "name": "INVOICE_ID",
+                        },
+                        {
+                            "name": "ISSUED_DATE",
                             "actorType": {
-                                "parentType": "RandomNumber",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "INVOICE_IMAGE",
                             "actorType": {
                                 "parentType": "EmptyBlob",
                                 "inputs": [],
                                 "outputs": []
                             }
-                         }, 
-						{
+                        },
+                        {
                             "name": "STATUS",
                             "actorType": {
-                                "parentType": "RandomStringRegex",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Closed"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Open"
+                                                ],
+                                                [
+                                                    50,
+                                                    "New"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
-                         } 
-						
-
-						
+                        }
                     ]
                 }
             ]
         }
     ],
     "connections": [
-		
-		{
-			"leftPort": {
+        {
+            "leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -256,7 +354,27 @@
             "path": [
                 "subscriber_id"
             ]
-		},
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "INVOICE_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "INVOICE_ID"
+            }
+        },
         {
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
@@ -267,42 +385,7 @@
                 "name": "SUBSCRIBER_ID"
             }
         },
-            {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }		
-         } 
-		
-        
-
-		
-        
-		
-		,
-		
         {
-            "leftPort": {
-                "actor": "invoice_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "invoice_id"
-            }
-         } 
-		
-        
-
-        
-		
-         ,
-         
-		{
             "leftPort": {
                 "actor": "BALANCE",
                 "name": "value"
@@ -311,18 +394,18 @@
                 "actor": "flowArgs",
                 "name": "BALANCE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
-                "actor": "ISSUED_DATE",
-                "name": "value"
+                "actor": "flowArgs",
+                "name": "invoice_due_date"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "ISSUED_DATE"
+                "actor": "DUE_DATE",
+                "name": "distribution"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "DUE_DATE",
                 "name": "value"
@@ -331,18 +414,28 @@
                 "actor": "flowArgs",
                 "name": "DUE_DATE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
-                "actor": "INVOICE_ID",
+                "actor": "flowArgs",
+                "name": "invoice_issued_date"
+            },
+            "rightPort": {
+                "actor": "ISSUED_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ISSUED_DATE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "INVOICE_ID"
+                "name": "ISSUED_DATE"
             }
-         }, 
-		{
+        },
+        {
             "leftPort": {
                 "actor": "INVOICE_IMAGE",
                 "name": "value"
@@ -351,8 +444,18 @@
                 "actor": "flowArgs",
                 "name": "INVOICE_IMAGE"
             }
-         }, 
-		{
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "invoice_status"
+            },
+            "rightPort": {
+                "actor": "STATUS",
+                "name": "distribution"
+            }
+        },
+        {
             "leftPort": {
                 "actor": "STATUS",
                 "name": "value"
@@ -361,9 +464,6 @@
                 "actor": "flowArgs",
                 "name": "STATUS"
             }
-         } 
-		
-        
-
+        }
     ]
 }
