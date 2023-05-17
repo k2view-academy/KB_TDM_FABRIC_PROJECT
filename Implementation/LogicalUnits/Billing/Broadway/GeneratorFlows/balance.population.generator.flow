@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,17 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "subscriber_id": {
+                                            "properties":
+												{
+												"subscriber_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         }
@@ -40,19 +43,20 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "BALANCE_ID",
+                        
+ 						{
+                            "name": "balance_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                    {
+                                     {
                                         "name": "maskingId",
                                         "const": "balance_id"
                                     },
@@ -83,21 +87,20 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "const": null
+                                        }
                                     },
                                     {
-                                        "const": "Gen_BALANCE_ID_SEQ",
                                         "name": "sequenceId",
+                                        "const": "Gen_BALANCE_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM",
                                         "name": "sequenceInterface",
+                                        "const": "TDM",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -114,16 +117,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "1",
                                         "name": "initialValue",
+                                        "const": "1",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": 1,
                                         "name": "increment",
+                                        "const": 1,
                                         "schema": {
                                             "type": "number"
                                         },
@@ -138,8 +141,11 @@
                                         }
                                     }
                                 ]
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
                 }
             ]
@@ -151,7 +157,8 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -170,165 +177,67 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "BALANCE_REF_ID",
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
+                            "name": "BALANCE_ID",
                             "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 1000000,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 10000000,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
                             }
-                        },
-                        {
-                            "name": "AVAILABLE_AMOUNT",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 10,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 100,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "RESET_AMOUNT",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 1,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 50,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
+                         }, 
+						{
                             "name": "RESET_DATE",
                             "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "minimum": "date",
-                                                "maximum": "date"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "uniform",
-                                            "round": false,
-                                            "type": "date",
-                                            "minimum": "2015-01-01T05:00:00.000",
-                                            "maximum": "2017-12-30T22:00:00.000"
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "date"
-                                        }
-                                    }
-                                ]
+                                "parentType": "ConstDateTime",
+                                "inputs": [],
+                                "outputs": []
                             }
-                        }
+                         }, 
+						{
+                            "name": "BALANCE_REF_ID",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "AVAILABLE_AMOUNT",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "RESET_AMOUNT",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -339,27 +248,7 @@
             "path": [
                 "subscriber_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "BALANCE_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "BALANCE_ID"
-            }
-        },
+		},
         {
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
@@ -370,47 +259,52 @@
                 "name": "SUBSCRIBER_ID"
             }
         },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+		
+		,
+		
         {
             "leftPort": {
-                "actor": "BALANCE_REF_ID",
+                "actor": "balance_id",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "BALANCE_REF_ID"
+                "name": "balance_id"
             }
-        },
-        {
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
             "leftPort": {
-                "actor": "AVAILABLE_AMOUNT",
+                "actor": "BALANCE_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "AVAILABLE_AMOUNT"
+                "name": "BALANCE_ID"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "RESET_AMOUNT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "RESET_AMOUNT"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "reset_date"
-            },
-            "rightPort": {
-                "actor": "RESET_DATE",
-                "name": "distribution"
-            }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "RESET_DATE",
                 "name": "value"
@@ -419,6 +313,39 @@
                 "actor": "flowArgs",
                 "name": "RESET_DATE"
             }
-        }
+         }, 
+		{
+            "leftPort": {
+                "actor": "BALANCE_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "BALANCE_REF_ID"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "AVAILABLE_AMOUNT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "AVAILABLE_AMOUNT"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "RESET_AMOUNT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "RESET_AMOUNT"
+            }
+         } 
+		
+        
+
     ]
 }

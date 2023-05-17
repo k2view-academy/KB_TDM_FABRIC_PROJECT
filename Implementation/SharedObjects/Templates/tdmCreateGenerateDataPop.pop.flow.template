@@ -89,9 +89,8 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "const": null
+                                        }
                                     },
                                     {
                                         "name": "sequenceId",

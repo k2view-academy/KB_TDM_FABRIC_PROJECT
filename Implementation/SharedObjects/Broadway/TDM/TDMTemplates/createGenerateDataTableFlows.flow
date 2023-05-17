@@ -137,9 +137,12 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "generatorFlow",
+                                        "name": "generatorFlowNames",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
                                         }
                                     }
                                 ]
@@ -240,6 +243,13 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "generatorFlowName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -302,6 +312,13 @@
                                     },
                                     {
                                         "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "generatorFlowName",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -419,12 +436,35 @@
         {
             "leftPort": {
                 "actor": "create Generator Flow Name",
-                "name": "generatorFlow"
+                "name": "generatorFlowNames"
             },
             "rightPort": {
                 "actor": "Check If Flow Exists",
                 "name": "FLOW_FILE_NAME"
-            }
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "create Generator Flow Name",
+                "name": "generatorFlowNames"
+            },
+            "rightPort": {
+                "actor": "create Flow",
+                "name": "generatorFlowName"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "create Generator Flow Name",
+                "name": "generatorFlowNames"
+            },
+            "rightPort": {
+                "actor": "create Flow for New Table",
+                "name": "generatorFlowName"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

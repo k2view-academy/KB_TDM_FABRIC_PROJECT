@@ -114,6 +114,9 @@ public class SharedGlobals {
 	public static String LOAD_MASKING_FLAG = "false";
 
 	@category("TDM")
+	public static String TDM_SUMMARY_REPORT_LIMIT = "10000";
+
+	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")
 	public static String BUILD_TDMDB = "true";

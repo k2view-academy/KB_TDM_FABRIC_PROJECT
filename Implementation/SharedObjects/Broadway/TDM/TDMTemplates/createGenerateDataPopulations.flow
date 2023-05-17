@@ -200,40 +200,6 @@
                             }
                         },
                         {
-                            "name": "create Generator Flow Name",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createGeneratorFlowName"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "generatorFlow",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "Apply Template",
                             "actorType": {
                                 "parentType": "LuFunction",
@@ -282,7 +248,15 @@
                             "condition": "result",
                             "actorType": {
                                 "parentType": "NotNull",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "generatorFlowName"
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -357,26 +331,6 @@
         },
         {
             "leftPort": {
-                "actor": "create Generator Flow Name",
-                "name": "generatorFlow"
-            },
-            "rightPort": {
-                "actor": "Write Flow to Folder",
-                "name": "path"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "create Generator Flow Name",
-                "name": "generatorFlow"
-            },
-            "rightPort": {
-                "actor": "Check if Table has BF Population",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Apply Template",
                 "name": "result"
             },
@@ -418,21 +372,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "luType"
+                "name": "generatorFlowName"
             },
             "rightPort": {
-                "actor": "create Generator Flow Name",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "create Generator Flow Name",
-                "name": "tableName"
+                "actor": "Write Flow to Folder",
+                "name": "path"
             }
         }
     ]

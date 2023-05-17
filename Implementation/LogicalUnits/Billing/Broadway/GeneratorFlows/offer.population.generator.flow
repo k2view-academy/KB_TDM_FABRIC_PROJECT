@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,17 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "subscriber_id": {
+                                            "properties":
+												{
+												"subscriber_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         }
@@ -40,19 +43,20 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "OFFER_ID",
+                        
+ 						{
+                            "name": "offer_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
-                                    {
+                                     {
                                         "name": "maskingId",
                                         "const": "offer_id"
                                     },
@@ -83,21 +87,20 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "const": null
+                                        }
                                     },
                                     {
-                                        "const": "Gen_OFFER_ID_SEQ",
                                         "name": "sequenceId",
+                                        "const": "Gen_OFFER_ID_SEQ",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM",
                                         "name": "sequenceInterface",
+                                        "const": "TDM",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -114,16 +117,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "1",
                                         "name": "initialValue",
+                                        "const": "1",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "const": 1,
                                         "name": "increment",
+                                        "const": 1,
                                         "schema": {
                                             "type": "number"
                                         },
@@ -138,31 +141,11 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "DESCRIPTION",
-                            "actorType": {
-                                "parentType": "ConstStrings",
-                                "inputs": [
-                                    {
-                                        "name": "strings",
-                                        "const": [
-                                            "450 min",
-                                            "100 text",
-                                            "5G LTE",
-                                            "5G tether",
-                                            "Unlimited text",
-                                            "10G 3G",
-                                            "10G LTE",
-                                            "Unlimited call",
-                                            "Roaming special"
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
+							}
+                         } 
+						
+
+						
                     ]
                 }
             ]
@@ -174,7 +157,8 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -193,133 +177,67 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "OFFER_REF_ID",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 3001,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 3010,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
                             "name": "FROM_DATE",
                             "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "minimum": "date",
-                                                "maximum": "date"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "uniform",
-                                            "round": false,
-                                            "type": "date",
-                                            "minimum": "2015-01-01T05:00:00.000",
-                                            "maximum": "2017-12-30T22:00:00.000"
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "date"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "TO_DATE",
-                            "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "minimum": "date",
-                                                "maximum": "date"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "uniform",
-                                            "round": false,
-                                            "type": "date",
-                                            "minimum": "2015-01-01T05:00:00.000",
-                                            "maximum": "2017-12-30T22:00:00.000"
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "date"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "OFFER_DESCRIPTION",
-                            "actorType": {
-                                "parentType": "RandomFromCollection",
+                                "parentType": "ConstDateTime",
                                 "inputs": [],
                                 "outputs": []
                             }
-                        }
+                         }, 
+						{
+                            "name": "OFFER_DESCRIPTION",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "TO_DATE",
+                            "actorType": {
+                                "parentType": "ConstDateTime",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "OFFER_REF_ID",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "OFFER_ID",
+                            "actorType": {
+                                "parentType": "RandomNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -330,37 +248,7 @@
             "path": [
                 "subscriber_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "DESCRIPTION",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "OFFER_DESCRIPTION",
-                "name": "collection"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "OFFER_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "OFFER_ID"
-            }
-        },
+		},
         {
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
@@ -371,27 +259,42 @@
                 "name": "SUBSCRIBER_ID"
             }
         },
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+		
+		,
+		
         {
             "leftPort": {
-                "actor": "OFFER_REF_ID",
+                "actor": "offer_id",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "OFFER_REF_ID"
+                "name": "offer_id"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "from_date"
-            },
-            "rightPort": {
-                "actor": "FROM_DATE",
-                "name": "distribution"
-            }
-        },
-        {
+         } 
+		
+        
+
+        
+		
+         ,
+         
+		{
             "leftPort": {
                 "actor": "FROM_DATE",
                 "name": "value"
@@ -400,28 +303,8 @@
                 "actor": "flowArgs",
                 "name": "FROM_DATE"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "to_date"
-            },
-            "rightPort": {
-                "actor": "TO_DATE",
-                "name": "distribution"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TO_DATE",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "TO_DATE"
-            }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "OFFER_DESCRIPTION",
                 "name": "value"
@@ -430,6 +313,39 @@
                 "actor": "flowArgs",
                 "name": "OFFER_DESCRIPTION"
             }
-        }
+         }, 
+		{
+            "leftPort": {
+                "actor": "TO_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "TO_DATE"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "OFFER_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "OFFER_REF_ID"
+            }
+         }, 
+		{
+            "leftPort": {
+                "actor": "OFFER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "OFFER_ID"
+            }
+         } 
+		
+        
+
     ]
 }

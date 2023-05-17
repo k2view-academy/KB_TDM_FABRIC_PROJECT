@@ -27,7 +27,7 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "customer_id": {
+                                                "subscriber_id": {
                                                     "type": "any"
                                                 }
                                             }
@@ -37,16 +37,16 @@
                             }
                         },
                         {
-                            "name": "MTable of Addresses",
+                            "name": "MTable of Names",
                             "actorType": {
                                 "parentType": "MTableRandom",
                                 "inputs": [
                                     {
                                         "name": "mtable",
-                                        "const": "Addresses"
+                                        "const": "Names"
                                     },
                                     {
-                                        "name": "city",
+                                        "name": "firstname",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -56,8 +56,10 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "state",
-                                        "schema": {},
+                                        "name": "lastname",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
                                         },
@@ -70,16 +72,10 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "street_address_1": {
+                                                "firstname": {
                                                     "type": "string"
                                                 },
-                                                "city": {
-                                                    "type": "string"
-                                                },
-                                                "zip": {
-                                                    "type": "string"
-                                                },
-                                                "state": {
+                                                "lastname": {
                                                     "type": "string"
                                                 }
                                             }
@@ -98,101 +94,7 @@
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "ADDRESS_ID",
-                            "actorType": {
-                                "parentType": "Masking",
-                                "inputs": [
-                                    {
-                                        "name": "maskingId",
-                                        "const": "address_id"
-                                    },
-                                    {
-                                        "name": "flowName",
-                                        "const": "Sequence.actor"
-                                    },
-                                    {
-                                        "name": "category",
-                                        "const": "enable_sequences"
-                                    },
-                                    {
-                                        "name": "useEnvironment",
-                                        "const": true
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "DB_CASSANDRA"
-                                    },
-                                    {
-                                        "name": "TTL",
-                                        "const": 0
-                                    },
-                                    {
-                                        "name": "onEmpty",
-                                        "const": "MASK_NO_CACHE"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
-                                    },
-                                    {
-                                        "const": "Gen_ADDRESS_ID_SEQ",
-                                        "name": "sequenceId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "TDM",
-                                        "name": "sequenceInterface",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "REDIS",
-                                                "database"
-                                            ],
-                                            "interfaces": [
-                                                "IN-MEMORY"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "1",
-                                        "name": "initialValue",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": 1,
-                                        "name": "increment",
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -204,7 +106,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CUSTOMER_ID",
+                            "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -224,38 +126,83 @@
                             }
                         },
                         {
-                            "name": "STREET_ADDRESS_2",
+                            "name": "MSISDN",
                             "actorType": {
-                                "parentType": "Const",
+                                "parentType": "RandomRegexGenerator",
                                 "inputs": [
                                     {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{10}$"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
-                            "name": "COUNTRY",
+                            "name": "IMSI",
                             "actorType": {
-                                "parentType": "Const",
+                                "parentType": "RandomRegexGenerator",
                                 "inputs": [
                                     {
-                                        "name": "value",
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{15}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SIM",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{16}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SUBSCRIBER_TYPE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
                                         },
-                                        "const": "US"
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "1"
+                                                ],
+                                                [
+                                                    40,
+                                                    "2"
+                                                ],
+                                                [
+                                                    50,
+                                                    "3"
+                                                ],
+                                                [
+                                                    40,
+                                                    "4"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
@@ -269,7 +216,58 @@
                             }
                         },
                         {
-                            "name": "STREET_ADDRESS_1",
+                            "name": "VIP_STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Bronze"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Silver"
+                                                ],
+                                                [
+                                                    50,
+                                                    "Platinum"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Gold"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "FIRST_NAME",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -282,33 +280,7 @@
                             }
                         },
                         {
-                            "name": "CITY",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "ZIP",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "STATE",
+                            "name": "LAST_NAME",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -332,63 +304,37 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "CUSTOMER_ID",
+                "actor": "SUBSCRIBER_ID",
                 "name": "value"
             },
             "path": [
-                "customer_id"
+                "subscriber_id"
             ]
         },
         {
             "leftPort": {
-                "actor": "MTable of Addresses",
+                "actor": "MTable of Names",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "STREET_ADDRESS_1",
+                "actor": "FIRST_NAME",
                 "name": "value"
             },
             "path": [
-                "street_address_1"
+                "firstname"
             ]
         },
         {
             "leftPort": {
-                "actor": "MTable of Addresses",
+                "actor": "MTable of Names",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "CITY",
+                "actor": "LAST_NAME",
                 "name": "value"
             },
             "path": [
-                "city"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable of Addresses",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "ZIP",
-                "name": "value"
-            },
-            "path": [
-                "zip"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable of Addresses",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "STATE",
-                "name": "value"
-            },
-            "path": [
-                "state"
+                "lastname"
             ]
         },
         {
@@ -404,101 +350,121 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "city"
+                "name": "first_name"
             },
             "rightPort": {
-                "actor": "MTable of Addresses",
-                "name": "city"
+                "actor": "MTable of Names",
+                "name": "firstname"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "state"
+                "name": "last_name"
             },
             "rightPort": {
-                "actor": "MTable of Addresses",
-                "name": "state"
+                "actor": "MTable of Names",
+                "name": "lastname"
             }
         },
         {
             "leftPort": {
-                "actor": "ADDRESS_ID",
+                "actor": "SUBSCRIBER_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "ADDRESS_ID"
+                "name": "SUBSCRIBER_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "CUSTOMER_ID",
+                "actor": "MSISDN",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
+                "name": "MSISDN"
             }
         },
         {
             "leftPort": {
-                "actor": "STREET_ADDRESS_2",
+                "actor": "IMSI",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "STREET_ADDRESS_2"
+                "name": "IMSI"
             }
         },
         {
             "leftPort": {
-                "actor": "COUNTRY",
+                "actor": "SIM",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "COUNTRY"
+                "name": "SIM"
             }
         },
         {
             "leftPort": {
-                "actor": "STREET_ADDRESS_1",
-                "name": "value"
+                "actor": "flowArgs",
+                "name": "subscriber_type"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "STREET_ADDRESS_1"
+                "actor": "SUBSCRIBER_TYPE",
+                "name": "distribution"
             }
         },
         {
             "leftPort": {
-                "actor": "CITY",
+                "actor": "SUBSCRIBER_TYPE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CITY"
+                "name": "SUBSCRIBER_TYPE"
             }
         },
         {
             "leftPort": {
-                "actor": "ZIP",
-                "name": "value"
+                "actor": "flowArgs",
+                "name": "vip_status"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "ZIP"
+                "actor": "VIP_STATUS",
+                "name": "distribution"
             }
         },
         {
             "leftPort": {
-                "actor": "STATE",
+                "actor": "VIP_STATUS",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "STATE"
+                "name": "VIP_STATUS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FIRST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "FIRST_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LAST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "LAST_NAME"
             }
         }
     ]

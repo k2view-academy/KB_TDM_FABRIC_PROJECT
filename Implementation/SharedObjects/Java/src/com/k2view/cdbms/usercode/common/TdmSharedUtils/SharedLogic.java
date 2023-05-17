@@ -11,6 +11,7 @@ import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Util;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
@@ -1594,4 +1595,14 @@ public class SharedLogic {
         
         return tablesList;
     }
+    
+    @out(name="result", type = Boolean.class, desc = "")
+    public static Boolean fnIsJSONValid(String jsonInString) {
+        try {
+            JSONObject jsonObjOne = new JSONObject(jsonInString);
+            return true;
+        } catch(Exception ex) { 
+            return false;
+        }
+  }
 }

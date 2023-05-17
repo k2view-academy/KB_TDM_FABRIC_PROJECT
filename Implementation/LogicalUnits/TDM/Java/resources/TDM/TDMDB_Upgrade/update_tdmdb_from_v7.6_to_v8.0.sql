@@ -42,7 +42,7 @@ INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_descrip
 	'admin',NOW(),NOW(),'admin','Active',false,false,true,false,1000,false,false,0) ;
 
 INSERT INTO ${@schema}.environment_products(environment_product_id, environment_id, product_id, product_version, created_by, creation_date, 
-	last_updated_date, last_updated_by, status)(select nextval('environment_product_id_seq'::regclass),-1,product_id,split_part(product_versions, ',', 1),
+	last_updated_date, last_updated_by, status)(select nextval('environment_product_id_seq'::regclass),-1,product_id,'Synthetic',
 	'admin',NOW(),NOW(),'admin','Active' from products where product_status = 'Active') ;
 
 CREATE SEQUENCE IF NOT EXISTS ${@schema}.instance_id_seq

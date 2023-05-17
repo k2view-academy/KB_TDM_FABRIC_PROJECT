@@ -1,7 +1,8 @@
 {
     "tags": [
         "Generate Data",
-        "GeneratorFlows"
+        "GeneratorFlows",
+        "GeneratorFlowsBCK"
     ],
     "levels": [
         {
@@ -27,7 +28,7 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "case_id": {
+                                                "customer_id": {
                                                     "type": "any"
                                                 }
                                             }
@@ -71,13 +72,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "NOTE_ID",
+                            "name": "ACTIVITY_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
-                                        "const": "note_id"
+                                        "const": "activity_id"
                                     },
                                     {
                                         "name": "flowName",
@@ -111,7 +112,7 @@
                                         "const": 0
                                     },
                                     {
-                                        "const": "Gen_NOTE_ID_SEQ",
+                                        "const": "Gen_ACTIVITY_ID_SEQ",
                                         "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
@@ -175,7 +176,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CASE_ID",
+                            "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -195,7 +196,7 @@
                             }
                         },
                         {
-                            "name": "NOTE_TEXT",
+                            "name": "ACTIVITY_NOTE",
                             "actorType": {
                                 "parentType": "RandomFromCollection",
                                 "inputs": [],
@@ -203,7 +204,7 @@
                             }
                         },
                         {
-                            "name": "NOTE_DATE",
+                            "name": "ACTIVITY_DATE",
                             "actorType": {
                                 "parentType": "RandomDistribution",
                                 "inputs": [
@@ -250,11 +251,11 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "CASE_ID",
+                "actor": "CUSTOMER_ID",
                 "name": "value"
             },
             "path": [
-                "case_id"
+                "customer_id"
             ]
         },
         {
@@ -263,7 +264,7 @@
                 "name": "strings"
             },
             "rightPort": {
-                "actor": "NOTE_TEXT",
+                "actor": "ACTIVITY_NOTE",
                 "name": "collection"
             }
         },
@@ -279,52 +280,52 @@
         },
         {
             "leftPort": {
-                "actor": "NOTE_ID",
+                "actor": "ACTIVITY_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_ID"
+                "name": "ACTIVITY_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "CASE_ID",
+                "actor": "CUSTOMER_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CASE_ID"
+                "name": "CUSTOMER_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "NOTE_TEXT",
+                "actor": "ACTIVITY_NOTE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_TEXT"
+                "name": "ACTIVITY_NOTE"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "note_date"
+                "name": "activity_date"
             },
             "rightPort": {
-                "actor": "NOTE_DATE",
+                "actor": "ACTIVITY_DATE",
                 "name": "distribution"
             }
         },
         {
             "leftPort": {
-                "actor": "NOTE_DATE",
+                "actor": "ACTIVITY_DATE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_DATE"
+                "name": "ACTIVITY_DATE"
             }
         }
     ]

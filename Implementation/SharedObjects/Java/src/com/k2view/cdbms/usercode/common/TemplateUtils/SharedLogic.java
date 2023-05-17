@@ -481,9 +481,11 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		
 		
 		luType.getPopulationCollection().forEach((tableEntry) -> {
-		    String table = tableEntry.getLudbObjectName();
+		    //String table = tableEntry.getLudbObjectName();
+		    String table = tableEntry.getTableObject().schemaAndTableName;
 		    String popName =  tableEntry.getPopulationName();
 		    
+			//log.info("getPopulationsList - table: " + table + ", popName: " + popName);
 		    try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
 		    table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
 		        String tableFiltered = "";
@@ -511,8 +513,8 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	}
 
 	@out(name = "result", type = List.class, desc = "")
-	public static List<Map<String,String>> getPopArgumenList(String luName, String tableName) throws Exception {
-		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+	public static Set<Map<String,String>> getPopArgumenList(String luName, String tableName) throws Exception {
+		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
 		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
 		if (rel != null) {

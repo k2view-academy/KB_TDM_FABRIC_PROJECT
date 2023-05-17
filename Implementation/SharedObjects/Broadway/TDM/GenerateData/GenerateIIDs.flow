@@ -32,20 +32,6 @@
                             }
                         },
                         {
-                            "name": "Get SYNTHETIC_ENVIRONMENT",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SYNTHETIC_ENVIRONMENT",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Synthetic Environment Name",
                             "actorType": {
                                 "parentType": "Const",
@@ -113,7 +99,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ReturnGeneratedIIDs",
+                            "name": "Return GeneratedI IDs",
                             "actorType": {
                                 "parentType": "ReturnGeneratedIIDs",
                                 "inputs": [],
@@ -132,16 +118,30 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "TDM_EID",
+                            "name": "build TDM EID",
                             "actorType": {
-                                "parentType": "Concat",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
-                                        "name": "delimiter",
-                                        "const": "_"
+                                        "name": "flowName",
+                                        "const": "buildTDMEid"
+                                    },
+                                    {
+                                        "name": "SOURCE_IID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "TDM_EID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -231,56 +231,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
         }
     ],
     "connections": [
@@ -290,20 +240,9 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "ReturnGeneratedIIDs",
+                "actor": "Return GeneratedI IDs",
                 "name": "task_execution_id"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Get SYNTHETIC_ENVIRONMENT",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "TDM_EID",
-                "name": "elements"
-            },
-            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -327,19 +266,7 @@
         },
         {
             "leftPort": {
-                "actor": "ReturnGeneratedIIDs",
-                "name": "array"
-            },
-            "rightPort": {
-                "actor": "TDM_EID",
-                "name": "elements"
-            },
-            "iterate": "Iterate",
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "ReturnGeneratedIIDs",
+                "actor": "Return GeneratedI IDs",
                 "name": "array"
             },
             "rightPort": {
@@ -350,8 +277,19 @@
         },
         {
             "leftPort": {
-                "actor": "TDM_EID",
-                "name": "string"
+                "actor": "Return GeneratedI IDs",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "build TDM EID",
+                "name": "SOURCE_IID"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "build TDM EID",
+                "name": "TDM_EID"
             },
             "rightPort": {
                 "actor": "DbLoad",
@@ -384,17 +322,17 @@
                 "name": "lu_name"
             },
             "rightPort": {
-                "actor": "ReturnGeneratedIIDs",
+                "actor": "Return GeneratedI IDs",
                 "name": "lu_name"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "num_iids"
+                "name": "num_of_entities"
             },
             "rightPort": {
-                "actor": "ReturnGeneratedIIDs",
+                "actor": "Return GeneratedI IDs",
                 "name": "num_iids"
             }
         },

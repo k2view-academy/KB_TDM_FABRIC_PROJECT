@@ -1,7 +1,6 @@
 {
     "tags": [
-        "Generate Data",
-        "GeneratorFlows"
+        "Generate Data"
     ],
     "levels": [
         {
@@ -22,65 +21,21 @@
                                     }
                                 ],
                                 "outputs": [
+									
                                     {
                                         "name": "value",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "subscriber_id": {
+                                            "properties":
+												{
+												"subscriber_id": {
                                                     "type": "any"
-                                                }
+                                                 } 
+												
+												
                                             }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "MTable of Names",
-                            "actorType": {
-                                "parentType": "MTableRandom",
-                                "inputs": [
-                                    {
-                                        "name": "mtable",
-                                        "const": "Names"
-                                    },
-                                    {
-                                        "name": "firstname",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "lastname",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "firstname": {
-                                                    "type": "string"
-                                                },
-                                                "lastname": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
+										}
+									}
                                 ]
                             }
                         }
@@ -88,13 +43,15 @@
                 }
             ]
         },
-        {
+		{
             "stages": [
                 {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        
+                    ]
                 }
             ]
         },
@@ -105,7 +62,8 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
+						
+						{
                             "name": "SUBSCRIBER_ID",
                             "actorType": {
                                 "parentType": "Const",
@@ -124,182 +82,83 @@
                                     }
                                 ]
                             }
-                        },
-                        {
+						 } 
+						
+						
+						
+                        
+						
+						
+						,
+						
+						{
                             "name": "MSISDN",
                             "actorType": {
-                                "parentType": "RandomRegexGenerator",
-                                "inputs": [
-                                    {
-                                        "name": "regex",
-                                        "const": "^[1-9][0-9]{10}$"
-                                    }
-                                ],
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "IMSI",
-                            "actorType": {
-                                "parentType": "RandomRegexGenerator",
-                                "inputs": [
-                                    {
-                                        "name": "regex",
-                                        "const": "^[1-9][0-9]{15}$"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
+                         }, 
+						{
                             "name": "SIM",
                             "actorType": {
-                                "parentType": "RandomRegexGenerator",
-                                "inputs": [
-                                    {
-                                        "name": "regex",
-                                        "const": "^[1-9][0-9]{16}$"
-                                    }
-                                ],
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
+                         }, 
+						{
                             "name": "SUBSCRIBER_TYPE",
                             "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "weights": "array"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "weighted",
-                                            "round": false,
-                                            "type": "string",
-                                            "weights": [
-                                                [
-                                                    30,
-                                                    "1"
-                                                ],
-                                                [
-                                                    40,
-                                                    "2"
-                                                ],
-                                                [
-                                                    50,
-                                                    "3"
-                                                ],
-                                                [
-                                                    40,
-                                                    "4"
-                                                ]
-                                            ]
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
                             }
-                        },
-                        {
+                         }, 
+						{
+                            "name": "IMSI",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
                             "name": "VIP_STATUS",
                             "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "weights": "array"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "weighted",
-                                            "round": false,
-                                            "type": "string",
-                                            "weights": [
-                                                [
-                                                    30,
-                                                    "Bronze"
-                                                ],
-                                                [
-                                                    40,
-                                                    "Silver"
-                                                ],
-                                                [
-                                                    50,
-                                                    "Platinum"
-                                                ],
-                                                [
-                                                    40,
-                                                    "Gold"
-                                                ]
-                                            ]
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "FIRST_NAME",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
+                         }, 
+						{
                             "name": "LAST_NAME",
                             "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
                                 "outputs": []
                             }
-                        }
+                         }, 
+						{
+                            "name": "FIRST_NAME",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+
+						
                     ]
                 }
             ]
         }
     ],
     "connections": [
-        {
-            "leftPort": {
+		
+		{
+			"leftPort": {
                 "actor": "parent_row",
                 "name": "value"
             },
@@ -310,63 +169,7 @@
             "path": [
                 "subscriber_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable of Names",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "FIRST_NAME",
-                "name": "value"
-            },
-            "path": [
-                "firstname"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable of Names",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "LAST_NAME",
-                "name": "value"
-            },
-            "path": [
-                "lastname"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
-            },
-            "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "first_name"
-            },
-            "rightPort": {
-                "actor": "MTable of Names",
-                "name": "firstname"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "last_name"
-            },
-            "rightPort": {
-                "actor": "MTable of Names",
-                "name": "lastname"
-            }
-        },
+		},
         {
             "leftPort": {
                 "actor": "SUBSCRIBER_ID",
@@ -377,7 +180,29 @@
                 "name": "SUBSCRIBER_ID"
             }
         },
-        {
+            {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }		
+         } 
+		
+        
+
+		
+        
+
+        
+		 
+         
+		 ,
+		 
+		 
+		{
             "leftPort": {
                 "actor": "MSISDN",
                 "name": "value"
@@ -386,18 +211,8 @@
                 "actor": "flowArgs",
                 "name": "MSISDN"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "IMSI",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "IMSI"
-            }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "SIM",
                 "name": "value"
@@ -406,18 +221,8 @@
                 "actor": "flowArgs",
                 "name": "SIM"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "subscriber_type"
-            },
-            "rightPort": {
-                "actor": "SUBSCRIBER_TYPE",
-                "name": "distribution"
-            }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "SUBSCRIBER_TYPE",
                 "name": "value"
@@ -426,18 +231,18 @@
                 "actor": "flowArgs",
                 "name": "SUBSCRIBER_TYPE"
             }
-        },
-        {
+         }, 
+		{
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "vip_status"
+                "actor": "IMSI",
+                "name": "value"
             },
             "rightPort": {
-                "actor": "VIP_STATUS",
-                "name": "distribution"
+                "actor": "flowArgs",
+                "name": "IMSI"
             }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "VIP_STATUS",
                 "name": "value"
@@ -446,18 +251,8 @@
                 "actor": "flowArgs",
                 "name": "VIP_STATUS"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "FIRST_NAME",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "FIRST_NAME"
-            }
-        },
-        {
+         }, 
+		{
             "leftPort": {
                 "actor": "LAST_NAME",
                 "name": "value"
@@ -466,6 +261,19 @@
                 "actor": "flowArgs",
                 "name": "LAST_NAME"
             }
-        }
+         }, 
+		{
+            "leftPort": {
+                "actor": "FIRST_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "FIRST_NAME"
+            }
+         } 
+		
+        
+
     ]
 }

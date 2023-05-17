@@ -585,7 +585,7 @@ public class TdmExecuteTask {
                 entityInclusion = "SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " FROM " + luParamsTable + entityExclusionListWhere + " ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
                 break;
             case "CLONE": // In case the task requests to Clone entities
-				entityInclusion = "SELECT '" + env + separator + entitiesList + "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
+				entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesList) + "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
                 break;
             case "P": // In case the task has criteria based on parameters
                 listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
@@ -641,12 +641,11 @@ public class TdmExecuteTask {
 	
 	        // TDM 8.0 - New selection method - Generate Synthetic
 			case "GENERATE":
-            case "SYNTHETIC":
 				// In case the task requests to generate synthetic entities
 				luName = LU_NAME.get(taskProperties);
-				broadwayCommand = "broadway " + luName + ".GenerateGetEntityInclusion " + "iid=? , lu_name = " + luName + 
-					", task_execution_id=" + TASK_EXECUTION_ID.get(taskProperties) + ", be_id=" + 
-                    BE_ID.get(taskProperties) + ", source_env_name=" + env + ", num_of_entities=" + Math.toIntExact(NUM_OF_ENTITIES.get(taskProperties));
+				broadwayCommand = "broadway " + luName + ".GenerateIIDs " + "iid=? , lu_name = " + luName + 
+					", task_execution_id=" + TASK_EXECUTION_ID.get(taskProperties) + 
+                    ", num_of_entities=" + Math.toIntExact(NUM_OF_ENTITIES.get(taskProperties));
 				dcName = DATA_CENTER_NAME.get(taskProperties).toString();
 				affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
 				batchCommand = "BATCH " + luName + ".("+ luName + "_" + TASK_EXECUTION_ID.get(taskProperties) + ") fabric_command=? with " + affinity + " async=true";

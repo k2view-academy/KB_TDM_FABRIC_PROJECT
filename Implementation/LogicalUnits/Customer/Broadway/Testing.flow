@@ -1,0 +1,183 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MTableRandom1",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "Associated_line"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "IMSI",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^\\d{3}-?\\d{2}-?\\d{4}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Notes",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "I'm afraid I still don't understand, sir. Well, that's certainly good to know.",
+                                            "I'll alert the crew. When has justice ever been as simple as a rule book?",
+                                            "Travel time to the nearest starbase? The Federation's gone; the Borg is everywhere!",
+                                            "Fate. It protects fools, little children, and ships named Enterprise.",
+                                            "I suggest you drop it, Mr. Data. Mr. Worf, you sound like a man who's asking his friend if he can start dating his sister.",
+                                            "Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.",
+                                            "For an android with no feelings, he sure managed to evoke them in others.",
+                                            "Flair is what marks the difference between artistry and mere competence.",
+                                            "I've had twelve years to think about it. And if I had it to do over again, I would have grabbed the phaser and pointed it at you instead of them."
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "DESCRIPTION",
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "450 min",
+                                            "100 text",
+                                            "5G LTE",
+                                            "5G tether",
+                                            "Unlimited text",
+                                            "10G 3G",
+                                            "10G LTE",
+                                            "Unlimited call",
+                                            "Roaming special"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "RandomFromCollection1",
+                            "actorType": {
+                                "parentType": "RandomFromCollection",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "OFFER_DESCRIPTION",
+                            "actorType": {
+                                "parentType": "RandomFromCollection",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "STREET_ADDRESS_2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Notes",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "RandomFromCollection1",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DESCRIPTION",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "OFFER_DESCRIPTION",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "STREET_ADDRESS_2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "STREET_ADDRESS_2"
+            }
+        }
+    ]
+}

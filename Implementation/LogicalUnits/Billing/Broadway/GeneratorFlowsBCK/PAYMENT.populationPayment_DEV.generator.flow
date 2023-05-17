@@ -27,36 +27,13 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "case_id": {
+                                                "invoice_id": {
                                                     "type": "any"
                                                 }
                                             }
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "NOTES",
-                            "actorType": {
-                                "parentType": "ConstStrings",
-                                "inputs": [
-                                    {
-                                        "name": "strings",
-                                        "const": [
-                                            "I'm afraid I still don't understand, sir. Well, that's certainly good to know.",
-                                            "I'll alert the crew. When has justice ever been as simple as a rule book?",
-                                            "Travel time to the nearest starbase? The Federation's gone; the Borg is everywhere!",
-                                            "Fate. It protects fools, little children, and ships named Enterprise.",
-                                            "I suggest you drop it, Mr. Data. Mr. Worf, you sound like a man who's asking his friend if he can start dating his sister.",
-                                            "Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.",
-                                            "For an android with no feelings, he sure managed to evoke them in others.",
-                                            "Flair is what marks the difference between artistry and mere competence.",
-                                            "I've had twelve years to think about it. And if I had it to do over again, I would have grabbed the phaser and pointed it at you instead of them."
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
                             }
                         }
                     ]
@@ -71,13 +48,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "NOTE_ID",
+                            "name": "PAYMENT_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
-                                        "const": "note_id"
+                                        "const": "payment_id"
                                     },
                                     {
                                         "name": "flowName",
@@ -111,7 +88,7 @@
                                         "const": 0
                                     },
                                     {
-                                        "const": "Gen_NOTE_ID_SEQ",
+                                        "const": "Gen_PAYMENT_ID_SEQ",
                                         "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
@@ -175,7 +152,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CASE_ID",
+                            "name": "INVOICE_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -195,15 +172,7 @@
                             }
                         },
                         {
-                            "name": "NOTE_TEXT",
-                            "actorType": {
-                                "parentType": "RandomFromCollection",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "NOTE_DATE",
+                            "name": "ISSUED_DATE",
                             "actorType": {
                                 "parentType": "RandomDistribution",
                                 "inputs": [
@@ -237,6 +206,66 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "1"
+                                                ],
+                                                [
+                                                    40,
+                                                    "2"
+                                                ],
+                                                [
+                                                    50,
+                                                    "3"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "AMOUNT",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "([1-9]|[1-9][0-9]{1,2}|1000)"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -250,22 +279,12 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "CASE_ID",
+                "actor": "INVOICE_ID",
                 "name": "value"
             },
             "path": [
-                "case_id"
+                "invoice_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "NOTES",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "NOTE_TEXT",
-                "name": "collection"
-            }
         },
         {
             "leftPort": {
@@ -279,52 +298,72 @@
         },
         {
             "leftPort": {
-                "actor": "NOTE_ID",
+                "actor": "PAYMENT_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_ID"
+                "name": "PAYMENT_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "CASE_ID",
+                "actor": "INVOICE_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CASE_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "NOTE_TEXT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "NOTE_TEXT"
+                "name": "INVOICE_ID"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "note_date"
+                "name": "payment_issued_date"
             },
             "rightPort": {
-                "actor": "NOTE_DATE",
+                "actor": "ISSUED_DATE",
                 "name": "distribution"
             }
         },
         {
             "leftPort": {
-                "actor": "NOTE_DATE",
+                "actor": "ISSUED_DATE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_DATE"
+                "name": "ISSUED_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "payment_status"
+            },
+            "rightPort": {
+                "actor": "STATUS",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "STATUS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AMOUNT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "AMOUNT"
             }
         }
     ]

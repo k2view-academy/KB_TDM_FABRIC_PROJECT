@@ -27,36 +27,13 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "case_id": {
+                                                "order_id": {
                                                     "type": "any"
                                                 }
                                             }
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "NOTES",
-                            "actorType": {
-                                "parentType": "ConstStrings",
-                                "inputs": [
-                                    {
-                                        "name": "strings",
-                                        "const": [
-                                            "I'm afraid I still don't understand, sir. Well, that's certainly good to know.",
-                                            "I'll alert the crew. When has justice ever been as simple as a rule book?",
-                                            "Travel time to the nearest starbase? The Federation's gone; the Borg is everywhere!",
-                                            "Fate. It protects fools, little children, and ships named Enterprise.",
-                                            "I suggest you drop it, Mr. Data. Mr. Worf, you sound like a man who's asking his friend if he can start dating his sister.",
-                                            "Maybe if we felt any human loss as keenly as we feel one of those close to us, human history would be far less bloody.",
-                                            "For an android with no feelings, he sure managed to evoke them in others.",
-                                            "Flair is what marks the difference between artistry and mere competence.",
-                                            "I've had twelve years to think about it. And if I had it to do over again, I would have grabbed the phaser and pointed it at you instead of them."
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
                             }
                         }
                     ]
@@ -71,13 +48,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "NOTE_ID",
+                            "name": "CONTRACT_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
-                                        "const": "note_id"
+                                        "const": "contract_id"
                                     },
                                     {
                                         "name": "flowName",
@@ -111,7 +88,7 @@
                                         "const": 0
                                     },
                                     {
-                                        "const": "Gen_NOTE_ID_SEQ",
+                                        "const": "Gen_CONTRACT_ID_SEQ",
                                         "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
@@ -175,7 +152,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CASE_ID",
+                            "name": "ORDER_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -195,15 +172,54 @@
                             }
                         },
                         {
-                            "name": "NOTE_TEXT",
+                            "name": "ORDER_TYPE",
                             "actorType": {
-                                "parentType": "RandomFromCollection",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Device"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Network"
+                                                ],
+                                                [
+                                                    50,
+                                                    "Billing"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
-                            "name": "NOTE_DATE",
+                            "name": "ORDER_DATE",
                             "actorType": {
                                 "parentType": "RandomDistribution",
                                 "inputs": [
@@ -237,6 +253,53 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "ORDER_STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Closed"
+                                                ],
+                                                [
+                                                    40,
+                                                    "In Progress"
+                                                ],
+                                                [
+                                                    50,
+                                                    "New"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -250,22 +313,12 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "CASE_ID",
+                "actor": "ORDER_ID",
                 "name": "value"
             },
             "path": [
-                "case_id"
+                "order_id"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "NOTES",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "NOTE_TEXT",
-                "name": "collection"
-            }
         },
         {
             "leftPort": {
@@ -279,52 +332,82 @@
         },
         {
             "leftPort": {
-                "actor": "NOTE_ID",
+                "actor": "CONTRACT_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_ID"
+                "name": "CONTRACT_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "CASE_ID",
+                "actor": "ORDER_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CASE_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "NOTE_TEXT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "NOTE_TEXT"
+                "name": "ORDER_ID"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "note_date"
+                "name": "order_type"
             },
             "rightPort": {
-                "actor": "NOTE_DATE",
+                "actor": "ORDER_TYPE",
                 "name": "distribution"
             }
         },
         {
             "leftPort": {
-                "actor": "NOTE_DATE",
+                "actor": "ORDER_TYPE",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "NOTE_DATE"
+                "name": "ORDER_TYPE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "order_date"
+            },
+            "rightPort": {
+                "actor": "ORDER_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDER_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "order_status"
+            },
+            "rightPort": {
+                "actor": "ORDER_STATUS",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDER_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ORDER_STATUS"
             }
         }
     ]
