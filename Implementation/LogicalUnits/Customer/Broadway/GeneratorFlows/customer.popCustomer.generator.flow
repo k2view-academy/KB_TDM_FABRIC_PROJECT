@@ -28,10 +28,7 @@
                                             "type": "object",
                                             "properties": {
                                                 "customer_id": {
-                                                    "type": "any"
-                                                },
-                                                "CUSTOMER_ID": {
-                                                    "type": "any"
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -198,19 +195,6 @@
             },
             "path": [
                 "customer_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "parent_row",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "CUSTOMER_ID",
-                "name": "value"
-            },
-            "path": [
-                "CUSTOMER_ID"
             ]
         },
         {
