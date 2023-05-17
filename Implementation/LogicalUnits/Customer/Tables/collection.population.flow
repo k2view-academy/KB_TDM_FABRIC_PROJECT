@@ -1,6 +1,6 @@
 {
     "levels": [
-		{
+        {
             "stages": [
                 {
                     "name": "Input",
@@ -11,41 +11,37 @@
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
-								"readOnly": true,
+                                "readOnly": true,
                                 "inputs": [
-                                    
-                {
-                    "name": "customer_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "collection_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "last_update",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "collection_status",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "collection_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "last_update",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "collection_status",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
                                 "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "table",
                                         "const": null
@@ -77,31 +73,50 @@
                                     {
                                         "name": "sql",
                                         "const": "SELECT * FROM public.collection"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "object",
+                                                "maximum": "object"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "object",
+                                            "minimum": "1",
+                                            "maximum": "3"
+                                        },
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
-									{
+                                    {
                                         "name": "result",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                
-                "customer_id": {
-                    "type": {}
-                },
-                "collection_id": {
-                    "type": {}
-                },
-                "last_update": {
-                    "type": {}
-                },
-                "collection_status": {
-                    "type": {}
-                }
+                                                "customer_id": {
+                                                    "type": {}
+                                                },
+                                                "collection_id": {
+                                                    "type": {}
+                                                },
+                                                "last_update": {
+                                                    "type": {}
+                                                },
+                                                "collection_status": {
+                                                    "type": {}
+                                                }
                                             }
                                         }
                                     }
-								]
+                                ]
                             }
                         }
                     ]
@@ -134,7 +149,7 @@
                                         "name": "interface",
                                         "const": "fabric"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": null
                                     },
@@ -146,12 +161,12 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-"collection_id",
-"last_update",
-"collection_status"
+                                            "collection_id",
+                                            "last_update",
+                                            "collection_status"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "collection_id"
@@ -161,30 +176,22 @@
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
-									
-                {
-                    "name": "customer_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "collection_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "last_update",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "collection_status",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "collection_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "last_update",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "collection_status",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
@@ -193,7 +200,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Post Load",
@@ -226,24 +233,44 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "customer_id"
             },
             "rightPort": {
-                "actor": "collection",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "customer_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
+                "name": "collection_id"
             },
             "rightPort": {
-                "actor": "collection",
-                "name": "table"
+                "actor": "PopulationArgs",
+                "name": "collection_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "last_update"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "last_update"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "collection_status"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "collection_status"
             }
         },
         {
@@ -255,54 +282,36 @@
                 "actor": "SyncDeleteMode",
                 "name": "table"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_collection_number_of_records"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "rowsGeneratorDistribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "collection",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "collection",
+                "name": "table"
+            }
         }
-        ,
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "customer_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "customer_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "collection_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "collection_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "last_update"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "last_update"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "collection_status"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "collection_status"
-                    }
-                }
-                
     ]
 }

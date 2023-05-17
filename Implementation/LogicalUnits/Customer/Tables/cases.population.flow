@@ -1,6 +1,6 @@
 {
     "levels": [
-		{
+        {
             "stages": [
                 {
                     "name": "Input",
@@ -11,47 +11,41 @@
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
-								"readOnly": true,
+                                "readOnly": true,
                                 "inputs": [
-                                    
-                {
-                    "name": "activity_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "case_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "case_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "case_type",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "status",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "status",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
                                 "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "table",
                                         "const": null
@@ -83,34 +77,53 @@
                                     {
                                         "name": "sql",
                                         "const": "SELECT * FROM public.cases"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "object",
+                                                "maximum": "object"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "object",
+                                            "minimum": "1",
+                                            "maximum": "3"
+                                        },
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
-									{
+                                    {
                                         "name": "result",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                
-                "activity_id": {
-                    "type": {}
-                },
-                "case_id": {
-                    "type": {}
-                },
-                "case_date": {
-                    "type": {}
-                },
-                "case_type": {
-                    "type": {}
-                },
-                "status": {
-                    "type": {}
-                }
+                                                "activity_id": {
+                                                    "type": {}
+                                                },
+                                                "case_id": {
+                                                    "type": {}
+                                                },
+                                                "case_date": {
+                                                    "type": {}
+                                                },
+                                                "case_type": {
+                                                    "type": {}
+                                                },
+                                                "status": {
+                                                    "type": {}
+                                                }
                                             }
                                         }
                                     }
-								]
+                                ]
                             }
                         }
                     ]
@@ -143,7 +156,7 @@
                                         "name": "interface",
                                         "const": "fabric"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": null
                                     },
@@ -155,13 +168,13 @@
                                         "name": "fields",
                                         "const": [
                                             "activity_id",
-"case_id",
-"case_date",
-"case_type",
-"status"
+                                            "case_id",
+                                            "case_date",
+                                            "case_type",
+                                            "status"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "case_id"
@@ -171,36 +184,26 @@
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
-									
-                {
-                    "name": "activity_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "case_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "case_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "case_type",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "status",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "case_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "status",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
@@ -209,7 +212,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Post Load",
@@ -242,24 +245,54 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "activity_id"
             },
             "rightPort": {
-                "actor": "cases",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "activity_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
+                "name": "case_id"
             },
             "rightPort": {
-                "actor": "cases",
-                "name": "table"
+                "actor": "PopulationArgs",
+                "name": "case_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "case_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "case_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "case_type"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "case_type"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "status"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "status"
             }
         },
         {
@@ -271,66 +304,36 @@
                 "actor": "SyncDeleteMode",
                 "name": "table"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_cases_number_of_records"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "rowsGeneratorDistribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "cases",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "cases",
+                "name": "table"
+            }
         }
-        ,
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "activity_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "activity_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "case_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "case_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "case_date"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "case_date"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "case_type"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "case_type"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "status"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "status"
-                    }
-                }
-                
     ]
 }

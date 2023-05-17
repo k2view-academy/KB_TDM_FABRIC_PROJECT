@@ -1,6 +1,6 @@
 {
     "levels": [
-		{
+        {
             "stages": [
                 {
                     "name": "Input",
@@ -11,65 +11,53 @@
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
-								"readOnly": true,
+                                "readOnly": true,
                                 "inputs": [
-                                    
-                {
-                    "name": "customer_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "contract_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "contract_ref_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "associated_line",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "contract_description",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "from_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "to_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "associated_line_fmt",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "contract_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "contract_ref_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "associated_line",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "contract_description",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "from_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "to_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "associated_line_fmt",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
                                 "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "table",
                                         "const": null
@@ -101,43 +89,62 @@
                                     {
                                         "name": "sql",
                                         "const": "SELECT * FROM public.contract"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "object",
+                                                "maximum": "object"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "object",
+                                            "minimum": "1",
+                                            "maximum": "3"
+                                        },
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
-									{
+                                    {
                                         "name": "result",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                
-                "customer_id": {
-                    "type": {}
-                },
-                "contract_id": {
-                    "type": {}
-                },
-                "contract_ref_id": {
-                    "type": {}
-                },
-                "associated_line": {
-                    "type": {}
-                },
-                "contract_description": {
-                    "type": {}
-                },
-                "from_date": {
-                    "type": {}
-                },
-                "to_date": {
-                    "type": {}
-                },
-                "associated_line_fmt": {
-                    "type": {}
-                }
+                                                "customer_id": {
+                                                    "type": {}
+                                                },
+                                                "contract_id": {
+                                                    "type": {}
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": {}
+                                                },
+                                                "associated_line": {
+                                                    "type": {}
+                                                },
+                                                "contract_description": {
+                                                    "type": {}
+                                                },
+                                                "from_date": {
+                                                    "type": {}
+                                                },
+                                                "to_date": {
+                                                    "type": {}
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": {}
+                                                }
                                             }
                                         }
                                     }
-								]
+                                ]
                             }
                         }
                     ]
@@ -170,7 +177,7 @@
                                         "name": "interface",
                                         "const": "fabric"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": null
                                     },
@@ -182,16 +189,16 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-"contract_id",
-"contract_ref_id",
-"associated_line",
-"contract_description",
-"from_date",
-"to_date",
-"associated_line_fmt"
+                                            "contract_id",
+                                            "contract_ref_id",
+                                            "associated_line",
+                                            "contract_description",
+                                            "from_date",
+                                            "to_date",
+                                            "associated_line_fmt"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "contract_id"
@@ -201,54 +208,38 @@
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
-									
-                {
-                    "name": "customer_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "contract_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "contract_ref_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "associated_line",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "contract_description",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "from_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "to_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "associated_line_fmt",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "contract_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "contract_ref_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "associated_line",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "contract_description",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "from_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "to_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "associated_line_fmt",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
@@ -257,7 +248,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Post Load",
@@ -290,24 +281,84 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "customer_id"
             },
             "rightPort": {
-                "actor": "contract",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "customer_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
+                "name": "contract_id"
             },
             "rightPort": {
-                "actor": "contract",
-                "name": "table"
+                "actor": "PopulationArgs",
+                "name": "contract_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "contract_ref_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "contract_ref_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "associated_line"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "associated_line"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "contract_description"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "contract_description"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "from_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "from_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "to_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "to_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "associated_line_fmt"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "associated_line_fmt"
             }
         },
         {
@@ -319,102 +370,36 @@
                 "actor": "SyncDeleteMode",
                 "name": "table"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_contract_number_of_records"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "rowsGeneratorDistribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "contract",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "contract",
+                "name": "table"
+            }
         }
-        ,
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "customer_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "customer_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "contract_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "contract_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "contract_ref_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "contract_ref_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "associated_line"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "associated_line"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "contract_description"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "contract_description"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "from_date"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "from_date"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "to_date"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "to_date"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "associated_line_fmt"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "associated_line_fmt"
-                    }
-                }
-                
     ]
 }
