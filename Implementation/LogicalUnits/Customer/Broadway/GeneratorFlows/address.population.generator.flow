@@ -154,11 +154,17 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "state",
                                         "schema": {},
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
                                         "mandatory": false
                                     }
                                 ],

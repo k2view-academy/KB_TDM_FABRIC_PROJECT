@@ -49,16 +49,22 @@
                                         "const": "Names"
                                     },
                                     {
-                                        "name": "first_name",
+                                        "name": "firstname",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "last_name",
+                                        "name": "lastname",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
                                         },
                                         "mandatory": false
                                     }
@@ -236,7 +242,7 @@
             },
             "rightPort": {
                 "actor": "MTable of Names",
-                "name": "first_name"
+                "name": "firstname"
             }
         },
         {
@@ -246,7 +252,7 @@
             },
             "rightPort": {
                 "actor": "MTable of Names",
-                "name": "last_name"
+                "name": "lastname"
             }
         },
         {
