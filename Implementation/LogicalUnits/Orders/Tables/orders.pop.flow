@@ -198,7 +198,22 @@
                                         "schema": {}
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "order_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -278,9 +293,43 @@
                                     {
                                         "name": "sql",
                                         "const": "select * from orders"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "1"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ORDER_ID": {
+                                                        "type": "integer"
+                                                    },
+                                                    "contract_id": {
+                                                        "type": "string"
+                                                    },
+                                                    "ORDER_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "ORDER_DATE": {
+                                                        "type": "date"
+                                                    },
+                                                    "ORDER_STATUS": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -295,7 +344,9 @@
                                     {
                                         "const": "Orders",
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "const": "orders",

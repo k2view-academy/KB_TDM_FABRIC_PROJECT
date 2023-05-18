@@ -48,7 +48,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ORDER_ID",
+                            "name": "ORDER_ID 1",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -331,7 +331,7 @@
         },
         {
             "leftPort": {
-                "actor": "ORDER_ID",
+                "actor": "ORDER_ID 1",
                 "name": "value"
             },
             "rightPort": {
