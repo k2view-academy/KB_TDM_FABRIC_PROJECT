@@ -140,12 +140,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "Orders"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "fnIsFirstSync"
+                                    },
+                                    {
+                                        "const": "Orders",
+                                        "name": "luType",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -288,12 +289,13 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "Orders"
-                                    },
-                                    {
                                         "name": "functionName",
                                         "const": "getLuTableColumns"
+                                    },
+                                    {
+                                        "const": "Orders",
+                                        "name": "luType",
+                                        "schema": {}
                                     },
                                     {
                                         "const": "orders",
