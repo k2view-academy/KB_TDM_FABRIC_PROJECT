@@ -23,7 +23,29 @@
                                     },
                                     {
                                         "name": "order_type",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": {
+                                                    "type": "string"
+                                                },
+                                                "round": {
+                                                    "type": "boolean"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "weights": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     },
                                     {
                                         "name": "order_date",
@@ -34,7 +56,22 @@
                                         "schema": {}
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "contract_id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
