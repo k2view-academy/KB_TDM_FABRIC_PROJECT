@@ -163,28 +163,62 @@
                                     },
                                     {
                                         "name": "K2_TDM_EID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "SOURCE_ENV",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "IID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "TASK_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "TIMESTAMP",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Generate Data Params From TDMDB and Set them as Session Variables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Load GD Params From Table Into Session",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "LoadGDParamsFromTableIntoSession"
                                     }
                                 ],
                                 "outputs": []
@@ -199,7 +233,7 @@
                 {
                     "name": "Set root_iid if not set",
                     "dependsOnList": [
-                        "LU Table"
+                        "Get Generate Data Params From TDMDB and Set them as Session Variables"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -229,9 +263,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 2",
+                    "name": "root_iid already set",
                     "dependsOnList": [
-                        "LU Table"
+                        "Get Generate Data Params From TDMDB and Set them as Session Variables"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -265,30 +299,6 @@
                                         "name": "key",
                                         "const": "clone_id",
                                         "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Generate Data Params From TDMDB and Set them as Session Variables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load GD Params From Table Into Session",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "LoadGDParamsFromTableIntoSession"
                                     }
                                 ],
                                 "outputs": []

@@ -50,6 +50,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "remark": "Select the City to select a random address",
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
                                         },
@@ -57,7 +58,10 @@
                                     },
                                     {
                                         "name": "state",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "remark": "Select the State to select a random address",
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
                                         },
