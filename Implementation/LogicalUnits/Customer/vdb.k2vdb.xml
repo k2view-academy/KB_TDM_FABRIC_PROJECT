@@ -188,10 +188,10 @@
         <Node name="TDM_LU_TYPE_RELATION_EID" pos="1683 1231.54565" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="LU_PARAMS" pos="1683 1431.54565" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Target Tables for Delete " pos="312 20.4544373" size="869 559.0912" wasexpanded="false" expanded="true">
+      <Group name="Target Tables for Delete " pos="312 20.4544373" size="869 534.0912" wasexpanded="false" expanded="true">
         <Node name="tar_collection" pos="618 39.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CONTRACT" pos="618 414.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TAR_ORDERS" pos="920 439.5456" size="257 136" listGroupSize="250 16" viewType="Table" />
+        <Node name="TAR_ORDERS" pos="920 439.5456" size="257 58" listGroupSize="250 16" viewType="Table" />
         <Node name="TAR_CUSTOMER" pos="316 239.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_ACTIVITY" pos="618 239.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CASES" pos="920 264.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
