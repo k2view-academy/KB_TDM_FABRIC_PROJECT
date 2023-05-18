@@ -173,7 +173,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "FirstNames1",
+                            "name": "FirstNames",
                             "actorType": {
                                 "parentType": "FirstNames",
                                 "inputs": [],
@@ -181,7 +181,7 @@
                             }
                         },
                         {
-                            "name": "LastNames1",
+                            "name": "LastNames",
                             "actorType": {
                                 "parentType": "LastNames",
                                 "inputs": [],
@@ -248,7 +248,7 @@
                             }
                         },
                         {
-                            "name": "MaskingSSN1",
+                            "name": "MaskingSSN",
                             "actorType": {
                                 "parentType": "MaskingSSN",
                                 "inputs": [
@@ -532,7 +532,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "MaskingSSN1",
+                "actor": "MaskingSSN",
                 "name": "value"
             },
             "iterate": "Iterate",
@@ -590,7 +590,7 @@
         },
         {
             "leftPort": {
-                "actor": "FirstNames1",
+                "actor": "FirstNames",
                 "name": "strings"
             },
             "rightPort": {
@@ -600,7 +600,7 @@
         },
         {
             "leftPort": {
-                "actor": "LastNames1",
+                "actor": "LastNames",
                 "name": "strings"
             },
             "rightPort": {
@@ -630,7 +630,7 @@
         },
         {
             "leftPort": {
-                "actor": "MaskingSSN1",
+                "actor": "MaskingSSN",
                 "name": "value"
             },
             "rightPort": {
