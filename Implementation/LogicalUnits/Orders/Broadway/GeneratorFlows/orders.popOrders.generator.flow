@@ -48,7 +48,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CONTRACT_ID",
+                            "name": "contract_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -83,9 +83,8 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "const": null
+                                        }
                                     },
                                     {
                                         "const": "Gen_CONTRACT_ID_SEQ",
@@ -332,12 +331,12 @@
         },
         {
             "leftPort": {
-                "actor": "CONTRACT_ID",
+                "actor": "contract_id",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CONTRACT_ID"
+                "name": "contract_id"
             }
         },
         {

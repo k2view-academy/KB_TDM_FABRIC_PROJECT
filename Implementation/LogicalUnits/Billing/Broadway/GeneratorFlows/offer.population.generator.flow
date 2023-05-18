@@ -106,9 +106,8 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "type": "any"
+                                        }
                                     },
                                     {
                                         "const": "Gen_OFFER_ID_SEQ",

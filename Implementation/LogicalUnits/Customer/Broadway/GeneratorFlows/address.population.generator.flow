@@ -135,9 +135,8 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        },
-                                        "const": 0
+                                            "type": "any"
+                                        }
                                     },
                                     {
                                         "const": "Gen_ADDRESS_ID_SEQ",
