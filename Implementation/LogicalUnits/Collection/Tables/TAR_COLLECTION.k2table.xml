@@ -10,8 +10,7 @@
   <IndexesList />
   <EnrichmentList />
   <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
-    <DecisionFunction>fnDecisionInsertToTarget</DecisionFunction>
-    <TruncateBeforeSync>true</TruncateBeforeSync>
+    <DecisionFunction>fnDecisionDeleteFromTarget</DecisionFunction>
   </LazyDataUpdate>
   <TriggersList />
 </TableObject>

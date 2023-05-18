@@ -285,6 +285,10 @@
                                         "const": "Finished Extracting Entity ${luType}.${iid}."
                                     },
                                     {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
                                         "name": "luType",
                                         "schema": {
                                             "type": "string"

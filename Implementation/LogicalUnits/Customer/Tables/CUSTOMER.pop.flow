@@ -297,7 +297,7 @@
                                     {
                                         "name": "rowsGeneratorDistribution",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "object"
                                         },
                                         "const": "1"
                                     }

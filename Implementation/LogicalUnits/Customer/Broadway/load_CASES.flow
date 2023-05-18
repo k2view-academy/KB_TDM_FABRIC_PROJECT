@@ -166,23 +166,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Get Sequence for case_id",
-                            "actorType": {
-                                "parentType": "CASE_ID_SEQ_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "tableName",
-                                        "const": "cases"
-                                    },
-                                    {
-                                        "name": "columName",
-                                        "const": "case_id"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -471,22 +454,22 @@
         },
         {
             "leftPort": {
-                "actor": "Get Sequence for activity_id",
-                "name": "NewSeqValue"
-            },
-            "rightPort": {
-                "actor": "Load CASES Table",
-                "name": "activity_id"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Sequence for case_id",
                 "name": "NewSeqValue"
             },
             "rightPort": {
                 "actor": "Load CASES Table",
                 "name": "case_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Sequence for activity_id",
+                "name": "NewSeqValue"
+            },
+            "rightPort": {
+                "actor": "Load CASES Table",
+                "name": "activity_id"
             }
         },
         {
