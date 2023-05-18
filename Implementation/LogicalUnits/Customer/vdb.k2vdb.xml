@@ -51,7 +51,7 @@
     </TableProperties>
     <TableProperties name="collection">
       <Populations>
-        <Population name="population.flow" order="4" disabled="true" populationType="Flow" />
+        <Population name="population.flow" order="4" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="contract">
@@ -62,7 +62,6 @@
     <TableProperties name="CUSTOMER">
       <Populations>
         <Population name="popCustomer.flow" order="3" disabled="false" populationType="Flow" />
-        <Population name="populationCustomerMaskSSN.flow" order="4" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="FABRIC_TDM_ROOT">
@@ -77,7 +76,7 @@
     </TableProperties>
     <TableProperties name="orders">
       <Populations>
-        <Population name="population.flow" order="5" disabled="true" populationType="Flow" />
+        <Population name="population.flow" order="5" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="TAR_ACTIVITY">
@@ -123,10 +122,6 @@
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
       <To tableType="TableObject" table="TAR_CUSTOMER" populationObjectName="populationTarCustomer.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
@@ -196,14 +191,14 @@
       <Group name="Target Tables for Delete " pos="312 20.4544373" size="869 559.0912" wasexpanded="false" expanded="true">
         <Node name="tar_collection" pos="618 39.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CONTRACT" pos="618 414.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TAR_ORDERS" pos="920 439.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_ORDERS" pos="920 439.5456" size="257 136" listGroupSize="250 16" viewType="Table" />
         <Node name="TAR_CUSTOMER" pos="316 239.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_ACTIVITY" pos="618 239.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CASES" pos="920 264.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
       <Group name="Source Tables" pos="1226 257.954437" size="1171 734.0912" wasexpanded="false" expanded="true">
         <Node name="collection" pos="1532 277.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="CUSTOMER" pos="1230 486.0456" size="257 152" listGroupSize="250 100" viewType="Table" />
+        <Node name="CUSTOMER" pos="1230 486.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="contract" pos="1532 452.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="activity" pos="1532 652.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="address" pos="1532 852.0456" size="257 136" listGroupSize="250 100" viewType="Table" />

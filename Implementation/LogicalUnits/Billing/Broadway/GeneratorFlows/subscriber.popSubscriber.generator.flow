@@ -44,26 +44,6 @@
                                     {
                                         "name": "mtable",
                                         "const": "Names"
-                                    },
-                                    {
-                                        "name": "firstname",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "lastname",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.mTableKey"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -345,26 +325,6 @@
             "rightPort": {
                 "actor": "parent_row",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "first_name"
-            },
-            "rightPort": {
-                "actor": "MTable of Names",
-                "name": "firstname"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "last_name"
-            },
-            "rightPort": {
-                "actor": "MTable of Names",
-                "name": "lastname"
             }
         },
         {
