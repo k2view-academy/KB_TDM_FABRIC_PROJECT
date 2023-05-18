@@ -92,21 +92,9 @@
                                     {
                                         "name": "rowsGeneratorDistribution",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "minimum": "object",
-                                                "maximum": "object"
-                                            }
+                                            "type": "object"
                                         },
-                                        "const": {
-                                            "distribution": "uniform",
-                                            "round": false,
-                                            "type": "object",
-                                            "minimum": "1",
-                                            "maximum": "3"
-                                        },
+                                        "const": "4",
                                         "isDefault": true
                                     }
                                 ],

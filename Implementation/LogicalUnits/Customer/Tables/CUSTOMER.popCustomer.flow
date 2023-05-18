@@ -465,6 +465,7 @@
                     "actors": [
                         {
                             "name": "Check if Instance Was Not Found In Source",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [

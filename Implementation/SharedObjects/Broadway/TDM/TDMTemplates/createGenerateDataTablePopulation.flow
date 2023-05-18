@@ -232,40 +232,6 @@
                                 "inputs": [],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Check if Field is Sequential",
-                            "minHeight": 97,
-                            "actorType": {
-                                "parentType": "Lookup",
-                                "inputs": [
-                                    {
-                                        "name": "lookupKeys",
-                                        "const": [
-                                            "FABRIC_FIELD_NAME"
-                                        ]
-                                    },
-                                    {
-                                        "name": "lookupData",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {}
-                                            }
-                                        },
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "FABRIC_FIELD_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 },
@@ -291,12 +257,42 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Not Sequential",
+                            "name": "Check if Field is Sequential",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "flowArgs.seq_ind = false;\r\nif( String(seqList['FABRIC_FIELD_NAME']).toLowerCase == fieldName.toLowerCase) {\r\n    flowArgs.seq_ind = true;\r\n}\r\nflowArgs.seq_ind;\r\n",
+                                            "script": "flowArgs.seq_ind = false;\n\nif (String(seqList['FABRIC_FIELD_NAME']).toLowerCase == fieldName.toLowerCase) {\n  flowArgs.seq_ind = true;\n}\n\nflowArgs.seq_ind;"
+                                        }
+                                    },
+                                    {
+                                        "name": "seqList",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "fieldName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -682,22 +678,22 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "SEQUENCE_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "TARGET_TABLE_NAME": {
-                                                        "type": "string"
-                                                    },
                                                     "LU_NAME": {
                                                         "type": "string"
                                                     },
-                                                    "FABRIC_FIELD_NAME": {
+                                                    "TARGET_TABLE_NAME": {
                                                         "type": "string"
                                                     },
                                                     "TARGET_FIELD_NAME": {
                                                         "type": "string"
                                                     },
                                                     "FABRIC_TABLE_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FABRIC_FIELD_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "SEQUENCE_NAME": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -979,8 +975,8 @@
                 "name": "tableSeqList"
             },
             "rightPort": {
-                "actor": "Check if Field is Sequential",
-                "name": "lookupData"
+                "actor": "Filter Out Argument Fields from Sequences List",
+                "name": "Sequences"
             }
         },
         {
@@ -989,8 +985,8 @@
                 "name": "tableSeqList"
             },
             "rightPort": {
-                "actor": "Filter Out Argument Fields from Sequences List",
-                "name": "Sequences"
+                "actor": "Check if Field is Sequential",
+                "name": "seqList"
             }
         },
         {
@@ -1001,20 +997,6 @@
             "rightPort": {
                 "actor": "Add Field Name",
                 "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "columnName"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "get Lu Table Columns And Types",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check if Field is Sequential",
-                "name": "FABRIC_FIELD_NAME"
             },
             "iterate": "Iterate",
             "path": [
@@ -1051,6 +1033,20 @@
         },
         {
             "leftPort": {
+                "actor": "get Lu Table Columns And Types",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check if Field is Sequential",
+                "name": "fieldName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "columnName"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Default Actor Per Field Type",
                 "name": "table"
             },
@@ -1066,16 +1062,6 @@
             },
             "rightPort": {
                 "actor": "Not Input Argument",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Check if Field is Sequential",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Not Sequential",
                 "name": "value"
             }
         },

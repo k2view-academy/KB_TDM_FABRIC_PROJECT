@@ -30,7 +30,22 @@
                                         "schema": {}
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -220,7 +235,8 @@
             "rightPort": {
                 "actor": "Query",
                 "name": "parent_rows"
-            }
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
