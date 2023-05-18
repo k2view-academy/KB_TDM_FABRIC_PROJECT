@@ -23,18 +23,45 @@
                             }
                         },
                         {
-                            "name": "CheckIfDeleteOnlyTask1",
+                            "name": "Get Delete Only Task Indicator",
                             "actorType": {
-                                "parentType": "CheckIfDeleteOnlyTask",
-                                "inputs": [],
-                                "outputs": [
+                                "parentType": "FabricSetRead",
+                                "inputs": [
                                     {
-                                        "name": "deleteOnlyInd",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
+                                        "name": "key",
+                                        "const": "TDM_DELETE_ONLY_TASK",
+                                        "isDefault": false
                                     }
-                                ]
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Delete Before Load indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_BEFORE_LOAD",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Is Child LU Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "CHILD_LU_IND",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -84,7 +111,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "delete from collection"
+                                        "const": "delete from Collection.collection"
                                     },
                                     {
                                         "name": "table",
@@ -115,6 +142,11 @@
                                     {
                                         "name": "functionName",
                                         "const": "fnIsFirstSync"
+                                    },
+                                    {
+                                        "const": "Collection",
+                                        "name": "luType",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -131,7 +163,14 @@
                             "name": "Not1",
                             "actorType": {
                                 "parentType": "Not",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -254,16 +293,16 @@
                                         "const": "getLuTableColumns"
                                     },
                                     {
+                                        "const": "Collection",
+                                        "name": "luType",
+                                        "schema": {}
+                                    },
+                                    {
                                         "const": "collection",
                                         "name": "table",
                                         "schema": {
                                             "type": "string"
                                         }
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {},
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -277,6 +316,22 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "ToBool1",
+                            "actorType": {
+                                "parentType": "ToBool",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ToBool2",
+                            "actorType": {
+                                "parentType": "ToBool",
+                                "inputs": [],
+                                "outputs": []
                             }
                         }
                     ]
@@ -412,8 +467,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "if (flowArgs.instanceFound == false) {\r\n    throw \"Instance \" + iid + \" is not found in the Source\"\r\n}",
-                                            "script": "if (flowArgs.instanceFound == false) {\n  throw \"Instance \" + iid + \" is not found in the Source\";\n}"
+                                            "userCode": "if ((deleteBeforeLoad == false || isChildLu == false ) \r\n  && flowArgs.instanceFound == false) {\r\n    throw \"Instance \" + iid + \" is not found in the Source\"\r\n}",
+                                            "script": "if ((deleteBeforeLoad == false || isChildLu == false) && flowArgs.instanceFound == false) {\n  throw \"Instance \" + iid + \" is not found in the Source\";\n}"
                                         }
                                     },
                                     {
@@ -421,6 +476,20 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "deleteBeforeLoad",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "isChildLu",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -453,11 +522,31 @@
         },
         {
             "leftPort": {
-                "actor": "CheckIfDeleteOnlyTask1",
-                "name": "deleteOnlyInd"
+                "actor": "Get Delete Only Task Indicator",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Not1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Delete Before Load indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ToBool1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Is Child LU Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ToBool2",
                 "name": "value"
             }
         },
@@ -520,6 +609,26 @@
             "rightPort": {
                 "actor": "Root Table",
                 "name": "fields"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ToBool1",
+                "name": "bool"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ToBool2",
+                "name": "bool"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "isChildLu"
             }
         },
         {

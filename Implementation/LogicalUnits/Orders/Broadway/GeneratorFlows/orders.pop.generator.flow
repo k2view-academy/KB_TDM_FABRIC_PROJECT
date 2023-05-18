@@ -48,13 +48,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "contract_id",
+                            "name": "ORDER_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
-                                        "const": "contract_id"
+                                        "const": "order_id"
                                     },
                                     {
                                         "name": "flowName",
@@ -83,11 +83,11 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "const": null
+                                            "type": "any"
                                         }
                                     },
                                     {
-                                        "const": "Gen_CONTRACT_ID_SEQ",
+                                        "const": "Gen_ORDER_ID_SEQ",
                                         "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
@@ -151,7 +151,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ORDER_ID",
+                            "name": "CONTARCT_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -312,7 +312,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "ORDER_ID",
+                "actor": "CONTARCT_ID",
                 "name": "value"
             },
             "path": [
@@ -331,22 +331,22 @@
         },
         {
             "leftPort": {
-                "actor": "contract_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "contract_id"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "ORDER_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "ORDER_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTARCT_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "contract_id"
             }
         },
         {

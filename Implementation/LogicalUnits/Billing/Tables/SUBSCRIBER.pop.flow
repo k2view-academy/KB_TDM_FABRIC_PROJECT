@@ -35,6 +35,34 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get Delete Before Load indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DELETE_BEFORE_LOAD",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Is Child LU Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "CHILD_LU_IND",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -83,7 +111,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "delete from Customer.customer"
+                                        "const": "delete from Billing.SUBSCRIBER"
                                     },
                                     {
                                         "name": "table",
@@ -116,7 +144,7 @@
                                         "const": "fnIsFirstSync"
                                     },
                                     {
-                                        "const": "Customer",
+                                        "const": "Billing",
                                         "name": "luType",
                                         "schema": {}
                                     }
@@ -166,26 +194,11 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "customer_id",
+                                        "name": "SUBSCRIBER_ID",
                                         "schema": {}
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "customer_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -260,45 +273,14 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "CRM_DB"
+                                        "const": "BILLING_DB"
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from customer"
-                                    },
-                                    {
-                                        "name": "rowsGeneratorDistribution",
-                                        "schema": {
-                                            "type": "object"
-                                        },
-                                        "const": "1"
+                                        "const": "select * from SUBSCRIBER"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "CUSTOMER_ID": {
-                                                        "type": "string"
-                                                    },
-                                                    "SSN": {
-                                                        "type": "string"
-                                                    },
-                                                    "FIRST_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "LAST_NAME": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -311,14 +293,12 @@
                                         "const": "getLuTableColumns"
                                     },
                                     {
-                                        "const": "Customer",
+                                        "const": "Billing",
                                         "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "schema": {}
                                     },
                                     {
-                                        "const": "customer",
+                                        "const": "SUBSCRIBER",
                                         "name": "table",
                                         "schema": {
                                             "type": "string"
@@ -336,6 +316,22 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "ToBool1",
+                            "actorType": {
+                                "parentType": "ToBool",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ToBool2",
+                            "actorType": {
+                                "parentType": "ToBool",
+                                "inputs": [],
+                                "outputs": []
                             }
                         }
                     ]
@@ -417,7 +413,7 @@
                                     },
                                     {
                                         "name": "table",
-                                        "const": "customer"
+                                        "const": "SUBSCRIBER"
                                     },
                                     {
                                         "name": "fields",
@@ -426,7 +422,7 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "customer_id"
+                                            "SUBSCRIBER_ID"
                                         ]
                                     },
                                     {
@@ -434,7 +430,7 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "customer_id",
+                                        "name": "SUBSCRIBER_ID",
                                         "schema": {}
                                     }
                                 ],
@@ -465,15 +461,14 @@
                     "actors": [
                         {
                             "name": "Check if Instance Was Not Found In Source",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "if (flowArgs.instanceFound == false) {\r\n    throw \"Instance \" + iid + \" is not found in the Source\"\r\n}",
-                                            "script": "if (flowArgs.instanceFound == false) {\n  throw \"Instance \" + iid + \" is not found in the Source\";\n}"
+                                            "userCode": "if ((deleteBeforeLoad == false || isChildLu == false ) \r\n  && flowArgs.instanceFound == false) {\r\n    throw \"Instance \" + iid + \" is not found in the Source\"\r\n}",
+                                            "script": "if ((deleteBeforeLoad == false || isChildLu == false) && flowArgs.instanceFound == false) {\n  throw \"Instance \" + iid + \" is not found in the Source\";\n}"
                                         }
                                     },
                                     {
@@ -481,6 +476,20 @@
                                         "schema": {
                                             "type": "string"
                                         }
+                                    },
+                                    {
+                                        "name": "deleteBeforeLoad",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "isChildLu",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -518,6 +527,26 @@
             },
             "rightPort": {
                 "actor": "Not1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Delete Before Load indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ToBool1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Is Child LU Indicator",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ToBool2",
                 "name": "value"
             }
         },
@@ -584,6 +613,26 @@
         },
         {
             "leftPort": {
+                "actor": "ToBool1",
+                "name": "bool"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "deleteBeforeLoad"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ToBool2",
+                "name": "bool"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "isChildLu"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "table"
             },
@@ -595,11 +644,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "customer_id"
+                "name": "SUBSCRIBER_ID"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "customer_id"
+                "name": "SUBSCRIBER_ID"
             }
         },
         {

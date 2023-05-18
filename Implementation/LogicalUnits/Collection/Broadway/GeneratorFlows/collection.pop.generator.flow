@@ -48,7 +48,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CUSTOMER_ID",
+                            "name": "COLLECTION_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -87,7 +87,7 @@
                                         }
                                     },
                                     {
-                                        "const": "Gen_CUSTOMER_ID_SEQ",
+                                        "const": "Gen_COLEECTION_ID_SEQ",
                                         "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
@@ -151,7 +151,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "COLLECTION_ID",
+                            "name": "CUSTOMER_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -273,7 +273,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "COLLECTION_ID",
+                "actor": "CUSTOMER_ID",
                 "name": "value"
             },
             "path": [
@@ -292,22 +292,22 @@
         },
         {
             "leftPort": {
-                "actor": "CUSTOMER_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "COLLECTION_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "COLLECTION_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "customer_id"
             }
         },
         {
