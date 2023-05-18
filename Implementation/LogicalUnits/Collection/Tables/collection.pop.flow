@@ -302,7 +302,31 @@
                                         "const": "1"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "CUSTOMER_ID": {
+                                                        "type": "integer"
+                                                    },
+                                                    "COLLECTION_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "LAST_UPDATE": {
+                                                        "type": "date"
+                                                    },
+                                                    "COLLECTION_STATUS": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
