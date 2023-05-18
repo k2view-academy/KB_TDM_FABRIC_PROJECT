@@ -11,54 +11,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "get Population Argument List",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "getPopArgumenList"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "PARENT_TABLE": {
-                                                        "type": "string"
-                                                    },
-                                                    "PARENT_FIELD_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "FIELD_NAME": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "Get Table Sequences Mapping",
                             "actorType": {
                                 "parentType": "getTableSequenceMapping",
@@ -163,6 +115,38 @@
                                                 }
                                             }
                                         }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "get Population Argument List",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getPopArgumentList"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {}
                                     }
                                 ]
                             }
@@ -941,36 +925,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "get Population Argument List",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Field is an Input Argument",
-                "name": "lookupData"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get Population Argument List",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Population Arguments List",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get Population Argument List",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Filter Out Argument Fields from Sequences List",
-                "name": "parentRec"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Table Sequences Mapping",
                 "name": "tableSeqList"
             },
@@ -1053,6 +1007,36 @@
             "rightPort": {
                 "actor": "Get Actor By Field Type",
                 "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get Population Argument List",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Field is an Input Argument",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get Population Argument List",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Filter Out Argument Fields from Sequences List",
+                "name": "parentRec"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get Population Argument List",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Population Arguments List",
+                "name": "value"
             }
         },
         {
@@ -1179,26 +1163,6 @@
                 "name": "luType"
             },
             "rightPort": {
-                "actor": "get Population Argument List",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "get Population Argument List",
-                "name": "tableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
                 "actor": "Get Table Sequences Mapping",
                 "name": "LU_NAME"
             }
@@ -1231,6 +1195,26 @@
             "rightPort": {
                 "actor": "get Lu Table Columns And Types",
                 "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "get Population Argument List",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "get Population Argument List",
+                "name": "tableName"
             }
         },
         {

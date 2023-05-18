@@ -485,7 +485,11 @@ public class Logic extends WebServiceUserCode {
 				productData.put("product_name", row.get("product_name"));
 				productData.put("product_description", row.get("product_description"));
 				productData.put("product_vendor", row.get("product_vendor"));
-				productData.put("product_versions", row.get("product_versions"));
+				if (envId == -1) {
+					productData.put("product_versions", row.get("product_version"));
+				} else {
+					productData.put("product_versions", row.get("product_versions"));
+				}
 				productData.put("product_id1", row.get("product_id"));
 				productData.put("product_created_by", row.get("product_created_by"));
 				productData.put("product_creation_date", row.get("product_creation_date"));

@@ -486,34 +486,21 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		    String popName =  tableEntry.getPopulationName();
 		    
 			//log.info("getPopulationsList - table: " + table + ", popName: " + popName);
-		    try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
-		    table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
-		        String tableFiltered = "";
-		        if (checkTable != null && checkTable.firstValue() != null) {
-		        	tableFiltered = "" + checkTable.firstValue();
-		        }
-		        
-		        if(  !Util.isEmpty(tableFiltered)) {
-		            int flowNameEnd = popName.lastIndexOf(".flow");
-		            if (flowNameEnd > 0) {
-		                Map<String, String> map = new HashMap<String, String>();
-		                map.put("tableName", table);
-		                map.put("populationName", popName.substring(0, flowNameEnd));
-		        	    result.add(map);
-		            } else {
-		                log.warn("Table " + table + " has a population that is not a Broadway Flow, No Generator will be created for such population");
-		            }
-		        }
-		    } catch (SQLException e) {
-		        e.printStackTrace();
-		    }
-		    
+			int flowNameEnd = popName.lastIndexOf(".flow");
+			if (flowNameEnd > 0) {
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("tableName", table);
+				map.put("populationName", popName.substring(0, flowNameEnd));
+				result.add(map);
+			} else {
+				log.warn("Table " + table + " has a population that is not a Broadway Flow, No Generator will be created for such population");
+			}
 		});                  
 		return result;
 	}
 
 	@out(name = "result", type = List.class, desc = "")
-	public static Set<Map<String,String>> getPopArgumenList(String luName, String tableName) throws Exception {
+	public static Set<Map<String,String>> getPopArgumentList(String luName, String tableName) throws Exception {
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
 		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);

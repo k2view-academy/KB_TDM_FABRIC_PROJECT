@@ -20,6 +20,10 @@
                                         "const": "TDMGenerateOrchestrator --> Handling task with following parameters: iid: ${iid}, luType: ${luName}, syncMode: ${syncMode}"
                                     },
                                     {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
                                         "name": "iid",
                                         "schema": {
                                             "type": "string"
@@ -41,6 +45,14 @@
                                         "mandatory": false
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Start Time",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -154,27 +166,10 @@
         {
             "stages": [
                 {
-                    "name": "Get Synthetic Entities",
+                    "name": "Set Session Variables",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "Get Instance",
-                            "actorType": {
-                                "parentType": "FabricGet",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "syncMode",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Set TARGET_ENTITY_ID",
                             "actorType": {
@@ -191,6 +186,14 @@
                                         "isDefault": false
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Start Time",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -227,6 +230,93 @@
                                         "name": "value",
                                         "const": null,
                                         "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Initiate Entity Status",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "completed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Synthetic Entities",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Start Processing Time",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_START_DATETIME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Instance",
+                            "actorType": {
+                                "parentType": "FabricGet",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -277,6 +367,7 @@
                     "actors": [
                         {
                             "name": "Print Finish Note",
+                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
@@ -309,9 +400,59 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Start Time",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format Start Time",
+                "name": "date"
+            }
+        },
         {
             "leftPort": {
                 "actor": "Split IID",
@@ -329,6 +470,16 @@
             },
             "rightPort": {
                 "actor": "Set IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format Start Time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Set Start Processing Time",
                 "name": "value"
             }
         },

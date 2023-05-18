@@ -299,7 +299,7 @@
                                         "schema": {
                                             "type": "object"
                                         },
-                                        "const": null
+                                        "const": "1"
                                     }
                                 ],
                                 "outputs": [

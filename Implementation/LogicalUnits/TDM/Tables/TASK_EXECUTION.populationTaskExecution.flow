@@ -407,6 +407,10 @@
                                         ]
                                     },
                                     {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
                                         "name": "task_execution_id",
                                         "schema": {},
                                         "mandatory": false

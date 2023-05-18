@@ -256,11 +256,25 @@ public class TdmExecuteTask {
 		setGlobalsForTask("generate", taskProperties);
 		String luName = LU_NAME.get(taskProperties);
 		String entityInclusionOverride = "";
+        String taskExecutionID = "" + TASK_EXECUTION_ID.get(taskProperties);
+		String batchDB = CASSANDRA;
+		//entityInclusionOverride = getEntityInclusion(taskProperties);
+		
+        if(!isChildLU(taskProperties)){
+            String entityInclusion = entityInclusions.getOrDefault(taskExecutionID, "");
+			if (Util.isEmpty(entityInclusion)) {
+				entityInclusionOverride = getEntityInclusion(taskProperties);
+			} else { //the task execution has several root LUs, and if the entity inclusion was already populated for the previous root LU it will be reused
+				entityInclusionOverride = entityInclusion;
+			}
+        }else{// the parent id is populated- handle the child luID
+            entityInclusionOverride = getEntityInclusionForChildLU(taskProperties, luName);
+            batchDB = TDMDB;
+        }
 
-		entityInclusionOverride = getEntityInclusion(taskProperties);
 		String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
 		String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
-		String batchCommand = "BATCH " + luName + " FROM " + CASSANDRA + " USING(?) fabric_command=? with " + affinity + " async=true";
+		String batchCommand = "BATCH " + luName + " FROM " + batchDB + " USING(?) fabric_command=? with " + affinity + " async=true";
 		String broadwayCommand = "broadway " + luName + ".TDMGenerateOrchestrator " + "iid=?, luName=" + luName 
             +", syncMode=FORCE";
         //log.info("batchCommand: " + batchCommand + " ,broadwayCommand: " + broadwayCommand);

@@ -187,7 +187,6 @@
                     "actors": [
                         {
                             "name": "Create Masking Keyspace",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [

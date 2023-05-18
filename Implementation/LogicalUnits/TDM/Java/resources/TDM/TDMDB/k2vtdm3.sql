@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.business_entities
     CONSTRAINT business_entities_pkey PRIMARY KEY (be_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON Business_Entities (be_name) where be_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON ${@schema}.Business_Entities (be_name) where be_status = 'Active';
 
 -- Table: ${@schema}.environment_owners
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_products
     CONSTRAINT environment_products_pkey PRIMARY KEY (environment_product_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS ENV_PROD_FOR_ACTIVE_IX ON environment_products (environment_id, product_id) where status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS ENV_PROD_FOR_ACTIVE_IX ON ${@schema}.environment_products (environment_id, product_id) where status = 'Active';
 
 -- Table: ${@schema}.environment_role_users
 
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_role_users
 );
 
    
-Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON environment_role_users (environment_id, user_id);
+Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON ${@schema}.environment_role_users (environment_id, user_id);
 
 -- Table: ${@schema}.environment_roles
 
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_roles
     CONSTRAINT environment_roles_pkey PRIMARY KEY (role_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_FOR_ACTIVE_IX ON environment_roles  (environment_id, role_name) where role_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_FOR_ACTIVE_IX ON ${@schema}.environment_roles  (environment_id, role_name) where role_status = 'Active';
 
 -- Table: ${@schema}.environments
 
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environments
     CONSTRAINT environments_pkey PRIMARY KEY (environment_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS ENV_NAME_FOR_ACTIVE_IX ON environments (environment_name) where environment_status = 'Active'; 
+Create UNIQUE INDEX IF NOT EXISTS ENV_NAME_FOR_ACTIVE_IX ON ${@schema}.environments (environment_name) where environment_status = 'Active'; 
 
 -- Table: ${@schema}.parameters
 
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.products
    --, CONSTRAINT products_product_name_key UNIQUE (product_name)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON products (product_name) where product_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON ${@schema}.products (product_name) where product_status = 'Active';
 
 -- Table: ${@schema}.task_execution_list
 
@@ -251,8 +251,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
 );
 
 -- TDM 7.2 - Remove the unique index as it prevents rerunning the same task with different overriden attributes.
---Create UNIQUE INDEX IF NOT EXISTS TASK_EXEC_IX on task_execution_list(task_id, lu_id, process_id) where upper(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED', 'STARTEXECUTIONREQUESTED');
-Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON task_execution_list (task_execution_id, process_id); 
+--Create UNIQUE INDEX IF NOT EXISTS TASK_EXEC_IX on ${@schema}.task_execution_list(task_id, lu_id, process_id) where upper(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED', 'STARTEXECUTIONREQUESTED');
+Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON ${@schema}.task_execution_list (task_execution_id, process_id); 
 
 -- Table: ${@schema}.tasks
 -- Tali E.- 10-May-17- remove limitation of 1000 chars from selection_param_value and exclusion_list fields
@@ -307,7 +307,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS TASK_NAME_FOR_ACTIVE_IX on tasks (task_title) where task_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS TASK_NAME_FOR_ACTIVE_IX on ${@schema}.tasks (task_title) where task_status = 'Active';
 
 -- Table: ${@schema}.tdm_be_env_exclusion_list
 
@@ -327,25 +327,28 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_env_exclusion_list
   CONSTRAINT tdm_be_env_exclusion_list_be_env_exclusion_list_id_pk PRIMARY KEY (be_env_exclusion_list_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS BE_ENV_EXCLUSION_LIST_IX on tdm_be_env_exclusion_list (BE_ID,ENVIRONMENT_ID,REQUESTED_BY);
+Create UNIQUE INDEX IF NOT EXISTS BE_ENV_EXCLUSION_LIST_IX on ${@schema}.tdm_be_env_exclusion_list (BE_ID,ENVIRONMENT_ID,REQUESTED_BY);
 
 -- Table: ${@schema}.tdm_seq_mapping
 
 --DROP TABLE IF EXISTS ${@schema}.tdm_seq_mapping;
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
-(task_execution_id      bigint NOT NULL,
-lu_type character varying(30) NOT NULL,
-source_env      character varying(100) NOT NULL,
-entity_target_id        character varying(100),
-seq_name        character varying(100),
-table_name      character varying(100),
-column_name     character varying(100),
-source_id       character varying(100),
-target_id       character varying(100),
-is_instance_id  character varying(1),
-entity_sequence bigint)
-;
+(
+  task_execution_id      bigint NOT NULL,
+  lu_type character varying(30) NOT NULL,
+  source_env      character varying(100) NOT NULL,
+  entity_target_id        character varying(100),
+  seq_name        character varying(100),
+  table_name      character varying(100),
+  column_name     character varying(100),
+  source_id       character varying(100),
+  target_id       character varying(100),
+  is_instance_id  character varying(1),
+  entity_sequence bigint
+);
+
+Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (task_execution_id,lu_type,source_env);
 
 -- Table: ${@schema}.task_execution_entities
 
@@ -531,7 +534,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_env_globals
    UPDATED_BY character varying (200)
 );
 
-create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
+create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on ${@schema}.tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
 
 -- New Table task_execution_summary, TDM 6.1
 --DROP TABLE IF EXISTS ${@schema}.task_execution_summary;
@@ -666,6 +669,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
     diff character varying(20),
     results character varying(20)
 );
+
+-- DROP INDEX IF EXISTS ${@schema}.task_exe_stats_detailed_1ix;
+CREATE INDEX IF NOT EXISTS task_exe_stats_detailed_1ix ON ${@schema}.task_exe_stats_detailed (task_execution_id, lu_name, target_entity_id);
 
 -- Table ${@schema}.permission_groups_mapping; - TDM 7.1
 -- DROP TABLE IF EXISTS ${@schema}.permission_groups_mapping;
@@ -896,8 +902,8 @@ INSERT INTO ${@schema}.environments (environment_name, environment_description, 
 	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
 	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
 	allow_read, sync_mode) 
-	VALUES ('Synthetic','This is the synthetic environment.',NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE') ON CONFLICT DO NOTHING;;
-INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;;
+	VALUES ('Synthetic','This is the synthetic environment.',NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, 
 	allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, allowed_number_of_entities_to_copy, role_id, role_created_by, 
 	role_creation_date, role_last_updated_date, role_expiration_date, role_last_updated_by, role_status, allowed_refresh_reference_data, allowed_replace_sequences, 

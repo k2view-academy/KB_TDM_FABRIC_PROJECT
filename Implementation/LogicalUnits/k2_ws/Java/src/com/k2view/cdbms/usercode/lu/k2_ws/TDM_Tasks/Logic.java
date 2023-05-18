@@ -859,229 +859,125 @@ public class Logic extends WebServiceUserCode {
 			"Example of a request body:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"\t\"DataManParams\": {\r\n" +
-			"\t\t\"city\": {\r\n" +
-			"\t\t\t\"editor\": {\r\n" +
-			"\t\t\t\t\"name\": \"city\",\r\n" +
-			"\t\t\t\t\"schema\": {\r\n" +
-			"\t\t\t\t\t\"type\": \"string\"\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"context\": {\r\n" +
-			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtable\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": \"addresses\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"city\": {\r\n" +
-			"\t\t\t\t\t\t\"self\": \"city\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"state\": {\r\n" +
-			"\t\t\t\t\t\t\"external\": \"state\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableKey\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": {}\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t}\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"default\": null,\r\n" +
-			"\t\t\t\"description\": \"Select the City to select a random address\",\r\n" +
-			"\t\t\t\"type\": \"string\",\r\n" +
-			"\t\t\t\"mandatory\": false,\r\n" +
-			"\t\t\t\"value\": \"Dallas\",\r\n" +
-			"\t\t\t\"name\": \"city\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t\"contract_ref_id\": {\r\n" +
-			"\t\t\t\"editor\": {\r\n" +
-			"\t\t\t\t\"name\": \"contract_ref_id\",\r\n" +
-			"\t\t\t\t\"schema\": {\r\n" +
-			"\t\t\t\t\t\"type\": \"string\"\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"context\": {\r\n" +
-			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtable\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": \"contract_reference\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"contract_ref_id\": {\r\n" +
-			"\t\t\t\t\t\t\"self\": \"contract_ref_id\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableKey\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": {}\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t}\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"default\": null,\r\n" +
-			"\t\t\t\"description\": \"Select Reference ID to select random Contract Description\",\r\n" +
-			"\t\t\t\"type\": \"string\",\r\n" +
-			"\t\t\t\"mandatory\": false,\r\n" +
-			"\t\t\t\"name\": \"contract_ref_id\",\r\n" +
-			"\t\t\t\"value\": \"102\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t\"crm_cases_number_of_records\": {\r\n" +
-			"\t\t\t\"editor\": {\r\n" +
-			"\t\t\t\t\"schema\": \"{}\",\r\n" +
-			"\t\t\t\t\"name\": \"crm_cases_number_of_records\",\r\n" +
-			"\t\t\t\t\"context\": {\r\n" +
-			"\t\t\t\t\t\"crm_cases_number_of_records\": {\r\n" +
-			"\t\t\t\t\t\t\"self\": \"distribution\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"distribution\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": {\r\n" +
-			"\t\t\t\t\t\t\t\"distribution\": \"uniform\",\r\n" +
-			"\t\t\t\t\t\t\t\"round\": true,\r\n" +
-			"\t\t\t\t\t\t\t\"type\": \"integer\",\r\n" +
-			"\t\t\t\t\t\t\t\"minimum\": 1,\r\n" +
-			"\t\t\t\t\t\t\t\"maximum\": 3\r\n" +
-			"\t\t\t\t\t\t}\r\n" +
-			"\t\t\t\t\t}\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"id\": \"com.k2view.distribution\"\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"default\": {\r\n" +
-			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
-			"\t\t\t\t\"round\": true,\r\n" +
-			"\t\t\t\t\"type\": \"integer\",\r\n" +
-			"\t\t\t\t\"minimum\": 1,\r\n" +
-			"\t\t\t\t\"maximum\": 3\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"description\": \"Distribution Of Records Of table cases\",\r\n" +
-			"\t\t\t\"type\": \"any\",\r\n" +
-			"\t\t\t\"mandatory\": \"false\",\r\n" +
-			"\t\t\t\"value\": {\r\n" +
-			"\t\t\t\t\"maximum\": 5,\r\n" +
-			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
-			"\t\t\t\t\"round\": true,\r\n" +
-			"\t\t\t\t\"type\": \"integer\",\r\n" +
-			"\t\t\t\t\"minimum\": 3\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"name\": \"crm_cases_number_of_records\"\r\n" +
-			"\t\t}\r\n" +
-			"\t},\r\n" +
-			"\t\"filterout_reserved\": false,\r\n" +
-			"\t\"operationMode\": \"insert_entity_without_delete\",\r\n" +
-			"\t\"task_type\": \"LOAD\",\r\n" +
-			"\t\"task_title\": \"testapi2\",\r\n" +
-			"\t\"extractSelected\": false,\r\n" +
-			"\t\"load_entity\": true,\r\n" +
-			"\t\"delete_before_load\": false,\r\n" +
-			"\t\"reserve_ind\": true,\r\n" +
-			"\t\"be_id\": 4,\r\n" +
-			"\t\"source_environment_id\": 1,\r\n" +
-			"\t\"environment_id\": 2,\r\n" +
-			"\t\"source_env_name\": \"SRC\",\r\n" +
-			"\t\"environment_name\": \"TAR\",\r\n" +
-			"\t\"allLogicalUnits\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": null,\r\n" +
-			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_id\": 7,\r\n" +
-			"\t\t\t\"product_name\": \"CRM\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
-			"\t\t\t\"lu_id\": 9,\r\n" +
-			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_name\": \"Collection\",\r\n" +
-			"\t\t\t\"lu_id\": 10,\r\n" +
-			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_name\": \"Orders\",\r\n" +
-			"\t\t\t\"lu_id\": 8,\r\n" +
-			"\t\t\t\"product_name\": \"ORDERS\"\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"selectedLogicalUnits\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": null,\r\n" +
-			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_id\": 7,\r\n" +
-			"\t\t\t\"product_name\": \"CRM\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
-			"\t\t\t\"lu_id\": 9,\r\n" +
-			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_name\": \"Collection\",\r\n" +
-			"\t\t\t\"lu_id\": 10,\r\n" +
-			"\t\t\t\"product_name\": \"FINANCE\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"Customer\",\r\n" +
-			"\t\t\t\"lu_name\": \"Orders\",\r\n" +
-			"\t\t\t\"lu_id\": 8,\r\n" +
-			"\t\t\t\"product_name\": \"ORDERS\"\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"missingRootLU\": [],\r\n" +
-			"\t\"num_of_entities\": 2,\r\n" +
-			"\t\"syncModeRadio\": null,\r\n" +
-			"\t\"sync_mode\": null,\r\n" +
-			"\t\"reserve_retention_period_value\": 5,\r\n" +
-			"\t\"reserve_retention_period_type\": \"Days\",\r\n" +
-			"\t\"allPostExecutionProcess\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"process_id\": 1,\r\n" +
-			"\t\t\t\"be_id\": 4,\r\n" +
-			"\t\t\t\"process_name\": \"PostExecFlow\",\r\n" +
-			"\t\t\t\"process_description\": null,\r\n" +
-			"\t\t\t\"execution_order\": 1\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"postExecutionProcesses\": [\r\n" +
-			"\t\t1\r\n" +
-			"\t],\r\n" +
-			"\t\"reference\": \"both\",\r\n" +
-			"\t\"versionsForLoad\": [],\r\n" +
-			"\t\"selection_method\": \"PR\",\r\n" +
-			"\t\"selection_param_value\": \"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
-			"\t\"parameters\": \"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
-			"\t\"refList\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"ref_table_name\": \"DEVICESTABLE2017\",\r\n" +
-			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
-			"\t\t\t\"interface_name\": \"CRM_DB\",\r\n" +
-			"\t\t\t\"schema_name\": \"public\",\r\n" +
-			"\t\t\t\"logical_unit_name\": \"Customer\",\r\n" +
-			"\t\t\t\"reference_table_name\": \"DEVICESTABLE2017\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"ref_table_name\": \"devicestable2017\",\r\n" +
-			"\t\t\t\"lu_name\": \"Customer\",\r\n" +
-			"\t\t\t\"interface_name\": \"CRM_DB\",\r\n" +
-			"\t\t\t\"schema_name\": \"public\",\r\n" +
-			"\t\t\t\"logical_unit_name\": \"Customer\",\r\n" +
-			"\t\t\t\"reference_table_name\": \"devicestable2017\",\r\n" +
-			"\t\t\t\"selected\": true\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"refresh_reference_data\": false,\r\n" +
-			"\t\"selected_version_task_name\": null,\r\n" +
-			"\t\"selected_version_datetime\": null,\r\n" +
-			"\t\"selected_version_task_exe_id\": null,\r\n" +
-			"\t\"selected_ref_version_task_name\": null,\r\n" +
-			"\t\"selected_ref_version_datetime\": null,\r\n" +
-			"\t\"selected_ref_version_task_exe_id\": null,\r\n" +
-			"\t\"scheduler\": \"immediate\"\r\n" +
+			"   \"filterout_reserved\":false,\r\n" +
+			"   \"operationMode\":\"insert_entity_without_delete\",\r\n" +
+			"   \"task_type\":\"LOAD\",\r\n" +
+			"   \"task_title\":\"testapi2\",\r\n" +
+			"   \"extractSelected\":false,\r\n" +
+			"   \"load_entity\":true,\r\n" +
+			"   \"delete_before_load\":false,\r\n" +
+			"   \"reserve_ind\":true,\r\n" +
+			"   \"be_id\":4,\r\n" +
+			"   \"source_environment_id\":1,\r\n" +
+			"   \"environment_id\":2,\r\n" +
+			"   \"source_env_name\":\"SRC\",\r\n" +
+			"   \"environment_name\":\"TAR\",\r\n" +
+			"   \"allLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":null,\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"product_name\":\"CRM\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"product_name\":\"ORDERS\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"selectedLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":null,\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"product_name\":\"CRM\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"product_name\":\"ORDERS\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"missingRootLU\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"num_of_entities\":2,\r\n" +
+			"   \"syncModeRadio\":null,\r\n" +
+			"   \"sync_mode\":null,\r\n" +
+			"   \"reserve_retention_period_value\":5,\r\n" +
+			"   \"reserve_retention_period_type\":\"Days\",\r\n" +
+			"   \"allPostExecutionProcess\":[\r\n" +
+			"      {\r\n" +
+			"         \"process_id\":1,\r\n" +
+			"         \"be_id\":4,\r\n" +
+			"         \"process_name\":\"PostExecFlow\",\r\n" +
+			"         \"process_description\":null,\r\n" +
+			"         \"execution_order\":1\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"postExecutionProcesses\":[\r\n" +
+			"      1\r\n" +
+			"   ],\r\n" +
+			"   \"reference\":\"both\",\r\n" +
+			"   \"versionsForLoad\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"selection_method\":\"PR\",\r\n" +
+			"   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
+			"   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
+			"   \"refList\":[\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"devicestable2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"devicestable2017\",\r\n" +
+			"         \"selected\":true\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"refresh_reference_data\":false,\r\n" +
+			"   \"selected_version_task_name\":null,\r\n" +
+			"   \"selected_version_datetime\":null,\r\n" +
+			"   \"selected_version_task_exe_id\":null,\r\n" +
+			"   \"selected_ref_version_task_name\":null,\r\n" +
+			"   \"selected_ref_version_datetime\":null,\r\n" +
+			"   \"selected_ref_version_task_exe_id\":null,\r\n" +
+			"   \"scheduler\":\"immediate\"\r\n" +
 			"}")
 	@webService(path = "task", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
@@ -1150,7 +1046,7 @@ public class Logic extends WebServiceUserCode {
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-		          if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
+            if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
 				retention_period_value = -1;
 			}
 			Db.Row row = db(TDM).fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
@@ -1378,257 +1274,206 @@ public class Logic extends WebServiceUserCode {
 			"Example of a request body:\r\n" +
 			"\r\n" +
 			"{\r\n" +
-			"\t\"task_last_updated_date\": \"2023-05-03 07:16:42.066\",\r\n" +
-			"\t\"filterout_reserved\": true,\r\n" +
-			"\t\"be_id\": 1,\r\n" +
-			"\t\"selected_version_task_name\": null,\r\n" +
-			"\t\"reserve_retention_period_type\": null,\r\n" +
-			"\t\"environment_id\": -1,\r\n" +
-			"\t\"selection_method\": \"GENERATE\",\r\n" +
-			"\t\"selected_ref_version_task_name\": null,\r\n" +
-			"\t\"refresh_reference_data\": false,\r\n" +
-			"\t\"tester\": \"ALL\",\r\n" +
-			"\t\"be_last_updated_date\": \"2022-12-01 13:38:25.987\",\r\n" +
-			"\t\"owners\": [],\r\n" +
-			"\t\"refcount\": 0,\r\n" +
-			"\t\"num_of_entities\": 3,\r\n" +
-			"\t\"tester_type\": \"ID\",\r\n" +
-			"\t\"reserve_note\": null,\r\n" +
-			"\t\"load_entity\": false,\r\n" +
-			"\t\"selected_version_task_exe_id\": null,\r\n" +
-			"\t\"task_created_by\": \"Tahata@k2view.com\",\r\n" +
-			"\t\"be_last_updated_by\": \"admin\",\r\n" +
-			"\t\"scheduling_end_date\": null,\r\n" +
-			"\t\"retention_period_type\": \"Do Not Delete\",\r\n" +
-			"\t\"environment_point_of_contact_phone1\": null,\r\n" +
-			"\t\"processnames\": null,\r\n" +
-			"\t\"testers\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"tester_type\": \"ID\",\r\n" +
-			"\t\t\t\"role_id\": [\r\n" +
-			"\t\t\t\t\"-1\"\r\n" +
-			"\t\t\t],\r\n" +
-			"\t\t\t\"tester\": \"ALL\"\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"selection_param_value\": null,\r\n" +
-			"\t\"environment_status\": \"Active\",\r\n" +
-			"\t\"be_status\": \"Active\",\r\n" +
-			"\t\"selected_version_datetime\": null,\r\n" +
-			"\t\"task_last_updated_by\": \"Tahata@k2view.com\",\r\n" +
-			"\t\"selected_ref_version_task_exe_id\": null,\r\n" +
-			"\t\"task_execution_status\": \"Active\",\r\n" +
-			"\t\"sync_mode\": null,\r\n" +
-			"\t\"replace_sequences\": false,\r\n" +
-			"\t\"entity_exclusion_list\": null,\r\n" +
-			"\t\"environment_point_of_contact_last_name\": null,\r\n" +
-			"\t\"environment_point_of_contact_email\": null,\r\n" +
-			"\t\"be_description\": \"This is a Business Entity created for the TDM GUI for free trail.\",\r\n" +
-			"\t\"reserve_retention_period_value\": null,\r\n" +
-			"\t\"parameters\": null,\r\n" +
-			"\t\"environment_expiration_date\": null,\r\n" +
-			"\t\"environment_point_of_contact_phone2\": null,\r\n" +
-			"\t\"environment_created_by\": \"admin\",\r\n" +
-			"\t\"roles\": [\r\n" +
-			"\t\t[\r\n" +
-			"\t\t\t{\r\n" +
-			"\t\t\t\t\"role_id\": -1,\r\n" +
-			"\t\t\t\t\"allowed_test_conn_failure\": false\r\n" +
-			"\t\t\t}\r\n" +
-			"\t\t]\r\n" +
-			"\t],\r\n" +
-			"\t\"environment_last_updated_by\": \"Tahata@k2view.com\",\r\n" +
-			"\t\"be_creation_date\": \"2022-12-01 13:27:20.522\",\r\n" +
-			"\t\"task_id\": 6,\r\n" +
-			"\t\"be_created_by\": \"admin\",\r\n" +
-			"\t\"source_environment_id\": -1,\r\n" +
-			"\t\"role_id_orig\": -1,\r\n" +
-			"\t\"scheduler\": \"immediate\",\r\n" +
-			"\t\"environment_description\": \"This is the synthetic environment.\",\r\n" +
-			"\t\"selected_ref_version_datetime\": null,\r\n" +
-			"\t\"source_env_name\": \"Synthetic\",\r\n" +
-			"\t\"reserve_ind\": false,\r\n" +
-			"\t\"task_title\": \"g1\",\r\n" +
-			"\t\"fabric_environment_name\": null,\r\n" +
-			"\t\"environment_name\": \"Synthetic\",\r\n" +
-			"\t\"delete_before_load\": false,\r\n" +
-			"\t\"allow_write\": false,\r\n" +
-			"\t\"owner\": null,\r\n" +
-			"\t\"task_status\": \"Active\",\r\n" +
-			"\t\"retention_period_value\": \"-1\",\r\n" +
-			"\t\"executioncount\": 0,\r\n" +
-			"\t\"environment_last_updated_date\": \"2023-05-01 10:57:38.421\",\r\n" +
-			"\t\"be_name\": \"Customer\",\r\n" +
-			"\t\"version_ind\": false,\r\n" +
-			"\t\"task_creation_date\": \"2023-05-03 07:16:42.066\",\r\n" +
-			"\t\"task_globals\": false,\r\n" +
-			"\t\"environment_point_of_contact_first_name\": null,\r\n" +
-			"\t\"task_type\": \"GENERATE\",\r\n" +
-			"\t\"environment_creation_date\": \"2023-05-01 07:03:31.469007\",\r\n" +
-			"\t\"owner_type\": null,\r\n" +
-			"\t\"selection_method2\": \"Generate Synthetic Entities\",\r\n" +
-			"\t\"task_type2\": \"GENERATE\",\r\n" +
-			"\t\"operation_mode\": \"\",\r\n" +
-			"\t\"data_type\": \"Entities\",\r\n" +
-			"\t\"disabled\": false,\r\n" +
-			"\t\"onHold\": false,\r\n" +
-			"\t\"operationMode\": \"insert_entity_without_delete\",\r\n" +
-			"\t\"generateTask\": true,\r\n" +
-			"\t\"globals\": [],\r\n" +
-			"\t\"postExecutionProcesses\": [],\r\n" +
-			"\t\"selectedLogicalUnits\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_name\": \"Asset\",\r\n" +
-			"\t\t\t\"lu_id\": 3,\r\n" +
-			"\t\t\t\"task_id\": 6,\r\n" +
-			"\t\t\t\"$$hashKey\": \"object:246\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
-			"\t\t\t\"lu_id\": 2,\r\n" +
-			"\t\t\t\"task_id\": 6,\r\n" +
-			"\t\t\t\"$$hashKey\": \"object:247\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_name\": \"CRM\",\r\n" +
-			"\t\t\t\"lu_id\": 1,\r\n" +
-			"\t\t\t\"task_id\": 6,\r\n" +
-			"\t\t\t\"$$hashKey\": \"object:248\"\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"source_synthetic\": true,\r\n" +
-			"\t\"allLogicalUnits\": [\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": null,\r\n" +
-			"\t\t\t\"lu_name\": \"CRM\",\r\n" +
-			"\t\t\t\"lu_id\": 1,\r\n" +
-			"\t\t\t\"product_name\": \"CRM\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"CRM\",\r\n" +
-			"\t\t\t\"lu_name\": \"Billing\",\r\n" +
-			"\t\t\t\"lu_id\": 2,\r\n" +
-			"\t\t\t\"product_name\": \"BILLING\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t{\r\n" +
-			"\t\t\t\"lu_parent_name\": \"CRM\",\r\n" +
-			"\t\t\t\"lu_name\": \"Asset\",\r\n" +
-			"\t\t\t\"lu_id\": 3,\r\n" +
-			"\t\t\t\"product_name\": \"ASSET\"\r\n" +
-			"\t\t}\r\n" +
-			"\t],\r\n" +
-			"\t\"missingRootLU\": [],\r\n" +
-			"\t\"versionsForLoad\": [],\r\n" +
-			"\t\"DataManParams\": {\r\n" +
-			"\t\t\"city\": {\r\n" +
-			"\t\t\t\"editor\": {\r\n" +
-			"\t\t\t\t\"name\": \"city\",\r\n" +
-			"\t\t\t\t\"schema\": {\r\n" +
-			"\t\t\t\t\t\"type\": \"string\"\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"context\": {\r\n" +
-			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtable\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": \"addresses\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"city\": {\r\n" +
-			"\t\t\t\t\t\t\"self\": \"city\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"state\": {\r\n" +
-			"\t\t\t\t\t\t\"external\": \"state\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableKey\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": {}\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t}\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"default\": null,\r\n" +
-			"\t\t\t\"description\": \"Select the City to select a random address\",\r\n" +
-			"\t\t\t\"type\": \"string\",\r\n" +
-			"\t\t\t\"mandatory\": false,\r\n" +
-			"\t\t\t\"value\": \"Dallas\",\r\n" +
-			"\t\t\t\"name\": \"city\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t\"contract_ref_id\": {\r\n" +
-			"\t\t\t\"editor\": {\r\n" +
-			"\t\t\t\t\"name\": \"contract_ref_id\",\r\n" +
-			"\t\t\t\t\"schema\": {\r\n" +
-			"\t\t\t\t\t\"type\": \"string\"\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"context\": {\r\n" +
-			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtable\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": \"contract_reference\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"contract_ref_id\": {\r\n" +
-			"\t\t\t\t\t\t\"self\": \"contract_ref_id\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableKey\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": {}\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": true\r\n" +
-			"\t\t\t\t\t}\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"default\": null,\r\n" +
-			"\t\t\t\"description\": \"Select Reference ID to select random Contract Description\",\r\n" +
-			"\t\t\t\"type\": \"string\",\r\n" +
-			"\t\t\t\"mandatory\": false,\r\n" +
-			"\t\t\t\"name\": \"contract_ref_id\",\r\n" +
-			"\t\t\t\"value\": \"102\"\r\n" +
-			"\t\t},\r\n" +
-			"\t\t\"crm_cases_number_of_records\": {\r\n" +
-			"\t\t\t\"editor\": {\r\n" +
-			"\t\t\t\t\"schema\": \"{}\",\r\n" +
-			"\t\t\t\t\"name\": \"crm_cases_number_of_records\",\r\n" +
-			"\t\t\t\t\"context\": {\r\n" +
-			"\t\t\t\t\t\"crm_cases_number_of_records\": {\r\n" +
-			"\t\t\t\t\t\t\"self\": \"distribution\"\r\n" +
-			"\t\t\t\t\t},\r\n" +
-			"\t\t\t\t\t\"distribution\": {\r\n" +
-			"\t\t\t\t\t\t\"const\": {\r\n" +
-			"\t\t\t\t\t\t\t\"distribution\": \"uniform\",\r\n" +
-			"\t\t\t\t\t\t\t\"round\": true,\r\n" +
-			"\t\t\t\t\t\t\t\"type\": \"integer\",\r\n" +
-			"\t\t\t\t\t\t\t\"minimum\": 1,\r\n" +
-			"\t\t\t\t\t\t\t\"maximum\": 3\r\n" +
-			"\t\t\t\t\t\t}\r\n" +
-			"\t\t\t\t\t}\r\n" +
-			"\t\t\t\t},\r\n" +
-			"\t\t\t\t\"id\": \"com.k2view.distribution\"\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"default\": {\r\n" +
-			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
-			"\t\t\t\t\"round\": true,\r\n" +
-			"\t\t\t\t\"type\": \"integer\",\r\n" +
-			"\t\t\t\t\"minimum\": 1,\r\n" +
-			"\t\t\t\t\"maximum\": 3\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"description\": \"Distribution Of Records Of table cases\",\r\n" +
-			"\t\t\t\"type\": \"any\",\r\n" +
-			"\t\t\t\"mandatory\": \"false\",\r\n" +
-			"\t\t\t\"value\": {\r\n" +
-			"\t\t\t\t\"maximum\": 5,\r\n" +
-			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
-			"\t\t\t\t\"round\": true,\r\n" +
-			"\t\t\t\t\"type\": \"integer\",\r\n" +
-			"\t\t\t\t\"minimum\": 3\r\n" +
-			"\t\t\t},\r\n" +
-			"\t\t\t\"name\": \"crm_cases_number_of_records\"\r\n" +
-			"\t\t}\r\n" +
-			"\t},\r\n" +
-			"\t\"refList\": []\r\n" +
-			"}")
+			"   \"task_last_updated_date\":\"2022-12-19 12:16:48.257\",\r\n" +
+			"   \"filterout_reserved\":false,\r\n" +
+			"   \"be_id\":4,\r\n" +
+			"   \"selected_version_task_name\":null,\r\n" +
+			"   \"reserve_retention_period_type\":\"Days\",\r\n" +
+			"   \"environment_id\":2,\r\n" +
+			"   \"selection_method\":\"PR\",\r\n" +
+			"   \"selected_ref_version_task_name\":null,\r\n" +
+			"   \"refresh_reference_data\":false,\r\n" +
+			"   \"tester\":\"tester2\",\r\n" +
+			"   \"be_last_updated_date\":\"2022-12-19 12:12:39.838\",\r\n" +
+			"   \"owners\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"refcount\":1,\r\n" +
+			"   \"num_of_entities\":2,\r\n" +
+			"   \"tester_type\":\"ID\",\r\n" +
+			"   \"reserve_note\":null,\r\n" +
+			"   \"load_entity\":true,\r\n" +
+			"   \"selected_version_task_exe_id\":null,\r\n" +
+			"   \"task_created_by\":\"admin\",\r\n" +
+			"   \"be_last_updated_by\":\"admin\",\r\n" +
+			"   \"scheduling_end_date\":null,\r\n" +
+			"   \"environment_point_of_contact_phone1\":null,\r\n" +
+			"   \"processnames\":\"PostExecFlow\",\r\n" +
+			"   \"testers\":[\r\n" +
+			"      {\r\n" +
+			"         \"tester_type\":\"ID\",\r\n" +
+			"         \"role_id\":[\r\n" +
+			"            \"4\"\r\n" +
+			"         ],\r\n" +
+			"         \"tester\":\"tester2\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"tester_type\":\"ID\",\r\n" +
+			"         \"role_id\":[\r\n" +
+			"            \"3\"\r\n" +
+			"         ],\r\n" +
+			"         \"tester\":\"tester1\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"selection_param_value\":\"(( 'Bronze' = ANY(\\\"BILLING.VIP_STATUS\\\") ))\",\r\n" +
+			"   \"environment_status\":\"Active\",\r\n" +
+			"   \"be_status\":\"Active\",\r\n" +
+			"   \"selected_version_datetime\":null,\r\n" +
+			"   \"task_last_updated_by\":\"admin\",\r\n" +
+			"   \"selected_ref_version_task_exe_id\":null,\r\n" +
+			"   \"task_execution_status\":\"Active\",\r\n" +
+			"   \"sync_mode\":null,\r\n" +
+			"   \"replace_sequences\":false,\r\n" +
+			"   \"entity_exclusion_list\":null,\r\n" +
+			"   \"environment_point_of_contact_last_name\":null,\r\n" +
+			"   \"environment_point_of_contact_email\":null,\r\n" +
+			"   \"be_description\":\"\",\r\n" +
+			"   \"reserve_retention_period_value\":5,\r\n" +
+			"   \"parameters\":\"{\\\"group\\\":{\\\"rules\\\":[{\\\"condition\\\":\\\"=\\\",\\\"field\\\":\\\"BILLING.VIP_STATUS\\\",\\\"data\\\":\\\"Bronze\\\",\\\"operator\\\":\\\"AND\\\",\\\"type\\\":\\\"text\\\",\\\"comboIndicator\\\":\\\"true\\\",\\\"validValues\\\":[\\\"Bronze\\\",\\\"Gold\\\",\\\"Platinum\\\",\\\"Silver\\\"],\\\"disableThird\\\":false}]}}\",\r\n" +
+			"   \"environment_expiration_date\":null,\r\n" +
+			"   \"environment_point_of_contact_phone2\":null,\r\n" +
+			"   \"environment_created_by\":\"admin\",\r\n" +
+			"   \"roles\":[\r\n" +
+			"      [\r\n" +
+			"         {\r\n" +
+			"            \"role_id\":4,\r\n" +
+			"            \"allowed_test_conn_failure\":false\r\n" +
+			"         },\r\n" +
+			"         {\r\n" +
+			"            \"role_id\":3,\r\n" +
+			"            \"allowed_test_conn_failure\":false\r\n" +
+			"         }\r\n" +
+			"      ]\r\n" +
+			"   ],\r\n" +
+			"   \"environment_last_updated_by\":\"admin\",\r\n" +
+			"   \"be_creation_date\":\"2022-10-19 18:42:40.301\",\r\n" +
+			"   \"task_id\":87,\r\n" +
+			"   \"be_created_by\":\"admin\",\r\n" +
+			"   \"source_environment_id\":1,\r\n" +
+			"   \"role_id_orig\":4,\r\n" +
+			"   \"scheduler\":\"immediate\",\r\n" +
+			"   \"environment_description\":null,\r\n" +
+			"   \"selected_ref_version_datetime\":null,\r\n" +
+			"   \"source_env_name\":\"SRC\",\r\n" +
+			"   \"reserve_ind\":true,\r\n" +
+			"   \"task_title\":\"testapi2\",\r\n" +
+			"   \"fabric_environment_name\":null,\r\n" +
+			"   \"environment_name\":\"TAR\",\r\n" +
+			"   \"delete_before_load\":false,\r\n" +
+			"   \"allow_write\":true,\r\n" +
+			"   \"owner\":null,\r\n" +
+			"   \"task_status\":\"Active\",\r\n" +
+			"   \"executioncount\":0,\r\n" +
+			"   \"environment_last_updated_date\":\"2022-12-06 10:18:49.378\",\r\n" +
+			"   \"be_name\":\"Customer\",\r\n" +
+			"   \"version_ind\":false,\r\n" +
+			"   \"task_creation_date\":\"2022-12-19 12:16:48.257\",\r\n" +
+			"   \"task_globals\":false,\r\n" +
+			"   \"environment_point_of_contact_first_name\":null,\r\n" +
+			"   \"task_type\":\"LOAD\",\r\n" +
+			"   \"environment_creation_date\":\"2022-09-21 13:43:25.13\",\r\n" +
+			"   \"owner_type\":null,\r\n" +
+			"   \"creatorRoles\":[\r\n" +
+			"      \"admin\"\r\n" +
+			"   ],\r\n" +
+			"   \"selection_method2\":\"Parameters with Random Entity Selection\",\r\n" +
+			"   \"task_type2\":\"LOAD\",\r\n" +
+			"   \"operation_mode\":\"Load entity\",\r\n" +
+			"   \"data_type\":\"Entities and Reference\",\r\n" +
+			"   \"disabled\":false,\r\n" +
+			"   \"onHold\":false,\r\n" +
+			"   \"reference\":\"both\",\r\n" +
+			"   \"operationMode\":\"insert_entity_without_delete\",\r\n" +
+			"   \"extractSelected\":true,\r\n" +
+			"   \"postExecutionProcesses\":[\r\n" +
+			"      1\r\n" +
+			"   ],\r\n" +
+			"   \"refList\":[\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"DEVICESTABLE2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"DEVICESTABLE2017\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"ref_table_name\":\"devicestable2017\",\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"interface_name\":\"CRM_DB\",\r\n" +
+			"         \"schema_name\":\"public\",\r\n" +
+			"         \"logical_unit_name\":\"Customer\",\r\n" +
+			"         \"reference_table_name\":\"devicestable2017\",\r\n" +
+			"         \"selected\":true\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"globals\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"selectedLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"task_id\":87\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"allLogicalUnits\":[\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":null,\r\n" +
+			"         \"lu_name\":\"Customer\",\r\n" +
+			"         \"lu_id\":7,\r\n" +
+			"         \"product_name\":\"CRM\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Billing\",\r\n" +
+			"         \"lu_id\":9,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Collection\",\r\n" +
+			"         \"lu_id\":10,\r\n" +
+			"         \"product_name\":\"FINANCE\"\r\n" +
+			"      },\r\n" +
+			"      {\r\n" +
+			"         \"lu_parent_name\":\"Customer\",\r\n" +
+			"         \"lu_name\":\"Orders\",\r\n" +
+			"         \"lu_id\":8,\r\n" +
+			"         \"product_name\":\"ORDERS\"\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"missingRootLU\":[\r\n" +
+			"      \r\n" +
+			"   ],\r\n" +
+			"   \"syncModeRadio\":null,\r\n" +
+			"   \"allPostExecutionProcess\":[\r\n" +
+			"      {\r\n" +
+			"         \"process_id\":1,\r\n" +
+			"         \"be_id\":4,\r\n" +
+			"         \"process_name\":\"PostExecFlow\",\r\n" +
+			"         \"process_description\":null,\r\n" +
+			"         \"execution_order\":1\r\n" +
+			"      }\r\n" +
+			"   ],\r\n" +
+			"   \"versionsForLoad\":[\r\n" +
+			"      \r\n" +
+			"   ]\r\n" +
+			"}=-}")
 	@webService(path = "task/{taskId}", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
@@ -1748,11 +1593,18 @@ public class Logic extends WebServiceUserCode {
 		
 		
 			try {
-		              // TDM 8.0 - In case of Synthetic task, load the input parameters of the population flows into the TDMDB tdm_generate_task_field_mappings
-		              //log.info("wsUpdateTaskV1 - params size: " + DataManParams.size());
-		              createTaskDMParams(id, DataManParams);
-		
-		              String activityDesc = "Task " + task_title + " was updated";
+				// TDM 8.0 - In case of Synthetic task, load the input parameters of the population flows into the TDMDB tdm_generate_task_field_mappings
+				//log.info("wsUpdateTaskV1 - params size: " + DataManParams.size());
+				if (source_environment_id == -1) {
+					if (DataManParams == null) {
+						String luList = "" + db(TDM).fetch("select STRING_AGG(lu_name, ',') from tasks_logical_units where task_id = ?", 
+							taskId).firstValue();
+						DataManParams = (HashMap<String, Object>)((Map<String,Object>)wsGetDMPopParams(luList,taskId)).get("result");
+					}	
+					createTaskDMParams(id, DataManParams);	
+				}
+				
+				String activityDesc = "Task " + task_title + " was updated";
 				fnInsertActivity("update", "Tasks", activityDesc);
 			} catch(Exception e){
 		              e.printStackTrace();
@@ -5423,58 +5275,22 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"date\"\r\n" +
-			"        },\r\n" +
-			"        \"name\": \"param1\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"level\": {\r\n" +
-			"            \"const\": \"error\"\r\n" +
-			"          },\r\n" +
-			"          \"message\": {\r\n" +
-			"            \"const\": \"${param1}, ${param2}\"\r\n" +
-			"          },\r\n" +
-			"          \"param1\": {\r\n" +
-			"            \"self\": \"param1\"\r\n" +
-			"          },\r\n" +
-			"          \"param2\": {\r\n" +
-			"            \"external\": \"param2\"\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.default\",\r\n" +
-			"\t\t\"mandatory\": false\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
+			"      \"name\": \"luName\",\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"date\"\r\n" +
+			"      \"type\": \"array\",\r\n" +
+			"      \"mandatory\": false\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"integer\"\r\n" +
-			"        },\r\n" +
-			"        \"name\": \"param2\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"level\": {\r\n" +
-			"            \"const\": \"error\"\r\n" +
-			"          },\r\n" +
-			"          \"message\": {\r\n" +
-			"            \"const\": \"${param1}, ${param2}\"\r\n" +
-			"          },\r\n" +
-			"          \"param1\": {\r\n" +
-			"            \"external\": \"param1\"\r\n" +
-			"          },\r\n" +
-			"          \"param2\": {\r\n" +
-			"            \"self\": \"param2\"\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.default\"\r\n" +
-			"\t\t\"mandatory\": false\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
+			"      \"name\": \"syncMode\",\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"integer\"\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": false\r\n" +
+			"    },\r\n" +
+			"    {\r\n" +
+			"      \"name\": \"iid\",\r\n" +
+			"      \"description\": \"\",\r\n" +
+			"      \"type\": \"string\",\r\n" +
+			"      \"mandatory\": true\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -5502,16 +5318,13 @@ public class Logic extends WebServiceUserCode {
 					}
 					editorMap.put("name", row.get("name"));
 					editorMap.put("schema",Json.get().fromJson((String) row.get("schema")));
-					editorMap.put("mandatory", row.get("mandatory"));
 					editorMap.put("context", context);
 					map.put("editor", editorMap);
 					map.put("default", row.get("default"));
 					map.put("type", row.get("type"));
-						
-					String description = ("" + row.get("remark")).replaceAll("/n", "\n");
-					map.put("description", description);
-		
-							result.add(map);
+					map.put("mandatory", row.get("mandatory"));
+					map.put("description", row.get("remark"));
+					result.add(map);
 				}
 			}
 		} catch (Exception e) {
@@ -5521,801 +5334,41 @@ public class Logic extends WebServiceUserCode {
 		return wrapWebServiceResults("SUCCESS", null, result);
 	}
 	@desc("Get the list of parameters of the given custom Flow")
-	@webService(path = "getDMPopParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+	@webService(path = "getDMPopParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"city\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"city\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"mtableRandomRow\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          },\r\n" +
-			"          \"mtable\": {\r\n" +
-			"            \"const\": \"addresses\"\r\n" +
-			"          },\r\n" +
-			"          \"city\": {\r\n" +
-			"            \"self\": \"city\"\r\n" +
-			"          },\r\n" +
-			"          \"state\": {\r\n" +
-			"            \"external\": \"state\"\r\n" +
-			"          },\r\n" +
-			"          \"mtableKey\": {\r\n" +
-			"            \"const\": {}\r\n" +
-			"          },\r\n" +
-			"          \"mtableCaseSensitive\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
-			"      \"description\": \"Select the City to select a random address\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false,\r\n" +
-			"      \"value\": \"Dallas\"\r\n" +
+			"  \"result\": [\r\n" +
+			"    {\r\n" +
+			"      \"name\": \"luName\",\r\n" +
+			"      \"description\": \"\",\r\n" +
+			"      \"type\": \"array\",\r\n" +
+			"      \"mandatory\": false\r\n" +
 			"    },\r\n" +
-			"    \"contract_ref_id\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"contract_ref_id\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"mtableRandomRow\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          },\r\n" +
-			"          \"mtable\": {\r\n" +
-			"            \"const\": \"contract_reference\"\r\n" +
-			"          },\r\n" +
-			"          \"contract_ref_id\": {\r\n" +
-			"            \"self\": \"contract_ref_id\"\r\n" +
-			"          },\r\n" +
-			"          \"mtableKey\": {\r\n" +
-			"            \"const\": {}\r\n" +
-			"          },\r\n" +
-			"          \"mtableCaseSensitive\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
-			"      \"description\": \"Select Reference ID to select random Contract Description\",\r\n" +
+			"    {\r\n" +
+			"      \"name\": \"syncMode\",\r\n" +
+			"      \"description\": \"\",\r\n" +
 			"      \"type\": \"string\",\r\n" +
 			"      \"mandatory\": false\r\n" +
 			"    },\r\n" +
-			"    \"crm_cases_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_cases_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_cases_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table cases\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\",\r\n" +
-			"      \"value\": {\r\n" +
-			"        \"maximum\": 5,\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 3\r\n" +
-			"      }\r\n" +
-			"    },\r\n" +
-			"    \"contract_from_date\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"contract_from_date\",\r\n" +
-			"        \"schema\": {},\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"contract_from_date\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": false,\r\n" +
-			"              \"type\": \"date\",\r\n" +
-			"              \"minimum\": \"2023-01-01 17:21:08.991\",\r\n" +
-			"              \"maximum\": \"2023-04-03 19:21:18.493\"\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": false,\r\n" +
-			"        \"type\": \"date\",\r\n" +
-			"        \"minimum\": \"2023-01-01 17:21:08.991\",\r\n" +
-			"        \"maximum\": \"2023-04-03 19:21:18.493\"\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Set distribution for Contract start date\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"station_city\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"station_city\",\r\n" +
-			"        \"schema\": {},\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"station_city\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"weighted\",\r\n" +
-			"              \"round\": false,\r\n" +
-			"              \"type\": \"string\",\r\n" +
-			"              \"weights\": [\r\n" +
-			"                [\r\n" +
-			"                  50,\r\n" +
-			"                  \"New York\"\r\n" +
-			"                ],\r\n" +
-			"                [\r\n" +
-			"                  30,\r\n" +
-			"                  \"Los Angeles\"\r\n" +
-			"                ],\r\n" +
-			"                [\r\n" +
-			"                  20,\r\n" +
-			"                  \"Miami\"\r\n" +
-			"                ]\r\n" +
-			"              ]\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"weighted\",\r\n" +
-			"        \"round\": false,\r\n" +
-			"        \"type\": \"string\",\r\n" +
-			"        \"weights\": [\r\n" +
-			"          [\r\n" +
-			"            50,\r\n" +
-			"            \"New York\"\r\n" +
-			"          ],\r\n" +
-			"          [\r\n" +
-			"            30,\r\n" +
-			"            \"Los Angeles\"\r\n" +
-			"          ],\r\n" +
-			"          [\r\n" +
-			"            20,\r\n" +
-			"            \"Miami\"\r\n" +
-			"          ]\r\n" +
-			"        ]\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Set distribution of the cities of the stations\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_recommendations_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_recommendations_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_recommendations_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table recommendations\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"activity_date\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"activity_date\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"date\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"activity_date\": {\r\n" +
-			"            \"self\": \"value\"\r\n" +
-			"          },\r\n" +
-			"          \"value\": {\r\n" +
-			"            \"const\": \"2023-03-21 14:01:44.663\"\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"syncOutput\": true,\r\n" +
-			"        \"id\": \"com.k2view.default\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": \"2023-03-21 14:01:44.663\",\r\n" +
-			"      \"description\": \"A constant value\",\r\n" +
-			"      \"type\": \"date\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_address_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_address_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_address_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table address\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"cc_company\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"cc_company\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"mtableRandomRow\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          },\r\n" +
-			"          \"mtable\": {\r\n" +
-			"            \"const\": \"cc_company\"\r\n" +
-			"          },\r\n" +
-			"          \"cc_company\": {\r\n" +
-			"            \"self\": \"cc_company\"\r\n" +
-			"          },\r\n" +
-			"          \"mtableKey\": {\r\n" +
-			"            \"const\": {}\r\n" +
-			"          },\r\n" +
-			"          \"mtableCaseSensitive\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
-			"      \"description\": \"Select Credit Card Company\",\r\n" +
+			"    {\r\n" +
+			"      \"name\": \"iid\",\r\n" +
+			"      \"description\": \"\",\r\n" +
 			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_case_note_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_case_note_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_case_note_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table case_note\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"score_type\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"score_type\",\r\n" +
-			"        \"schema\": {},\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"weighted\",\r\n" +
-			"              \"round\": false,\r\n" +
-			"              \"type\": \"string\",\r\n" +
-			"              \"weights\": [\r\n" +
-			"                [\r\n" +
-			"                  10,\r\n" +
-			"                  \"UpSell\"\r\n" +
-			"                ],\r\n" +
-			"                [\r\n" +
-			"                  10,\r\n" +
-			"                  \"Technical\"\r\n" +
-			"                ],\r\n" +
-			"                [\r\n" +
-			"                  10,\r\n" +
-			"                  \"Marketing\"\r\n" +
-			"                ]\r\n" +
-			"              ]\r\n" +
-			"            }\r\n" +
-			"          },\r\n" +
-			"          \"score_type\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"weighted\",\r\n" +
-			"        \"round\": false,\r\n" +
-			"        \"type\": \"string\",\r\n" +
-			"        \"weights\": [\r\n" +
-			"          [\r\n" +
-			"            10,\r\n" +
-			"            \"UpSell\"\r\n" +
-			"          ],\r\n" +
-			"          [\r\n" +
-			"            10,\r\n" +
-			"            \"Technical\"\r\n" +
-			"          ],\r\n" +
-			"          [\r\n" +
-			"            10,\r\n" +
-			"            \"Marketing\"\r\n" +
-			"          ]\r\n" +
-			"        ]\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Set distribution of score types\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_payment_methods_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_payment_methods_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_payment_methods_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table payment_methods\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"event_type\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"event_type\",\r\n" +
-			"        \"schema\": {},\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"event_type\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"weighted\",\r\n" +
-			"              \"round\": false,\r\n" +
-			"              \"type\": \"string\",\r\n" +
-			"              \"weights\": [\r\n" +
-			"                [\r\n" +
-			"                  10,\r\n" +
-			"                  \"User Issue\"\r\n" +
-			"                ],\r\n" +
-			"                [\r\n" +
-			"                  10,\r\n" +
-			"                  \"Station Issue\"\r\n" +
-			"                ],\r\n" +
-			"                [\r\n" +
-			"                  10,\r\n" +
-			"                  \"Station Availability\"\r\n" +
-			"                ]\r\n" +
-			"              ]\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"weighted\",\r\n" +
-			"        \"round\": false,\r\n" +
-			"        \"type\": \"string\",\r\n" +
-			"        \"weights\": [\r\n" +
-			"          [\r\n" +
-			"            10,\r\n" +
-			"            \"User Issue\"\r\n" +
-			"          ],\r\n" +
-			"          [\r\n" +
-			"            10,\r\n" +
-			"            \"Station Issue\"\r\n" +
-			"          ],\r\n" +
-			"          [\r\n" +
-			"            10,\r\n" +
-			"            \"Station Availability\"\r\n" +
-			"          ]\r\n" +
-			"        ]\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Set distribution of event type\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"score_value\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"score_value\",\r\n" +
-			"        \"schema\": {},\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"score_value\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"normal\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"mean\": 75,\r\n" +
-			"              \"stddev\": 3,\r\n" +
-			"              \"minimum\": 10,\r\n" +
-			"              \"maximum\": 100\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"normal\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"mean\": 75,\r\n" +
-			"        \"stddev\": 3,\r\n" +
-			"        \"minimum\": 10,\r\n" +
-			"        \"maximum\": 100\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Set distribution of score values\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_asset_transaction_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_asset_transaction_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_asset_transaction_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table asset_transaction\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"activity_note\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"activity_note\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"activity_note\": {\r\n" +
-			"            \"self\": \"value\"\r\n" +
-			"          },\r\n" +
-			"          \"value\": {\r\n" +
-			"            \"const\": \"My Note\"\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"syncOutput\": true,\r\n" +
-			"        \"id\": \"com.k2view.default\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": \"My Note\",\r\n" +
-			"      \"description\": \"NTE DEC\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"state\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"state\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"mtableRandomRow\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          },\r\n" +
-			"          \"mtable\": {\r\n" +
-			"            \"const\": \"addresses\"\r\n" +
-			"          },\r\n" +
-			"          \"city\": {\r\n" +
-			"            \"external\": \"city\"\r\n" +
-			"          },\r\n" +
-			"          \"state\": {\r\n" +
-			"            \"self\": \"state\"\r\n" +
-			"          },\r\n" +
-			"          \"mtableKey\": {\r\n" +
-			"            \"const\": {}\r\n" +
-			"          },\r\n" +
-			"          \"mtableCaseSensitive\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
-			"      \"description\": \"Select State to set the address\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false,\r\n" +
-			"      \"value\": \"TX\"\r\n" +
-			"    },\r\n" +
-			"    \"note_date\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"note_date\",\r\n" +
-			"        \"schema\": {},\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"note_date\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": false,\r\n" +
-			"              \"type\": \"date\",\r\n" +
-			"              \"minimum\": \"2023-03-01 19:17:17.998\",\r\n" +
-			"              \"maximum\": \"2023-04-03 22:17:27.344\"\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": false,\r\n" +
-			"        \"type\": \"date\",\r\n" +
-			"        \"minimum\": \"2023-03-01 19:17:17.998\",\r\n" +
-			"        \"maximum\": \"2023-04-03 22:17:27.344\"\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Set the distribution of the notes dates\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"paypal_id\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"paypal_id\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"mtableRandomRow\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          },\r\n" +
-			"          \"mtable\": {\r\n" +
-			"            \"const\": \"paypal_id\"\r\n" +
-			"          },\r\n" +
-			"          \"paypal_id\": {\r\n" +
-			"            \"self\": \"paypal_id\"\r\n" +
-			"          },\r\n" +
-			"          \"mtableKey\": {\r\n" +
-			"            \"const\": {}\r\n" +
-			"          },\r\n" +
-			"          \"mtableCaseSensitive\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
-			"      \"description\": \"Select the paypal id\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_activity_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_activity_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_activity_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table activity\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"note_text\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"name\": \"note_text\",\r\n" +
-			"        \"schema\": {\r\n" +
-			"          \"type\": \"string\"\r\n" +
-			"        },\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"mtableRandomRow\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          },\r\n" +
-			"          \"mtable\": {\r\n" +
-			"            \"const\": \"note_text\"\r\n" +
-			"          },\r\n" +
-			"          \"note_text\": {\r\n" +
-			"            \"self\": \"note_text\"\r\n" +
-			"          },\r\n" +
-			"          \"mtableKey\": {\r\n" +
-			"            \"const\": {}\r\n" +
-			"          },\r\n" +
-			"          \"mtableCaseSensitive\": {\r\n" +
-			"            \"const\": true\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.mTableKey\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": null,\r\n" +
-			"      \"description\": \"Select a text for the note\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    \"crm_contract_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_contract_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_contract_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table contract\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
-			"    },\r\n" +
-			"    \"crm_score_number_of_records\": {\r\n" +
-			"      \"editor\": {\r\n" +
-			"        \"schema\": \"{}\",\r\n" +
-			"        \"name\": \"crm_score_number_of_records\",\r\n" +
-			"        \"context\": {\r\n" +
-			"          \"crm_score_number_of_records\": {\r\n" +
-			"            \"self\": \"distribution\"\r\n" +
-			"          },\r\n" +
-			"          \"distribution\": {\r\n" +
-			"            \"const\": {\r\n" +
-			"              \"distribution\": \"uniform\",\r\n" +
-			"              \"round\": true,\r\n" +
-			"              \"type\": \"integer\",\r\n" +
-			"              \"minimum\": 1,\r\n" +
-			"              \"maximum\": 3\r\n" +
-			"            }\r\n" +
-			"          }\r\n" +
-			"        },\r\n" +
-			"        \"id\": \"com.k2view.distribution\"\r\n" +
-			"      },\r\n" +
-			"      \"default\": {\r\n" +
-			"        \"distribution\": \"uniform\",\r\n" +
-			"        \"round\": true,\r\n" +
-			"        \"type\": \"integer\",\r\n" +
-			"        \"minimum\": 1,\r\n" +
-			"        \"maximum\": 3\r\n" +
-			"      },\r\n" +
-			"      \"description\": \"Distribution Of Records Of table score\",\r\n" +
-			"      \"type\": \"any\",\r\n" +
-			"      \"mandatory\": \"false\"\r\n" +
+			"      \"mandatory\": true\r\n" +
 			"    }\r\n" +
-			"  },\r\n" +
+			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsGetDMPopParams(String luList, Long taskId) throws Exception {
-		HashMap<String, HashMap<String, Object>> result = new HashMap<>();
+		      
+		SortedMap<String, HashMap<String, Object>> result = new TreeMap<>();
 		
 		try {
 		          luList = luList.replaceAll("\\s+", "");
 		    String[] lus = luList.split(",");
-		     for (String luName : lus) {
-		        String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
+		
+		          for (String luName : lus) {
+		              String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
 				Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
 		
 				for (Db.Row flow : flows) {
@@ -6374,7 +5427,7 @@ public class Logic extends WebServiceUserCode {
 		                      Map<?, ?> context = Json.get().fromJson(contextString);
 		                      editorMap.put("id","com.k2view.distribution");
 		                      editorMap.put("name", distParamName);
-					    editorMap.put("schema", "{}");
+					    editorMap.put("schema", Json.get().fromJson("{type=integer}"));
 		                      editorMap.put("context", context);
 		                      map.put("editor", editorMap);
 				        map.put("type", "any");
@@ -6421,6 +5474,7 @@ public class Logic extends WebServiceUserCode {
 		          log.error(e.getMessage());
 			return wrapWebServiceResults("FAILED", e.getMessage(), null);
 		}
+		
 		return wrapWebServiceResults("SUCCESS", null, result);
 	}
 }

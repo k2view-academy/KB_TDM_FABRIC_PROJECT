@@ -88,11 +88,37 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "filter Out TDM Tables",
+                            "name": "filter Out Tables",
                             "actorType": {
-                                "parentType": "filterOutTDMTables",
-                                "inputs": [],
-                                "outputs": []
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "filterOutGenertors"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "tableNameOut",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -384,25 +410,14 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "filter Out TDM Tables",
+                "actor": "filter Out Tables",
                 "name": "tableName"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "Report to Log",
-                "name": "TABLE_NAME"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out TDM Tables",
+                "actor": "filter Out Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -413,7 +428,18 @@
         },
         {
             "leftPort": {
-                "actor": "filter Out TDM Tables",
+                "actor": "filter Out Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Report to Log",
+                "name": "TABLE_NAME"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -424,7 +450,7 @@
         },
         {
             "leftPort": {
-                "actor": "filter Out TDM Tables",
+                "actor": "filter Out Tables",
                 "name": "tableNameOut"
             },
             "rightPort": {
@@ -502,7 +528,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "filter Out TDM Tables",
+                "actor": "filter Out Tables",
                 "name": "luName"
             }
         },
