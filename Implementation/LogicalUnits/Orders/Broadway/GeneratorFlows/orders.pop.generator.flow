@@ -48,7 +48,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ORDER_ID 1",
+                            "name": "CONTRACT_ID",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -87,7 +87,7 @@
                                         }
                                     },
                                     {
-                                        "const": "Gen_ORDER_ID_SEQ",
+                                        "const": "Gen_CONTRACT_ID_SEQ",
                                         "name": "sequenceId",
                                         "schema": {
                                             "type": "string"
@@ -151,7 +151,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CONTARCT_ID",
+                            "name": "ORDER_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -312,7 +312,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "CONTARCT_ID",
+                "actor": "ORDER_ID",
                 "name": "value"
             },
             "path": [
@@ -331,22 +331,22 @@
         },
         {
             "leftPort": {
-                "actor": "ORDER_ID 1",
+                "actor": "CONTRACT_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ORDER_ID",
                 "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "ORDER_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CONTARCT_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "contract_id"
             }
         },
         {
