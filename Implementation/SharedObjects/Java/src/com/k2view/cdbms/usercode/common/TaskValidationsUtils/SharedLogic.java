@@ -274,15 +274,26 @@ public class SharedLogic {
         Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
         Long maxRetentionPeriod = -1L;
         if ("versioning".equals(validation)) {
-            Map<String,Long>versionMap=(Map<String,Long>)retentionDefinitions.get("maxRetentionPeriod");
-            maxRetentionPeriod = versionMap.get("value");
-        } else {
             if (adminOrOwner) {
-                maxRetentionPeriod = 0L;
+                Map<String, Long> versionMap = (Map<String, Long>) retentionDefinitions.get("versioningRetentionPeriod");
+                maxRetentionPeriod = versionMap.get("value");
             } else {
-                Map<String,Long>versionMap=(Map<String,Long>)retentionDefinitions.get("maxReserveDays");
-                maxRetentionPeriod = versionMap.get("value");;
+                Map<String, Long> versionMap = (Map<String, Long>) retentionDefinitions.get("versioningRetentionPeriodForTesters");
+                maxRetentionPeriod = versionMap.get("value");
+                String val = String.valueOf(versionMap.get("allow_doNotDelete"));
+                if (maxRetentionPeriod == -1 && "false".equalsIgnoreCase(val)) {
+                    errorMessages.put("retention", "The tester cannot use DO NOT DELETE Mode in versioning");
+                }
             }
+        }
+        else {
+            Map<String, Long> versionMap;
+            if (adminOrOwner) {
+                versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriod");
+            } else {
+                versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriodForTesters");
+            }
+            maxRetentionPeriod = versionMap.get("value");
         }
 
         ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("periodTypes");
@@ -299,10 +310,8 @@ public class SharedLogic {
                 }
             }
             Double retentionValue = Double.parseDouble(value);
-            if (!adminOrOwner && retentionValue == 0) {
-                errorMessages.put("retention", "The retention period of a tester user cannot be zero");
-            }
-            if (retentionValue < 0) {
+
+            if (retentionValue < -1) {
                 errorMessages.put("retention", "The retention period is negative");
             } else {
                 Double retention = Double.parseDouble(unitToDay) * retentionValue;
