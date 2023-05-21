@@ -2,7 +2,7 @@
 <FabEnvironmentsManager xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>Environments</Name>
   <EnvironmentsList>
-    <Environment enabled="true" name="SRCLocalDebug">
+    <Environment enabled="true" name="SRC">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
@@ -112,10 +112,10 @@
           <Value>143</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>SRCLocalDebug</Value>
+          <Value>SRC</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>TARLocalDebug</Value>
+          <Value>TAR</Value>
         </Global>
         <Global name="TDM_CLONING_DATA" luName="">
           <Value>false</Value>
@@ -193,6 +193,9 @@
         </Global>
         <Global name="LOAD_MASKING_FLAG" luName="">
           <Value>false</Value>
+        </Global>
+        <Global name="TDM_SUMMARY_REPORT_LIMIT" luName="">
+          <Value>10000</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -324,7 +327,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="TARLocalDebug">
+    <Environment enabled="true" name="TAR">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>host.docker.internal</dbHost>
@@ -434,10 +437,10 @@
           <Value>0</Value>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
-          <Value>SRCLocalDebug</Value>
+          <Value>SRC</Value>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
-          <Value>TARLocalDebug</Value>
+          <Value>TAR</Value>
         </Global>
         <Global name="TDM_CLONING_DATA" luName="">
           <Value>false</Value>
@@ -515,6 +518,9 @@
         </Global>
         <Global name="LOAD_MASKING_FLAG" luName="">
           <Value>false</Value>
+        </Global>
+        <Global name="TDM_SUMMARY_REPORT_LIMIT" luName="">
+          <Value>10000</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
@@ -838,6 +844,9 @@
         </Global>
         <Global name="LOAD_MASKING_FLAG" luName="">
           <Value>false</Value>
+        </Global>
+        <Global name="TDM_SUMMARY_REPORT_LIMIT" luName="">
+          <Value>10000</Value>
         </Global>
         <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
