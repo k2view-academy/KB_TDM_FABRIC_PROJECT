@@ -20,6 +20,23 @@ import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
+import java.util.*;
+import java.sql.*;
+import java.math.*;
+import java.io.*;
+import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
+import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.shared.user.UserCode.*;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
@@ -268,7 +285,8 @@ public class SharedLogic {
     }
 
 
-    public static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) {
+	@out(name = "result", type = Map.class, desc = "")
+    public static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) throws Exception {
         Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
         Map<String, String> errorMessages = new HashMap<>();
         Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
@@ -288,8 +306,8 @@ public class SharedLogic {
                     break;
                 }
             }
-            long cnt = Long.parseLong(value);
-            long inputValue = Long.parseLong(unitToDay) * cnt;
+            Double cnt = Double.parseDouble(value);
+            Double inputValue = Double.parseDouble(unitToDay) * cnt;
 
 
             if("versioning".equals(validation)) {
@@ -308,7 +326,6 @@ public class SharedLogic {
                     versionMap = (Map<String, Long>) retentionDefinitions.get("maxReservationPeriod");
                 } else {
                     versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriodForTesters");
-
                 }
                 maxPeriod = versionMap.get("value");
             }
@@ -319,7 +336,6 @@ public class SharedLogic {
 
         return errorMessages;
     }
-
 
     public static Map<String, String> fnValidateVersionExecIdAndGetDetails(Long dataVersionExecId, Map<String,Object> beLUs, String sourceEnvName) throws Exception {
         Map<String, String> result = new HashMap<>();

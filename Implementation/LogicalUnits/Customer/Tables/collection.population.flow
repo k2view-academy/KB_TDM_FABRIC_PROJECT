@@ -235,8 +235,7 @@
             "rightPort": {
                 "actor": "Query",
                 "name": "parent_rows"
-            },
-            "iterate": "Iterate"
+            }
         },
         {
             "leftPort": {

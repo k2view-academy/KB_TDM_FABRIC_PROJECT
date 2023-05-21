@@ -235,9 +235,13 @@ public class TdmExecuteTask {
 					// TDM 7.4 - 19.01.22 - Set globals at task level instead of instance level
                     //TASK_TYPES type = TASK_TYPES.valueOf(TASK_TYPE.get(taskProperties).toString().toUpperCase());
                     //Map<String,Object> globals = getGlobals(type.query(), taskProperties, new HashMap<>(), type.params(taskProperties));
-					setGlobalsForTask(taskType, taskProperties);
+					try {
+						setGlobalsForTask(taskType, taskProperties);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 
-                    try {
+					try {
                         //String fabricCommandParams = " globals=" + globals + ", taskExecutionID=" + taskExecutionID; //todo: iid=?
 						String fabricCommandParams = " taskExecutionID=" + taskExecutionID; //todo: iid=?
                         db(TDM).fetch(POST_EXECUTIONS, taskExecutionID).forEach(res -> runPostExecution(taskExecutionID, fabricCommandParams, res));
@@ -866,7 +870,7 @@ public class TdmExecuteTask {
 		return globals;
     }
 	
-	private static void setGlobalsForTask(String taskType, Map<String, Object> taskProperties) {
+	private static void setGlobalsForTask(String taskType, Map<String, Object> taskProperties) throws Exception {
 		
 		Map<String,Object> globals = new HashMap<>();
 		Map<String, Object> additionalGlobals = new HashMap<>();
@@ -901,7 +905,7 @@ public class TdmExecuteTask {
 					adminOrOwner = Util.rte(() -> fnIsAdminOrOwner("" + ENVIRONMENT_ID.get(taskProperties), executed_by));
 				}
 				if (!adminOrOwner) {
-					Map<String, Object> retentionInfo = fnGetRetentionPeriod();
+					Map<String, Object> retentionInfo = Util.rte(() -> fnGetRetentionPeriod());
 					maxReserveTester = String.valueOf(retentionInfo.get("maxRetentionPeriodForTester"));
 				}
 				//log.info("MAX_RESERVATION_DAYS_FOR_TESTER: " +  maxReserveTester);

@@ -576,71 +576,72 @@ public class SharedLogic {
         return response;
     }
 
-	public static Map<String, Object> fnGetRetentionPeriod() {
-        Map<String, Object> map;
-        try {
-            String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
-
-            Object params = db(TDM).fetch(sql).firstRow().get("param_value");
-            Map result = Json.get().fromJson((String) params, Map.class);
-
-            map = new HashMap<>();
-
-            Object maxRetentionPeriod = result.get("maxRetentionPeriod");
-            if (maxRetentionPeriod != null) {
-                Map<String, Object> retain = new HashMap<>();
-                retain.put("units", "Days");
-                retain.put("value", maxRetentionPeriod);
-
-                map.put("maxRetentionPeriod", retain);
-            }
-
-            Object RetaindefaultPeriod = result.get("retentionDefaultPeriod");
-            if (RetaindefaultPeriod != null) {
-
-                map.put("retentionDefaultPeriod", RetaindefaultPeriod);
-            }
-
-            Object retentionPeriodTypes = result.get("availableOptions");
-            if (retentionPeriodTypes != null) {
-                map.put("periodTypes", retentionPeriodTypes);
-            }
-
-            Object maxReservationPeriod = result.get("maxReservationPeriod");
-            if (maxReservationPeriod != null) {
-                Map<String, Object> reserve = new HashMap<>();
-                reserve.put("units", "Days");
-                reserve.put("value", maxReservationPeriod);
-                map.put("maxReservationPeriod", reserve);
-            }
-            Object reserveDefaultPeriod = result.get("reservationDefaultPeriod");
-            if (reserveDefaultPeriod != null) {
-                map.put("reservationDefaultPeriod", reserveDefaultPeriod);
-            }
-            Object versioningRetentionPeriod = result.get("versioningRetentionPeriod");
-            if (versioningRetentionPeriod != null) {
-                map.put("versioningRetentionPeriod", versioningRetentionPeriod);
-            }
-            Object versioningRetentionPeriodForTesters = result.get("versioningRetentionPeriodForTesters");
-            if (versioningRetentionPeriodForTesters != null) {
-                map.put("versioningRetentionPeriodForTesters", versioningRetentionPeriodForTesters);
-            }
-
-            sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
-            String maxReserveDays = "" + db(TDM).fetch(sql).firstValue();
-            if (maxReserveDays != null) {
-                Map<String, Object> testers = new HashMap<>();
-
-                testers.put("units", "Days");
-                testers.put("value", maxReserveDays);
-
-                map.put("maxRetentionPeriodForTesters", testers);
-            }
-            return map;
-        } catch (Throwable t) {
-            throw new RuntimeException("Failed to get retention Period Definitions from tdm_general_parameters TDMDB");
-        }
-    }
+	@out(name = "result", type = Map.class, desc = "")
+	public static Map<String,Object> fnGetRetentionPeriod() throws Exception {
+		Map<String, Object> map;
+		try {
+		    String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+		
+		    Object params = db(TDM).fetch(sql).firstRow().get("param_value");
+		    Map result = Json.get().fromJson((String) params, Map.class);
+		
+		    map = new HashMap<>();
+		
+		    Object maxRetentionPeriod = result.get("maxRetentionPeriod");
+		    if (maxRetentionPeriod != null) {
+		        Map<String, Object> retain = new HashMap<>();
+		        retain.put("units", "Days");
+		        retain.put("value", maxRetentionPeriod);
+		
+		        map.put("maxRetentionPeriod", retain);
+		    }
+		
+		    Object RetaindefaultPeriod = result.get("retentionDefaultPeriod");
+		    if (RetaindefaultPeriod != null) {
+		
+		        map.put("retentionDefaultPeriod", RetaindefaultPeriod);
+		    }
+		
+		    Object retentionPeriodTypes = result.get("availableOptions");
+		    if (retentionPeriodTypes != null) {
+		        map.put("periodTypes", retentionPeriodTypes);
+		    }
+		
+		    Object maxReservationPeriod = result.get("maxReservationPeriod");
+		    if (maxReservationPeriod != null) {
+		        Map<String, Object> reserve = new HashMap<>();
+		        reserve.put("units", "Days");
+		        reserve.put("value", maxReservationPeriod);
+		        map.put("maxReservationPeriod", reserve);
+		    }
+		    Object reserveDefaultPeriod = result.get("reservationDefaultPeriod");
+		    if (reserveDefaultPeriod != null) {
+		        map.put("reservationDefaultPeriod", reserveDefaultPeriod);
+		    }
+		    Object versioningRetentionPeriod = result.get("versioningRetentionPeriod");
+		    if (versioningRetentionPeriod != null) {
+		        map.put("versioningRetentionPeriod", versioningRetentionPeriod);
+		    }
+		    Object versioningRetentionPeriodForTesters = result.get("versioningRetentionPeriodForTesters");
+		    if (versioningRetentionPeriodForTesters != null) {
+		        map.put("versioningRetentionPeriodForTesters", versioningRetentionPeriodForTesters);
+		    }
+		
+		    sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
+		    Object maxReserveDays = "" + db(TDM).fetch(sql).firstValue();
+		    if (maxReserveDays != null) {
+		        Map<String, Object> testers = new HashMap<>();
+		
+		        testers.put("units", "Days");
+		        testers.put("value", maxReserveDays);
+		
+		        map.put("maxRetentionPeriodForTesters", testers);
+		    }
+		    return map;
+		} catch (Throwable t) {
+		    throw new RuntimeException("Failed to get retention Period Definitions from tdm_general_parameters TDMDB");
+		}
+	}
 	
 	public static String fnGetUserPermissionGroup(String userName) {
 		try {

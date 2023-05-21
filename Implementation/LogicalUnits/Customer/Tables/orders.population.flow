@@ -113,7 +113,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * FROM public.orders"
+                                        "const": "SELECT * FROM public.orders where contract_id="
                                     },
                                     {
                                         "name": "rowsGeneratorDistribution",
@@ -269,8 +269,7 @@
             "rightPort": {
                 "actor": "Query",
                 "name": "parent_rows"
-            },
-            "iterate": "Iterate"
+            }
         },
         {
             "leftPort": {
