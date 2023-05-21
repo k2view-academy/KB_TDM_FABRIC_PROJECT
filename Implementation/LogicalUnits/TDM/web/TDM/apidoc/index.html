@@ -196,6 +196,16 @@
 
   <h3>Table of Contents </h3>
   <div class="method-summary"></div>
+  <h4><a href="#Catalog">Catalog</a></h4>
+  <ul>
+  <li><a href="#catalogAllVersionsGet"><code><span class="http-method">get</span> /catalog/all-versions</code></a></li>
+  <li><a href="#catalogCleanGraphGet"><code><span class="http-method">get</span> /catalog/clean-graph</code></a></li>
+  <li><a href="#catalogCrawlerStatusGet"><code><span class="http-method">get</span> /catalog/crawler-status</code></a></li>
+  <li><a href="#catalogRankRecommendationGet"><code><span class="http-method">get</span> /catalog/rank-recommendation</code></a></li>
+  <li><a href="#catalogVersionDataPlatformGet"><code><span class="http-method">get</span> /catalog/{version}/{dataPlatform}</code></a></li>
+  <li><a href="#catalogVersionDataPlatformSchemaGet"><code><span class="http-method">get</span> /catalog/{version}/{dataPlatform}/{schema}</code></a></li>
+  <li><a href="#catalogVersionGet"><code><span class="http-method">get</span> /catalog/{version}</code></a></li>
+  </ul>
   <h4><a href="#Common">Common</a></h4>
   <ul>
   <li><a href="#commonGet"><code><span class="http-method">get</span> /common</code></a></li>
@@ -382,6 +392,348 @@
   <li><a href="#tdmVersionGet"><code><span class="http-method">get</span> /tdmVersion</code></a></li>
   </ul>
 
+  <h1><a name="Catalog">Catalog</a></h1>
+  <div class="method"><a name="catalogAllVersionsGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/all-versions</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogAllVersionsGet</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Object
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{ }</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Object">Object</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>{}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="catalogCleanGraphGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/clean-graph</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogCleanGraphGet</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Boolean
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>true</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Boolean">Boolean</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>false</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>false</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="catalogCrawlerStatusGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/crawler-status</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogCrawlerStatusGet</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+    <h3 class="field-label">Query parameters</h3>
+    <div class="field-items">
+      <div class="param">uuid (optional)</div>
+      
+            <div class="param-desc"><span class="param-type">Query Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Object
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{ }</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Object">Object</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>{}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="catalogRankRecommendationGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/rank-recommendation</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogRankRecommendationGet</span>)</div>
+    <div class="method-notes"></div>
+
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Object
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{ }</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Object">Object</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>{}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="catalogVersionDataPlatformGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/{version}/{dataPlatform}</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogVersionDataPlatformGet</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">version (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>      <div class="param">dataPlatform (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Object
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{ }</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Object">Object</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>{}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="catalogVersionDataPlatformSchemaGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/{version}/{dataPlatform}/{schema}</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogVersionDataPlatformSchemaGet</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">version (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>      <div class="param">dataPlatform (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>      <div class="param">schema (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Object
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{ }</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Object">Object</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>{}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{}</code></pre>
+  </div> <!-- method -->
+  <hr/>
+  <div class="method"><a name="catalogVersionGet"></a>
+    <div class="method-path">
+    <a class="up" href="#__Methods">Up</a>
+    <pre class="get"><code class="huge"><span class="http-method">get</span> /catalog/{version}</code></pre></div>
+    <div class="method-summary"> (<span class="nickname">catalogVersionGet</span>)</div>
+    <div class="method-notes"></div>
+
+    <h3 class="field-label">Path parameters</h3>
+    <div class="field-items">
+      <div class="param">version (required)</div>
+      
+            <div class="param-desc"><span class="param-type">Path Parameter</span> &mdash;  </div>    </div>  <!-- field-items -->
+
+
+
+
+
+
+    <h3 class="field-label">Return type</h3>
+    <div class="return-type">
+      
+      Object
+    </div>
+
+    <!--Todo: process Response Object and its headers, schema, examples -->
+
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{ }</code></pre>
+
+    <h3 class="field-label">Produces</h3>
+    This API call produces the following media types according to the <span class="header">Accept</span> request header;
+    the media type will be conveyed by the <span class="header">Content-Type</span> response header.
+    <ul>
+      <li><code>application/json</code></li>
+      <li><code>application/xml</code></li>
+    </ul>
+
+    <h3 class="field-label">Responses</h3>
+    <h4 class="field-label">200</h4>
+    OK
+        <a href="#Object">Object</a>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/xml</div>
+    <pre class="example"><code>{}</code></pre>
+    <h3 class="field-label">Example data</h3>
+    <div class="example-data-content-type">Content-Type: application/json</div>
+    <pre class="example"><code>{}</code></pre>
+  </div> <!-- method -->
+  <hr/>
   <h1><a name="Common">Common</a></h1>
   <div class="method"><a name="commonGet"></a>
     <div class="method-path">
@@ -555,7 +907,20 @@
     <pre class="example"><code>PATIENT_ID,INVOICE_ID1,11112,22223,3333</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/xml</div>
-    <pre class="example"><code>&lt;TABLE&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;1&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;1111&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;2&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;2222&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;3&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;3333&lt;/COLUMN&gt;&lt;/ROW&gt;&quot;&lt;/TABLE&gt;</code></pre>
+    <pre class="example"><code>&lt;TABLE&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;1&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;1111&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;2&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;2222&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;3&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;3333&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&quot;&lt;/TABLE&gt;</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>{&quot;tableName&quot;:[{&quot;columnName&quot;:&quot;value&quot;}]}</code></pre>
@@ -1382,7 +1747,36 @@ The entity?s selection method:</p>
         
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/xml</div>
-    <pre class="example"><code>&lt;TABLES&gt;&lt;TABLE name&#x3D;&quot;Patiens&quot;&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;1&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;1111&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;2&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;2222&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;3&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;3333&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;/TABLE&gt;&lt;TABLE name&#x3D;&quot;Clients&quot;&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;CLIENT_ID&quot;&gt;10&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;10101010&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;CLIENT_ID&quot;&gt;20&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;20202020&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;CLIENT_ID&quot;&gt;30&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;30303030&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;/TABLE&gt;&lt;/TABLES&gt;</code></pre>
+    <pre class="example"><code>&lt;TABLES&gt;
+&lt;TABLE name&#x3D;&quot;Patiens&quot;&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;1&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;1111&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;2&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;2222&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;3&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;3333&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;/TABLE&gt;
+&lt;TABLE name&#x3D;&quot;Clients&quot;&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;CLIENT_ID&quot;&gt;10&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;10101010&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;CLIENT_ID&quot;&gt;20&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;20202020&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;CLIENT_ID&quot;&gt;30&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;30303030&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;/TABLE&gt;
+&lt;/TABLES&gt;</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>[{&quot;tableName1&quot;:[{&quot;columnName1&quot;:&quot;value1&quot;}]},{&quot;tableName2&quot;:[{&quot;columnName2&quot;:&quot;value2&quot;}]}]</code></pre>
@@ -1579,7 +1973,20 @@ The entity?s selection method:</p>
     <pre class="example"><code>PATIENT_ID,INVOICE_ID1,11112,22223,3333</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/xml</div>
-    <pre class="example"><code>&lt;TABLE&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;1&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;1111&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;2&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;2222&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;ROW&gt;&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;3&lt;/COLUMN&gt;&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;3333&lt;/COLUMN&gt;&lt;/ROW&gt;&lt;/TABLE&gt;</code></pre>
+    <pre class="example"><code>&lt;TABLE&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;1&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;1111&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;2&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;2222&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;ROW&gt;
+&lt;COLUMN NAME&#x3D;&quot;PATIENT_ID&quot;&gt;3&lt;/COLUMN&gt;
+&lt;COLUMN NAME&#x3D;&quot;INVOICE_ID&quot;&gt;3333&lt;/COLUMN&gt;
+&lt;/ROW&gt;
+&lt;/TABLE&gt;</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>[{&quot;column1&quot;:&quot;value1&quot;,&quot;column2&quot;:&quot;value2&quot;,&quot;column3&quot;:&quot;value3&quot;,&quot;column4&quot;:&quot;value4&quot;}]</code></pre>
@@ -2394,7 +2801,26 @@ Example request body:
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>{  &quot;result&quot;: [    {      &quot;process_id&quot;: 1,      &quot;be_id&quot;: 2,      &quot;process_name&quot;: &quot;name&quot;,      &quot;process_description&quot;: &quot;description,      &quot;execution_order&quot;: 1    },    {      &quot;process_id&quot;: 2,      &quot;be_id&quot;: 2,      &quot;process_name&quot;: &quot;name2&quot;,      &quot;process_description&quot;: &quot;description2,      &quot;execution_order&quot;: 2    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>{
+  &quot;result&quot;: [
+    {
+      &quot;process_id&quot;: 1,
+      &quot;be_id&quot;: 2,
+      &quot;process_name&quot;: &quot;name&quot;,
+      &quot;process_description&quot;: &quot;description,
+      &quot;execution_order&quot;: 1
+    },
+    {
+      &quot;process_id&quot;: 2,
+      &quot;be_id&quot;: 2,
+      &quot;process_name&quot;: &quot;name2&quot;,
+      &quot;process_description&quot;: &quot;description2,
+      &quot;execution_order&quot;: 2
+    }
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="businessentityBeIdProductCountGet"></a>
@@ -2444,7 +2870,11 @@ Example request body:
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>{  &quot;result&quot;: 7  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>{
+  &quot;result&quot;: 7
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="businessentityBeIdPut"></a>
@@ -2708,7 +3138,19 @@ Example request body:
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>&quot;result&quot;: [    {      &quot;be_id&quot;: 1,      &quot;be_name&quot;: &quot;BE&quot;    },    {      &quot;be_id&quot;: 3,      &quot;be_name&quot;: &quot;bb&quot;    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>&quot;result&quot;: [
+    {
+      &quot;be_id&quot;: 1,
+      &quot;be_name&quot;: &quot;BE&quot;
+    },
+    {
+      &quot;be_id&quot;: 3,
+      &quot;be_name&quot;: &quot;bb&quot;
+    }
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="logicalunitsGet"></a>
@@ -3739,7 +4181,26 @@ Example request body:
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>Response bodyDownload{  &quot;result&quot;: [    {      &quot;be_env_exclusion_list_id&quot;: 10,      &quot;be_id&quot;: 15,      &quot;requested_by&quot;: &quot;test2903&quot;,      &quot;environment_id&quot;: 11,      &quot;exclusion_list&quot;: &quot;1,9,35,91&quot;,      &quot;updated_by&quot;: &quot;K2View&quot;,      &quot;creation_date&quot;: &quot;2021-03-29 07:55:06.839&quot;,      &quot;created_by&quot;: &quot;K2View&quot;,      &quot;be_name&quot;: &quot;beName&quot;,      &quot;update_date&quot;: &quot;2021-03-29 07:55:06.839&quot;    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>Response body
+Download
+{
+  &quot;result&quot;: [
+    {
+      &quot;be_env_exclusion_list_id&quot;: 10,
+      &quot;be_id&quot;: 15,
+      &quot;requested_by&quot;: &quot;test2903&quot;,
+      &quot;environment_id&quot;: 11,
+      &quot;exclusion_list&quot;: &quot;1,9,35,91&quot;,
+      &quot;updated_by&quot;: &quot;K2View&quot;,
+      &quot;creation_date&quot;: &quot;2021-03-29 07:55:06.839&quot;,
+      &quot;created_by&quot;: &quot;K2View&quot;,
+      &quot;be_name&quot;: &quot;beName&quot;,
+      &quot;update_date&quot;: &quot;2021-03-29 07:55:06.839&quot;
+    }
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="environmentEnvIdExclusionListsPost"></a>
@@ -4393,7 +4854,56 @@ The number of tasks executed on an environment over last month per execution sta
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>Example 1;{  &quot;result&quot;: {    &quot;minRead&quot;: -1,    &quot;userRole&quot;: null,    &quot;minWrite&quot;: -1  },  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}Example 2:{  &quot;result&quot;: {    &quot;minRead&quot;: 10,    &quot;userRole&quot;: {      &quot;role_last_updated_by&quot;: &quot;admin&quot;,      &quot;allowed_delete_before_load&quot;: true,      &quot;environment_id&quot;: 2,      &quot;allowed_number_of_entities_to_read&quot;: 10,      &quot;allowed_replace_sequences&quot;: false,      &quot;allowed_random_entity_selection&quot;: true,      &quot;role_created_by&quot;: &quot;admin&quot;,      &quot;allow_read&quot;: true,      &quot;role_description&quot;: &quot;&quot;,      &quot;user_type&quot;: &quot;ID&quot;,      &quot;allowed_task_scheduling&quot;: false,      &quot;role_id&quot;: 6,      &quot;allowed_request_of_fresh_data&quot;: false,      &quot;allowed_number_of_reserved_entities&quot;: 0,      &quot;allowed_entity_versioning&quot;: false,      &quot;role_last_updated_date&quot;: &quot;2022-03-21 09:55:56.891&quot;,      &quot;allowed_number_of_entities_to_copy&quot;: 10,      &quot;role_expiration_date&quot;: null,      &quot;allow_write&quot;: true,      &quot;allowed_creation_of_synthetic_data&quot;: false,      &quot;allowed_refresh_reference_data&quot;: false,      &quot;role_creation_date&quot;: &quot;2021-11-22 07:20:58.183&quot;,      &quot;role_name&quot;: &quot;role2&quot;,      &quot;user_id&quot;: &quot;harry&quot;,      &quot;role_status&quot;: &quot;Active&quot;,      &quot;allowed_test_conn_failure&quot;: true,      &quot;username&quot;: &quot;harry&quot;    },    &quot;minWrite&quot;: 10  },  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>Example 1;
+{
+  &quot;result&quot;: {
+    &quot;minRead&quot;: -1,
+    &quot;userRole&quot;: null,
+    &quot;minWrite&quot;: -1
+  },
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}
+
+Example 2:
+
+{
+  &quot;result&quot;: {
+    &quot;minRead&quot;: 10,
+    &quot;userRole&quot;: {
+      &quot;role_last_updated_by&quot;: &quot;admin&quot;,
+      &quot;allowed_delete_before_load&quot;: true,
+      &quot;environment_id&quot;: 2,
+      &quot;allowed_number_of_entities_to_read&quot;: 10,
+      &quot;allowed_replace_sequences&quot;: false,
+      &quot;allowed_random_entity_selection&quot;: true,
+      &quot;role_created_by&quot;: &quot;admin&quot;,
+      &quot;allow_read&quot;: true,
+      &quot;role_description&quot;: &quot;&quot;,
+      &quot;user_type&quot;: &quot;ID&quot;,
+      &quot;allowed_task_scheduling&quot;: false,
+      &quot;role_id&quot;: 6,
+      &quot;allowed_request_of_fresh_data&quot;: false,
+      &quot;allowed_number_of_reserved_entities&quot;: 0,
+      &quot;allowed_entity_versioning&quot;: false,
+      &quot;role_last_updated_date&quot;: &quot;2022-03-21 09:55:56.891&quot;,
+      &quot;allowed_number_of_entities_to_copy&quot;: 10,
+      &quot;role_expiration_date&quot;: null,
+      &quot;allow_write&quot;: true,
+      &quot;allowed_creation_of_synthetic_data&quot;: false,
+      &quot;allowed_refresh_reference_data&quot;: false,
+      &quot;role_creation_date&quot;: &quot;2021-11-22 07:20:58.183&quot;,
+      &quot;role_name&quot;: &quot;role2&quot;,
+      &quot;user_id&quot;: &quot;harry&quot;,
+      &quot;role_status&quot;: &quot;Active&quot;,
+      &quot;allowed_test_conn_failure&quot;: true,
+      &quot;username&quot;: &quot;harry&quot;
+    },
+    &quot;minWrite&quot;: 10
+  },
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="environmentEnvIdValidateListBeforeUpdatePost"></a>
@@ -4626,7 +5136,81 @@ The number of tasks executed on an environment over last month per execution sta
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>&quot;result&quot;: [    {      &quot;globalName&quot;: &quot;LOAD_MASKING_FLAG&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;false&quot;        }      ]    },    {      &quot;globalName&quot;: &quot;EXTRACT_MASKING_FLAG&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;true&quot;        }      ]    },    {      &quot;globalName&quot;: &quot;GET_RESERVED_ENTITIES_LIMIT&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;0&quot;        }      ]    },    {      &quot;globalName&quot;: &quot;MAIL_ADDRESS&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;&quot;        }      ]    },    {      &quot;globalName&quot;: &quot;DEVELOPMENT_PRODUCT_VERSION&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;DEV&quot;        }      ]    },    {      &quot;globalName&quot;: &quot;PRODUCTION_PRODUCT_VERSION&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;PROD&quot;        }      ]    },    {      &quot;globalName&quot;: &quot;TDM_DEL_TABLE_PREFIX&quot;,      &quot;Description&quot;: &quot;&quot;,      &quot;luList&quot;: [        {          &quot;luName&quot;: &quot;ALL&quot;,          &quot;defaultValue&quot;: &quot;TAR&quot;        }      ]    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>&quot;result&quot;: [
+    {
+      &quot;globalName&quot;: &quot;LOAD_MASKING_FLAG&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;false&quot;
+        }
+      ]
+    },
+    {
+      &quot;globalName&quot;: &quot;EXTRACT_MASKING_FLAG&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;true&quot;
+        }
+      ]
+    },
+    {
+      &quot;globalName&quot;: &quot;GET_RESERVED_ENTITIES_LIMIT&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;0&quot;
+        }
+      ]
+    },
+    {
+      &quot;globalName&quot;: &quot;MAIL_ADDRESS&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;&quot;
+        }
+      ]
+    },
+    {
+      &quot;globalName&quot;: &quot;DEVELOPMENT_PRODUCT_VERSION&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;DEV&quot;
+        }
+      ]
+    },
+    {
+      &quot;globalName&quot;: &quot;PRODUCTION_PRODUCT_VERSION&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;PROD&quot;
+        }
+      ]
+    },
+    {
+      &quot;globalName&quot;: &quot;TDM_DEL_TABLE_PREFIX&quot;,
+      &quot;Description&quot;: &quot;&quot;,
+      &quot;luList&quot;: [
+        {
+          &quot;luName&quot;: &quot;ALL&quot;,
+          &quot;defaultValue&quot;: &quot;TAR&quot;
+        }
+      ]
+    }
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="environmentPost"></a>
@@ -5822,7 +6406,29 @@ environment_name, allow_write, and allow_read.</p>
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>{  &quot;result&quot;: [    {      &quot;be_id&quot;: 1,      &quot;lu_parent_id&quot;: 12,      &quot;be_status&quot;: &quot;Active&quot;,      &quot;be_creation_date&quot;: &quot;date&quot;,      &quot;be_last_updated_date&quot;: &quot;date&quot;,      &quot;lu_dc_name&quot;: &quot;DC1&quot;,      &quot;be_created_by&quot;: &quot;k2view&quot;,      &quot;product_name&quot;: &quot;PROD&quot;,      &quot;be_name&quot;: &quot;BE&quot;,      &quot;lu_description&quot;: &quot;null&quot;,      &quot;lu_parent_name&quot;: &quot;parentName&quot;,      &quot;lu_name&quot;: &quot;luName&quot;,      &quot;product_id&quot;: 1,      &quot;lu_id&quot;: 16,      &quot;be_description&quot;: &quot;beDesc&quot;,      &quot;be_last_updated_by&quot;: &quot;K2View&quot;  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>{
+  &quot;result&quot;: [
+    {
+      &quot;be_id&quot;: 1,
+      &quot;lu_parent_id&quot;: 12,
+      &quot;be_status&quot;: &quot;Active&quot;,
+      &quot;be_creation_date&quot;: &quot;date&quot;,
+      &quot;be_last_updated_date&quot;: &quot;date&quot;,
+      &quot;lu_dc_name&quot;: &quot;DC1&quot;,
+      &quot;be_created_by&quot;: &quot;k2view&quot;,
+      &quot;product_name&quot;: &quot;PROD&quot;,
+      &quot;be_name&quot;: &quot;BE&quot;,
+      &quot;lu_description&quot;: &quot;null&quot;,
+      &quot;lu_parent_name&quot;: &quot;parentName&quot;,
+      &quot;lu_name&quot;: &quot;luName&quot;,
+      &quot;product_id&quot;: 1,
+      &quot;lu_id&quot;: 16,
+      &quot;be_description&quot;: &quot;beDesc&quot;,
+      &quot;be_last_updated_by&quot;: &quot;K2View&quot;
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="productProdIdPut"></a>
@@ -6867,7 +7473,63 @@ Each entity must have the following parameters:</p>
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>Example 1 - Summary Information: {  &quot;result&quot;: {    &quot;PATIENT_LU&quot;: {      &quot;minStartExecutionDate&quot;: &quot;Sun May 09 09:08:42 UTC 2021&quot;,      &quot;maxEndExecutionDate&quot;: &quot;Sun May 09 09:08:42 UTC 2021&quot;,      &quot;totNumOfTablesToProcess&quot;: 3,      &quot;numOfProcessedRefTables&quot;: 3,      &quot;numOfCopiedRefTables&quot;: 0,      &quot;numOfFailedRefTables&quot;: 3,      &quot;numOfProcessingRefTables&quot;: 0,      &quot;numberOfNotStartedRefTables&quot;: 0    }  },  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}Example 2 - Detailed Information:{  &quot;result&quot;: [    {      &quot;start_time&quot;: &quot;2021-05-09 09:08:42.622&quot;,      &quot;error_msg&quot;: &quot;java.lang.NullPointerException&quot;,      &quot;ref_table_name&quot;: &quot;REF_GIBRISH&quot;,      &quot;number_of_processed_records&quot;: null,      &quot;lu_name&quot;: &quot;PATIENT_LU&quot;,      &quot;execution_status&quot;: &quot;failed&quot;,      &quot;end_time&quot;: &quot;2021-05-09 09:08:42.622&quot;,      &quot;estimated_remaining_duration&quot;: null,      &quot;number_of_records_to_process&quot;: 0    },    {      &quot;start_time&quot;: &quot;2021-05-09 09:08:42.613&quot;,      &quot;error_msg&quot;: &quot;java.lang.NullPointerException&quot;,      &quot;ref_table_name&quot;: &quot;PATIENT_REF&quot;,      &quot;number_of_processed_records&quot;: null,      &quot;lu_name&quot;: &quot;PATIENT_LU&quot;,      &quot;execution_status&quot;: &quot;failed&quot;,      &quot;end_time&quot;: &quot;2021-05-09 09:08:42.613&quot;,      &quot;estimated_remaining_duration&quot;: null,      &quot;number_of_records_to_process&quot;: 0    },    {      &quot;start_time&quot;: &quot;2021-05-09 09:08:42.617&quot;,      &quot;error_msg&quot;: &quot;java.lang.NullPointerException&quot;,      &quot;ref_table_name&quot;: &quot;REF_COMPLEX&quot;,      &quot;number_of_processed_records&quot;: null,      &quot;lu_name&quot;: &quot;PATIENT_LU&quot;,      &quot;execution_status&quot;: &quot;failed&quot;,      &quot;end_time&quot;: &quot;2021-05-09 09:08:42.617&quot;,      &quot;estimated_remaining_duration&quot;: null,      &quot;number_of_records_to_process&quot;: 0    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>Example 1 - Summary Information: 
+{
+  &quot;result&quot;: {
+    &quot;PATIENT_LU&quot;: {
+      &quot;minStartExecutionDate&quot;: &quot;Sun May 09 09:08:42 UTC 2021&quot;,
+      &quot;maxEndExecutionDate&quot;: &quot;Sun May 09 09:08:42 UTC 2021&quot;,
+      &quot;totNumOfTablesToProcess&quot;: 3,
+      &quot;numOfProcessedRefTables&quot;: 3,
+      &quot;numOfCopiedRefTables&quot;: 0,
+      &quot;numOfFailedRefTables&quot;: 3,
+      &quot;numOfProcessingRefTables&quot;: 0,
+      &quot;numberOfNotStartedRefTables&quot;: 0
+    }
+  },
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}
+Example 2 - Detailed Information:
+{
+  &quot;result&quot;: [
+    {
+      &quot;start_time&quot;: &quot;2021-05-09 09:08:42.622&quot;,
+      &quot;error_msg&quot;: &quot;java.lang.NullPointerException&quot;,
+      &quot;ref_table_name&quot;: &quot;REF_GIBRISH&quot;,
+      &quot;number_of_processed_records&quot;: null,
+      &quot;lu_name&quot;: &quot;PATIENT_LU&quot;,
+      &quot;execution_status&quot;: &quot;failed&quot;,
+      &quot;end_time&quot;: &quot;2021-05-09 09:08:42.622&quot;,
+      &quot;estimated_remaining_duration&quot;: null,
+      &quot;number_of_records_to_process&quot;: 0
+    },
+    {
+      &quot;start_time&quot;: &quot;2021-05-09 09:08:42.613&quot;,
+      &quot;error_msg&quot;: &quot;java.lang.NullPointerException&quot;,
+      &quot;ref_table_name&quot;: &quot;PATIENT_REF&quot;,
+      &quot;number_of_processed_records&quot;: null,
+      &quot;lu_name&quot;: &quot;PATIENT_LU&quot;,
+      &quot;execution_status&quot;: &quot;failed&quot;,
+      &quot;end_time&quot;: &quot;2021-05-09 09:08:42.613&quot;,
+      &quot;estimated_remaining_duration&quot;: null,
+      &quot;number_of_records_to_process&quot;: 0
+    },
+    {
+      &quot;start_time&quot;: &quot;2021-05-09 09:08:42.617&quot;,
+      &quot;error_msg&quot;: &quot;java.lang.NullPointerException&quot;,
+      &quot;ref_table_name&quot;: &quot;REF_COMPLEX&quot;,
+      &quot;number_of_processed_records&quot;: null,
+      &quot;lu_name&quot;: &quot;PATIENT_LU&quot;,
+      &quot;execution_status&quot;: &quot;failed&quot;,
+      &quot;end_time&quot;: &quot;2021-05-09 09:08:42.617&quot;,
+      &quot;estimated_remaining_duration&quot;: null,
+      &quot;number_of_records_to_process&quot;: 0
+    }
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="getCustomLogicParamsGet"></a>
@@ -6919,7 +7581,7 @@ Each entity must have the following parameters:</p>
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>{  &quot;result&quot;: [    {      &quot;editor&quot;: {        &quot;schema&quot;: {          &quot;type&quot;: &quot;date&quot;        },        &quot;name&quot;: &quot;param1&quot;,        &quot;context&quot;: {          &quot;level&quot;: {            &quot;const&quot;: &quot;error&quot;          },          &quot;message&quot;: {            &quot;const&quot;: &quot;${param1}, ${param2}&quot;          },          &quot;param1&quot;: {            &quot;self&quot;: &quot;param1&quot;          },          &quot;param2&quot;: {            &quot;external&quot;: &quot;param2&quot;          }        },        &quot;id&quot;: &quot;com.k2view.default&quot;,&quot;mandatory&quot;: false      },      &quot;default&quot;: null,      &quot;description&quot;: &quot;&quot;,      &quot;type&quot;: &quot;date&quot;    },    {      &quot;editor&quot;: {        &quot;schema&quot;: {          &quot;type&quot;: &quot;integer&quot;        },        &quot;name&quot;: &quot;param2&quot;,        &quot;context&quot;: {          &quot;level&quot;: {            &quot;const&quot;: &quot;error&quot;          },          &quot;message&quot;: {            &quot;const&quot;: &quot;${param1}, ${param2}&quot;          },          &quot;param1&quot;: {            &quot;external&quot;: &quot;param1&quot;          },          &quot;param2&quot;: {            &quot;self&quot;: &quot;param2&quot;          }        },        &quot;id&quot;: &quot;com.k2view.default&quot;&quot;mandatory&quot;: false      },      &quot;default&quot;: null,      &quot;description&quot;: &quot;&quot;,      &quot;type&quot;: &quot;integer&quot;    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}</code></pre>
+    <pre class="example"><code>{&quot;result&quot;:[{&quot;editor&quot;:{&quot;schema&quot;:{&quot;type&quot;:&quot;date&quot;},&quot;name&quot;:&quot;param1&quot;,&quot;context&quot;:{&quot;level&quot;:{&quot;const&quot;:&quot;error&quot;},&quot;message&quot;:{&quot;const&quot;:&quot;${param1}, ${param2}&quot;},&quot;param1&quot;:{&quot;self&quot;:&quot;param1&quot;},&quot;param2&quot;:{&quot;external&quot;:&quot;param2&quot;}},&quot;id&quot;:&quot;com.k2view.default&quot;},&quot;description&quot;:&quot;&quot;,&quot;type&quot;:&quot;date&quot;,&quot;mandatory&quot;:false},{&quot;editor&quot;:{&quot;schema&quot;:{&quot;type&quot;:&quot;integer&quot;},&quot;name&quot;:&quot;param2&quot;,&quot;context&quot;:{&quot;level&quot;:{&quot;const&quot;:&quot;error&quot;},&quot;message&quot;:{&quot;const&quot;:&quot;${param1}, ${param2}&quot;},&quot;param1&quot;:{&quot;external&quot;:&quot;param1&quot;},&quot;param2&quot;:{&quot;self&quot;:&quot;param2&quot;}},&quot;id&quot;:&quot;com.k2view.default&quot;},&quot;description&quot;:&quot;&quot;,&quot;type&quot;:&quot;integer&quot;,&quot;mandatory&quot;:false}],&quot;errorCode&quot;:&quot;SUCCESS&quot;}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="getDMPopParamsGet"></a>
@@ -6927,7 +7589,8 @@ Each entity must have the following parameters:</p>
     <a class="up" href="#__Methods">Up</a>
     <pre class="get"><code class="huge"><span class="http-method">get</span> /getDMPopParams</code></pre></div>
     <div class="method-summary"> (<span class="nickname">getDMPopParamsGet</span>)</div>
-    <div class="method-notes">Get the list of parameters of the given custom Flow</div>
+    <div class="method-notes">Get the list of parameters of the given custom Flow.
+It gets a list of LU Names separated by comma, and optional task id. Task Id will be sent in case of updating an existing task, to get the values already set in that task.</div>
 
 
 
@@ -6971,7 +7634,7 @@ Each entity must have the following parameters:</p>
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>{&quot;result&quot;:{&quot;city&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;city&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;addresses&quot;},&quot;city&quot;:{&quot;self&quot;:&quot;city&quot;},&quot;state&quot;:{&quot;external&quot;:&quot;state&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;Select the City to select a random address&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false,&quot;value&quot;:&quot;Dallas&quot;},&quot;contract_ref_id&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;contract_ref_id&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;contract_reference&quot;},&quot;contract_ref_id&quot;:{&quot;self&quot;:&quot;contract_ref_id&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;Select Reference ID to select random Contract Description&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false},&quot;crm_cases_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_cases_number_of_records&quot;,&quot;context&quot;:{&quot;crm_cases_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table cases&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;,&quot;value&quot;:{&quot;maximum&quot;:5,&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:3}},&quot;contract_from_date&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;contract_from_date&quot;,&quot;schema&quot;:{},&quot;context&quot;:{&quot;contract_from_date&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;date&quot;,&quot;minimum&quot;:&quot;2023-01-01 17:21:08.991&quot;,&quot;maximum&quot;:&quot;2023-04-03 19:21:18.493&quot;}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;date&quot;,&quot;minimum&quot;:&quot;2023-01-01 17:21:08.991&quot;,&quot;maximum&quot;:&quot;2023-04-03 19:21:18.493&quot;},&quot;description&quot;:&quot;Set distribution for Contract start date&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:false},&quot;station_city&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;station_city&quot;,&quot;schema&quot;:{},&quot;context&quot;:{&quot;station_city&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;weighted&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;string&quot;,&quot;weights&quot;:[[50,&quot;New York&quot;],[30,&quot;Los Angeles&quot;],[20,&quot;Miami&quot;]]}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;weighted&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;string&quot;,&quot;weights&quot;:[[50,&quot;New York&quot;],[30,&quot;Los Angeles&quot;],[20,&quot;Miami&quot;]]},&quot;description&quot;:&quot;Set distribution of the cities of the stations&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:false},&quot;crm_recommendations_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_recommendations_number_of_records&quot;,&quot;context&quot;:{&quot;crm_recommendations_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table recommendations&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;activity_date&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;activity_date&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;date&quot;},&quot;context&quot;:{&quot;activity_date&quot;:{&quot;self&quot;:&quot;value&quot;},&quot;value&quot;:{&quot;const&quot;:&quot;2023-03-21 14:01:44.663&quot;}},&quot;syncOutput&quot;:true,&quot;id&quot;:&quot;com.k2view.default&quot;},&quot;default&quot;:&quot;2023-03-21 14:01:44.663&quot;,&quot;description&quot;:&quot;A constant value&quot;,&quot;type&quot;:&quot;date&quot;,&quot;mandatory&quot;:false},&quot;crm_address_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_address_number_of_records&quot;,&quot;context&quot;:{&quot;crm_address_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table address&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;cc_company&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;cc_company&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;cc_company&quot;},&quot;cc_company&quot;:{&quot;self&quot;:&quot;cc_company&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;Select Credit Card Company&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false},&quot;crm_case_note_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_case_note_number_of_records&quot;,&quot;context&quot;:{&quot;crm_case_note_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table case_note&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;score_type&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;score_type&quot;,&quot;schema&quot;:{},&quot;context&quot;:{&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;weighted&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;string&quot;,&quot;weights&quot;:[[10,&quot;UpSell&quot;],[10,&quot;Technical&quot;],[10,&quot;Marketing&quot;]]}},&quot;score_type&quot;:{&quot;self&quot;:&quot;distribution&quot;}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;weighted&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;string&quot;,&quot;weights&quot;:[[10,&quot;UpSell&quot;],[10,&quot;Technical&quot;],[10,&quot;Marketing&quot;]]},&quot;description&quot;:&quot;Set distribution of score types&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:false},&quot;crm_payment_methods_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_payment_methods_number_of_records&quot;,&quot;context&quot;:{&quot;crm_payment_methods_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table payment_methods&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;event_type&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;event_type&quot;,&quot;schema&quot;:{},&quot;context&quot;:{&quot;event_type&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;weighted&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;string&quot;,&quot;weights&quot;:[[10,&quot;User Issue&quot;],[10,&quot;Station Issue&quot;],[10,&quot;Station Availability&quot;]]}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;weighted&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;string&quot;,&quot;weights&quot;:[[10,&quot;User Issue&quot;],[10,&quot;Station Issue&quot;],[10,&quot;Station Availability&quot;]]},&quot;description&quot;:&quot;Set distribution of event type&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:false},&quot;score_value&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;score_value&quot;,&quot;schema&quot;:{},&quot;context&quot;:{&quot;score_value&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;normal&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;mean&quot;:75,&quot;stddev&quot;:3,&quot;minimum&quot;:10,&quot;maximum&quot;:100}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;normal&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;mean&quot;:75,&quot;stddev&quot;:3,&quot;minimum&quot;:10,&quot;maximum&quot;:100},&quot;description&quot;:&quot;Set distribution of score values&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:false},&quot;crm_asset_transaction_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_asset_transaction_number_of_records&quot;,&quot;context&quot;:{&quot;crm_asset_transaction_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table asset_transaction&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;activity_note&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;activity_note&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;activity_note&quot;:{&quot;self&quot;:&quot;value&quot;},&quot;value&quot;:{&quot;const&quot;:&quot;My Note&quot;}},&quot;syncOutput&quot;:true,&quot;id&quot;:&quot;com.k2view.default&quot;},&quot;default&quot;:&quot;My Note&quot;,&quot;description&quot;:&quot;NTE DEC&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false},&quot;state&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;state&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;addresses&quot;},&quot;city&quot;:{&quot;external&quot;:&quot;city&quot;},&quot;state&quot;:{&quot;self&quot;:&quot;state&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;Select State to set the address&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false,&quot;value&quot;:&quot;TX&quot;},&quot;note_date&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;note_date&quot;,&quot;schema&quot;:{},&quot;context&quot;:{&quot;note_date&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;date&quot;,&quot;minimum&quot;:&quot;2023-03-01 19:17:17.998&quot;,&quot;maximum&quot;:&quot;2023-04-03 22:17:27.344&quot;}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:false,&quot;type&quot;:&quot;date&quot;,&quot;minimum&quot;:&quot;2023-03-01 19:17:17.998&quot;,&quot;maximum&quot;:&quot;2023-04-03 22:17:27.344&quot;},&quot;description&quot;:&quot;Set the distribution of the notes dates&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:false},&quot;paypal_id&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;paypal_id&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;paypal_id&quot;},&quot;paypal_id&quot;:{&quot;self&quot;:&quot;paypal_id&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;Select the paypal id&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false},&quot;crm_activity_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_activity_number_of_records&quot;,&quot;context&quot;:{&quot;crm_activity_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table activity&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;note_text&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;note_text&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;note_text&quot;},&quot;note_text&quot;:{&quot;self&quot;:&quot;note_text&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;Select a text for the note&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false},&quot;crm_contract_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_contract_number_of_records&quot;,&quot;context&quot;:{&quot;crm_contract_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table contract&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;crm_score_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:&quot;{}&quot;,&quot;name&quot;:&quot;crm_score_number_of_records&quot;,&quot;context&quot;:{&quot;crm_score_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table score&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;}},&quot;errorCode&quot;:&quot;SUCCESS&quot;}</code></pre>
+    <pre class="example"><code>{&quot;result&quot;:{&quot;activity_note&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;activity_note&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;activity_note&quot;:{&quot;self&quot;:&quot;value&quot;},&quot;value&quot;:{&quot;const&quot;:&quot;My Note&quot;}},&quot;syncOutput&quot;:true,&quot;id&quot;:&quot;com.k2view.default&quot;},&quot;default&quot;:&quot;My Note&quot;,&quot;description&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false},&quot;billing_balance_number_of_records&quot;:{&quot;editor&quot;:{&quot;schema&quot;:{&quot;type&quot;:&quot;integer&quot;},&quot;name&quot;:&quot;billing_balance_number_of_records&quot;,&quot;context&quot;:{&quot;billing_balance_number_of_records&quot;:{&quot;self&quot;:&quot;distribution&quot;},&quot;distribution&quot;:{&quot;const&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3}}},&quot;id&quot;:&quot;com.k2view.distribution&quot;},&quot;default&quot;:{&quot;distribution&quot;:&quot;uniform&quot;,&quot;round&quot;:true,&quot;type&quot;:&quot;integer&quot;,&quot;minimum&quot;:1,&quot;maximum&quot;:3},&quot;description&quot;:&quot;Distribution Of Records Of table balance&quot;,&quot;type&quot;:&quot;any&quot;,&quot;mandatory&quot;:&quot;false&quot;},&quot;state&quot;:{&quot;editor&quot;:{&quot;name&quot;:&quot;state&quot;,&quot;schema&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;context&quot;:{&quot;mtableRandomRow&quot;:{&quot;const&quot;:true},&quot;mtable&quot;:{&quot;const&quot;:&quot;addresses&quot;},&quot;city&quot;:{&quot;external&quot;:&quot;city&quot;},&quot;state&quot;:{&quot;self&quot;:&quot;state&quot;},&quot;mtableKey&quot;:{&quot;const&quot;:{}},&quot;mtableCaseSensitive&quot;:{&quot;const&quot;:true}},&quot;id&quot;:&quot;com.k2view.mTableKey&quot;},&quot;description&quot;:&quot;&quot;,&quot;type&quot;:&quot;string&quot;,&quot;mandatory&quot;:false}},&quot;errorCode&quot;:&quot;SUCCESS&quot;}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="getEnvironmentsForTaskAttrGet"></a>
@@ -7153,7 +7816,21 @@ The input can be one root LU or more separated by comma.</div>
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>{  &quot;result&quot;: [    {      &quot;collapsed&quot;: true,      &quot;lu_name&quot;: &quot;PATIENT_VISITS&quot;,      &quot;task_execution_id&quot;: 161,      &quot;count&quot;: 0,      &quot;lu_id&quot;: 12,      &quot;lu_status&quot;: &quot;completed&quot;    }  ],  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}Response headers</code></pre>
+    <pre class="example"><code>{
+  &quot;result&quot;: [
+    {
+      &quot;collapsed&quot;: true,
+      &quot;lu_name&quot;: &quot;PATIENT_VISITS&quot;,
+      &quot;task_execution_id&quot;: 161,
+      &quot;count&quot;: 0,
+      &quot;lu_id&quot;: 12,
+      &quot;lu_status&quot;: &quot;completed&quot;
+    }
+  ],
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}
+Response headers</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="migrateStatusWsPost"></a>
@@ -7451,229 +8128,123 @@ Example of request body:
     <div class="method-notes"><p>Creates Task.</p>
 <p>Example of a request body:</p>
 <p>{
-&quot;DataManParams&quot;: {
-&quot;city&quot;: {
-&quot;editor&quot;: {
-&quot;name&quot;: &quot;city&quot;,
-&quot;schema&quot;: {
-&quot;type&quot;: &quot;string&quot;
-},
-&quot;context&quot;: {
-&quot;mtableRandomRow&quot;: {
-&quot;const&quot;: true
-},
-&quot;mtable&quot;: {
-&quot;const&quot;: &quot;addresses&quot;
-},
-&quot;city&quot;: {
-&quot;self&quot;: &quot;city&quot;
-},
-&quot;state&quot;: {
-&quot;external&quot;: &quot;state&quot;
-},
-&quot;mtableKey&quot;: {
-&quot;const&quot;: {}
-},
-&quot;mtableCaseSensitive&quot;: {
-&quot;const&quot;: true
-}
-},
-&quot;id&quot;: &quot;com.k2view.mTableKey&quot;
-},
-&quot;default&quot;: null,
-&quot;description&quot;: &quot;Select the City to select a random address&quot;,
-&quot;type&quot;: &quot;string&quot;,
-&quot;mandatory&quot;: false,
-&quot;value&quot;: &quot;Dallas&quot;,
-&quot;name&quot;: &quot;city&quot;
-},
-&quot;contract_ref_id&quot;: {
-&quot;editor&quot;: {
-&quot;name&quot;: &quot;contract_ref_id&quot;,
-&quot;schema&quot;: {
-&quot;type&quot;: &quot;string&quot;
-},
-&quot;context&quot;: {
-&quot;mtableRandomRow&quot;: {
-&quot;const&quot;: true
-},
-&quot;mtable&quot;: {
-&quot;const&quot;: &quot;contract_reference&quot;
-},
-&quot;contract_ref_id&quot;: {
-&quot;self&quot;: &quot;contract_ref_id&quot;
-},
-&quot;mtableKey&quot;: {
-&quot;const&quot;: {}
-},
-&quot;mtableCaseSensitive&quot;: {
-&quot;const&quot;: true
-}
-},
-&quot;id&quot;: &quot;com.k2view.mTableKey&quot;
-},
-&quot;default&quot;: null,
-&quot;description&quot;: &quot;Select Reference ID to select random Contract Description&quot;,
-&quot;type&quot;: &quot;string&quot;,
-&quot;mandatory&quot;: false,
-&quot;name&quot;: &quot;contract_ref_id&quot;,
-&quot;value&quot;: &quot;102&quot;
-},
-&quot;crm_cases_number_of_records&quot;: {
-&quot;editor&quot;: {
-&quot;schema&quot;: &quot;{}&quot;,
-&quot;name&quot;: &quot;crm_cases_number_of_records&quot;,
-&quot;context&quot;: {
-&quot;crm_cases_number_of_records&quot;: {
-&quot;self&quot;: &quot;distribution&quot;
-},
-&quot;distribution&quot;: {
-&quot;const&quot;: {
-&quot;distribution&quot;: &quot;uniform&quot;,
-&quot;round&quot;: true,
-&quot;type&quot;: &quot;integer&quot;,
-&quot;minimum&quot;: 1,
-&quot;maximum&quot;: 3
-}
-}
-},
-&quot;id&quot;: &quot;com.k2view.distribution&quot;
-},
-&quot;default&quot;: {
-&quot;distribution&quot;: &quot;uniform&quot;,
-&quot;round&quot;: true,
-&quot;type&quot;: &quot;integer&quot;,
-&quot;minimum&quot;: 1,
-&quot;maximum&quot;: 3
-},
-&quot;description&quot;: &quot;Distribution Of Records Of table cases&quot;,
-&quot;type&quot;: &quot;any&quot;,
-&quot;mandatory&quot;: &quot;false&quot;,
-&quot;value&quot;: {
-&quot;maximum&quot;: 5,
-&quot;distribution&quot;: &quot;uniform&quot;,
-&quot;round&quot;: true,
-&quot;type&quot;: &quot;integer&quot;,
-&quot;minimum&quot;: 3
-},
-&quot;name&quot;: &quot;crm_cases_number_of_records&quot;
-}
-},
-&quot;filterout_reserved&quot;: false,
-&quot;operationMode&quot;: &quot;insert_entity_without_delete&quot;,
-&quot;task_type&quot;: &quot;LOAD&quot;,
-&quot;task_title&quot;: &quot;testapi2&quot;,
-&quot;extractSelected&quot;: false,
-&quot;load_entity&quot;: true,
-&quot;delete_before_load&quot;: false,
-&quot;reserve_ind&quot;: true,
-&quot;be_id&quot;: 4,
-&quot;source_environment_id&quot;: 1,
-&quot;environment_id&quot;: 2,
-&quot;source_env_name&quot;: &quot;SRC&quot;,
-&quot;environment_name&quot;: &quot;TAR&quot;,
-&quot;allLogicalUnits&quot;: [
+&quot;filterout_reserved&quot;:false,
+&quot;operationMode&quot;:&quot;insert_entity_without_delete&quot;,
+&quot;task_type&quot;:&quot;LOAD&quot;,
+&quot;task_title&quot;:&quot;testapi2&quot;,
+&quot;extractSelected&quot;:false,
+&quot;load_entity&quot;:true,
+&quot;delete_before_load&quot;:false,
+&quot;reserve_ind&quot;:true,
+&quot;be_id&quot;:4,
+&quot;source_environment_id&quot;:1,
+&quot;environment_id&quot;:2,
+&quot;source_env_name&quot;:&quot;SRC&quot;,
+&quot;environment_name&quot;:&quot;TAR&quot;,
+&quot;allLogicalUnits&quot;:[
 {
-&quot;lu_parent_name&quot;: null,
-&quot;lu_name&quot;: &quot;Customer&quot;,
-&quot;lu_id&quot;: 7,
-&quot;product_name&quot;: &quot;CRM&quot;
+&quot;lu_parent_name&quot;:null,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;lu_id&quot;:7,
+&quot;product_name&quot;:&quot;CRM&quot;
 },
 {
-&quot;lu_parent_name&quot;: &quot;Customer&quot;,
-&quot;lu_name&quot;: &quot;Billing&quot;,
-&quot;lu_id&quot;: 9,
-&quot;product_name&quot;: &quot;FINANCE&quot;
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Billing&quot;,
+&quot;lu_id&quot;:9,
+&quot;product_name&quot;:&quot;FINANCE&quot;
 },
 {
-&quot;lu_parent_name&quot;: &quot;Customer&quot;,
-&quot;lu_name&quot;: &quot;Collection&quot;,
-&quot;lu_id&quot;: 10,
-&quot;product_name&quot;: &quot;FINANCE&quot;
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Collection&quot;,
+&quot;lu_id&quot;:10,
+&quot;product_name&quot;:&quot;FINANCE&quot;
 },
 {
-&quot;lu_parent_name&quot;: &quot;Customer&quot;,
-&quot;lu_name&quot;: &quot;Orders&quot;,
-&quot;lu_id&quot;: 8,
-&quot;product_name&quot;: &quot;ORDERS&quot;
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Orders&quot;,
+&quot;lu_id&quot;:8,
+&quot;product_name&quot;:&quot;ORDERS&quot;
 }
 ],
-&quot;selectedLogicalUnits&quot;: [
+&quot;selectedLogicalUnits&quot;:[
 {
-&quot;lu_parent_name&quot;: null,
-&quot;lu_name&quot;: &quot;Customer&quot;,
-&quot;lu_id&quot;: 7,
-&quot;product_name&quot;: &quot;CRM&quot;
+&quot;lu_parent_name&quot;:null,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;lu_id&quot;:7,
+&quot;product_name&quot;:&quot;CRM&quot;
 },
 {
-&quot;lu_parent_name&quot;: &quot;Customer&quot;,
-&quot;lu_name&quot;: &quot;Billing&quot;,
-&quot;lu_id&quot;: 9,
-&quot;product_name&quot;: &quot;FINANCE&quot;
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Billing&quot;,
+&quot;lu_id&quot;:9,
+&quot;product_name&quot;:&quot;FINANCE&quot;
 },
 {
-&quot;lu_parent_name&quot;: &quot;Customer&quot;,
-&quot;lu_name&quot;: &quot;Collection&quot;,
-&quot;lu_id&quot;: 10,
-&quot;product_name&quot;: &quot;FINANCE&quot;
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Collection&quot;,
+&quot;lu_id&quot;:10,
+&quot;product_name&quot;:&quot;FINANCE&quot;
 },
 {
-&quot;lu_parent_name&quot;: &quot;Customer&quot;,
-&quot;lu_name&quot;: &quot;Orders&quot;,
-&quot;lu_id&quot;: 8,
-&quot;product_name&quot;: &quot;ORDERS&quot;
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Orders&quot;,
+&quot;lu_id&quot;:8,
+&quot;product_name&quot;:&quot;ORDERS&quot;
 }
 ],
-&quot;missingRootLU&quot;: [],
-&quot;num_of_entities&quot;: 2,
-&quot;syncModeRadio&quot;: null,
-&quot;sync_mode&quot;: null,
-&quot;reserve_retention_period_value&quot;: 5,
-&quot;reserve_retention_period_type&quot;: &quot;Days&quot;,
-&quot;allPostExecutionProcess&quot;: [
+&quot;missingRootLU&quot;:[</p>
+<p>],
+&quot;num_of_entities&quot;:2,
+&quot;syncModeRadio&quot;:null,
+&quot;sync_mode&quot;:null,
+&quot;reserve_retention_period_value&quot;:5,
+&quot;reserve_retention_period_type&quot;:&quot;Days&quot;,
+&quot;allPostExecutionProcess&quot;:[
 {
-&quot;process_id&quot;: 1,
-&quot;be_id&quot;: 4,
-&quot;process_name&quot;: &quot;PostExecFlow&quot;,
-&quot;process_description&quot;: null,
-&quot;execution_order&quot;: 1
+&quot;process_id&quot;:1,
+&quot;be_id&quot;:4,
+&quot;process_name&quot;:&quot;PostExecFlow&quot;,
+&quot;process_description&quot;:null,
+&quot;execution_order&quot;:1
 }
 ],
-&quot;postExecutionProcesses&quot;: [
+&quot;postExecutionProcesses&quot;:[
 1
 ],
-&quot;reference&quot;: &quot;both&quot;,
-&quot;versionsForLoad&quot;: [],
-&quot;selection_method&quot;: &quot;PR&quot;,
-&quot;selection_param_value&quot;: &quot;(( 'Bronze' = ANY(&quot;BILLING.VIP_STATUS&quot;) ))&quot;,
-&quot;parameters&quot;: &quot;{&quot;group&quot;:{&quot;rules&quot;:[{&quot;condition&quot;:&quot;=&quot;,&quot;field&quot;:&quot;BILLING.VIP_STATUS&quot;,&quot;data&quot;:&quot;Bronze&quot;,&quot;operator&quot;:&quot;AND&quot;,&quot;type&quot;:&quot;text&quot;,&quot;comboIndicator&quot;:&quot;true&quot;,&quot;validValues&quot;:[&quot;Bronze&quot;,&quot;Gold&quot;,&quot;Platinum&quot;,&quot;Silver&quot;],&quot;disableThird&quot;:false}]}}&quot;,
-&quot;refList&quot;: [
+&quot;reference&quot;:&quot;both&quot;,
+&quot;versionsForLoad&quot;:[</p>
+<p>],
+&quot;selection_method&quot;:&quot;PR&quot;,
+&quot;selection_param_value&quot;:&quot;(( 'Bronze' = ANY(&quot;BILLING.VIP_STATUS&quot;) ))&quot;,
+&quot;parameters&quot;:&quot;{&quot;group&quot;:{&quot;rules&quot;:[{&quot;condition&quot;:&quot;=&quot;,&quot;field&quot;:&quot;BILLING.VIP_STATUS&quot;,&quot;data&quot;:&quot;Bronze&quot;,&quot;operator&quot;:&quot;AND&quot;,&quot;type&quot;:&quot;text&quot;,&quot;comboIndicator&quot;:&quot;true&quot;,&quot;validValues&quot;:[&quot;Bronze&quot;,&quot;Gold&quot;,&quot;Platinum&quot;,&quot;Silver&quot;],&quot;disableThird&quot;:false}]}}&quot;,
+&quot;refList&quot;:[
 {
-&quot;ref_table_name&quot;: &quot;DEVICESTABLE2017&quot;,
-&quot;lu_name&quot;: &quot;Customer&quot;,
-&quot;interface_name&quot;: &quot;CRM_DB&quot;,
-&quot;schema_name&quot;: &quot;public&quot;,
-&quot;logical_unit_name&quot;: &quot;Customer&quot;,
-&quot;reference_table_name&quot;: &quot;DEVICESTABLE2017&quot;
+&quot;ref_table_name&quot;:&quot;DEVICESTABLE2017&quot;,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;interface_name&quot;:&quot;CRM_DB&quot;,
+&quot;schema_name&quot;:&quot;public&quot;,
+&quot;logical_unit_name&quot;:&quot;Customer&quot;,
+&quot;reference_table_name&quot;:&quot;DEVICESTABLE2017&quot;
 },
 {
-&quot;ref_table_name&quot;: &quot;devicestable2017&quot;,
-&quot;lu_name&quot;: &quot;Customer&quot;,
-&quot;interface_name&quot;: &quot;CRM_DB&quot;,
-&quot;schema_name&quot;: &quot;public&quot;,
-&quot;logical_unit_name&quot;: &quot;Customer&quot;,
-&quot;reference_table_name&quot;: &quot;devicestable2017&quot;,
-&quot;selected&quot;: true
+&quot;ref_table_name&quot;:&quot;devicestable2017&quot;,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;interface_name&quot;:&quot;CRM_DB&quot;,
+&quot;schema_name&quot;:&quot;public&quot;,
+&quot;logical_unit_name&quot;:&quot;Customer&quot;,
+&quot;reference_table_name&quot;:&quot;devicestable2017&quot;,
+&quot;selected&quot;:true
 }
 ],
-&quot;refresh_reference_data&quot;: false,
-&quot;selected_version_task_name&quot;: null,
-&quot;selected_version_datetime&quot;: null,
-&quot;selected_version_task_exe_id&quot;: null,
-&quot;selected_ref_version_task_name&quot;: null,
-&quot;selected_ref_version_datetime&quot;: null,
-&quot;selected_ref_version_task_exe_id&quot;: null,
-&quot;scheduler&quot;: &quot;immediate&quot;
+&quot;refresh_reference_data&quot;:false,
+&quot;selected_version_task_name&quot;:null,
+&quot;selected_version_datetime&quot;:null,
+&quot;selected_version_task_exe_id&quot;:null,
+&quot;selected_ref_version_task_name&quot;:null,
+&quot;selected_ref_version_datetime&quot;:null,
+&quot;selected_ref_version_task_exe_id&quot;:null,
+&quot;scheduler&quot;:&quot;immediate&quot;
 }</p>
 </div>
 
@@ -7852,7 +8423,17 @@ Example of request body:
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>1. Task Execution Level (Root Logical Unit)- {&quot;result&quot;:{&quot;luTree&quot;:[{&quot;isRoot&quot;:true,&quot;test&quot;:true,&quot;hasChildren&quot;:true,&quot;collapsed&quot;:true,&quot;lu_name&quot;:&quot;PATIENT_LU&quot;,&quot;task_execution_id&quot;:69,&quot;count&quot;:1,&quot;lu_id&quot;:1,&quot;test1&quot;:true,&quot;lu_status&quot;:&quot;completed&quot;,&quot;selected&quot;:true,&quot;status&quot;:&quot;completed&quot;}],&quot;data&quot;:{&quot;Copied entities per execution&quot;:{&quot;entitiesList&quot;:[{&quot;sourceId&quot;:&quot;1&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;1&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;2&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;2&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;3&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;3&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;4&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;4&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;5&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;5&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;6&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;6&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;6&quot;,&quot;rootTargetId&quot;:&quot;6&quot;},{&quot;sourceId&quot;:&quot;7&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;7&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;8&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;8&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;}],&quot;NoOfEntities&quot;:&quot;8&quot;},&quot;Failed entities per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:&quot;0&quot;},&quot;Copied Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Failed Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Roots Status&quot;:{&quot;PATIENT_LU&quot;:&quot;completed&quot;}}},&quot;errorCode&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:null}2. Logical Unit Level - {&quot;result&quot;:{&quot;data&quot;:{&quot;Copied entities per execution&quot;:{&quot;entitiesList&quot;:[{&quot;sourceId&quot;:&quot;24900&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24900&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24901&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24901&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24902&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24902&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24903&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24903&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24913&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24913&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24914&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24914&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24915&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24915&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24916&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24916&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24917&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24917&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24918&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24918&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24919&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24919&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24920&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24920&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24921&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24921&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24925&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24925&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24926&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24926&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24927&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24927&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24928&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24928&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24929&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24929&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24934&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24934&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24935&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24935&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24936&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24936&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24937&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24937&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24938&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24938&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24939&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24939&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24940&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24940&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24959&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;6&quot;,&quot;targetId&quot;:&quot;24959&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;6&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;6&quot;,&quot;rootTargetId&quot;:&quot;6&quot;},{&quot;sourceId&quot;:&quot;24960&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;6&quot;,&quot;targetId&quot;:&quot;24960&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;6&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;6&quot;,&quot;rootTargetId&quot;:&quot;6&quot;},{&quot;sourceId&quot;:&quot;24963&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24963&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24964&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24964&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24965&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24965&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24967&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24967&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24969&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24969&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24971&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24971&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24973&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24973&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24974&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24974&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;25072&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25072&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25085&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25085&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25089&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25089&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25092&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25092&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25094&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25094&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25112&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25112&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25114&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25114&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25115&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25115&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25116&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25116&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25120&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25120&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25122&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25122&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25134&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25134&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;400&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;400&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;}],&quot;NoOfEntities&quot;:&quot;48&quot;},&quot;Failed entities per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:&quot;0&quot;},&quot;Copied Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Failed Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Roots Status&quot;:{&quot;PATIENT_LU&quot;:&quot;completed&quot;}}},&quot;errorCode&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:null} 3. Logical Unit and Entity ID level -{&quot;result&quot;:{&quot;data&quot;:{&quot;Copied entities per execution&quot;:{&quot;entitiesList&quot;:[{&quot;sourceId&quot;:&quot;400&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;400&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;}],&quot;NoOfEntities&quot;:&quot;1&quot;},&quot;Failed entities per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:&quot;0&quot;},&quot;Copied Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Failed Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Roots Status&quot;:{&quot;PATIENT_LU&quot;:&quot;completed&quot;}}},&quot;errorCode&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:null}</code></pre>
+    <pre class="example"><code>1. Task Execution Level (Root Logical Unit)- 
+
+{&quot;result&quot;:{&quot;luTree&quot;:[{&quot;isRoot&quot;:true,&quot;test&quot;:true,&quot;hasChildren&quot;:true,&quot;collapsed&quot;:true,&quot;lu_name&quot;:&quot;PATIENT_LU&quot;,&quot;task_execution_id&quot;:69,&quot;count&quot;:1,&quot;lu_id&quot;:1,&quot;test1&quot;:true,&quot;lu_status&quot;:&quot;completed&quot;,&quot;selected&quot;:true,&quot;status&quot;:&quot;completed&quot;}],&quot;data&quot;:{&quot;Copied entities per execution&quot;:{&quot;entitiesList&quot;:[{&quot;sourceId&quot;:&quot;1&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;1&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;2&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;2&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;3&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;3&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;4&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;4&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;5&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;5&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;6&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;6&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;6&quot;,&quot;rootTargetId&quot;:&quot;6&quot;},{&quot;sourceId&quot;:&quot;7&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;7&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;8&quot;,&quot;parentLuName&quot;:&quot;&quot;,&quot;parentTargetId&quot;:&quot;&quot;,&quot;targetId&quot;:&quot;8&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_LU&quot;,&quot;parentSourceId&quot;:&quot;&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;}],&quot;NoOfEntities&quot;:&quot;8&quot;},&quot;Failed entities per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:&quot;0&quot;},&quot;Copied Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Failed Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Roots Status&quot;:{&quot;PATIENT_LU&quot;:&quot;completed&quot;}}},&quot;errorCode&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:null}
+
+2. Logical Unit Level - 
+
+{&quot;result&quot;:{&quot;data&quot;:{&quot;Copied entities per execution&quot;:{&quot;entitiesList&quot;:[{&quot;sourceId&quot;:&quot;24900&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24900&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24901&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24901&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24902&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24902&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24903&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;24903&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;},{&quot;sourceId&quot;:&quot;24913&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24913&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24914&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24914&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24915&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24915&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24916&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24916&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24917&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24917&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24918&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24918&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24919&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24919&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24920&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24920&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24921&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;2&quot;,&quot;targetId&quot;:&quot;24921&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;2&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;2&quot;,&quot;rootTargetId&quot;:&quot;2&quot;},{&quot;sourceId&quot;:&quot;24925&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24925&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24926&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24926&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24927&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24927&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24928&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24928&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24929&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;4&quot;,&quot;targetId&quot;:&quot;24929&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;4&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;4&quot;,&quot;rootTargetId&quot;:&quot;4&quot;},{&quot;sourceId&quot;:&quot;24934&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24934&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24935&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24935&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24936&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24936&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24937&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24937&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24938&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24938&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24939&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24939&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24940&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;7&quot;,&quot;targetId&quot;:&quot;24940&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;7&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;7&quot;,&quot;rootTargetId&quot;:&quot;7&quot;},{&quot;sourceId&quot;:&quot;24959&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;6&quot;,&quot;targetId&quot;:&quot;24959&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;6&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;6&quot;,&quot;rootTargetId&quot;:&quot;6&quot;},{&quot;sourceId&quot;:&quot;24960&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;6&quot;,&quot;targetId&quot;:&quot;24960&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;6&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;6&quot;,&quot;rootTargetId&quot;:&quot;6&quot;},{&quot;sourceId&quot;:&quot;24963&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24963&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24964&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24964&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24965&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24965&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24967&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24967&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24969&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24969&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24971&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24971&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24973&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24973&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;24974&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;8&quot;,&quot;targetId&quot;:&quot;24974&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;8&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;8&quot;,&quot;rootTargetId&quot;:&quot;8&quot;},{&quot;sourceId&quot;:&quot;25072&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25072&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25085&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25085&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25089&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25089&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25092&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25092&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25094&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;5&quot;,&quot;targetId&quot;:&quot;25094&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;5&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;5&quot;,&quot;rootTargetId&quot;:&quot;5&quot;},{&quot;sourceId&quot;:&quot;25112&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25112&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25114&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25114&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25115&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25115&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25116&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25116&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25120&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25120&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25122&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25122&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;25134&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;3&quot;,&quot;targetId&quot;:&quot;25134&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;3&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;3&quot;,&quot;rootTargetId&quot;:&quot;3&quot;},{&quot;sourceId&quot;:&quot;400&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;400&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;}],&quot;NoOfEntities&quot;:&quot;48&quot;},&quot;Failed entities per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:&quot;0&quot;},&quot;Copied Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Failed Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Roots Status&quot;:{&quot;PATIENT_LU&quot;:&quot;completed&quot;}}},&quot;errorCode&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:null} 
+
+3. Logical Unit and Entity ID level -
+
+{&quot;result&quot;:{&quot;data&quot;:{&quot;Copied entities per execution&quot;:{&quot;entitiesList&quot;:[{&quot;sourceId&quot;:&quot;400&quot;,&quot;parentLuName&quot;:&quot;PATIENT_LU&quot;,&quot;parentTargetId&quot;:&quot;1&quot;,&quot;targetId&quot;:&quot;400&quot;,&quot;copyEntityStatus&quot;:&quot;Copied&quot;,&quot;luName&quot;:&quot;PATIENT_VISITS&quot;,&quot;parentSourceId&quot;:&quot;1&quot;,&quot;copyHierarchyStatus&quot;:&quot;Copied&quot;,&quot;rootSourceId&quot;:&quot;1&quot;,&quot;rootTargetId&quot;:&quot;1&quot;}],&quot;NoOfEntities&quot;:&quot;1&quot;},&quot;Failed entities per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:&quot;0&quot;},&quot;Copied Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Failed Reference per execution&quot;:{&quot;entitiesList&quot;:[],&quot;NoOfEntities&quot;:0},&quot;Roots Status&quot;:{&quot;PATIENT_LU&quot;:&quot;completed&quot;}}},&quot;errorCode&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:null}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="taskSummaryReportExecutionIdLuNameLuNameGet"></a>
@@ -7904,7 +8485,547 @@ Example of request body:
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>Populate the LU Name with ALL:&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;{  &quot;result&quot;: {    &quot;General Info&quot;: [      {        &quot;task_name&quot;: &quot;createTaskByTester&quot;,        &quot;task_id&quot;: 294,        &quot;task_execution_id&quot;: &quot;490&quot;,        &quot;created_by&quot;: &quot;tali&quot;,        &quot;executed_by&quot;: &quot;admin&quot;,        &quot;start_execution&quot;: &quot;2021-06-16 16:24:21.0&quot;,        &quot;end_execution&quot;: &quot;2021-06-16 16:24:32.0&quot;,        &quot;execution_status&quot;: &quot;completed&quot;,        &quot;source_env&quot;: &quot;SRC&quot;,        &quot;target_env&quot;: &quot;TAR&quot;,        &quot;be_name&quot;: &quot;CUSTOMER&quot;,        &quot;task_type&quot;: &quot;LOAD&quot;,        &quot;selection_method&quot;: &quot;Randon Selection&quot;,        &quot;task_sync_mode&quot;: null,        &quot;env_sync_mode&quot;: &quot;ON&quot;,        &quot;operation_mode&quot;: &quot;Delete and load entity&quot;,        &quot;replace_sequences&quot;: &quot;false&quot;,        &quot;version_ind&quot;: &quot;false&quot;,        &quot;selected_version_task_name&quot;: null,        &quot;selected_version_datetime&quot;: null,        &quot;selected_ref_version_task_name&quot;: null,        &quot;selected_ref_version_datetime&quot;: null,        &quot;scheduling_parameters&quot;: &quot;immediate&quot;,        &quot;schedule_expiration_date&quot;: null,        &quot;override_parameters&quot;: &quot;{\&quot;TASK_GLOBALS\&quot;:{\&quot;MASKING_FLAG\&quot;:\&quot;0\&quot;, \&quot;GLOBAL2\&quot;:\&quot;aaaaaa\&quot;},\&quot;ENTITY_LIST\&quot;:\&quot;1\&quot;}&quot;,        &quot;reserve_ind&quot;: &quot;true&quot;,        &quot;reserve_retention_period_type&quot;: &quot;Days&quot;,        &quot;reserve_retention_period_value&quot;: null      }    ],    &quot;Source Environment&quot;: {      &quot;Environment Name&quot;: [        {          &quot;name&quot;: &quot;SRC&quot;        }      ],      &quot;Source Environment Products&quot;: [        {          &quot;product_name&quot;: &quot;BILLING&quot;,          &quot;source_product_version&quot;: &quot;PROD&quot;        },        {          &quot;product_name&quot;: &quot;COLLECTION&quot;,          &quot;source_product_version&quot;: &quot;1&quot;        },        {          &quot;product_name&quot;: &quot;CRM&quot;,          &quot;source_product_version&quot;: &quot;1&quot;        },        {          &quot;product_name&quot;: &quot;ORDERING&quot;,          &quot;source_product_version&quot;: &quot;1&quot;        }      ]    },    &quot;Target Environment&quot;: {      &quot;Environment Name&quot;: [        {          &quot;name&quot;: &quot;TAR&quot;        }      ],      &quot;Target Environment Products&quot;: [        {          &quot;product_name&quot;: &quot;BILLING&quot;,          &quot;target_product_version&quot;: &quot;PROD&quot;        },        {          &quot;product_name&quot;: &quot;COLLECTION&quot;,          &quot;target_product_version&quot;: &quot;1&quot;        },        {          &quot;product_name&quot;: &quot;CRM&quot;,          &quot;target_product_version&quot;: &quot;1.5&quot;        },        {          &quot;product_name&quot;: &quot;ORDERING&quot;,          &quot;target_product_version&quot;: &quot;1&quot;        }      ]    },    &quot;Task Execution Summary&quot;: [      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;fabric_execution_id&quot;: &quot;aced32c8-7d2c-43cd-a7ba-f363733f59e7&quot;,        &quot;parent_lu_name&quot;: &quot;null&quot;,        &quot;data_center_name&quot;: &quot;null&quot;,        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:21.0&quot;,        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:22.0&quot;,        &quot;num_of_processed_entities&quot;: 5,        &quot;num_of_copied_entities&quot;: 5,        &quot;num_of_failed_entities&quot;: 0,        &quot;num_of_processed_ref_tables&quot;: 0,        &quot;num_of_copied_ref_tables&quot;: 0,        &quot;num_of_failed_ref_tables&quot;: 0      },      {        &quot;lu_name&quot;: &quot;Collection&quot;,        &quot;fabric_execution_id&quot;: &quot;4f4e3609-1b9b-418b-b059-ceb38b4e93eb&quot;,        &quot;parent_lu_name&quot;: &quot;Customer&quot;,        &quot;data_center_name&quot;: &quot;null&quot;,        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,        &quot;num_of_processed_entities&quot;: 3,        &quot;num_of_copied_entities&quot;: 3,        &quot;num_of_failed_entities&quot;: 0,        &quot;num_of_processed_ref_tables&quot;: 0,        &quot;num_of_copied_ref_tables&quot;: 0,        &quot;num_of_failed_ref_tables&quot;: 0      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;fabric_execution_id&quot;: &quot;8868047e-0aa4-4793-a2f2-d41f8a24a94b&quot;,        &quot;parent_lu_name&quot;: &quot;Customer&quot;,        &quot;data_center_name&quot;: &quot;null&quot;,        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,        &quot;num_of_processed_entities&quot;: 17,        &quot;num_of_copied_entities&quot;: 17,        &quot;num_of_failed_entities&quot;: 0,        &quot;num_of_processed_ref_tables&quot;: 0,        &quot;num_of_copied_ref_tables&quot;: 0,        &quot;num_of_failed_ref_tables&quot;: 0      },      {        &quot;lu_name&quot;: &quot;Orders&quot;,        &quot;fabric_execution_id&quot;: &quot;d423dcfc-e175-4aed-b31f-0ca55e59f095&quot;,        &quot;parent_lu_name&quot;: &quot;Customer&quot;,        &quot;data_center_name&quot;: &quot;null&quot;,        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,        &quot;num_of_processed_entities&quot;: 27,        &quot;num_of_copied_entities&quot;: 27,        &quot;num_of_failed_entities&quot;: 0,        &quot;num_of_processed_ref_tables&quot;: 0,        &quot;num_of_copied_ref_tables&quot;: 0,        &quot;num_of_failed_ref_tables&quot;: 0      }    ],    &quot;List of Root Entities&quot;: {      &quot;Number of Copied Entities&quot;: [        {          &quot;number_of_copied_root_entities&quot;: 5        }      ],      &quot;List of Copied Entities&quot;: [        {          &quot;source_id&quot;: &quot;SRC_36&quot;,          &quot;target_id&quot;: &quot;36&quot;        },        {          &quot;source_id&quot;: &quot;SRC_532&quot;,          &quot;target_id&quot;: &quot;532&quot;        },        {          &quot;source_id&quot;: &quot;SRC_577&quot;,          &quot;target_id&quot;: &quot;577&quot;        },        {          &quot;source_id&quot;: &quot;SRC_627&quot;,          &quot;target_id&quot;: &quot;627&quot;        },        {          &quot;source_id&quot;: &quot;SRC_794&quot;,          &quot;target_id&quot;: &quot;794&quot;        }      ],      &quot;Number of Failed Entities&quot;: [        {          &quot;number_of_failed_root_entities&quot;: 0        }      ],      &quot;List of Failed Entities&quot;: []    },    &quot;List of Reference Tables&quot;: {      &quot;Number of Copied Reference Tables&quot;: [        {          &quot;count&quot;: 0        }      ],      &quot;List of Copied Reference Tables&quot;: [],      &quot;Number of Failed Reference Tables&quot;: [        {          &quot;count&quot;: 0        }      ],      &quot;List of Failed Reference Tables&quot;: []    },    &quot;Error Summary&quot;: [],    &quot;Error Details&quot;: [],    &quot;Statistics Report&quot;: [      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;BALANCE&quot;,        &quot;target_count&quot;: &quot;172&quot;,        &quot;source_count&quot;: &quot;172&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;INVOICE&quot;,        &quot;target_count&quot;: &quot;107&quot;,        &quot;source_count&quot;: &quot;107&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;OFFER&quot;,        &quot;target_count&quot;: &quot;9&quot;,        &quot;source_count&quot;: &quot;9&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;SUBSCRIBER&quot;,        &quot;target_count&quot;: &quot;17&quot;,        &quot;source_count&quot;: &quot;17&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Collection&quot;,        &quot;table_name&quot;: &quot;COLLECTION&quot;,        &quot;target_count&quot;: &quot;3&quot;,        &quot;source_count&quot;: &quot;3&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;table_name&quot;: &quot;ACTIVITY&quot;,        &quot;target_count&quot;: &quot;26&quot;,        &quot;source_count&quot;: &quot;26&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;table_name&quot;: &quot;ADDRESS&quot;,        &quot;target_count&quot;: &quot;5&quot;,        &quot;source_count&quot;: &quot;5&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;table_name&quot;: &quot;CASE_NOTE&quot;,        &quot;target_count&quot;: &quot;35&quot;,        &quot;source_count&quot;: &quot;35&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;table_name&quot;: &quot;CASES&quot;,        &quot;target_count&quot;: &quot;16&quot;,        &quot;source_count&quot;: &quot;16&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;table_name&quot;: &quot;CONTRACT&quot;,        &quot;target_count&quot;: &quot;17&quot;,        &quot;source_count&quot;: &quot;17&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Customer&quot;,        &quot;table_name&quot;: &quot;CUSTOMER&quot;,        &quot;target_count&quot;: &quot;5&quot;,        &quot;source_count&quot;: &quot;5&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Orders&quot;,        &quot;table_name&quot;: &quot;ORDERS&quot;,        &quot;target_count&quot;: &quot;27&quot;,        &quot;source_count&quot;: &quot;27&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      }    ],    &quot;Replace Sequence Summary Report&quot;: []  },  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: &quot;&quot;}Populate the LU Name with a Logical Unit:&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;{  &quot;result&quot;: {    &quot;General Info&quot;: [      {        &quot;task_name&quot;: &quot;createTaskByTester&quot;,        &quot;task_id&quot;: 294,        &quot;task_execution_id&quot;: &quot;490&quot;,        &quot;created_by&quot;: &quot;tali&quot;,        &quot;executed_by&quot;: &quot;admin&quot;,        &quot;start_execution&quot;: &quot;2021-06-16 16:24:21.0&quot;,        &quot;end_execution&quot;: &quot;2021-06-16 16:24:32.0&quot;,        &quot;execution_status&quot;: &quot;completed&quot;,        &quot;source_env&quot;: &quot;SRC&quot;,        &quot;target_env&quot;: &quot;TAR&quot;,        &quot;be_name&quot;: &quot;CUSTOMER&quot;,        &quot;task_type&quot;: &quot;LOAD&quot;,        &quot;selection_method&quot;: &quot;Randon Selection&quot;,       &quot;task_sync_mode&quot;: null,        &quot;env_sync_mode&quot;: &quot;ON&quot;,        &quot;operation_mode&quot;: &quot;Delete and load entity&quot;,        &quot;replace_sequences&quot;: &quot;false&quot;,        &quot;version_ind&quot;: &quot;false&quot;,        &quot;selected_version_task_name&quot;: null,        &quot;selected_version_datetime&quot;: null,        &quot;selected_ref_version_task_name&quot;: null,        &quot;selected_ref_version_datetime&quot;: null,        &quot;scheduling_parameters&quot;: &quot;immediate&quot;,        &quot;schedule_expiration_date&quot;: null,        &quot;override_parameters&quot;: null,        &quot;reserve_ind&quot;: &quot;false&quot;,        &quot;reserve_retention_period_type&quot;: null,        &quot;reserve_retention_period_value&quot;: null,        &quot;fabric_execution_id&quot;: &quot;c30a97f2-fc3e-4b66-9986-aa0c6108456a&quot;      }    ],    &quot;Source Environment&quot;: {      &quot;Environment Name&quot;: [        {          &quot;name&quot;: &quot;SRC&quot;        }      ],      &quot;Source Environment Products&quot;: [        {          &quot;product_name&quot;: &quot;BILLING&quot;,          &quot;source_product_version&quot;: &quot;PROD&quot;        },        {          &quot;product_name&quot;: &quot;COLLECTION&quot;,          &quot;source_product_version&quot;: &quot;1&quot;        },        {          &quot;product_name&quot;: &quot;CRM&quot;,          &quot;source_product_version&quot;: &quot;1&quot;        },        {          &quot;product_name&quot;: &quot;ORDERING&quot;,          &quot;source_product_version&quot;: &quot;1&quot;        }      ]    },    &quot;Target Environment&quot;: {      &quot;Environment Name&quot;: [        {          &quot;name&quot;: &quot;TAR&quot;        }      ],      &quot;Target Environment Products&quot;: [        {          &quot;product_name&quot;: &quot;BILLING&quot;,          &quot;target_product_version&quot;: &quot;PROD&quot;        },        {          &quot;product_name&quot;: &quot;COLLECTION&quot;,          &quot;target_product_version&quot;: &quot;1&quot;        },        {          &quot;product_name&quot;: &quot;CRM&quot;,          &quot;target_product_version&quot;: &quot;1.5&quot;        },        {          &quot;product_name&quot;: &quot;ORDERING&quot;,          &quot;target_product_version&quot;: &quot;1&quot;        }      ]    },    &quot;Task Execution Summary&quot;: [      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;fabric_execution_id&quot;: &quot;8868047e-0aa4-4793-a2f2-d41f8a24a94b&quot;,        &quot;parent_lu_name&quot;: &quot;Customer&quot;,        &quot;data_center_name&quot;: &quot;null&quot;,        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,        &quot;num_of_processed_entities&quot;: 17,        &quot;num_of_copied_entities&quot;: 17,        &quot;num_of_failed_entities&quot;: 0,        &quot;num_of_processed_ref_tables&quot;: 0,        &quot;num_of_copied_ref_tables&quot;: 0,        &quot;num_of_failed_ref_tables&quot;: 0      }    ],    &quot;List of Root Entities&quot;: {      &quot;Number of Copied Entities&quot;: [        {          &quot;number_of_copied_root_entities&quot;: 17        }      ],      &quot;List of Copied Entities&quot;: [        {          &quot;source_id&quot;: &quot;SRC_102&quot;,          &quot;target_id&quot;: &quot;102&quot;        },        {          &quot;source_id&quot;: &quot;SRC_103&quot;,          &quot;target_id&quot;: &quot;103&quot;        },        {          &quot;source_id&quot;: &quot;SRC_104&quot;,          &quot;target_id&quot;: &quot;104&quot;        },        {          &quot;source_id&quot;: &quot;SRC_105&quot;,          &quot;target_id&quot;: &quot;105&quot;        },        {          &quot;source_id&quot;: &quot;SRC_106&quot;,          &quot;target_id&quot;: &quot;106&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1324&quot;,          &quot;target_id&quot;: &quot;1324&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1325&quot;,          &quot;target_id&quot;: &quot;1325&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1326&quot;,          &quot;target_id&quot;: &quot;1326&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1429&quot;,          &quot;target_id&quot;: &quot;1429&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1430&quot;,          &quot;target_id&quot;: &quot;1430&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1431&quot;,          &quot;target_id&quot;: &quot;1431&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1432&quot;,          &quot;target_id&quot;: &quot;1432&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1537&quot;,          &quot;target_id&quot;: &quot;1537&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1538&quot;,          &quot;target_id&quot;: &quot;1538&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1965&quot;,          &quot;target_id&quot;: &quot;1965&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1966&quot;,          &quot;target_id&quot;: &quot;1966&quot;        },        {          &quot;source_id&quot;: &quot;SRC_1967&quot;,          &quot;target_id&quot;: &quot;1967&quot;        }      ],      &quot;Number of Failed Entities&quot;: [        {          &quot;number_of_failed_root_entities&quot;: 0        }      ],      &quot;List of Failed Entities&quot;: []    },    &quot;List of Reference Tables&quot;: {      &quot;Number of Copied Reference Tables&quot;: [        {          &quot;count&quot;: 0        }      ],      &quot;List of Copied Reference Tables&quot;: [],      &quot;Number of Failed Reference Tables&quot;: [        {          &quot;count&quot;: 0        }      ],      &quot;List of Failed Reference Tables&quot;: []    },    &quot;Error Summary&quot;: [],    &quot;Error Details&quot;: [],    &quot;Statistics Report&quot;: [      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;BALANCE&quot;,        &quot;target_count&quot;: &quot;172&quot;,        &quot;source_count&quot;: &quot;172&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;INVOICE&quot;,        &quot;target_count&quot;: &quot;107&quot;,        &quot;source_count&quot;: &quot;107&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;OFFER&quot;,        &quot;target_count&quot;: &quot;9&quot;,        &quot;source_count&quot;: &quot;9&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      },      {        &quot;lu_name&quot;: &quot;Billing&quot;,        &quot;table_name&quot;: &quot;SUBSCRIBER&quot;,        &quot;target_count&quot;: &quot;17&quot;,        &quot;source_count&quot;: &quot;17&quot;,        &quot;diff&quot;: &quot;0&quot;,        &quot;results&quot;: &quot;OK&quot;      }    ],    &quot;Replace Sequence Summary Report&quot;: []  },  &quot;message&quot;: &quot;&quot;}</code></pre>
+    <pre class="example"><code>Populate the LU Name with ALL:
+&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+
+{
+  &quot;result&quot;: {
+    &quot;General Info&quot;: [
+      {
+        &quot;task_name&quot;: &quot;createTaskByTester&quot;,
+        &quot;task_id&quot;: 294,
+        &quot;task_execution_id&quot;: &quot;490&quot;,
+        &quot;created_by&quot;: &quot;tali&quot;,
+        &quot;executed_by&quot;: &quot;admin&quot;,
+        &quot;start_execution&quot;: &quot;2021-06-16 16:24:21.0&quot;,
+        &quot;end_execution&quot;: &quot;2021-06-16 16:24:32.0&quot;,
+        &quot;execution_status&quot;: &quot;completed&quot;,
+        &quot;source_env&quot;: &quot;SRC&quot;,
+        &quot;target_env&quot;: &quot;TAR&quot;,
+        &quot;be_name&quot;: &quot;CUSTOMER&quot;,
+        &quot;task_type&quot;: &quot;LOAD&quot;,
+        &quot;selection_method&quot;: &quot;Randon Selection&quot;,
+        &quot;task_sync_mode&quot;: null,
+        &quot;env_sync_mode&quot;: &quot;ON&quot;,
+        &quot;operation_mode&quot;: &quot;Delete and load entity&quot;,
+        &quot;replace_sequences&quot;: &quot;false&quot;,
+        &quot;version_ind&quot;: &quot;false&quot;,
+        &quot;selected_version_task_name&quot;: null,
+        &quot;selected_version_datetime&quot;: null,
+        &quot;selected_ref_version_task_name&quot;: null,
+        &quot;selected_ref_version_datetime&quot;: null,
+        &quot;scheduling_parameters&quot;: &quot;immediate&quot;,
+        &quot;schedule_expiration_date&quot;: null,
+        &quot;override_parameters&quot;: &quot;{\&quot;TASK_GLOBALS\&quot;:{\&quot;MASKING_FLAG\&quot;:\&quot;0\&quot;, \&quot;GLOBAL2\&quot;:\&quot;aaaaaa\&quot;},\&quot;ENTITY_LIST\&quot;:\&quot;1\&quot;}&quot;,
+        &quot;reserve_ind&quot;: &quot;true&quot;,
+        &quot;reserve_retention_period_type&quot;: &quot;Days&quot;,
+        &quot;reserve_retention_period_value&quot;: null
+      }
+    ],
+    &quot;Source Environment&quot;: {
+      &quot;Environment Name&quot;: [
+        {
+          &quot;name&quot;: &quot;SRC&quot;
+        }
+      ],
+      &quot;Source Environment Products&quot;: [
+        {
+          &quot;product_name&quot;: &quot;BILLING&quot;,
+          &quot;source_product_version&quot;: &quot;PROD&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;COLLECTION&quot;,
+          &quot;source_product_version&quot;: &quot;1&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;CRM&quot;,
+          &quot;source_product_version&quot;: &quot;1&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;ORDERING&quot;,
+          &quot;source_product_version&quot;: &quot;1&quot;
+        }
+      ]
+    },
+    &quot;Target Environment&quot;: {
+      &quot;Environment Name&quot;: [
+        {
+          &quot;name&quot;: &quot;TAR&quot;
+        }
+      ],
+      &quot;Target Environment Products&quot;: [
+        {
+          &quot;product_name&quot;: &quot;BILLING&quot;,
+          &quot;target_product_version&quot;: &quot;PROD&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;COLLECTION&quot;,
+          &quot;target_product_version&quot;: &quot;1&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;CRM&quot;,
+          &quot;target_product_version&quot;: &quot;1.5&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;ORDERING&quot;,
+          &quot;target_product_version&quot;: &quot;1&quot;
+        }
+      ]
+    },
+    &quot;Task Execution Summary&quot;: [
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;fabric_execution_id&quot;: &quot;aced32c8-7d2c-43cd-a7ba-f363733f59e7&quot;,
+        &quot;parent_lu_name&quot;: &quot;null&quot;,
+        &quot;data_center_name&quot;: &quot;null&quot;,
+        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:21.0&quot;,
+        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:22.0&quot;,
+        &quot;num_of_processed_entities&quot;: 5,
+        &quot;num_of_copied_entities&quot;: 5,
+        &quot;num_of_failed_entities&quot;: 0,
+        &quot;num_of_processed_ref_tables&quot;: 0,
+        &quot;num_of_copied_ref_tables&quot;: 0,
+        &quot;num_of_failed_ref_tables&quot;: 0
+      },
+      {
+        &quot;lu_name&quot;: &quot;Collection&quot;,
+        &quot;fabric_execution_id&quot;: &quot;4f4e3609-1b9b-418b-b059-ceb38b4e93eb&quot;,
+        &quot;parent_lu_name&quot;: &quot;Customer&quot;,
+        &quot;data_center_name&quot;: &quot;null&quot;,
+        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,
+        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,
+        &quot;num_of_processed_entities&quot;: 3,
+        &quot;num_of_copied_entities&quot;: 3,
+        &quot;num_of_failed_entities&quot;: 0,
+        &quot;num_of_processed_ref_tables&quot;: 0,
+        &quot;num_of_copied_ref_tables&quot;: 0,
+        &quot;num_of_failed_ref_tables&quot;: 0
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;fabric_execution_id&quot;: &quot;8868047e-0aa4-4793-a2f2-d41f8a24a94b&quot;,
+        &quot;parent_lu_name&quot;: &quot;Customer&quot;,
+        &quot;data_center_name&quot;: &quot;null&quot;,
+        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,
+        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,
+        &quot;num_of_processed_entities&quot;: 17,
+        &quot;num_of_copied_entities&quot;: 17,
+        &quot;num_of_failed_entities&quot;: 0,
+        &quot;num_of_processed_ref_tables&quot;: 0,
+        &quot;num_of_copied_ref_tables&quot;: 0,
+        &quot;num_of_failed_ref_tables&quot;: 0
+      },
+      {
+        &quot;lu_name&quot;: &quot;Orders&quot;,
+        &quot;fabric_execution_id&quot;: &quot;d423dcfc-e175-4aed-b31f-0ca55e59f095&quot;,
+        &quot;parent_lu_name&quot;: &quot;Customer&quot;,
+        &quot;data_center_name&quot;: &quot;null&quot;,
+        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,
+        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,
+        &quot;num_of_processed_entities&quot;: 27,
+        &quot;num_of_copied_entities&quot;: 27,
+        &quot;num_of_failed_entities&quot;: 0,
+        &quot;num_of_processed_ref_tables&quot;: 0,
+        &quot;num_of_copied_ref_tables&quot;: 0,
+        &quot;num_of_failed_ref_tables&quot;: 0
+      }
+    ],
+    &quot;List of Root Entities&quot;: {
+      &quot;Number of Copied Entities&quot;: [
+        {
+          &quot;number_of_copied_root_entities&quot;: 5
+        }
+      ],
+      &quot;List of Copied Entities&quot;: [
+        {
+          &quot;source_id&quot;: &quot;SRC_36&quot;,
+          &quot;target_id&quot;: &quot;36&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_532&quot;,
+          &quot;target_id&quot;: &quot;532&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_577&quot;,
+          &quot;target_id&quot;: &quot;577&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_627&quot;,
+          &quot;target_id&quot;: &quot;627&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_794&quot;,
+          &quot;target_id&quot;: &quot;794&quot;
+        }
+      ],
+      &quot;Number of Failed Entities&quot;: [
+        {
+          &quot;number_of_failed_root_entities&quot;: 0
+        }
+      ],
+      &quot;List of Failed Entities&quot;: []
+    },
+    &quot;List of Reference Tables&quot;: {
+      &quot;Number of Copied Reference Tables&quot;: [
+        {
+          &quot;count&quot;: 0
+        }
+      ],
+      &quot;List of Copied Reference Tables&quot;: [],
+      &quot;Number of Failed Reference Tables&quot;: [
+        {
+          &quot;count&quot;: 0
+        }
+      ],
+      &quot;List of Failed Reference Tables&quot;: []
+    },
+    &quot;Error Summary&quot;: [],
+    &quot;Error Details&quot;: [],
+    &quot;Statistics Report&quot;: [
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;BALANCE&quot;,
+        &quot;target_count&quot;: &quot;172&quot;,
+        &quot;source_count&quot;: &quot;172&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;INVOICE&quot;,
+        &quot;target_count&quot;: &quot;107&quot;,
+        &quot;source_count&quot;: &quot;107&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;OFFER&quot;,
+        &quot;target_count&quot;: &quot;9&quot;,
+        &quot;source_count&quot;: &quot;9&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;SUBSCRIBER&quot;,
+        &quot;target_count&quot;: &quot;17&quot;,
+        &quot;source_count&quot;: &quot;17&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Collection&quot;,
+        &quot;table_name&quot;: &quot;COLLECTION&quot;,
+        &quot;target_count&quot;: &quot;3&quot;,
+        &quot;source_count&quot;: &quot;3&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;table_name&quot;: &quot;ACTIVITY&quot;,
+        &quot;target_count&quot;: &quot;26&quot;,
+        &quot;source_count&quot;: &quot;26&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;table_name&quot;: &quot;ADDRESS&quot;,
+        &quot;target_count&quot;: &quot;5&quot;,
+        &quot;source_count&quot;: &quot;5&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;table_name&quot;: &quot;CASE_NOTE&quot;,
+        &quot;target_count&quot;: &quot;35&quot;,
+        &quot;source_count&quot;: &quot;35&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;table_name&quot;: &quot;CASES&quot;,
+        &quot;target_count&quot;: &quot;16&quot;,
+        &quot;source_count&quot;: &quot;16&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;table_name&quot;: &quot;CONTRACT&quot;,
+        &quot;target_count&quot;: &quot;17&quot;,
+        &quot;source_count&quot;: &quot;17&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Customer&quot;,
+        &quot;table_name&quot;: &quot;CUSTOMER&quot;,
+        &quot;target_count&quot;: &quot;5&quot;,
+        &quot;source_count&quot;: &quot;5&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Orders&quot;,
+        &quot;table_name&quot;: &quot;ORDERS&quot;,
+        &quot;target_count&quot;: &quot;27&quot;,
+        &quot;source_count&quot;: &quot;27&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      }
+    ],
+    &quot;Replace Sequence Summary Report&quot;: []
+  },
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: &quot;&quot;
+}
+
+Populate the LU Name with a Logical Unit:
+&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;
+
+{
+  &quot;result&quot;: {
+    &quot;General Info&quot;: [
+      {
+        &quot;task_name&quot;: &quot;createTaskByTester&quot;,
+        &quot;task_id&quot;: 294,
+        &quot;task_execution_id&quot;: &quot;490&quot;,
+        &quot;created_by&quot;: &quot;tali&quot;,
+        &quot;executed_by&quot;: &quot;admin&quot;,
+        &quot;start_execution&quot;: &quot;2021-06-16 16:24:21.0&quot;,
+        &quot;end_execution&quot;: &quot;2021-06-16 16:24:32.0&quot;,
+        &quot;execution_status&quot;: &quot;completed&quot;,
+        &quot;source_env&quot;: &quot;SRC&quot;,
+        &quot;target_env&quot;: &quot;TAR&quot;,
+        &quot;be_name&quot;: &quot;CUSTOMER&quot;,
+        &quot;task_type&quot;: &quot;LOAD&quot;,
+        &quot;selection_method&quot;: &quot;Randon Selection&quot;,
+       &quot;task_sync_mode&quot;: null,
+        &quot;env_sync_mode&quot;: &quot;ON&quot;,
+        &quot;operation_mode&quot;: &quot;Delete and load entity&quot;,
+        &quot;replace_sequences&quot;: &quot;false&quot;,
+        &quot;version_ind&quot;: &quot;false&quot;,
+        &quot;selected_version_task_name&quot;: null,
+        &quot;selected_version_datetime&quot;: null,
+        &quot;selected_ref_version_task_name&quot;: null,
+        &quot;selected_ref_version_datetime&quot;: null,
+        &quot;scheduling_parameters&quot;: &quot;immediate&quot;,
+        &quot;schedule_expiration_date&quot;: null,
+        &quot;override_parameters&quot;: null,
+        &quot;reserve_ind&quot;: &quot;false&quot;,
+        &quot;reserve_retention_period_type&quot;: null,
+        &quot;reserve_retention_period_value&quot;: null,
+        &quot;fabric_execution_id&quot;: &quot;c30a97f2-fc3e-4b66-9986-aa0c6108456a&quot;
+      }
+    ],
+    &quot;Source Environment&quot;: {
+      &quot;Environment Name&quot;: [
+        {
+          &quot;name&quot;: &quot;SRC&quot;
+        }
+      ],
+      &quot;Source Environment Products&quot;: [
+        {
+          &quot;product_name&quot;: &quot;BILLING&quot;,
+          &quot;source_product_version&quot;: &quot;PROD&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;COLLECTION&quot;,
+          &quot;source_product_version&quot;: &quot;1&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;CRM&quot;,
+          &quot;source_product_version&quot;: &quot;1&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;ORDERING&quot;,
+          &quot;source_product_version&quot;: &quot;1&quot;
+        }
+      ]
+    },
+    &quot;Target Environment&quot;: {
+      &quot;Environment Name&quot;: [
+        {
+          &quot;name&quot;: &quot;TAR&quot;
+        }
+      ],
+      &quot;Target Environment Products&quot;: [
+        {
+          &quot;product_name&quot;: &quot;BILLING&quot;,
+          &quot;target_product_version&quot;: &quot;PROD&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;COLLECTION&quot;,
+          &quot;target_product_version&quot;: &quot;1&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;CRM&quot;,
+          &quot;target_product_version&quot;: &quot;1.5&quot;
+        },
+        {
+          &quot;product_name&quot;: &quot;ORDERING&quot;,
+          &quot;target_product_version&quot;: &quot;1&quot;
+        }
+      ]
+    },
+    &quot;Task Execution Summary&quot;: [
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;fabric_execution_id&quot;: &quot;8868047e-0aa4-4793-a2f2-d41f8a24a94b&quot;,
+        &quot;parent_lu_name&quot;: &quot;Customer&quot;,
+        &quot;data_center_name&quot;: &quot;null&quot;,
+        &quot;start_execution_time&quot;: &quot;2021-06-16 16:24:31.0&quot;,
+        &quot;end_execution_time&quot;: &quot;2021-06-16 16:24:32.0&quot;,
+        &quot;num_of_processed_entities&quot;: 17,
+        &quot;num_of_copied_entities&quot;: 17,
+        &quot;num_of_failed_entities&quot;: 0,
+        &quot;num_of_processed_ref_tables&quot;: 0,
+        &quot;num_of_copied_ref_tables&quot;: 0,
+        &quot;num_of_failed_ref_tables&quot;: 0
+      }
+    ],
+    &quot;List of Root Entities&quot;: {
+      &quot;Number of Copied Entities&quot;: [
+        {
+          &quot;number_of_copied_root_entities&quot;: 17
+        }
+      ],
+      &quot;List of Copied Entities&quot;: [
+        {
+          &quot;source_id&quot;: &quot;SRC_102&quot;,
+          &quot;target_id&quot;: &quot;102&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_103&quot;,
+          &quot;target_id&quot;: &quot;103&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_104&quot;,
+          &quot;target_id&quot;: &quot;104&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_105&quot;,
+          &quot;target_id&quot;: &quot;105&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_106&quot;,
+          &quot;target_id&quot;: &quot;106&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1324&quot;,
+          &quot;target_id&quot;: &quot;1324&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1325&quot;,
+          &quot;target_id&quot;: &quot;1325&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1326&quot;,
+          &quot;target_id&quot;: &quot;1326&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1429&quot;,
+          &quot;target_id&quot;: &quot;1429&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1430&quot;,
+          &quot;target_id&quot;: &quot;1430&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1431&quot;,
+          &quot;target_id&quot;: &quot;1431&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1432&quot;,
+          &quot;target_id&quot;: &quot;1432&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1537&quot;,
+          &quot;target_id&quot;: &quot;1537&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1538&quot;,
+          &quot;target_id&quot;: &quot;1538&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1965&quot;,
+          &quot;target_id&quot;: &quot;1965&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1966&quot;,
+          &quot;target_id&quot;: &quot;1966&quot;
+        },
+        {
+          &quot;source_id&quot;: &quot;SRC_1967&quot;,
+          &quot;target_id&quot;: &quot;1967&quot;
+        }
+      ],
+      &quot;Number of Failed Entities&quot;: [
+        {
+          &quot;number_of_failed_root_entities&quot;: 0
+        }
+      ],
+      &quot;List of Failed Entities&quot;: []
+    },
+    &quot;List of Reference Tables&quot;: {
+      &quot;Number of Copied Reference Tables&quot;: [
+        {
+          &quot;count&quot;: 0
+        }
+      ],
+      &quot;List of Copied Reference Tables&quot;: [],
+      &quot;Number of Failed Reference Tables&quot;: [
+        {
+          &quot;count&quot;: 0
+        }
+      ],
+      &quot;List of Failed Reference Tables&quot;: []
+    },
+    &quot;Error Summary&quot;: [],
+    &quot;Error Details&quot;: [],
+    &quot;Statistics Report&quot;: [
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;BALANCE&quot;,
+        &quot;target_count&quot;: &quot;172&quot;,
+        &quot;source_count&quot;: &quot;172&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;INVOICE&quot;,
+        &quot;target_count&quot;: &quot;107&quot;,
+        &quot;source_count&quot;: &quot;107&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;OFFER&quot;,
+        &quot;target_count&quot;: &quot;9&quot;,
+        &quot;source_count&quot;: &quot;9&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      },
+      {
+        &quot;lu_name&quot;: &quot;Billing&quot;,
+        &quot;table_name&quot;: &quot;SUBSCRIBER&quot;,
+        &quot;target_count&quot;: &quot;17&quot;,
+        &quot;source_count&quot;: &quot;17&quot;,
+        &quot;diff&quot;: &quot;0&quot;,
+        &quot;results&quot;: &quot;OK&quot;
+      }
+    ],
+    &quot;Replace Sequence Summary Report&quot;: []
+  },
+  &quot;message&quot;: &quot;&quot;
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="taskTaskExeIdHistoryGet"></a>
@@ -8196,7 +9317,31 @@ A task execution can override the following parameters:</p>
     <pre class="example"><code>{}</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
-    <pre class="example"><code>1. Succesful Execution:{  &quot;result&quot;: {    &quot;taskExecutionId&quot;: 43  },  &quot;errorCode&quot;: &quot;SUCCESS&quot;,  &quot;message&quot;: null}2. Validation Failure:{    &quot;result&quot;:[{&quot;Number of entity&quot;:&quot;The number of entities exceeds the number of entities in the write permission&quot;,&quot;selectionMethod&quot;:&quot;The User has no permissions to run the task&#x27;s selection method on the task&#x27;s target environment&quot;}],    &quot;errorCode&quot;:&quot;FAIL&quot;,    &quot;message&quot;:&quot;validation failure&quot;}{     &quot;result&quot;:     [{&quot;reference&quot;: &quot;The user has no permissions to run tasks on Reference tables on source environment&quot;,       &quot;syncMode&quot;: &quot;the user has no permissions to ask to always sync the data from the source.&quot;    } ],     &quot;errorCode&quot;: &quot;FAIL&quot;,    &quot;message&quot;: &quot;validation failure&quot;}</code></pre>
+    <pre class="example"><code>1. Succesful Execution:
+
+{
+  &quot;result&quot;: {
+    &quot;taskExecutionId&quot;: 43
+  },
+  &quot;errorCode&quot;: &quot;SUCCESS&quot;,
+  &quot;message&quot;: null
+}
+
+2. Validation Failure:
+
+{
+    &quot;result&quot;:[{&quot;Number of entity&quot;:&quot;The number of entities exceeds the number of entities in the write permission&quot;,&quot;selectionMethod&quot;:&quot;The User has no permissions to run the task&#x27;s selection method on the task&#x27;s target environment&quot;}],
+    &quot;errorCode&quot;:&quot;FAIL&quot;,
+    &quot;message&quot;:&quot;validation failure&quot;
+}
+
+{ 
+    &quot;result&quot;: 
+    [{&quot;reference&quot;: &quot;The user has no permissions to run tasks on Reference tables on source environment&quot;, 
+      &quot;syncMode&quot;: &quot;the user has no permissions to ask to always sync the data from the source.&quot;    } ], 
+    &quot;errorCode&quot;: &quot;FAIL&quot;,
+    &quot;message&quot;: &quot;validation failure&quot;
+}</code></pre>
   </div> <!-- method -->
   <hr/>
   <div class="method"><a name="taskTaskIdGlobalsGet"></a>
@@ -8490,257 +9635,202 @@ A task execution can override the following parameters:</p>
     <div class="method-notes"><p>Updates Task. The task update creates a new version of the task and set the status of the previous task version to Inactive.</p>
 <p>Example of a request body:</p>
 <p>{
-&quot;task_last_updated_date&quot;: &quot;2023-05-03 07:16:42.066&quot;,
-&quot;filterout_reserved&quot;: true,
-&quot;be_id&quot;: 1,
-&quot;selected_version_task_name&quot;: null,
-&quot;reserve_retention_period_type&quot;: null,
-&quot;environment_id&quot;: -1,
-&quot;selection_method&quot;: &quot;GENERATE&quot;,
-&quot;selected_ref_version_task_name&quot;: null,
-&quot;refresh_reference_data&quot;: false,
-&quot;tester&quot;: &quot;ALL&quot;,
-&quot;be_last_updated_date&quot;: &quot;2022-12-01 13:38:25.987&quot;,
-&quot;owners&quot;: [],
-&quot;refcount&quot;: 0,
-&quot;num_of_entities&quot;: 3,
-&quot;tester_type&quot;: &quot;ID&quot;,
-&quot;reserve_note&quot;: null,
-&quot;load_entity&quot;: false,
-&quot;selected_version_task_exe_id&quot;: null,
-&quot;task_created_by&quot;: &quot;Tahata@k2view.com&quot;,
-&quot;be_last_updated_by&quot;: &quot;admin&quot;,
-&quot;scheduling_end_date&quot;: null,
-&quot;retention_period_type&quot;: &quot;Do Not Delete&quot;,
-&quot;environment_point_of_contact_phone1&quot;: null,
-&quot;processnames&quot;: null,
-&quot;testers&quot;: [
+&quot;task_last_updated_date&quot;:&quot;2022-12-19 12:16:48.257&quot;,
+&quot;filterout_reserved&quot;:false,
+&quot;be_id&quot;:4,
+&quot;selected_version_task_name&quot;:null,
+&quot;reserve_retention_period_type&quot;:&quot;Days&quot;,
+&quot;environment_id&quot;:2,
+&quot;selection_method&quot;:&quot;PR&quot;,
+&quot;selected_ref_version_task_name&quot;:null,
+&quot;refresh_reference_data&quot;:false,
+&quot;tester&quot;:&quot;tester2&quot;,
+&quot;be_last_updated_date&quot;:&quot;2022-12-19 12:12:39.838&quot;,
+&quot;owners&quot;:[</p>
+<p>],
+&quot;refcount&quot;:1,
+&quot;num_of_entities&quot;:2,
+&quot;tester_type&quot;:&quot;ID&quot;,
+&quot;reserve_note&quot;:null,
+&quot;load_entity&quot;:true,
+&quot;selected_version_task_exe_id&quot;:null,
+&quot;task_created_by&quot;:&quot;admin&quot;,
+&quot;be_last_updated_by&quot;:&quot;admin&quot;,
+&quot;scheduling_end_date&quot;:null,
+&quot;environment_point_of_contact_phone1&quot;:null,
+&quot;processnames&quot;:&quot;PostExecFlow&quot;,
+&quot;testers&quot;:[
 {
-&quot;tester_type&quot;: &quot;ID&quot;,
-&quot;role_id&quot;: [
-&quot;-1&quot;
+&quot;tester_type&quot;:&quot;ID&quot;,
+&quot;role_id&quot;:[
+&quot;4&quot;
 ],
-&quot;tester&quot;: &quot;ALL&quot;
+&quot;tester&quot;:&quot;tester2&quot;
+},
+{
+&quot;tester_type&quot;:&quot;ID&quot;,
+&quot;role_id&quot;:[
+&quot;3&quot;
+],
+&quot;tester&quot;:&quot;tester1&quot;
 }
 ],
-&quot;selection_param_value&quot;: null,
-&quot;environment_status&quot;: &quot;Active&quot;,
-&quot;be_status&quot;: &quot;Active&quot;,
-&quot;selected_version_datetime&quot;: null,
-&quot;task_last_updated_by&quot;: &quot;Tahata@k2view.com&quot;,
-&quot;selected_ref_version_task_exe_id&quot;: null,
-&quot;task_execution_status&quot;: &quot;Active&quot;,
-&quot;sync_mode&quot;: null,
-&quot;replace_sequences&quot;: false,
-&quot;entity_exclusion_list&quot;: null,
-&quot;environment_point_of_contact_last_name&quot;: null,
-&quot;environment_point_of_contact_email&quot;: null,
-&quot;be_description&quot;: &quot;This is a Business Entity created for the TDM GUI for free trail.&quot;,
-&quot;reserve_retention_period_value&quot;: null,
-&quot;parameters&quot;: null,
-&quot;environment_expiration_date&quot;: null,
-&quot;environment_point_of_contact_phone2&quot;: null,
-&quot;environment_created_by&quot;: &quot;admin&quot;,
-&quot;roles&quot;: [
+&quot;selection_param_value&quot;:&quot;(( 'Bronze' = ANY(&quot;BILLING.VIP_STATUS&quot;) ))&quot;,
+&quot;environment_status&quot;:&quot;Active&quot;,
+&quot;be_status&quot;:&quot;Active&quot;,
+&quot;selected_version_datetime&quot;:null,
+&quot;task_last_updated_by&quot;:&quot;admin&quot;,
+&quot;selected_ref_version_task_exe_id&quot;:null,
+&quot;task_execution_status&quot;:&quot;Active&quot;,
+&quot;sync_mode&quot;:null,
+&quot;replace_sequences&quot;:false,
+&quot;entity_exclusion_list&quot;:null,
+&quot;environment_point_of_contact_last_name&quot;:null,
+&quot;environment_point_of_contact_email&quot;:null,
+&quot;be_description&quot;:&quot;&quot;,
+&quot;reserve_retention_period_value&quot;:5,
+&quot;parameters&quot;:&quot;{&quot;group&quot;:{&quot;rules&quot;:[{&quot;condition&quot;:&quot;=&quot;,&quot;field&quot;:&quot;BILLING.VIP_STATUS&quot;,&quot;data&quot;:&quot;Bronze&quot;,&quot;operator&quot;:&quot;AND&quot;,&quot;type&quot;:&quot;text&quot;,&quot;comboIndicator&quot;:&quot;true&quot;,&quot;validValues&quot;:[&quot;Bronze&quot;,&quot;Gold&quot;,&quot;Platinum&quot;,&quot;Silver&quot;],&quot;disableThird&quot;:false}]}}&quot;,
+&quot;environment_expiration_date&quot;:null,
+&quot;environment_point_of_contact_phone2&quot;:null,
+&quot;environment_created_by&quot;:&quot;admin&quot;,
+&quot;roles&quot;:[
 [
 {
-&quot;role_id&quot;: -1,
-&quot;allowed_test_conn_failure&quot;: false
+&quot;role_id&quot;:4,
+&quot;allowed_test_conn_failure&quot;:false
+},
+{
+&quot;role_id&quot;:3,
+&quot;allowed_test_conn_failure&quot;:false
 }
 ]
 ],
-&quot;environment_last_updated_by&quot;: &quot;Tahata@k2view.com&quot;,
-&quot;be_creation_date&quot;: &quot;2022-12-01 13:27:20.522&quot;,
-&quot;task_id&quot;: 6,
-&quot;be_created_by&quot;: &quot;admin&quot;,
-&quot;source_environment_id&quot;: -1,
-&quot;role_id_orig&quot;: -1,
-&quot;scheduler&quot;: &quot;immediate&quot;,
-&quot;environment_description&quot;: &quot;This is the synthetic environment.&quot;,
-&quot;selected_ref_version_datetime&quot;: null,
-&quot;source_env_name&quot;: &quot;Synthetic&quot;,
-&quot;reserve_ind&quot;: false,
-&quot;task_title&quot;: &quot;g1&quot;,
-&quot;fabric_environment_name&quot;: null,
-&quot;environment_name&quot;: &quot;Synthetic&quot;,
-&quot;delete_before_load&quot;: false,
-&quot;allow_write&quot;: false,
-&quot;owner&quot;: null,
-&quot;task_status&quot;: &quot;Active&quot;,
-&quot;retention_period_value&quot;: &quot;-1&quot;,
-&quot;executioncount&quot;: 0,
-&quot;environment_last_updated_date&quot;: &quot;2023-05-01 10:57:38.421&quot;,
-&quot;be_name&quot;: &quot;Customer&quot;,
-&quot;version_ind&quot;: false,
-&quot;task_creation_date&quot;: &quot;2023-05-03 07:16:42.066&quot;,
-&quot;task_globals&quot;: false,
-&quot;environment_point_of_contact_first_name&quot;: null,
-&quot;task_type&quot;: &quot;GENERATE&quot;,
-&quot;environment_creation_date&quot;: &quot;2023-05-01 07:03:31.469007&quot;,
-&quot;owner_type&quot;: null,
-&quot;selection_method2&quot;: &quot;Generate Synthetic Entities&quot;,
-&quot;task_type2&quot;: &quot;GENERATE&quot;,
-&quot;operation_mode&quot;: &quot;&quot;,
-&quot;data_type&quot;: &quot;Entities&quot;,
-&quot;disabled&quot;: false,
-&quot;onHold&quot;: false,
-&quot;operationMode&quot;: &quot;insert_entity_without_delete&quot;,
-&quot;generateTask&quot;: true,
-&quot;globals&quot;: [],
-&quot;postExecutionProcesses&quot;: [],
-&quot;selectedLogicalUnits&quot;: [
+&quot;environment_last_updated_by&quot;:&quot;admin&quot;,
+&quot;be_creation_date&quot;:&quot;2022-10-19 18:42:40.301&quot;,
+&quot;task_id&quot;:87,
+&quot;be_created_by&quot;:&quot;admin&quot;,
+&quot;source_environment_id&quot;:1,
+&quot;role_id_orig&quot;:4,
+&quot;scheduler&quot;:&quot;immediate&quot;,
+&quot;environment_description&quot;:null,
+&quot;selected_ref_version_datetime&quot;:null,
+&quot;source_env_name&quot;:&quot;SRC&quot;,
+&quot;reserve_ind&quot;:true,
+&quot;task_title&quot;:&quot;testapi2&quot;,
+&quot;fabric_environment_name&quot;:null,
+&quot;environment_name&quot;:&quot;TAR&quot;,
+&quot;delete_before_load&quot;:false,
+&quot;allow_write&quot;:true,
+&quot;owner&quot;:null,
+&quot;task_status&quot;:&quot;Active&quot;,
+&quot;executioncount&quot;:0,
+&quot;environment_last_updated_date&quot;:&quot;2022-12-06 10:18:49.378&quot;,
+&quot;be_name&quot;:&quot;Customer&quot;,
+&quot;version_ind&quot;:false,
+&quot;task_creation_date&quot;:&quot;2022-12-19 12:16:48.257&quot;,
+&quot;task_globals&quot;:false,
+&quot;environment_point_of_contact_first_name&quot;:null,
+&quot;task_type&quot;:&quot;LOAD&quot;,
+&quot;environment_creation_date&quot;:&quot;2022-09-21 13:43:25.13&quot;,
+&quot;owner_type&quot;:null,
+&quot;creatorRoles&quot;:[
+&quot;admin&quot;
+],
+&quot;selection_method2&quot;:&quot;Parameters with Random Entity Selection&quot;,
+&quot;task_type2&quot;:&quot;LOAD&quot;,
+&quot;operation_mode&quot;:&quot;Load entity&quot;,
+&quot;data_type&quot;:&quot;Entities and Reference&quot;,
+&quot;disabled&quot;:false,
+&quot;onHold&quot;:false,
+&quot;reference&quot;:&quot;both&quot;,
+&quot;operationMode&quot;:&quot;insert_entity_without_delete&quot;,
+&quot;extractSelected&quot;:true,
+&quot;postExecutionProcesses&quot;:[
+1
+],
+&quot;refList&quot;:[
 {
-&quot;lu_name&quot;: &quot;Asset&quot;,
-&quot;lu_id&quot;: 3,
-&quot;task_id&quot;: 6,
-&quot;$$hashKey&quot;: &quot;object:246&quot;
+&quot;ref_table_name&quot;:&quot;DEVICESTABLE2017&quot;,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;interface_name&quot;:&quot;CRM_DB&quot;,
+&quot;schema_name&quot;:&quot;public&quot;,
+&quot;logical_unit_name&quot;:&quot;Customer&quot;,
+&quot;reference_table_name&quot;:&quot;DEVICESTABLE2017&quot;
 },
 {
-&quot;lu_name&quot;: &quot;Billing&quot;,
-&quot;lu_id&quot;: 2,
-&quot;task_id&quot;: 6,
-&quot;$$hashKey&quot;: &quot;object:247&quot;
-},
-{
-&quot;lu_name&quot;: &quot;CRM&quot;,
-&quot;lu_id&quot;: 1,
-&quot;task_id&quot;: 6,
-&quot;$$hashKey&quot;: &quot;object:248&quot;
+&quot;ref_table_name&quot;:&quot;devicestable2017&quot;,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;interface_name&quot;:&quot;CRM_DB&quot;,
+&quot;schema_name&quot;:&quot;public&quot;,
+&quot;logical_unit_name&quot;:&quot;Customer&quot;,
+&quot;reference_table_name&quot;:&quot;devicestable2017&quot;,
+&quot;selected&quot;:true
 }
 ],
-&quot;source_synthetic&quot;: true,
-&quot;allLogicalUnits&quot;: [
+&quot;globals&quot;:[</p>
+<p>],
+&quot;selectedLogicalUnits&quot;:[
 {
-&quot;lu_parent_name&quot;: null,
-&quot;lu_name&quot;: &quot;CRM&quot;,
-&quot;lu_id&quot;: 1,
-&quot;product_name&quot;: &quot;CRM&quot;
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;lu_id&quot;:7,
+&quot;task_id&quot;:87
 },
 {
-&quot;lu_parent_name&quot;: &quot;CRM&quot;,
-&quot;lu_name&quot;: &quot;Billing&quot;,
-&quot;lu_id&quot;: 2,
-&quot;product_name&quot;: &quot;BILLING&quot;
+&quot;lu_name&quot;:&quot;Billing&quot;,
+&quot;lu_id&quot;:9,
+&quot;task_id&quot;:87
+{
+&quot;lu_name&quot;:&quot;Collection&quot;,
+&quot;lu_id&quot;:10,
+&quot;task_id&quot;:87
 },
 {
-&quot;lu_parent_name&quot;: &quot;CRM&quot;,
-&quot;lu_name&quot;: &quot;Asset&quot;,
-&quot;lu_id&quot;: 3,
-&quot;product_name&quot;: &quot;ASSET&quot;
+&quot;lu_name&quot;:&quot;Orders&quot;,
+&quot;lu_id&quot;:8,
+&quot;task_id&quot;:87
 }
 ],
-&quot;missingRootLU&quot;: [],
-&quot;versionsForLoad&quot;: [],
-&quot;DataManParams&quot;: {
-&quot;city&quot;: {
-&quot;editor&quot;: {
-&quot;name&quot;: &quot;city&quot;,
-&quot;schema&quot;: {
-&quot;type&quot;: &quot;string&quot;
+&quot;allLogicalUnits&quot;:[
+{
+&quot;lu_parent_name&quot;:null,
+&quot;lu_name&quot;:&quot;Customer&quot;,
+&quot;lu_id&quot;:7,
+&quot;product_name&quot;:&quot;CRM&quot;
 },
-&quot;context&quot;: {
-&quot;mtableRandomRow&quot;: {
-&quot;const&quot;: true
+{
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Billing&quot;,
+&quot;lu_id&quot;:9,
+&quot;product_name&quot;:&quot;FINANCE&quot;
 },
-&quot;mtable&quot;: {
-&quot;const&quot;: &quot;addresses&quot;
+{
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Collection&quot;,
+&quot;lu_id&quot;:10,
+&quot;product_name&quot;:&quot;FINANCE&quot;
 },
-&quot;city&quot;: {
-&quot;self&quot;: &quot;city&quot;
-},
-&quot;state&quot;: {
-&quot;external&quot;: &quot;state&quot;
-},
-&quot;mtableKey&quot;: {
-&quot;const&quot;: {}
-},
-&quot;mtableCaseSensitive&quot;: {
-&quot;const&quot;: true
+{
+&quot;lu_parent_name&quot;:&quot;Customer&quot;,
+&quot;lu_name&quot;:&quot;Orders&quot;,
+&quot;lu_id&quot;:8,
+&quot;product_name&quot;:&quot;ORDERS&quot;
 }
-},
-&quot;id&quot;: &quot;com.k2view.mTableKey&quot;
-},
-&quot;default&quot;: null,
-&quot;description&quot;: &quot;Select the City to select a random address&quot;,
-&quot;type&quot;: &quot;string&quot;,
-&quot;mandatory&quot;: false,
-&quot;value&quot;: &quot;Dallas&quot;,
-&quot;name&quot;: &quot;city&quot;
-},
-&quot;contract_ref_id&quot;: {
-&quot;editor&quot;: {
-&quot;name&quot;: &quot;contract_ref_id&quot;,
-&quot;schema&quot;: {
-&quot;type&quot;: &quot;string&quot;
-},
-&quot;context&quot;: {
-&quot;mtableRandomRow&quot;: {
-&quot;const&quot;: true
-},
-&quot;mtable&quot;: {
-&quot;const&quot;: &quot;contract_reference&quot;
-},
-&quot;contract_ref_id&quot;: {
-&quot;self&quot;: &quot;contract_ref_id&quot;
-},
-&quot;mtableKey&quot;: {
-&quot;const&quot;: {}
-},
-&quot;mtableCaseSensitive&quot;: {
-&quot;const&quot;: true
+],
+&quot;missingRootLU&quot;:[</p>
+<p>],
+&quot;syncModeRadio&quot;:null,
+&quot;allPostExecutionProcess&quot;:[
+{
+&quot;process_id&quot;:1,
+&quot;be_id&quot;:4,
+&quot;process_name&quot;:&quot;PostExecFlow&quot;,
+&quot;process_description&quot;:null,
+&quot;execution_order&quot;:1
 }
-},
-&quot;id&quot;: &quot;com.k2view.mTableKey&quot;
-},
-&quot;default&quot;: null,
-&quot;description&quot;: &quot;Select Reference ID to select random Contract Description&quot;,
-&quot;type&quot;: &quot;string&quot;,
-&quot;mandatory&quot;: false,
-&quot;name&quot;: &quot;contract_ref_id&quot;,
-&quot;value&quot;: &quot;102&quot;
-},
-&quot;crm_cases_number_of_records&quot;: {
-&quot;editor&quot;: {
-&quot;schema&quot;: &quot;{}&quot;,
-&quot;name&quot;: &quot;crm_cases_number_of_records&quot;,
-&quot;context&quot;: {
-&quot;crm_cases_number_of_records&quot;: {
-&quot;self&quot;: &quot;distribution&quot;
-},
-&quot;distribution&quot;: {
-&quot;const&quot;: {
-&quot;distribution&quot;: &quot;uniform&quot;,
-&quot;round&quot;: true,
-&quot;type&quot;: &quot;integer&quot;,
-&quot;minimum&quot;: 1,
-&quot;maximum&quot;: 3
-}
-}
-},
-&quot;id&quot;: &quot;com.k2view.distribution&quot;
-},
-&quot;default&quot;: {
-&quot;distribution&quot;: &quot;uniform&quot;,
-&quot;round&quot;: true,
-&quot;type&quot;: &quot;integer&quot;,
-&quot;minimum&quot;: 1,
-&quot;maximum&quot;: 3
-},
-&quot;description&quot;: &quot;Distribution Of Records Of table cases&quot;,
-&quot;type&quot;: &quot;any&quot;,
-&quot;mandatory&quot;: &quot;false&quot;,
-&quot;value&quot;: {
-&quot;maximum&quot;: 5,
-&quot;distribution&quot;: &quot;uniform&quot;,
-&quot;round&quot;: true,
-&quot;type&quot;: &quot;integer&quot;,
-&quot;minimum&quot;: 3
-},
-&quot;name&quot;: &quot;crm_cases_number_of_records&quot;
-}
-},
-&quot;refList&quot;: []
-}</p>
+],
+&quot;versionsForLoad&quot;:[</p>
+<p>]
+}=-}</p>
 </div>
 
     <h3 class="field-label">Path parameters</h3>
@@ -9368,7 +10458,11 @@ A task execution can override the following parameters:</p>
         <a href="#Object">Object</a>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/xml</div>
-    <pre class="example"><code>&lt;HashMap&gt;&lt;result&gt;5&lt;/result&gt;&lt;errorCode&gt;SUCCESS&lt;/errorCode&gt;&lt;message/&gt;&lt;/HashMap&gt;</code></pre>
+    <pre class="example"><code>&lt;HashMap&gt;
+&lt;result&gt;5&lt;/result&gt;
+&lt;errorCode&gt;SUCCESS&lt;/errorCode&gt;
+&lt;message/&gt;
+&lt;/HashMap&gt;</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>{&quot;result&quot;:5,&quot;errorCode&quot;:&quot;SUCCESS&quot;}</code></pre>
@@ -9702,7 +10796,11 @@ When the task execution id is empty, the API returns current/last execution of t
         <a href="#Object">Object</a>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/xml</div>
-    <pre class="example"><code>&lt;HashMap&gt;  &lt;result&gt;7.3.0&lt;/result&gt;  &lt;errorCode&gt;SUCCESS&lt;/errorCode&gt;  &lt;message/&gt;&lt;/HashMap&gt;</code></pre>
+    <pre class="example"><code>&lt;HashMap&gt;
+  &lt;result&gt;7.3.0&lt;/result&gt;
+  &lt;errorCode&gt;SUCCESS&lt;/errorCode&gt;
+  &lt;message/&gt;
+&lt;/HashMap&gt;</code></pre>
     <h3 class="field-label">Example data</h3>
     <div class="example-data-content-type">Content-Type: application/json</div>
     <pre class="example"><code>{&quot;result&quot;:&quot;7.3.0&quot;,&quot;errorCode&quot;:&quot;SUCCESS&quot;}</code></pre>

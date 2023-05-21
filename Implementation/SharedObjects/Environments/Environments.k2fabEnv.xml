@@ -209,9 +209,6 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="TALI_TEST" luName="">
-          <Value>1</Value>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -250,6 +247,9 @@
         </Global>
         <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
           <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>false</Value>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
@@ -534,9 +534,6 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="TALI_TEST" luName="">
-          <Value>1</Value>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -575,6 +572,9 @@
         </Global>
         <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
           <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>false</Value>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
@@ -860,9 +860,6 @@
         <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
           <Value>PROD</Value>
         </Global>
-        <Global name="TALI_TEST" luName="">
-          <Value>1</Value>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
         </Global>
@@ -901,6 +898,9 @@
         </Global>
         <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
           <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>false</Value>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>

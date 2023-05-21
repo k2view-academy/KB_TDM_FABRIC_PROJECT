@@ -26,4 +26,8 @@ public class Globals extends SharedGlobals {
 	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
 
+	@category("TDM")
+	public static String TDM_DEPLOY_ENVIRONMENTS = "false";
+
+
 }

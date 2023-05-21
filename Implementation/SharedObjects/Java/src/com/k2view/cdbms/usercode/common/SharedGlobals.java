@@ -124,7 +124,6 @@ public class SharedGlobals {
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	@category("TDM_DEMO")
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
-	public static String TALI_TEST = "1";
 
 
 }

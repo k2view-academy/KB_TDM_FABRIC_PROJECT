@@ -3,12 +3,78 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Check Flag For Deploy Envs",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Logger1",
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DEPLOY_ENVIRONMENTS"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If True",
+                    "dependsOnList": [
+                        "Check Flag For Deploy Envs"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "EqualsIgnoreCase1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "If Flase",
+                    "dependsOnList": [
+                        "Check Flag For Deploy Envs"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Statement",
+                    "dependsOnList": [
+                        "If True"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Starting Deploy Activities",
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
@@ -25,7 +91,7 @@
                             }
                         },
                         {
-                            "name": "Const1",
+                            "name": "Command",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -68,7 +134,7 @@
                             }
                         },
                         {
-                            "name": "Const2",
+                            "name": "Path",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -91,6 +157,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "If Flase"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -98,11 +173,13 @@
             "stages": [
                 {
                     "name": "Create Deploy Environment Command",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Build Statement"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Concat1",
+                            "name": "Concat",
                             "actorType": {
                                 "parentType": "Concat",
                                 "inputs": [
@@ -115,6 +192,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -122,12 +208,13 @@
             "stages": [
                 {
                     "name": "Run Deploy Environments",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Create Deploy Environment Command"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
                             "name": "Deploy Environments",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -144,6 +231,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [
+                        "Stage 6"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -241,7 +337,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Logger2",
+                            "name": "Finished Deploy Activities",
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
@@ -265,11 +361,21 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "EqualsIgnoreCase1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Command",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Concat1",
+                "actor": "Concat",
                 "name": "elements"
             },
             "arrayPosition": 0
@@ -280,25 +386,25 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Concat1",
+                "actor": "Concat",
                 "name": "elements"
             },
             "arrayPosition": 1
         },
         {
             "leftPort": {
-                "actor": "Const2",
+                "actor": "Path",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Concat1",
+                "actor": "Concat",
                 "name": "elements"
             },
             "arrayPosition": 2
         },
         {
             "leftPort": {
-                "actor": "Concat1",
+                "actor": "Concat",
                 "name": "string"
             },
             "rightPort": {

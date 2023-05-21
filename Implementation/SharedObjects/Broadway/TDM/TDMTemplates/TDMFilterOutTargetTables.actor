@@ -7,43 +7,6 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "table_regex": "FABRIC_TDM_ROOT",
-                    "active": true,
-                    "lu_name": "ALL_LUS"
-                },
-                {
-                    "table_regex": "LU_PARAMS",
-                    "active": true,
-                    "lu_name": "ALL_LUS"
-                },
-                {
-                    "table_regex": "TDM_LU_TYPE_REL_TAR_EID",
-                    "active": true,
-                    "lu_name": "ALL_LUS"
-                },
-                {
-                    "table_regex": "TDM_LU_TYPE_RELATION_EID",
-                    "active": true,
-                    "lu_name": "ALL_LUS"
-                },
-                {
-                    "table_regex": "TAR_.*",
-                    "active": true,
-                    "lu_name": "ALL_LUS"
-                },
-                {
-                    "table_regex": "collection",
-                    "active": true,
-                    "lu_name": "Customer"
-                },
-                {
-                    "table_regex": "orders",
-                    "active": true,
-                    "lu_name": "Customer"
-                }
-            ],
             "schema": {
                 "type": "array",
                 "items": {
@@ -57,10 +20,45 @@
                         },
                         "lu_name": {
                             "type": "string"
+                        },
+                        "generator_filterout": {
+                            "type": "boolean"
                         }
                     }
                 }
-            }
+            },
+            "const": [
+                {
+                    "table_regex": "FABRIC_TDM_ROOT",
+                    "active": true,
+                    "lu_name": "ALL_LUS",
+                    "generator_filterout": true
+                },
+                {
+                    "table_regex": "LU_PARAMS",
+                    "active": true,
+                    "lu_name": "ALL_LUS",
+                    "generator_filterout": true
+                },
+                {
+                    "table_regex": "TDM_LU_TYPE_REL_TAR_EID",
+                    "active": true,
+                    "lu_name": "ALL_LUS",
+                    "generator_filterout": true
+                },
+                {
+                    "table_regex": "TDM_LU_TYPE_RELATION_EID",
+                    "active": true,
+                    "lu_name": "ALL_LUS",
+                    "generator_filterout": true
+                },
+                {
+                    "table_regex": "TAR_.*",
+                    "active": true,
+                    "lu_name": "ALL_LUS",
+                    "generator_filterout": true
+                }
+            ]
         }
     ],
     "outputs": [],

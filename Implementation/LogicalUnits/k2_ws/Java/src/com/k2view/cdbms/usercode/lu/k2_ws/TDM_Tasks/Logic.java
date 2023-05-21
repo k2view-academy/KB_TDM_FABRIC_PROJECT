@@ -5275,22 +5275,58 @@ public class Logic extends WebServiceUserCode {
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
-			"      \"name\": \"luName\",\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"date\"\r\n" +
+			"        },\r\n" +
+			"        \"name\": \"param1\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"level\": {\r\n" +
+			"            \"const\": \"error\"\r\n" +
+			"          },\r\n" +
+			"          \"message\": {\r\n" +
+			"            \"const\": \"${param1}, ${param2}\"\r\n" +
+			"          },\r\n" +
+			"          \"param1\": {\r\n" +
+			"            \"self\": \"param1\"\r\n" +
+			"          },\r\n" +
+			"          \"param2\": {\r\n" +
+			"            \"external\": \"param2\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.default\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"array\",\r\n" +
+			"      \"type\": \"date\",\r\n" +
 			"      \"mandatory\": false\r\n" +
 			"    },\r\n" +
 			"    {\r\n" +
-			"      \"name\": \"syncMode\",\r\n" +
+			"      \"editor\": {\r\n" +
+			"        \"schema\": {\r\n" +
+			"          \"type\": \"integer\"\r\n" +
+			"        },\r\n" +
+			"        \"name\": \"param2\",\r\n" +
+			"        \"context\": {\r\n" +
+			"          \"level\": {\r\n" +
+			"            \"const\": \"error\"\r\n" +
+			"          },\r\n" +
+			"          \"message\": {\r\n" +
+			"            \"const\": \"${param1}, ${param2}\"\r\n" +
+			"          },\r\n" +
+			"          \"param1\": {\r\n" +
+			"            \"external\": \"param1\"\r\n" +
+			"          },\r\n" +
+			"          \"param2\": {\r\n" +
+			"            \"self\": \"param2\"\r\n" +
+			"          }\r\n" +
+			"        },\r\n" +
+			"        \"id\": \"com.k2view.default\"\r\n" +
+			"      },\r\n" +
+			"      \"default\": null,\r\n" +
 			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
+			"      \"type\": \"integer\",\r\n" +
 			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"name\": \"iid\",\r\n" +
-			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": true\r\n" +
 			"    }\r\n" +
 			"  ],\r\n" +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
@@ -5333,31 +5369,102 @@ public class Logic extends WebServiceUserCode {
 		
 		return wrapWebServiceResults("SUCCESS", null, result);
 	}
-	@desc("Get the list of parameters of the given custom Flow")
+	@desc("Get the list of parameters of the given custom Flow.\r\n" +
+			"It gets a list of LU Names separated by comma, and optional task id. Task Id will be sent in case of updating an existing task, to get the values already set in that task.")
 	@webService(path = "getDMPopParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    {\r\n" +
-			"      \"name\": \"luName\",\r\n" +
-			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"array\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"name\": \"syncMode\",\r\n" +
-			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": false\r\n" +
-			"    },\r\n" +
-			"    {\r\n" +
-			"      \"name\": \"iid\",\r\n" +
-			"      \"description\": \"\",\r\n" +
-			"      \"type\": \"string\",\r\n" +
-			"      \"mandatory\": true\r\n" +
-			"    }\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
+			"\t\"result\": {\r\n" +
+			"\t\t\"activity_note\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"name\": \"activity_note\",\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"string\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"activity_note\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"value\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"value\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": \"My Note\"\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"syncOutput\": true,\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.default\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": \"My Note\",\r\n" +
+			"\t\t\t\"description\": \"\",\r\n" +
+			"\t\t\t\"type\": \"string\",\r\n" +
+			"\t\t\t\"mandatory\": false\r\n" +
+			"\t\t},\r\n" +
+			"\t\t\"billing_balance_number_of_records\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"integer\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"name\": \"billing_balance_number_of_records\",\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"billing_balance_number_of_records\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"distribution\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"distribution\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {\r\n" +
+			"\t\t\t\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\t\t\t\"minimum\": 1,\r\n" +
+			"\t\t\t\t\t\t\t\"maximum\": 3\r\n" +
+			"\t\t\t\t\t\t}\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.distribution\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": {\r\n" +
+			"\t\t\t\t\"distribution\": \"uniform\",\r\n" +
+			"\t\t\t\t\"round\": true,\r\n" +
+			"\t\t\t\t\"type\": \"integer\",\r\n" +
+			"\t\t\t\t\"minimum\": 1,\r\n" +
+			"\t\t\t\t\"maximum\": 3\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"description\": \"Distribution Of Records Of table balance\",\r\n" +
+			"\t\t\t\"type\": \"any\",\r\n" +
+			"\t\t\t\"mandatory\": \"false\"\r\n" +
+			"\t\t},\r\n" +
+			"\t\t\"state\": {\r\n" +
+			"\t\t\t\"editor\": {\r\n" +
+			"\t\t\t\t\"name\": \"state\",\r\n" +
+			"\t\t\t\t\"schema\": {\r\n" +
+			"\t\t\t\t\t\"type\": \"string\"\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"context\": {\r\n" +
+			"\t\t\t\t\t\"mtableRandomRow\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtable\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": \"addresses\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"city\": {\r\n" +
+			"\t\t\t\t\t\t\"external\": \"city\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"state\": {\r\n" +
+			"\t\t\t\t\t\t\"self\": \"state\"\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableKey\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": {}\r\n" +
+			"\t\t\t\t\t},\r\n" +
+			"\t\t\t\t\t\"mtableCaseSensitive\": {\r\n" +
+			"\t\t\t\t\t\t\"const\": true\r\n" +
+			"\t\t\t\t\t}\r\n" +
+			"\t\t\t\t},\r\n" +
+			"\t\t\t\t\"id\": \"com.k2view.mTableKey\"\r\n" +
+			"\t\t\t},\r\n" +
+			"\t\t\t\"default\": null,\r\n" +
+			"\t\t\t\"description\": \"\",\r\n" +
+			"\t\t\t\"type\": \"string\",\r\n" +
+			"\t\t\t\"mandatory\": false\r\n" +
+			"\t\t}\r\n" +
+			"\t},\r\n" +
+			"\t\"errorCode\": \"SUCCESS\",\r\n" +
+			"\t\"message\": null\r\n" +
 			"}")
 	public static Object wsGetDMPopParams(String luList, Long taskId) throws Exception {
 		      
