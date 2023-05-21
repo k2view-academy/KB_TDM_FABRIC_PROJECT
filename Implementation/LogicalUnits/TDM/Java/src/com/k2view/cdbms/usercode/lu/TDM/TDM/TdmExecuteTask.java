@@ -1191,7 +1191,7 @@ public class TdmExecuteTask {
 							taskProperties.put(attrName, overrideValue);
 							break;
 						case "dataflux_retention_params":
-							Map rentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
+							Map rentionPeriodInfo = Json.get().fromJson(overrideValue, Map.class);
 							taskProperties.put("retention_period_type", "" + rentionPeriodInfo.get("unit"));
 							taskProperties.put("retention_period_value", "" + rentionPeriodInfo.get("value"));
 							break;
@@ -1199,7 +1199,7 @@ public class TdmExecuteTask {
 							taskProperties.put("reserve_ind", overrideValue);
 							break;
 						case "reserve_retention_params":
-							Map reserveRentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
+							Map reserveRentionPeriodInfo = Json.get().fromJson(overrideValue, Map.class);
 							taskProperties.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("unit"));
 							taskProperties.put("reserve_retention_period_value", "" + reserveRentionPeriodInfo.get("value"));
 							break;

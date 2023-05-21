@@ -16,18 +16,6 @@
                                     {
                                         "name": "customer_id",
                                         "schema": {}
-                                    },
-                                    {
-                                        "name": "collection_id",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "last_update",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "collection_status",
-                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -256,36 +244,6 @@
             "rightPort": {
                 "actor": "PopulationArgs",
                 "name": "customer_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "collection_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "collection_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "last_update"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "last_update"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "collection_status"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "collection_status"
             }
         },
         {

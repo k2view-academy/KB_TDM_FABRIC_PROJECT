@@ -16,44 +16,6 @@
                                     {
                                         "name": "contract_id",
                                         "schema": {}
-                                    },
-                                    {
-                                        "name": "order_id",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "order_type",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": {
-                                                    "type": "string"
-                                                },
-                                                "round": {
-                                                    "type": "boolean"
-                                                },
-                                                "type": {
-                                                    "type": "string"
-                                                },
-                                                "weights": {
-                                                    "type": "array",
-                                                    "items": {
-                                                        "type": "array",
-                                                        "items": {
-                                                            "type": "integer"
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "order_date",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "order_status",
-                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -113,7 +75,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * FROM public.orders where contract_id="
+                                        "const": "SELECT * FROM public.orders"
                                     },
                                     {
                                         "name": "rowsGeneratorDistribution",
@@ -290,46 +252,6 @@
             "rightPort": {
                 "actor": "PopulationArgs",
                 "name": "contract_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "order_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "order_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "order_type"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "order_type"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "order_date"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "order_date"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "order_status"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "order_status"
             }
         },
         {

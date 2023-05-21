@@ -628,13 +628,12 @@ public class SharedLogic {
 		    }
 		
 		    sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
-		    Object maxReserveDays = "" + db(TDM).fetch(sql).firstValue();
+		    Object maxReserveDays = db(TDM).fetch(sql).firstValue();
 		    if (maxReserveDays != null) {
 		        Map<String, Object> testers = new HashMap<>();
 		
 		        testers.put("units", "Days");
 		        testers.put("value", maxReserveDays);
-		
 		        map.put("maxRetentionPeriodForTesters", testers);
 		    }
 		    return map;
