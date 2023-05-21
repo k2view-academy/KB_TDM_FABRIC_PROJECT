@@ -317,6 +317,7 @@
                                 "inputs": [
                                     {
                                         "name": "distribution",
+                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
                                         "schema": {
                                             "type": "object",
                                             "properties": {

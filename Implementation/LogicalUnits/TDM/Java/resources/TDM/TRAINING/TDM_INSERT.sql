@@ -36,3 +36,14 @@ INSERT INTO public.products (product_name, product_description,  product_version
 INSERT INTO public.products (product_name, product_description,  product_versions, product_id, product_created_by, product_creation_date, product_last_updated_date, product_last_updated_by, product_status) VALUES ('Ordering', 'Ordering Application', '1', 4, 'admin', now(), now(), 'admin', 'Active') ON CONFLICT DO NOTHING;
 
 INSERT INTO public.tdm_be_post_exe_process (process_id, process_name, process_description, be_id, execution_order) VALUES (1, 'postTaskExePrintToLog', 'This is a Post Execution Process Flow.', 1, 1) ON CONFLICT DO NOTHING;
+SELECT pg_catalog.setval('public.business_entities_be_id_seq', 1, true);
+SELECT pg_catalog.setval('public.environment_product_id_seq', 8, true);
+SELECT pg_catalog.setval('public.environment_roles_role_id_seq', 3, true);
+SELECT pg_catalog.setval('public.environments_environment_id_seq', 3, true);
+SELECT pg_catalog.setval('public.post_exe_process_id_seq', 1, true);
+SELECT pg_catalog.setval('public.product_logical_units_lu_id_seq', 3, true);
+SELECT pg_catalog.setval('public.products_product_id_seq', 4, true);
+SELECT pg_catalog.setval('public.tasks_ref_table_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tasks_task_execution_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tasks_task_id_seq', 1, false);
+SELECT pg_catalog.setval('public.tdm_be_env_exclusion_list_be_env_exclusion_list_id_seq', 1, false);
