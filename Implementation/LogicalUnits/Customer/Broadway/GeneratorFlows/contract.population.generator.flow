@@ -37,29 +37,6 @@
                             }
                         },
                         {
-                            "name": "DESCRIPTION",
-                            "actorType": {
-                                "parentType": "ConstStrings",
-                                "inputs": [
-                                    {
-                                        "name": "strings",
-                                        "const": [
-                                            "450 min",
-                                            "100 text",
-                                            "5G LTE",
-                                            "5G tether",
-                                            "Unlimited text",
-                                            "10G 3G",
-                                            "10G LTE",
-                                            "Unlimited call",
-                                            "Roaming special"
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "MTable Associtaed Line",
                             "actorType": {
                                 "parentType": "MTableRandom",
@@ -294,52 +271,6 @@
                             }
                         },
                         {
-                            "name": "CONTRACT_DESCRIPTION",
-                            "actorType": {
-                                "parentType": "RandomFromCollection",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "CONTRACT_REF_ID",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 101,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 110,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "ASSOCIATED_LINE",
                             "actorType": {
                                 "parentType": "Const",
@@ -361,6 +292,164 @@
                         },
                         {
                             "name": "ASSOCIATED_LINE_FMT",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "CONTRACT_REF_ID",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    10,
+                                                    "101"
+                                                ],
+                                                [
+                                                    10,
+                                                    "102"
+                                                ],
+                                                [
+                                                    10,
+                                                    "103"
+                                                ],
+                                                [
+                                                    10,
+                                                    "104"
+                                                ],
+                                                [
+                                                    10,
+                                                    "105"
+                                                ],
+                                                [
+                                                    10,
+                                                    "106"
+                                                ],
+                                                [
+                                                    10,
+                                                    "107"
+                                                ],
+                                                [
+                                                    10,
+                                                    "108"
+                                                ],
+                                                [
+                                                    10,
+                                                    "109"
+                                                ],
+                                                [
+                                                    10,
+                                                    "110"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MTable Description",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "OfferContractMapping"
+                                    },
+                                    {
+                                        "name": "contract_ref_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_contract_description": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DESCRIPTION",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -400,16 +489,6 @@
         },
         {
             "leftPort": {
-                "actor": "DESCRIPTION",
-                "name": "strings"
-            },
-            "rightPort": {
-                "actor": "CONTRACT_DESCRIPTION",
-                "name": "collection"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "MTable Associtaed Line",
                 "name": "result"
             },
@@ -432,6 +511,29 @@
             },
             "path": [
                 "associated_line"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MTable Description",
+                "name": "contract_ref_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Description",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DESCRIPTION",
+                "name": "value"
+            },
+            "path": [
+                "offer_contract_description"
             ]
         },
         {
@@ -506,26 +608,6 @@
         },
         {
             "leftPort": {
-                "actor": "CONTRACT_DESCRIPTION",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CONTRACT_DESCRIPTION"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CONTRACT_REF_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CONTRACT_REF_ID"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "ASSOCIATED_LINE",
                 "name": "value"
             },
@@ -542,6 +624,36 @@
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "ASSOCIATED_LINE_FMT"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "contract_ref_id"
+            },
+            "rightPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_REF_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DESCRIPTION",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_DESCRIPTION"
             }
         }
     ]
