@@ -269,37 +269,16 @@ public class SharedLogic {
 
 
     public static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) {
-        Map<String, String> errorMessages = new HashMap<>();
         Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
+        Map<String, String> errorMessages = new HashMap<>();
         Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
-        Long maxRetentionPeriod = -1L;
-        if ("versioning".equals(validation)) {
-            if (adminOrOwner) {
-                Map<String, Long> versionMap = (Map<String, Long>) retentionDefinitions.get("versioningRetentionPeriod");
-                maxRetentionPeriod = versionMap.get("value");
-            } else {
-                Map<String, Long> versionMap = (Map<String, Long>) retentionDefinitions.get("versioningRetentionPeriodForTesters");
-                maxRetentionPeriod = versionMap.get("value");
-                String val = String.valueOf(versionMap.get("allow_doNotDelete"));
-                if (maxRetentionPeriod == -1 && "false".equalsIgnoreCase(val)) {
-                    errorMessages.put("retention", "The tester cannot use DO NOT DELETE Mode in versioning");
-                }
-            }
-        }
-        else {
-            Map<String, Long> versionMap;
-            if (adminOrOwner) {
-                versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriod");
-            } else {
-                versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriodForTesters");
-            }
-            maxRetentionPeriod = versionMap.get("value");
-        }
+        Map<String, Long> versionMap;
+        Long maxPeriod = -1L;
+        Long testerPeriod = -1L;
 
         ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("periodTypes");
-        //log.info("retentionPeriodTypes: " + retentionPeriodTypes);
         if(retentionPeriodTypes!=null) {
-            String unit = retentionPeriodParams.get("units");
+            String unit = retentionPeriodParams.get("unit");
             String value = retentionPeriodParams.get("value");
 
             String unitToDay = "1";
@@ -309,15 +288,32 @@ public class SharedLogic {
                     break;
                 }
             }
-            Double retentionValue = Double.parseDouble(value);
+            long cnt = Long.parseLong(value);
+            long inputValue = Long.parseLong(unitToDay) * cnt;
 
-            if (retentionValue < -1) {
-                errorMessages.put("retention", "The retention period is negative");
-            } else {
-                Double retention = Double.parseDouble(unitToDay) * retentionValue;
-                if (maxRetentionPeriod > 0 && retention > maxRetentionPeriod) {
-                    errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
+
+            if("versioning".equals(validation)) {
+                versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriod");
+                maxPeriod = versionMap.get("value");
+                if (!adminOrOwner) {
+                    versionMap = (Map<String, Long>) retentionDefinitions.get("versioningRetentionPeriodForTesters");
+                    testerPeriod = versionMap.get("value");
+                    String val = String.valueOf(versionMap.get("allow_doNotDelete"));
+                    if (testerPeriod == -1 && "false".equalsIgnoreCase(val)) {
+                        errorMessages.put("retention", "The tester cannot use DO NOT DELETE mode in versioning");
+                    }
                 }
+            } else {
+                if (adminOrOwner) {
+                    versionMap = (Map<String, Long>) retentionDefinitions.get("maxReservationPeriod");
+                } else {
+                    versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriodForTesters");
+
+                }
+                maxPeriod = versionMap.get("value");
+            }
+            if (maxPeriod > -1 && inputValue > maxPeriod) {
+                errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
             }
         }
 
