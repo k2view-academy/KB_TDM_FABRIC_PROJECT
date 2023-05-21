@@ -274,38 +274,41 @@ public class SharedLogic {
         Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
         Long maxRetentionPeriod = -1L;
         if ("versioning".equals(validation)) {
-            maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxRetentionPeriod"));
+            Map<String,Long>versionMap=(Map<String,Long>)retentionDefinitions.get("maxRetentionPeriod");
+            maxRetentionPeriod = versionMap.get("value");
         } else {
             if (adminOrOwner) {
                 maxRetentionPeriod = 0L;
             } else {
-                maxRetentionPeriod =  Long.parseLong("" + retentionDefinitions.get("maxReserveDays"));
+                Map<String,Long>versionMap=(Map<String,Long>)retentionDefinitions.get("maxReserveDays");
+                maxRetentionPeriod = versionMap.get("value");;
             }
         }
-        ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("retentionPeriodTypes");
+
+        ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("periodTypes");
         //log.info("retentionPeriodTypes: " + retentionPeriodTypes);
+        if(retentionPeriodTypes!=null) {
+            String unit = retentionPeriodParams.get("units");
+            String value = retentionPeriodParams.get("value");
 
-        String unit = retentionPeriodParams.get("unit");
-        String value = retentionPeriodParams.get("value");
-
-        String unitToDay = "1";
-        for (Map<String, String>rec : retentionPeriodTypes) {
-            if(unit.equalsIgnoreCase(rec.get("name"))) {
-                unitToDay = String.valueOf(rec.get("units"));
-                break;
+            String unitToDay = "1";
+            for (Map<String, String> rec : retentionPeriodTypes) {
+                if (unit.equalsIgnoreCase(rec.get("name"))) {
+                    unitToDay = String.valueOf(rec.get("units"));
+                    break;
+                }
             }
-        }
-
-        Double retentionValue = Double.parseDouble(value);
-        if (!adminOrOwner && retentionValue == 0) {
-            errorMessages.put("retention", "The retention period of a tester user cannot be zero");
-        }
-        if (retentionValue < 0) {
-            errorMessages.put("retention", "The retention period is negative");
-        } else {
-            Double retention = Double.parseDouble(unitToDay) * retentionValue;
-            if (maxRetentionPeriod > 0 && retention > maxRetentionPeriod) {
-                errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
+            Double retentionValue = Double.parseDouble(value);
+            if (!adminOrOwner && retentionValue == 0) {
+                errorMessages.put("retention", "The retention period of a tester user cannot be zero");
+            }
+            if (retentionValue < 0) {
+                errorMessages.put("retention", "The retention period is negative");
+            } else {
+                Double retention = Double.parseDouble(unitToDay) * retentionValue;
+                if (maxRetentionPeriod > 0 && retention > maxRetentionPeriod) {
+                    errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
+                }
             }
         }
 
