@@ -21,7 +21,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "InitiateTDMLoad_Actor2",
+                            "name": "InitiateTDMLoad_Actor1",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [],
@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from BALANCE"
+                                        "const": "select * from OFFER"
                                     }
                                 ],
                                 "outputs": [
@@ -63,11 +63,11 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "SUBSCRIBER_ID": {},
-                                                    "BALANCE_ID": {},
-                                                    "BALANCE_REF_ID": {},
-                                                    "AVAILABLE_AMOUNT": {},
-                                                    "RESET_AMOUNT": {},
-                                                    "RESET_DATE": {}
+                                                    "OFFER_ID": {},
+                                                    "OFFER_REF_ID": {},
+                                                    "OFFER_DESCRIPTION": {},
+                                                    "FROM_DATE": {},
+                                                    "TO_DATE": {}
                                                 }
                                             }
                                         }
@@ -104,28 +104,28 @@
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "BALANCE"
+                                        "const": "OFFER"
                                     },
                                     {
                                         "name": "columName",
-                                        "const": "CONTRACT_ID"
+                                        "const": "SUBSCRIBER_ID"
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "BALANCE_ID_SEQ_Actor1",
+                            "name": "OFFER_ID_SEQ_Actor1",
                             "actorType": {
-                                "parentType": "BALANCE_ID_SEQ_Actor",
+                                "parentType": "OFFER_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "BALANCE"
+                                        "const": "OFFER"
                                     },
                                     {
                                         "name": "columName",
-                                        "const": "BALANCE_ID"
+                                        "const": "OFFER_ID"
                                     }
                                 ],
                                 "outputs": []
@@ -179,7 +179,7 @@
                             }
                         },
                         {
-                            "name": "Load BALANCE Table",
+                            "name": "Load OFFER Table",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -189,23 +189,23 @@
                                     },
                                     {
                                         "name": "table",
-                                        "const": "BALANCE"
+                                        "const": "OFFER"
                                     },
                                     {
                                         "name": "fields",
                                         "const": [
                                             "SUBSCRIBER_ID",
-                                            "BALANCE_ID",
-                                            "BALANCE_REF_ID",
-                                            "AVAILABLE_AMOUNT",
-                                            "RESET_AMOUNT",
-                                            "RESET_DATE"
+                                            "OFFER_ID",
+                                            "OFFER_REF_ID",
+                                            "OFFER_DESCRIPTION",
+                                            "FROM_DATE",
+                                            "TO_DATE"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "BALANCE_ID"
+                                            "OFFER_ID"
                                         ]
                                     },
                                     {
@@ -214,26 +214,30 @@
                                     },
                                     {
                                         "name": "SUBSCRIBER_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "OFFER_ID",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "OFFER_REF_ID",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "BALANCE_ID",
+                                        "name": "OFFER_DESCRIPTION",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "BALANCE_REF_ID",
+                                        "name": "FROM_DATE",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "AVAILABLE_AMOUNT",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "RESET_AMOUNT",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "RESET_DATE",
+                                        "name": "TO_DATE",
                                         "schema": {}
                                     }
                                 ],
@@ -266,7 +270,66 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_OFFER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_OFFER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_OFFER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_OFFER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -315,7 +378,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Load BALANCE Table",
+                "actor": "Load OFFER Table",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -340,12 +403,12 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "BALANCE_ID_SEQ_Actor1",
+                "actor": "OFFER_ID_SEQ_Actor1",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
             "path": [
-                "BALANCE_ID"
+                "OFFER_ID"
             ]
         },
         {
@@ -354,18 +417,18 @@
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load BALANCE Table",
+                "actor": "Load OFFER Table",
                 "name": "SUBSCRIBER_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "BALANCE_ID_SEQ_Actor1",
+                "actor": "OFFER_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load BALANCE Table",
-                "name": "BALANCE_ID"
+                "actor": "Load OFFER Table",
+                "name": "OFFER_ID"
             }
         },
         {
@@ -384,7 +447,7 @@
                 "name": "syncMode"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor2",
+                "actor": "InitiateTDMLoad_Actor1",
                 "name": "syncMode"
             }
         },
@@ -394,7 +457,7 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor2",
+                "actor": "InitiateTDMLoad_Actor1",
                 "name": "iid"
             }
         },
@@ -404,7 +467,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor2",
+                "actor": "InitiateTDMLoad_Actor1",
                 "name": "luName"
             }
         }

@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from INVOICE"
+                                        "const": "select * from BALANCE"
                                     }
                                 ],
                                 "outputs": [
@@ -63,12 +63,11 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "SUBSCRIBER_ID": {},
-                                                    "INVOICE_ID": {},
-                                                    "ISSUED_DATE": {},
-                                                    "DUE_DATE": {},
-                                                    "STATUS": {},
-                                                    "BALANCE": {},
-                                                    "INVOICE_IMAGE": {}
+                                                    "BALANCE_ID": {},
+                                                    "BALANCE_REF_ID": {},
+                                                    "AVAILABLE_AMOUNT": {},
+                                                    "RESET_AMOUNT": {},
+                                                    "RESET_DATE": {}
                                                 }
                                             }
                                         }
@@ -105,28 +104,28 @@
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "INVOICE"
+                                        "const": "BALANCE"
                                     },
                                     {
                                         "name": "columName",
-                                        "const": "SUBSCRIBER_ID"
+                                        "const": "CONTRACT_ID"
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "INVOICE_ID_SEQ_Actor1",
+                            "name": "BALANCE_ID_SEQ_Actor1",
                             "actorType": {
-                                "parentType": "INVOICE_ID_SEQ_Actor",
+                                "parentType": "BALANCE_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "INVOICE"
+                                        "const": "BALANCE"
                                     },
                                     {
                                         "name": "columName",
-                                        "const": "INVOICE_ID"
+                                        "const": "BALANCE_ID"
                                     }
                                 ],
                                 "outputs": []
@@ -180,7 +179,7 @@
                             }
                         },
                         {
-                            "name": "Load INVOICE Table",
+                            "name": "Load BALANCE Table",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -190,24 +189,23 @@
                                     },
                                     {
                                         "name": "table",
-                                        "const": "INVOICE"
+                                        "const": "BALANCE"
                                     },
                                     {
                                         "name": "fields",
                                         "const": [
                                             "SUBSCRIBER_ID",
-                                            "INVOICE_ID",
-                                            "ISSUED_DATE",
-                                            "DUE_DATE",
-                                            "STATUS",
-                                            "BALANCE",
-                                            "INVOICE_IMAGE"
+                                            "BALANCE_ID",
+                                            "BALANCE_REF_ID",
+                                            "AVAILABLE_AMOUNT",
+                                            "RESET_AMOUNT",
+                                            "RESET_DATE"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "INVOICE_ID"
+                                            "BALANCE_ID"
                                         ]
                                     },
                                     {
@@ -216,30 +214,30 @@
                                     },
                                     {
                                         "name": "SUBSCRIBER_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "BALANCE_ID",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "BALANCE_REF_ID",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "INVOICE_ID",
+                                        "name": "AVAILABLE_AMOUNT",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "ISSUED_DATE",
+                                        "name": "RESET_AMOUNT",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "DUE_DATE",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "STATUS",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "BALANCE",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "INVOICE_IMAGE",
+                                        "name": "RESET_DATE",
                                         "schema": {}
                                     }
                                 ],
@@ -272,7 +270,54 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_BALANCE": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -321,7 +366,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Load INVOICE Table",
+                "actor": "Load BALANCE Table",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -346,12 +391,12 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "INVOICE_ID_SEQ_Actor1",
+                "actor": "BALANCE_ID_SEQ_Actor1",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
             "path": [
-                "INVOICE_ID"
+                "BALANCE_ID"
             ]
         },
         {
@@ -360,18 +405,18 @@
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load INVOICE Table",
+                "actor": "Load BALANCE Table",
                 "name": "SUBSCRIBER_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "INVOICE_ID_SEQ_Actor1",
+                "actor": "BALANCE_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load INVOICE Table",
-                "name": "INVOICE_ID"
+                "actor": "Load BALANCE Table",
+                "name": "BALANCE_ID"
             }
         },
         {

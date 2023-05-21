@@ -35,81 +35,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "CONTRACT_REF_ID",
-                            "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "weights": "array"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "weighted",
-                                            "round": false,
-                                            "type": "string",
-                                            "weights": [
-                                                [
-                                                    10,
-                                                    "101"
-                                                ],
-                                                [
-                                                    10,
-                                                    "102"
-                                                ],
-                                                [
-                                                    10,
-                                                    "103"
-                                                ],
-                                                [
-                                                    10,
-                                                    "104"
-                                                ],
-                                                [
-                                                    10,
-                                                    "105"
-                                                ],
-                                                [
-                                                    10,
-                                                    "106"
-                                                ],
-                                                [
-                                                    10,
-                                                    "107"
-                                                ],
-                                                [
-                                                    10,
-                                                    "108"
-                                                ],
-                                                [
-                                                    10,
-                                                    "109"
-                                                ],
-                                                [
-                                                    10,
-                                                    "110"
-                                                ]
-                                            ]
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -461,26 +386,6 @@
             "rightPort": {
                 "actor": "parent_row",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "CONTRACT_REF_ID"
-            },
-            "rightPort": {
-                "actor": "CONTRACT_REF_ID",
-                "name": "distribution"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CONTRACT_REF_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CONTRACT_REF_ID"
             }
         },
         {

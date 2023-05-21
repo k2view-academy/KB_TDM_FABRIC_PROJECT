@@ -21,7 +21,7 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "InitiateTDMLoad_Actor1",
+                            "name": "InitiateTDMLoad_Actor2",
                             "actorType": {
                                 "parentType": "InitiateTDMLoad_Actor",
                                 "inputs": [],
@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from OFFER"
+                                        "const": "select * from INVOICE"
                                     }
                                 ],
                                 "outputs": [
@@ -63,11 +63,12 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "SUBSCRIBER_ID": {},
-                                                    "OFFER_ID": {},
-                                                    "OFFER_REF_ID": {},
-                                                    "OFFER_DESCRIPTION": {},
-                                                    "FROM_DATE": {},
-                                                    "TO_DATE": {}
+                                                    "INVOICE_ID": {},
+                                                    "ISSUED_DATE": {},
+                                                    "DUE_DATE": {},
+                                                    "STATUS": {},
+                                                    "BALANCE": {},
+                                                    "INVOICE_IMAGE": {}
                                                 }
                                             }
                                         }
@@ -104,7 +105,7 @@
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "OFFER"
+                                        "const": "INVOICE"
                                     },
                                     {
                                         "name": "columName",
@@ -115,17 +116,17 @@
                             }
                         },
                         {
-                            "name": "OFFER_ID_SEQ_Actor1",
+                            "name": "INVOICE_ID_SEQ_Actor1",
                             "actorType": {
-                                "parentType": "OFFER_ID_SEQ_Actor",
+                                "parentType": "INVOICE_ID_SEQ_Actor",
                                 "inputs": [
                                     {
                                         "name": "tableName",
-                                        "const": "OFFER"
+                                        "const": "INVOICE"
                                     },
                                     {
                                         "name": "columName",
-                                        "const": "OFFER_ID"
+                                        "const": "INVOICE_ID"
                                     }
                                 ],
                                 "outputs": []
@@ -179,7 +180,7 @@
                             }
                         },
                         {
-                            "name": "Load OFFER Table",
+                            "name": "Load INVOICE Table",
                             "actorType": {
                                 "parentType": "DbLoad",
                                 "inputs": [
@@ -189,23 +190,24 @@
                                     },
                                     {
                                         "name": "table",
-                                        "const": "OFFER"
+                                        "const": "INVOICE"
                                     },
                                     {
                                         "name": "fields",
                                         "const": [
                                             "SUBSCRIBER_ID",
-                                            "OFFER_ID",
-                                            "OFFER_REF_ID",
-                                            "OFFER_DESCRIPTION",
-                                            "FROM_DATE",
-                                            "TO_DATE"
+                                            "INVOICE_ID",
+                                            "ISSUED_DATE",
+                                            "DUE_DATE",
+                                            "STATUS",
+                                            "BALANCE",
+                                            "INVOICE_IMAGE"
                                         ]
                                     },
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "OFFER_ID"
+                                            "INVOICE_ID"
                                         ]
                                     },
                                     {
@@ -214,26 +216,34 @@
                                     },
                                     {
                                         "name": "SUBSCRIBER_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "INVOICE_ID",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    {
+                                        "name": "ISSUED_DATE",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "OFFER_ID",
+                                        "name": "DUE_DATE",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "OFFER_REF_ID",
+                                        "name": "STATUS",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "OFFER_DESCRIPTION",
+                                        "name": "BALANCE",
                                         "schema": {}
                                     },
                                     {
-                                        "name": "FROM_DATE",
-                                        "schema": {}
-                                    },
-                                    {
-                                        "name": "TO_DATE",
+                                        "name": "INVOICE_IMAGE",
                                         "schema": {}
                                     }
                                 ],
@@ -266,7 +276,60 @@
                             "actorType": {
                                 "parentType": "StatsReader",
                                 "inputs": [],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "flow",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_INVOICE": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "global",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "db_affected": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_affected_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_BALANCE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_INVOICE": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_SUBSCRIBER": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -315,7 +378,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Load OFFER Table",
+                "actor": "Load INVOICE Table",
                 "name": "params"
             },
             "iterate": "Iterate"
@@ -340,12 +403,12 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "OFFER_ID_SEQ_Actor1",
+                "actor": "INVOICE_ID_SEQ_Actor1",
                 "name": "OriginalSeqValue"
             },
             "iterate": "Iterate",
             "path": [
-                "OFFER_ID"
+                "INVOICE_ID"
             ]
         },
         {
@@ -354,18 +417,18 @@
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load OFFER Table",
+                "actor": "Load INVOICE Table",
                 "name": "SUBSCRIBER_ID"
             }
         },
         {
             "leftPort": {
-                "actor": "OFFER_ID_SEQ_Actor1",
+                "actor": "INVOICE_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
             "rightPort": {
-                "actor": "Load OFFER Table",
-                "name": "OFFER_ID"
+                "actor": "Load INVOICE Table",
+                "name": "INVOICE_ID"
             }
         },
         {
@@ -384,7 +447,7 @@
                 "name": "syncMode"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "InitiateTDMLoad_Actor2",
                 "name": "syncMode"
             }
         },
@@ -394,7 +457,7 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "InitiateTDMLoad_Actor2",
                 "name": "iid"
             }
         },
@@ -404,7 +467,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "InitiateTDMLoad_Actor1",
+                "actor": "InitiateTDMLoad_Actor2",
                 "name": "luName"
             }
         }
