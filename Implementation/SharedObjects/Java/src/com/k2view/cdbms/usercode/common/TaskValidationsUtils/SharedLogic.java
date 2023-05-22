@@ -286,56 +286,56 @@ public class SharedLogic {
 
 
 	@out(name = "result", type = Map.class, desc = "")
-    public static Map<String, String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) throws Exception {
-        Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
-        Map<String, String> errorMessages = new HashMap<>();
-        Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
-        Map<String, Long> versionMap;
-        Long maxPeriod = -1L;
-        Long testerPeriod = -1L;
-
-        ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("periodTypes");
-        if(retentionPeriodTypes!=null) {
-            String unit = retentionPeriodParams.get("unit");
-            String value = retentionPeriodParams.get("value");
-
-            String unitToDay = "1";
-            for (Map<String, String> rec : retentionPeriodTypes) {
-                if (unit.equalsIgnoreCase(rec.get("name"))) {
-                    unitToDay = String.valueOf(rec.get("units"));
-                    break;
-                }
-            }
-            Double cnt = Double.parseDouble(value);
-            Double inputValue = Double.parseDouble(unitToDay) * cnt;
-
-
-            if("versioning".equals(validation)) {
-                versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriod");
-                maxPeriod = versionMap.get("value");
-                if (!adminOrOwner) {
-                    versionMap = (Map<String, Long>) retentionDefinitions.get("versioningRetentionPeriodForTesters");
-                    testerPeriod = versionMap.get("value");
-                    String val = String.valueOf(versionMap.get("allow_doNotDelete"));
-                    if (testerPeriod == -1 && "false".equalsIgnoreCase(val)) {
-                        errorMessages.put("retention", "The tester cannot use DO NOT DELETE mode in versioning");
-                    }
-                }
-            }else {
-                if (adminOrOwner) {
-                    versionMap = (Map<String, Long>) retentionDefinitions.get("maxReservationPeriod");
-                } else {
-                    versionMap = (Map<String, Long>) retentionDefinitions.get("maxRetentionPeriodForTesters");
-                }
-                maxPeriod = Long.valueOf(versionMap.get("value"));
-            }
-            if (maxPeriod > -1 && inputValue > maxPeriod) {
-                errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
-            }
-        }
-
-        return errorMessages;
-    }
+	public static Map<String,String> fnValidateRetentionPeriodParams(Map<String,String> retentionPeriodParams, String validation, String envId) throws Exception {
+		Boolean adminOrOwner = Util.rte(() -> fnIsAdminOrOwner(envId, sessionUser().name()));
+		Map<String, String> errorMessages = new HashMap<>();
+		Map<String, Object> retentionDefinitions = fnGetRetentionPeriod();
+		Map<String, Object> versionMap;
+		Long maxPeriod = -1L;
+		Long testerPeriod = -1L;
+		
+		ArrayList<Map<String, String>> retentionPeriodTypes = (ArrayList<Map<String, String>>)retentionDefinitions.get("periodTypes");
+		if(retentionPeriodTypes!=null) {
+		    String unit = retentionPeriodParams.get("unit");
+		    String value = retentionPeriodParams.get("value");
+		
+		    String unitToDay = "1";
+		    for (Map<String, String> rec : retentionPeriodTypes) {
+		        if (unit.equalsIgnoreCase(rec.get("name"))) {
+		            unitToDay = String.valueOf(rec.get("units"));
+		            break;
+		        }
+		    }
+		    Double cnt = Double.parseDouble(value);
+		    Double inputValue = Double.parseDouble(unitToDay) * cnt;
+		
+		
+		    if("versioning".equals(validation)) {
+		        versionMap = (Map<String, Object>) retentionDefinitions.get("maxRetentionPeriod");
+		        maxPeriod = Long.valueOf((String) versionMap.get("value"));
+		        if (!adminOrOwner) {
+		            versionMap = (Map<String, Object>) retentionDefinitions.get("versioningRetentionPeriodForTesters");
+		            testerPeriod = Long.valueOf((String) versionMap.get("value"));
+		            String val = String.valueOf(versionMap.get("allow_doNotDelete"));
+		            if (testerPeriod == -1 && "false".equalsIgnoreCase(val)) {
+		                errorMessages.put("retention", "The tester cannot use DO NOT DELETE mode in versioning");
+		            }
+		        }
+		    } else {
+		        if (adminOrOwner) {
+		            versionMap = (Map<String, Object>) retentionDefinitions.get("maxReservationPeriod");
+		        } else {
+		            versionMap = (Map<String, Object>) retentionDefinitions.get("maxReservationPeriodForTesters");
+		        }
+		        maxPeriod =  Long.valueOf((String) versionMap.get("value"));
+		    }
+		    if (maxPeriod > -1 && inputValue > maxPeriod) {
+		        errorMessages.put("retention", "The retention period exceeds the max retention period for a task");
+		    }
+		}
+		
+		return errorMessages;
+	}
 
     public static Map<String, String> fnValidateVersionExecIdAndGetDetails(Long dataVersionExecId, Map<String,Object> beLUs, String sourceEnvName) throws Exception {
         Map<String, String> result = new HashMap<>();

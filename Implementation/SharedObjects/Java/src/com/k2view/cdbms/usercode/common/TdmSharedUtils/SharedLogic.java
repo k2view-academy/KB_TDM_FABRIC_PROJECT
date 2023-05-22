@@ -634,7 +634,7 @@ public class SharedLogic {
 		
 		        testers.put("units", "Days");
 		        testers.put("value", maxReserveDays);
-		        map.put("maxRetentionPeriodForTesters", testers);
+		        map.put("maxReservationPeriodForTesters", testers);
 		    }
 		    return map;
 		} catch (Throwable t) {
