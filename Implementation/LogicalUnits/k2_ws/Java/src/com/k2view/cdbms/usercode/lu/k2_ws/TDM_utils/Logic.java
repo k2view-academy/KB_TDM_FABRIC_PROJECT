@@ -110,7 +110,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"value\": 5,\r\n" +
 			"      \"allow_doNotDelete\": true\r\n" +
 			"    },\r\n" +
-			"    \"versioningRetentionPeriodForTesters\": {\r\n" +
+			"    \"retentionPeriodForTesters\": {\r\n" +
 			"      \"unit\": \"Days\",\r\n" +
 			"      \"value\": 5,\r\n" +
 			"      \"allow_doNotDelete\": false\r\n" +
@@ -237,7 +237,7 @@ public class Logic extends WebServiceUserCode {
 			"        \"units\": -1\r\n" +
 			"      }\r\n" +
 			"    ],\r\n" +
-			"    \"versioningRetentionPeriodForTesters\": {\r\n" +
+			"    \"retentionPeriodForTesters\": {\r\n" +
 			"      \"unit\": \"Days\",\r\n" +
 			"      \"value\": 5,\r\n" +
 			"      \"allow_doNotDelete\": \"False\"\r\n" +

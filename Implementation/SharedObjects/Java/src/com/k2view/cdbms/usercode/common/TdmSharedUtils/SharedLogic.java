@@ -622,9 +622,9 @@ public class SharedLogic {
 		    if (versioningRetentionPeriod != null) {
 		        map.put("versioningRetentionPeriod", versioningRetentionPeriod);
 		    }
-		    Object versioningRetentionPeriodForTesters = result.get("versioningRetentionPeriodForTesters");
-		    if (versioningRetentionPeriodForTesters != null) {
-		        map.put("versioningRetentionPeriodForTesters", versioningRetentionPeriodForTesters);
+		    Object retentionPeriodForTesters = result.get("retentionPeriodForTesters");
+		    if (retentionPeriodForTesters != null) {
+		        map.put("retentionPeriodForTesters", retentionPeriodForTesters);
 		    }
 		
 		    sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";

@@ -314,7 +314,7 @@ public class SharedLogic {
 		        versionMap = (Map<String, Object>) retentionDefinitions.get("maxRetentionPeriod");
 		        maxPeriod = Long.valueOf((String) versionMap.get("value"));
 		        if (!adminOrOwner) {
-		            versionMap = (Map<String, Object>) retentionDefinitions.get("versioningRetentionPeriodForTesters");
+		            versionMap = (Map<String, Object>) retentionDefinitions.get("retentionPeriodForTesters");
 		            testerPeriod = Long.valueOf((String) versionMap.get("value"));
 		            String val = String.valueOf(versionMap.get("allow_doNotDelete"));
 		            if (testerPeriod == -1 && "false".equalsIgnoreCase(val)) {
