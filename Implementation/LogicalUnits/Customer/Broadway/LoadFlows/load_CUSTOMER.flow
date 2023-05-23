@@ -198,7 +198,7 @@
         {
             "stages": [
                 {
-                    "name": "Masking2",
+                    "name": "Masking ",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [

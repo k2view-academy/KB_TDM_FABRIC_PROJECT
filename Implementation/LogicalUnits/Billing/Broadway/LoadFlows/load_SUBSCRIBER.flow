@@ -142,16 +142,83 @@
         {
             "stages": [
                 {
-                    "name": "Transformation 2",
+                    "name": "Masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "setTargetEntityId_Actor1",
+                            "name": "FirstNames",
                             "actorType": {
-                                "parentType": "setTargetEntityId_Actor",
+                                "parentType": "FirstNames",
                                 "inputs": [],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LastNames",
+                            "actorType": {
+                                "parentType": "LastNames",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Masking ",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MaskFirstName",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskFirstName"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MaskLastName",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskLastName"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -186,6 +253,21 @@
                                                 }
                                             }
                                         ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "setTargetEntityId_Actor1",
+                            "actorType": {
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "target_entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -247,11 +329,15 @@
                                     },
                                     {
                                         "name": "FIRST_NAME",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "LAST_NAME",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "SUBSCRIBER_TYPE",
@@ -402,6 +488,34 @@
         },
         {
             "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskFirstName",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "FIRST_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskLastName",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "LAST_NAME"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "CONTRACT_ID_SEQ_Actor1",
                 "name": "NewSeqValue"
             },
@@ -418,6 +532,46 @@
             "rightPort": {
                 "actor": "setTargetEntityId_Actor1",
                 "name": "target_entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FirstNames",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MaskFirstName",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LastNames",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MaskLastName",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskFirstName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load SUBSCRIBER Table",
+                "name": "FIRST_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MaskLastName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Load SUBSCRIBER Table",
+                "name": "LAST_NAME"
             }
         },
         {
