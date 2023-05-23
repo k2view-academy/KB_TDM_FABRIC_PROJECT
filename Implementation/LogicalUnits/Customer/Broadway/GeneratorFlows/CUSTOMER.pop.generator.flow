@@ -37,36 +37,7 @@
                             }
                         },
                         {
-                            "name": "MTable of Names",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "MTableRandom",
-                                "inputs": [
-                                    {
-                                        "name": "mtable",
-                                        "const": "Names"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "firstname": {
-                                                    "type": "string"
-                                                },
-                                                "lastname": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "FabricSetRead1",
+                            "name": "root_iid",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -134,48 +105,6 @@
                         },
                         {
                             "name": "FIRST_NAME",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "LAST_NAME",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "StringFormat1",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -195,7 +124,7 @@
                             }
                         },
                         {
-                            "name": "StringFormat2",
+                            "name": "LAST_NAME",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -235,47 +164,21 @@
         },
         {
             "leftPort": {
-                "actor": "MTable of Names",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "LAST_NAME",
-                "name": "value"
-            },
-            "path": [
-                "lastname"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable of Names",
+                "actor": "root_iid",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "FIRST_NAME",
-                "name": "value"
-            },
-            "path": [
-                "firstname"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "FabricSetRead1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "StringFormat1",
                 "name": "root_id"
             }
         },
         {
             "leftPort": {
-                "actor": "FabricSetRead1",
+                "actor": "root_iid",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "StringFormat2",
+                "actor": "LAST_NAME",
                 "name": "root_id"
             }
         },
@@ -312,26 +215,6 @@
         {
             "leftPort": {
                 "actor": "FIRST_NAME",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "FIRST_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LAST_NAME",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "LAST_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "StringFormat1",
                 "name": "string"
             },
             "rightPort": {
@@ -341,7 +224,7 @@
         },
         {
             "leftPort": {
-                "actor": "StringFormat2",
+                "actor": "LAST_NAME",
                 "name": "string"
             },
             "rightPort": {
