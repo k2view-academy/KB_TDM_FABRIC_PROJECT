@@ -1,17 +1,18 @@
 {
     "tags": [
-        "Masking"
+        "Masking",
+        "MaskingFlows"
     ],
     "levels": [
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Input",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Const1",
+                            "name": "Record",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -75,7 +76,7 @@
         {
             "stages": [
                 {
-                    "name": "Masking",
+                    "name": "Collection of Names",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -316,12 +317,12 @@
         {
             "stages": [
                 {
-                    "name": "1",
+                    "name": "Masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "MaskingWithCollection1",
+                            "name": "Masking First Name",
                             "minHeight": 146,
                             "actorType": {
                                 "parentType": "MaskingWithCollection",
@@ -346,7 +347,7 @@
                             }
                         },
                         {
-                            "name": "MaskingWithCollection2",
+                            "name": "Masking Last Name",
                             "actorType": {
                                 "parentType": "MaskingWithCollection",
                                 "inputs": [
@@ -370,7 +371,7 @@
                             }
                         },
                         {
-                            "name": "MaskingSSN",
+                            "name": "Masking SSN",
                             "actorType": {
                                 "parentType": "MaskingSSN",
                                 "inputs": [
@@ -408,12 +409,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 3",
+                    "name": "Build Name",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "MapCreate1",
+                            "name": "Name Concat",
                             "minHeight": 170,
                             "actorType": {
                                 "parentType": "MapCreate",
@@ -465,12 +466,12 @@
         {
             "stages": [
                 {
-                    "name": "reurn record",
+                    "name": "Build Record",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "MapMerge1",
+                            "name": "Final Record",
                             "actorType": {
                                 "parentType": "MapMerge",
                                 "inputs": [],
@@ -540,22 +541,22 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "Record",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MapMerge1",
+                "actor": "Final Record",
                 "name": "maps"
             },
             "arrayPosition": 0
         },
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "Record",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MaskingWithCollection1",
+                "actor": "Masking First Name",
                 "name": "value"
             },
             "path": [
@@ -564,11 +565,11 @@
         },
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "Record",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MaskingWithCollection2",
+                "actor": "Masking Last Name",
                 "name": "value"
             },
             "path": [
@@ -577,11 +578,11 @@
         },
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "Record",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MaskingSSN",
+                "actor": "Masking SSN",
                 "name": "value"
             },
             "path": [
@@ -594,7 +595,7 @@
                 "name": "strings"
             },
             "rightPort": {
-                "actor": "MaskingWithCollection1",
+                "actor": "Masking First Name",
                 "name": "collection"
             }
         },
@@ -604,47 +605,47 @@
                 "name": "strings"
             },
             "rightPort": {
-                "actor": "MaskingWithCollection2",
+                "actor": "Masking Last Name",
                 "name": "collection"
             }
         },
         {
             "leftPort": {
-                "actor": "MaskingWithCollection1",
+                "actor": "Masking First Name",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MapCreate1",
+                "actor": "Name Concat",
                 "name": "first_name"
             }
         },
         {
             "leftPort": {
-                "actor": "MaskingWithCollection2",
+                "actor": "Masking Last Name",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MapCreate1",
+                "actor": "Name Concat",
                 "name": "last_name"
             }
         },
         {
             "leftPort": {
-                "actor": "MaskingSSN",
+                "actor": "Masking SSN",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "MapCreate1",
+                "actor": "Name Concat",
                 "name": "id_number"
             }
         },
         {
             "leftPort": {
-                "actor": "MapCreate1",
+                "actor": "Name Concat",
                 "name": "map"
             },
             "rightPort": {
-                "actor": "MapMerge1",
+                "actor": "Final Record",
                 "name": "maps"
             },
             "arrayPosition": 1
@@ -655,13 +656,13 @@
                 "name": "row"
             },
             "rightPort": {
-                "actor": "Const1",
+                "actor": "Record",
                 "name": "value"
             }
         },
         {
             "leftPort": {
-                "actor": "MapMerge1",
+                "actor": "Final Record",
                 "name": "map"
             },
             "rightPort": {
