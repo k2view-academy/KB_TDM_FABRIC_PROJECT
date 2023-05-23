@@ -46,8 +46,10 @@
                                         "const": "Names"
                                     },
                                     {
-                                        "name": "subscriber_first_name",
-                                        "schema": {},
+                                        "name": "firstname",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "remark": "Select the first name of the subscriber ",
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
@@ -55,8 +57,10 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "subscriber_last_name",
-                                        "schema": {},
+                                        "name": "lastname",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "remark": "Select the last name of the subscriber",
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
@@ -381,7 +385,7 @@
             },
             "rightPort": {
                 "actor": "MTable of Names",
-                "name": "subscriber_first_name"
+                "name": "firstname"
             }
         },
         {
@@ -391,7 +395,7 @@
             },
             "rightPort": {
                 "actor": "MTable of Names",
-                "name": "subscriber_last_name"
+                "name": "lastname"
             }
         },
         {
