@@ -44,6 +44,24 @@
                                     {
                                         "name": "mtable",
                                         "const": "Names"
+                                    },
+                                    {
+                                        "name": "subscriber_first_name",
+                                        "schema": {},
+                                        "remark": "Select the first name of the subscriber ",
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "subscriber_last_name",
+                                        "schema": {},
+                                        "remark": "Select the last name of the subscriber",
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -354,6 +372,26 @@
             "rightPort": {
                 "actor": "parent_row",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "subscriber_first_name"
+            },
+            "rightPort": {
+                "actor": "MTable of Names",
+                "name": "subscriber_first_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "subscriber_last_name"
+            },
+            "rightPort": {
+                "actor": "MTable of Names",
+                "name": "subscriber_last_name"
             }
         },
         {
