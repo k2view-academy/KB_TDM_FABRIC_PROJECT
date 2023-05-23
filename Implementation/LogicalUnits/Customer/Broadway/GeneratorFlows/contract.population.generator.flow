@@ -384,7 +384,7 @@
                             }
                         },
                         {
-                            "name": "REF_ID",
+                            "name": "CONTRACT_REF_ID",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -460,7 +460,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "REF_ID",
+                "actor": "CONTRACT_REF_ID",
                 "name": "value"
             },
             "path": [
@@ -579,7 +579,7 @@
         },
         {
             "leftPort": {
-                "actor": "REF_ID",
+                "actor": "CONTRACT_REF_ID",
                 "name": "value"
             },
             "rightPort": {
