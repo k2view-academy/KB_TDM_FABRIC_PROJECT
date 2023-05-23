@@ -321,6 +321,7 @@
                                     },
                                     {
                                         "name": "contract_ref_id",
+                                        "const": "105",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -328,7 +329,8 @@
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
                                         },
-                                        "mandatory": false
+                                        "mandatory": false,
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
