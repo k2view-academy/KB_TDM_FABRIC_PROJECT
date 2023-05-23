@@ -153,6 +153,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
                                         },

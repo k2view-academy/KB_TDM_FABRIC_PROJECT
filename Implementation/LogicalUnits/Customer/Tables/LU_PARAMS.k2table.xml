@@ -11,6 +11,8 @@
     <Column name="NO_OF_OPEN_CASES" id="NO_OF_OPEN_CASES" index="5" datatype="text" />
     <Column name="OPEN_CASE_DATE" id="OPEN_CASE_DATE" index="6" datatype="text" />
     <Column name="NO_OF_SUBSCRIBERS" id="NO_OF_SUBSCRIBERS" index="7" datatype="text" />
+    <Column name="CITY" id="CITY" index="8" datatype="text" />
+    <Column name="STATE" id="STATE" index="9" datatype="text" />
   </Columns>
   <IndexesList />
   <EnrichmentList />

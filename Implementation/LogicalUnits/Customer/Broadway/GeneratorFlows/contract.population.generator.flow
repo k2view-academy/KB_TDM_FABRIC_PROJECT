@@ -311,93 +311,6 @@
                             }
                         },
                         {
-                            "name": "CONTRACT_REF_ID",
-                            "actorType": {
-                                "parentType": "RandomDistribution",
-                                "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "weights": "array"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "weighted",
-                                            "round": false,
-                                            "type": "string",
-                                            "weights": [
-                                                [
-                                                    10,
-                                                    "101"
-                                                ],
-                                                [
-                                                    10,
-                                                    "102"
-                                                ],
-                                                [
-                                                    10,
-                                                    "103"
-                                                ],
-                                                [
-                                                    10,
-                                                    "104"
-                                                ],
-                                                [
-                                                    10,
-                                                    "105"
-                                                ],
-                                                [
-                                                    10,
-                                                    "106"
-                                                ],
-                                                [
-                                                    10,
-                                                    "107"
-                                                ],
-                                                [
-                                                    10,
-                                                    "108"
-                                                ],
-                                                [
-                                                    10,
-                                                    "109"
-                                                ],
-                                                [
-                                                    10,
-                                                    "110"
-                                                ]
-                                            ]
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
                             "name": "MTable Description",
                             "actorType": {
                                 "parentType": "MTableRandom",
@@ -411,6 +324,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
                                         "editor": {
                                             "id": "com.k2view.mTableKey"
                                         },
@@ -445,7 +359,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Stage 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -513,16 +427,6 @@
             "path": [
                 "associated_line"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "CONTRACT_REF_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MTable Description",
-                "name": "contract_ref_id"
-            }
         },
         {
             "leftPort": {
@@ -633,18 +537,8 @@
                 "name": "contract_ref_id"
             },
             "rightPort": {
-                "actor": "CONTRACT_REF_ID",
-                "name": "distribution"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "CONTRACT_REF_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "CONTRACT_REF_ID"
+                "actor": "MTable Description",
+                "name": "contract_ref_id"
             }
         },
         {
