@@ -382,6 +382,19 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "REF_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -439,6 +452,19 @@
             },
             "path": [
                 "offer_contract_description"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Description",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "REF_ID",
+                "name": "value"
+            },
+            "path": [
+                "contract_ref_id"
             ]
         },
         {
@@ -549,6 +575,16 @@
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "CONTRACT_DESCRIPTION"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_REF_ID"
             }
         }
     ]
