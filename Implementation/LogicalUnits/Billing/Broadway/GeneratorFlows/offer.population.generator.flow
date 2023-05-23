@@ -43,6 +43,16 @@
         {
             "stages": [
                 {
+                    "name": "Get contract_ref_id",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Sequence Fields",
                     "dependsOnList": [],
                     "isLast": 0,
