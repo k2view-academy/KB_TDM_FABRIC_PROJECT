@@ -19,7 +19,22 @@
                                         "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -570,6 +585,33 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "source_product_version For Load Task",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select product_version from @TDMDB_SCHEMA@.environment_products\r\nwhere status = 'Active' and product_id = ${product_id} and environment_id = ${environment_id}"
+                                    },
+                                    {
+                                        "name": "product_id",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "environment_id",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -1371,6 +1413,34 @@
         },
         {
             "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "source_product_version For Load Task",
+                "name": "product_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "product_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "source_product_version For Load Task",
+                "name": "environment_id"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "source_environment_id"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "Integer lu_id",
                 "name": "number"
             },
@@ -1528,6 +1598,16 @@
             "rightPort": {
                 "actor": "task_execution_list",
                 "name": "TARGET_PRODUCT_VERSION"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "source_product_version For Load Task",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "task_execution_list",
+                "name": "SOURCE_PRODUCT_VERSION"
             }
         },
         {

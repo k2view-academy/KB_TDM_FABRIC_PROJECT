@@ -633,7 +633,7 @@ public class SharedLogic {
 		        Map<String, Object> testers = new HashMap<>();
 		
 		        testers.put("units", "Days");
-		        testers.put("value", maxReserveDays);
+		        testers.put("value",  Long.valueOf((String) maxReserveDays));
 		        map.put("maxReservationPeriodForTesters", testers);
 		    }
 		    return map;

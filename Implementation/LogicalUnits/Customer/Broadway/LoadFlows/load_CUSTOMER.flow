@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "LoadFlows"
+    ],
     "levels": [
         {
             "stages": [

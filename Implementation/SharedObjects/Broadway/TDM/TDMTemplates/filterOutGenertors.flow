@@ -163,8 +163,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "if ((luName == 'ALL_LUS' || luName == luType) && genaeratorFilterOut == true) {\r\n    if (match != '[]' && flowArgs.matchFound == false) {\r\n        flowArgs.matchFound = true;\r\n    }\r\n}\r\nflowArgs.matchFound \r\n",
-                                            "script": "if ((luName == 'ALL_LUS' || luName == luType) && genaeratorFilterOut == true) {\n  if (match != '[]' && flowArgs.matchFound == false) {\n    flowArgs.matchFound = true;\n  }\n}\n\nflowArgs.matchFound;"
+                                            "userCode": "if ((FilterOutLU == 'ALL_LUS' || FilterOutLU == luName) && genaeratorFilterOut == true) {\r\n    if (match != '[]' && flowArgs.matchFound == false) {\r\n        flowArgs.matchFound = true;\r\n    }\r\n}\r\nflowArgs.matchFound \r\n",
+                                            "script": "if ((FilterOutLU == 'ALL_LUS' || FilterOutLU == luName) && genaeratorFilterOut == true) {\n  if (match != '[]' && flowArgs.matchFound == false) {\n    flowArgs.matchFound = true;\n  }\n}\n\nflowArgs.matchFound;"
                                         }
                                     },
                                     {
@@ -183,6 +183,13 @@
                                         "name": "genaeratorFilterOut",
                                         "schema": {
                                             "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "FilterOutLU",
+                                        "schema": {
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -266,20 +273,6 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "JavaScript1",
-                "name": "luName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "lu_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "TDMFilterOutTargetTables1",
-                "name": "table"
-            },
-            "rightPort": {
                 "actor": "Uppercase1",
                 "name": "string"
             },
@@ -300,6 +293,20 @@
             "iterate": "Iterate",
             "path": [
                 "generator_filterout"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "TDMFilterOutTargetTables1",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "FilterOutLU"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "lu_name"
             ]
         },
         {

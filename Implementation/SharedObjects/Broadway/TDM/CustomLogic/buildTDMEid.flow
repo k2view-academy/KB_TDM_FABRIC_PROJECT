@@ -245,30 +245,6 @@
                     "actors": []
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "buldTDMEid --- IID: ${0}"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
         }
     ],
     "connections": [
@@ -381,28 +357,6 @@
                 "actor": "Format DataFlux EID",
                 "name": "versionDateTime"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Format Simple EID",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Format DataFlux EID",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "params"
-            },
-            "arrayPosition": 0
         },
         {
             "leftPort": {

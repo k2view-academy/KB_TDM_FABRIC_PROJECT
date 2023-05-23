@@ -476,27 +476,8 @@ public class SharedLogic {
 		
 		uid = "" + splitCloneId[0];
 		String params = "";
-		//String cloneId = "";
-		//String cloneIdPattern = "\\{\"clone_id\" : (.*?)\\}";
-		//java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(cloneIdPattern);
-		
-		/*if (splitCloneId.length > 1) {
-			params = "" + splitCloneId[1];
-            log.info("fnEnrichmentChildLink - params: " + params);
-            Map<String,Object> paramsData = Json.get().fromJson(params, Map.class);
-            if (paramsData.get("clone_id") != null) {
-                cloneId = "" +  paramsData.get("clone_id");
-            }
-			
-			java.util.regex.Matcher matcher = pattern.matcher(params);
-			if (matcher.find()) {
-				cloneId = matcher.group(1);
-			}
-		}*/
-		//log.info("fnEnrichmentChildLink after removing params: " + uid);
-		//log.info("fnEnrichmentChildLink - cloneId: " + cloneId);
-		
-		Object[] splitUID = fnSplitUID(uid);
+
+        Object[] splitUID = fnSplitUID(uid);
 		String instanceId = "" + splitUID[0];
 		String srcEnv = "" + splitUID[1];
 		//TDM 6.0 - VERSION_NAME and VERSION_DATETIME are part of the new Primary key
@@ -1330,7 +1311,7 @@ public class SharedLogic {
 		String ErrorCode = "SUCCESS";
 		String ErrorMessage = "";
 		
-		log.info("Start fnReleaseReservedEntity for user: " + userName);
+		//log.info("Start fnReleaseReservedEntity for user: " + userName);
 		if (userName == null || "".equals(userName)) {
 			userName = sessionUser().name();
 		}

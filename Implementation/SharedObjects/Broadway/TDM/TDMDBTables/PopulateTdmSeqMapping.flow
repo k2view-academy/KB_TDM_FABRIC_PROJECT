@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -288,7 +291,7 @@
                                         "schema": {
                                             "type": "boolean"
                                         },
-                                        "const": false
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []

@@ -277,6 +277,13 @@
                                     {
                                         "name": "sql",
                                         "const": "select * from {{TABLE_NAME}}"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": "1"
                                     }
                                 ],
                                 "outputs": []

@@ -118,6 +118,18 @@ From Customer.CASES where upper(status) &lt;&gt; 'CLOSED'</SQL>
           <SQL>Select count(*) AS NO_OF_CONTRACT 
 From Customer.CONTRACT</SQL>
         </trnLuParams>
+        <trnLuParams diffgr:id="trnLuParams7" msdata:rowOrder="6">
+          <INDEX>8</INDEX>
+          <COLUMN_NAME>CITY</COLUMN_NAME>
+          <SQL>Select Distinct ADDRESS.CITY
+ From Customer.ADDRESS</SQL>
+        </trnLuParams>
+        <trnLuParams diffgr:id="trnLuParams8" msdata:rowOrder="7">
+          <INDEX>9</INDEX>
+          <COLUMN_NAME>STATE</COLUMN_NAME>
+          <SQL>Select Distinct ADDRESS.STATE
+ From Customer.ADDRESS</SQL>
+        </trnLuParams>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>

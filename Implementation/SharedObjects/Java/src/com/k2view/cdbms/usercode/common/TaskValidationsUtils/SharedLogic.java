@@ -312,10 +312,10 @@ public class SharedLogic {
 		
 		    if("versioning".equals(validation)) {
 		        versionMap = (Map<String, Object>) retentionDefinitions.get("maxRetentionPeriod");
-		        maxPeriod = Long.valueOf((String) versionMap.get("value"));
+			    maxPeriod = (Long) versionMap.get("value");
 		        if (!adminOrOwner) {
 		            versionMap = (Map<String, Object>) retentionDefinitions.get("retentionPeriodForTesters");
-		            testerPeriod = Long.valueOf((String) versionMap.get("value"));
+		            testerPeriod =(Long) versionMap.get("value");
 		            String val = String.valueOf(versionMap.get("allow_doNotDelete"));
 		            if (testerPeriod == -1 && "false".equalsIgnoreCase(val)) {
 		                errorMessages.put("retention", "The tester cannot use DO NOT DELETE mode in versioning");
@@ -327,7 +327,7 @@ public class SharedLogic {
 		        } else {
 		            versionMap = (Map<String, Object>) retentionDefinitions.get("maxReservationPeriodForTesters");
 		        }
-		        maxPeriod =  Long.valueOf((String) versionMap.get("value"));
+		        maxPeriod =  (Long) versionMap.get("value");
 		    }
 		    if (maxPeriod > -1 && inputValue > maxPeriod) {
 		        errorMessages.put("retention", "The retention period exceeds the max retention period for a task");

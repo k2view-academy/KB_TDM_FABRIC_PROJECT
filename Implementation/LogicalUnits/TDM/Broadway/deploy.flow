@@ -8,7 +8,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "FabricSetRead1",
+                            "name": "TDM_DEPLOY_ENVIRONMENTS",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -34,7 +34,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "EqualsIgnoreCase1",
+                            "name": "True",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "EqualsIgnoreCase",
@@ -361,11 +361,11 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "FabricSetRead1",
+                "actor": "TDM_DEPLOY_ENVIRONMENTS",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "EqualsIgnoreCase1",
+                "actor": "True",
                 "name": "a"
             }
         },
