@@ -388,6 +388,9 @@ public class SharedLogic {
                 for (HashMap<String, Object> row : (List<HashMap>) ((HashMap<String, Object>) data).get("result")) {
                     row.put("Start time (UTC)", row.get("Start time"));
                     row.put("End time (UTC)", row.get("End time"));
+                    if (!row.containsKey("Added")) {
+                        row.put("Added", row.get("Succeeded"));
+                    }
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("columns", row);
                     results.add(map);

@@ -146,7 +146,23 @@
                                 "outputs": [
                                     {
                                         "name": "result",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "PARENT_TABLE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_FIELD_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FIELD_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 ]
                             }
@@ -216,6 +232,56 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Check if Field is Sequential",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "checkIfFieldSequential"
+                                    },
+                                    {
+                                        "name": "MAIN_FIELD_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "MAIN_TABLE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "SEQ_FIELD_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "SEQUENCE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 },
@@ -241,42 +307,26 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Check if Field is Sequential",
+                            "name": "Not Sequential",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "JavaScript",
+                                "parentType": "Equals",
                                 "inputs": [
                                     {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "flowArgs.seq_ind = false;\r\nif( String(seqList['FABRIC_FIELD_NAME']).toLowerCase == fieldName.toLowerCase) {\r\n    flowArgs.seq_ind = true;\r\n}\r\nflowArgs.seq_ind;\r\n",
-                                            "script": "flowArgs.seq_ind = false;\n\nif (String(seqList['FABRIC_FIELD_NAME']).toLowerCase == fieldName.toLowerCase) {\n  flowArgs.seq_ind = true;\n}\n\nflowArgs.seq_ind;"
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
                                         }
                                     },
                                     {
-                                        "name": "seqList",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {}
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "fieldName",
+                                        "name": "b",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "mandatory": false
+                                        "const": ""
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -935,16 +985,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get Table Sequences Mapping",
-                "name": "tableSeqList"
-            },
-            "rightPort": {
-                "actor": "Check if Field is Sequential",
-                "name": "seqList"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "get Lu Table Columns And Types",
                 "name": "result"
             },
@@ -992,7 +1032,7 @@
             },
             "rightPort": {
                 "actor": "Check if Field is Sequential",
-                "name": "fieldName"
+                "name": "MAIN_FIELD_NAME"
             },
             "iterate": "Iterate",
             "path": [
@@ -1047,6 +1087,16 @@
             "rightPort": {
                 "actor": "Not Input Argument",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check if Field is Sequential",
+                "name": "SEQ_FIELD_NAME"
+            },
+            "rightPort": {
+                "actor": "Not Sequential",
+                "name": "a"
             }
         },
         {
@@ -1215,6 +1265,26 @@
             "rightPort": {
                 "actor": "get Population Argument List",
                 "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "Check if Field is Sequential",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Check if Field is Sequential",
+                "name": "MAIN_TABLE_NAME"
             }
         },
         {

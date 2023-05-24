@@ -55,6 +55,7 @@ public class TDMSourceDbQuery extends SourceDbQuery {
             String distJson = "{distribution=uniform,round=true,type=integer,minimum=" + minDist + ",maximum=" + maxDist + "}";
             noOfRecsVal = Json.get().fromJson(distJson);
         }
+        fabricSession.close();
         return noOfRecsVal;
 
 

@@ -536,7 +536,7 @@ public class SharedLogic {
 		    }
 		}
 	}
-
+    @out(name = "result", type = String.class, desc = "")
     public static String fnGetRootEntityId(Long luId, String luName, String iid, String taskExecId) throws Exception{
         String parentEntityId = iid;
         String parentLuSql = "SELECT u.lu_name as parent_lu_name " +

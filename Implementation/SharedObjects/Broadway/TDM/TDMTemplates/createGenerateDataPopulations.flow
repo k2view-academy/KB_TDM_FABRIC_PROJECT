@@ -51,6 +51,9 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit"
+                                        },
                                         "mandatory": false
                                     }
                                 ],

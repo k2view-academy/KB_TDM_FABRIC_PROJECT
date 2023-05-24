@@ -172,12 +172,15 @@ public class SharedLogic {
 		try{
 		    if (!inDebugMode())
 		    {
-				rows= ciTDM.fetch(tblInfoSql, tblName);
-				for (Db.Row row:rows) {
+                Db.Rows cols= ciTDM.fetch(tblInfoSql, tblName);
+				for (Db.Row row:cols) {
 					if(row.get("column_name") != null)
 						pgColsList.add((row.get("column_name") + ""));
 				}
-				
+                if(cols != null) {
+                    cols.close();
+                }
+
 				rows = ludb().fetch(luParamTblSql);
 				for (Db.Row row : rows)
 		    	{
@@ -576,11 +579,12 @@ public class SharedLogic {
 				    values = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", verName, verDateTime, "now()"};
 			    }
 		
+                String currDatetime = "" + fabric().fetch("select datetime()").firstValue();
 			    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 			    if (verName.equals("")) {
-				    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", "''", "''"};
+				    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDatetime, "''", "''"};
 			    } else {
-				    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), "now()", verName, verDateTime};
+				    valuesLUDB = new Object[]{srcEnv, parentLU, key, instanceId, row.cell(0), currDatetime, verName, verDateTime};
 			    }
 					
 			    // TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
@@ -608,10 +612,11 @@ public class SharedLogic {
 				
 				childTarEIDs = ludb().fetch(sqlTar);
 				for (Db.Row row : childTarEIDs) {
-					
+					String currDatetime = "" + fabric().fetch("select datetime()").firstValue();
 		    		Object[] values =  new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), "now()"};
+                    Object[] valuesLUDB = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDatetime};
 			
-					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",values);
+					ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)",valuesLUDB);
 		
 					if (!inDebugMode()) {
 						ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
@@ -624,6 +629,11 @@ public class SharedLogic {
 		if (childEIDs != null) {
 			childEIDs.close();	
 		}
+
+        if(childTarEIDs != null) {
+            childTarEIDs.close();
+        }
+
 		if (!inDebugMode()) {
 			ciTDM.commit();
 		}
