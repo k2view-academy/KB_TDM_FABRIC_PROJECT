@@ -103,44 +103,6 @@
                             }
                         },
                         {
-                            "name": "Set SOURCE_ENTIT_ID",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "SOURCE_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set clone_id",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "clone_id",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "0",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Set INPUT_IID",
                             "actorType": {
                                 "parentType": "FabricSet",
@@ -217,6 +179,25 @@
                             }
                         },
                         {
+                            "name": "Initiate Entity Status",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "completed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Set IID",
                             "actorType": {
                                 "parentType": "FabricSet",
@@ -236,18 +217,18 @@
                             }
                         },
                         {
-                            "name": "Initiate Entity Status",
+                            "name": "Set SOURCE_ENTIT_ID",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "ENTITY_STATUS",
+                                        "const": "SOURCE_ENTITY_ID",
                                         "isDefault": false
                                     },
                                     {
                                         "name": "value",
-                                        "const": "completed",
+                                        "const": null,
                                         "isDefault": false
                                     }
                                 ],
@@ -475,6 +456,16 @@
         },
         {
             "leftPort": {
+                "actor": "Split IID",
+                "name": "UID"
+            },
+            "rightPort": {
+                "actor": "Set SOURCE_ENTIT_ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Format Start Time",
                 "name": "string"
             },
@@ -531,16 +522,6 @@
             "rightPort": {
                 "actor": "Split IID",
                 "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Set SOURCE_ENTIT_ID",
-                "name": "value"
             }
         },
         {
