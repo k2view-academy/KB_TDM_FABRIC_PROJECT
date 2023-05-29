@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "DeleteFlows"
+    ],
     "levels": [
         {
             "stages": [
@@ -10,7 +13,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Delete Tables Level 1",
@@ -24,7 +27,40 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "delete_orders"
+                                        "const": "delete_ORDERS"
+                                    },
+                                    {
+                                        "name": "syncMode",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.dropdown",
+                                            "options": [
+                                                "ON",
+                                                "OFF",
+                                                "FORCE"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []

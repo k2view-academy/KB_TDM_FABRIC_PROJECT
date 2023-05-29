@@ -363,10 +363,6 @@
                                         ]
                                     },
                                     {
-                                        "name": "dialect",
-                                        "const": "oracle"
-                                    },
-                                    {
                                         "name": "customer_id",
                                         "schema": {
                                             "type": "string"
