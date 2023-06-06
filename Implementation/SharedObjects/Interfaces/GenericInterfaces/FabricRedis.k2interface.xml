@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<GenericInterface xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="REDIS" displayName="Redis" enabled="true" version="1.8">
+<GenericInterface xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="REDIS" displayName="Redis" enabled="false" version="1.8">
   <Name>FabricRedis</Name>
   <Properties>
     <Property name="Servers">
