@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Deploy"
+    ],
     "levels": [
         {
             "stages": [
@@ -282,7 +285,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "craetePGDBS",
+                            "name": "createPGDBS",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -490,7 +493,7 @@
                 "name": "is_first_deploy"
             },
             "rightPort": {
-                "actor": "craetePGDBS",
+                "actor": "createPGDBS",
                 "name": "is_first_deploy"
             }
         },
