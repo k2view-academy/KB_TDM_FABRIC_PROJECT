@@ -277,6 +277,68 @@
         {
             "stages": [
                 {
+                    "name": "Create PGDB Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "craetePGDBS",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "craetePGDBS"
+                                    },
+                                    {
+                                        "name": "is_first_deploy",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Populate PGDBS",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "populatePGDBS",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "populatePGDBS"
+                                    },
+                                    {
+                                        "name": "is_first_deploy",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Create k2masking Keyspace if it does not exists",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -419,6 +481,26 @@
             },
             "rightPort": {
                 "actor": "Create TDMDB",
+                "name": "is_first_deploy"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "is_first_deploy"
+            },
+            "rightPort": {
+                "actor": "craetePGDBS",
+                "name": "is_first_deploy"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "is_first_deploy"
+            },
+            "rightPort": {
+                "actor": "populatePGDBS",
                 "name": "is_first_deploy"
             }
         }

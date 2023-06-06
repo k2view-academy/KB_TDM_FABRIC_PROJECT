@@ -43,7 +43,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "Equals",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -113,7 +113,18 @@
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create TDMDB & Role",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
                         {
                             "name": "ErrorHandler1",
                             "onError": "result",
@@ -141,7 +152,7 @@
                             }
                         },
                         {
-                            "name": "Create tdm role and TDMDB DB",
+                            "name": "Create TDM role & DB",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -478,7 +489,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Equals1",
+                "actor": "Equals",
                 "name": "a"
             }
         },
