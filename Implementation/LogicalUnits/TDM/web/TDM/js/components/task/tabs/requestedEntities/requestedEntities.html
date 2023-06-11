@@ -436,23 +436,23 @@
                                 ng-class="{
                                     checked: 
                                     ( 
-                                        requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].default !== requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].editor.value || 
-                                        requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].default !== requestedEntitiesCtrl.taskData.DataManParamsTemp.refData.state.values[generationType].value && 
-                                        requestedEntitiesCtrl.taskData.DataManParamsTemp.refData && requestedEntitiesCtrl.taskData.DataManParamsTemp.refData.state.values[generationType] && 
+                                        widgetRefContent.DataManParamsTemp[generationType].default !== widgetRefContent.DataManParamsTemp[generationType].editor.value || 
+                                        widgetRefContent.DataManParamsTemp[generationType].default !== widgetRefContent.DataManParamsTemp.refData.state.values[generationType].value && 
+                                        widgetRefContent.DataManParamsTemp.refData && widgetRefContent.DataManParamsTemp.refData.state.values[generationType] && 
                                         requestedEntitiesCtrl.generationTypeChosen.indexOf(generationType) >= 0
                                     )
                                 }"
                                 ng-repeat="generationType in requestedEntitiesCtrl.generationTypes | filter:dataGenerationSearch">
                                 <span style="position: relative">
-                                    <span ng-if="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].description" 
+                                    <span ng-if="widgetRefContent.DataManParamsTemp[generationType].description" 
                                         popover-append-to-body="true"
                                         popover-class="data-generation"
                                         popover-title=""
                                         popover-placement="left"
-                                        popover-is-open="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].showDesc"
+                                        popover-is-open="widgetRefContent.DataManParamsTemp[generationType].showDesc"
                                         uib-popover-template="'dataGenerationDescriprion.html'"
-                                        ng-mouseover="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].showDesc = true"
-                                        ng-mouseleave="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].showDesc = false">
+                                        ng-mouseover="widgetRefContent.DataManParamsTemp[generationType].showDesc = true"
+                                        ng-mouseleave="widgetRefContent.DataManParamsTemp[generationType].showDesc = false">
                                         <i style="font-size: 15px;" class="fa fa-info-circle"></i>
                                     </span>
                                     <script type="text/ng-template" id="dataGenerationDescriprion.html">
@@ -460,13 +460,13 @@
                                             style="z-index: 10000; width: 290px">
                                             <ul class="newScroll slim" style="overflow: auto;height: 100%;white-space:pre-line">
                                                 <li>
-                                                    {{requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].description}}
+                                                    {{widgetRefContent.DataManParamsTemp[generationType].description}}
                                                 </li>
                                             </ul>
                                         </div>
                                     </script>
                                     <span ng-style="{
-                                        marginLeft: requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].description ? '0' : '17px'
+                                        marginLeft: widgetRefContent.DataManParamsTemp[generationType].description ? '0' : '17px'
                                     }">
                                         {{generationType}} 
                                     </span>
@@ -482,8 +482,7 @@
                 <div class="data-generation-window"
                     generate-data ng-if="requestedEntitiesCtrl.generationTypeChosen.length > 0"
                     chosen-items="requestedEntitiesCtrl.generationTypeChosen"
-                    data="requestedEntitiesCtrl.taskData.DataManParamsTemp"
-                    close="requestedEntitiesCtrl.closeDataGenerationPopup">
+                    data="widgetRefContent.DataManParamsTemp">
                 </div>
             </div> 
         </div>
