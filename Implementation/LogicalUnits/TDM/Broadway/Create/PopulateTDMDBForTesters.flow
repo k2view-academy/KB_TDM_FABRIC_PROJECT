@@ -181,7 +181,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/TDM_INSERT.sql",
+                                        "const": "TDM/DEMO/tdm_insert.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"

@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Create"
+    ],
     "levels": [
         {
             "stages": [
@@ -45,7 +48,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/CRM_CREATE.sql",
+                                        "const": "TDM/DEMO/crm_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -73,7 +76,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/BILLING_CREATE.sql",
+                                        "const": "TDM/DEMO/billing_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -101,7 +104,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/COLLECTION_CREATE.sql",
+                                        "const": "TDM/DEMO/ordering_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -129,7 +132,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/ORDERING_CREATE.sql",
+                                        "const": "TDM/DEMO/collection_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"

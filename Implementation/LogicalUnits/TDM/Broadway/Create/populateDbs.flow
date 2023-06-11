@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Create"
+    ],
     "levels": [
         {
             "stages": [
@@ -99,7 +102,7 @@
                                 "inputs": [
                                     {
                                         "name": "size",
-                                        "const": 10000
+                                        "const": 500
                                     }
                                 ],
                                 "outputs": [

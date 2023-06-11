@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Create"
+    ],
     "levels": [
         {
             "stages": [
@@ -118,7 +121,7 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM/TRAINING/CRM_INSERT.sql.gz",
+                                        "const": "TDM/DEMO/crm.sql.gz",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -179,7 +182,7 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM/TRAINING/BILLING_INSERT.sql.gz",
+                                        "const": "TDM/DEMO/billing.sql.gz",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -240,7 +243,7 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM/TRAINING/COLLECTION_INSERT.sql.gz",
+                                        "const": "TDM/DEMO/collection.sql.gz",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -301,7 +304,7 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "const": "TDM/TRAINING/ORDERING_INSERT.sql.gz",
+                                        "const": "TDM/DEMO/orders.sql.gz",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"

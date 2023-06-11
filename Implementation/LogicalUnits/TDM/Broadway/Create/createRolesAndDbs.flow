@@ -123,7 +123,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/ROLES_CREATE.sql",
+                                        "const": "TDM/DEMO/roles.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -151,7 +151,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TRAINING/DBS_CREATE.sql",
+                                        "const": "TDM/DEMO/dbs.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
