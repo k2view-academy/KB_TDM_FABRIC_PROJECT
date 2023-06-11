@@ -6,6 +6,8 @@ UPDATE ${@schema}.tdm_general_parameters
 SET param_value = '{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"retentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
 WHERE param_name = 'tdm_gui_params';
 
+update tasks set retention_period_type='Do Not Delete', retention_period_value= -1 where retention_period_value = 0;
+
 insert into ${@schema}.tdm_general_parameters (param_name, param_value) values('TABLE_DEFAULT_DISTRIBUTION_MIN', 1) ON CONFLICT DO NOTHING;
 insert into ${@schema}.tdm_general_parameters (param_name, param_value) values('TABLE_DEFAULT_DISTRIBUTION_MAX', 3) ON CONFLICT DO NOTHING;
 

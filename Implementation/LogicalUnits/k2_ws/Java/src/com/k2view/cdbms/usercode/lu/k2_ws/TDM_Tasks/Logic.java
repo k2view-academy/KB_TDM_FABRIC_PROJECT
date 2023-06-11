@@ -5354,6 +5354,7 @@ public class Logic extends WebServiceUserCode {
 					}
 					editorMap.put("name", row.get("name"));
 					editorMap.put("schema",Json.get().fromJson((String) row.get("schema")));
+					editorMap.put("mandatory", row.get("mandatory"));
 					editorMap.put("context", context);
 					map.put("editor", editorMap);
 					map.put("default", row.get("default"));
@@ -5471,12 +5472,12 @@ public class Logic extends WebServiceUserCode {
 		SortedMap<String, HashMap<String, Object>> result = new TreeMap<>();
 		
 		try {
-		          luList = luList.replaceAll("\\s+", "");
-		    String[] lus = luList.split(",");
+		        luList = luList.replaceAll("\\s+", "");
+		        String[] lus = luList.split(",");
 		
-		          for (String luName : lus) {
-		              String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
-				Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
+		        for (String luName : lus) {
+		            String rootTableName = getGlobal("ROOT_TABLE_NAME", luName);
+				    Db.Rows flows = fabric().fetch("list BF lu_name = " + luName + " tag = 'Generate Data'");
 		
 				for (Db.Row flow : flows) {
 					String flowName = flow.get("Flow").toString();
@@ -5497,7 +5498,7 @@ public class Logic extends WebServiceUserCode {
 							HashMap<String, Object> map = new HashMap<>();
 							HashMap<Object, Object> editorMap = new HashMap<>();
 							Map<?, ?> editor = Json.get().fromJson(ParamConvertor.toString(row.get("editor")));
-		                          Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
+		                    Map<?, ?> context = Json.get().fromJson(ParamConvertor.toString(row.get("context")));
 		
 							if (editor.isEmpty()) {
 		                              editorMap.put("id","com.k2view.default");
@@ -5506,14 +5507,25 @@ public class Logic extends WebServiceUserCode {
 		                          }
 		
 							editorMap.put("name", name);
-							editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
-		                          editorMap.put("context", context);
+		                          if ("com.k2view.distribution".equals(editorMap.get("id"))) {
+		                              Map<?,?> distMap = Json.get().fromJson(ParamConvertor.toString(context.get("distribution")));
+		                              Map<?,?> constMap = Json.get().fromJson(ParamConvertor.toString(distMap.get("const")));
+		                              //Map<?,?> innerDist = Json.get().fromJson(ParamConvertor.toString(constMap.get("distribution")));
+		
+		                              Object schema =  Json.get().fromJson(ParamConvertor.toString(constMap.get("type")));
+		
+		                              String schemaJson = "{type=" + schema.toString() + "}";
+		                              editorMap.put("schema", Json.get().fromJson(schemaJson));
+		                          } else {
+		                              editorMap.put("schema", Json.get().fromJson((String) row.get("schema")));
+		                          }
+							editorMap.put("mandatory", row.get("mandatory"));
+		                    editorMap.put("context", context);
 							map.put("editor", editorMap);
 							map.put("type", row.get("type"));
 							map.put("mandatory", row.get("mandatory"));
 							map.put("default", row.get("default"));
-		
-		                          String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+		                    String description = ("" + row.get("remark")).replaceAll("/n", "\n");
 							map.put("description", description);
 		                          
 							result.put(name, map);

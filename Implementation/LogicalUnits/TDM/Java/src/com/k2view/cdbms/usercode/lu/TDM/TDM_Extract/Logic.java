@@ -43,6 +43,11 @@ public class Logic extends UserCode {
 		if (!"ON".equalsIgnoreCase(syncMode)) {
 			fabric().execute("SET SYNC " + syncMode);
 		}
+		
+		//Set Fabric's active environment to sourceEnvName + Execute batch + get batch_id
+		if (sourceEnvName != null && !sourceEnvName.isEmpty()) {
+			ludb().execute("set environment='" + sourceEnvName + "'");
+		}
 			
 		String batchCommand = "";
 		String entityList = "";
@@ -90,7 +95,7 @@ public class Logic extends UserCode {
 				version_exp_date = new SimpleDateFormat("yyyyMMddHHmmss").format(unixTime_plus_retention);
 			}
 			//Set TTL
-            if(-1 != retention_in_seconds) {
+		          if(-1 != retention_in_seconds) {
 				ludb().execute("SET INSTANCE_TTL = " + retention_in_seconds);
 			}
 		}
@@ -156,7 +161,7 @@ public class Logic extends UserCode {
 					//log.info("fnMExtractEntities - taskName: " + taskName + ", timeStamp: " + timeStamp);
 					entityIdSelectChildID += "||''" + separator + taskName + separator + "''||''" + timeStamp + "''";
 				}
-
+		
 				entityIdSelectChildID += "||'#params#{\"root_entity_id\" : '|| t.root_entity_id ||'}'";
 				//log.info("entityIdSelectChildID: " + entityIdSelectChildID);
 				String selSql = "";
@@ -195,10 +200,6 @@ public class Logic extends UserCode {
 			}
 		}
 		
-		//Set Fabric's active environment to sourceEnvName + Execute batch + get batch_id
-		if (sourceEnvName != null && !sourceEnvName.isEmpty()) {
-			ludb().execute("set environment='" + sourceEnvName + "'");
-		}
 		rs_mig_id = ludb().fetch(batchCommand, entityList);
 		migrationInfo = "" + rs_mig_id.firstValue();
 		

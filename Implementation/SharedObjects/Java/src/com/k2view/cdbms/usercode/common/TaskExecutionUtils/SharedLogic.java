@@ -31,7 +31,9 @@ import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.Log;
+import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
 import com.k2view.fabric.events.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
@@ -841,6 +843,7 @@ public class SharedLogic {
 
 	public static void fnPostTaskLogicalUnits(Long taskId, List<Map<String, Object>> logicalUnits) throws Exception {
 		String sql = "DELETE FROM \"" + schema + "\".tasks_logical_units WHERE \"" + schema + "\".tasks_logical_units.task_id = " + taskId;
+        //log.info("fnPostTaskLogicalUnits - schema: " + schema);
 		db(TDM).execute(sql);
 		if (logicalUnits != null) {
 			for (Map<String, Object> logicalUnit : logicalUnits) {
@@ -1471,51 +1474,43 @@ public class SharedLogic {
 
 
     //TDM 8.0 New function to populate the tdm_generate_task_field_mappings table.
-    public static void createTaskDMParams(Long taskId, HashMap<String, Object> params) throws Exception {
-        try {
-        String luName = getLuType().luName;
-
-        JSONObject JSONObject = new JSONObject(params);
+	public static void createTaskDMParams(Long taskId, HashMap<String,Object> params) throws Exception {
+		try {
+		String luName = getLuType().luName;
+		
+		JSONObject JSONObject = new JSONObject(params);
 		GlobalProperties gp = GlobalProperties.getInstance();
-		    
-	    for (String paramName : params.keySet()) {
-			Map<String, Object> paramValues = (Map<String,Object>)params.get(paramName);
-			JSONObject paramValue = JSONObject.getJSONObject(paramName);
-            Object value = null;
-            if (paramValue.has("value")) {
-                value = paramValue.get("value");
-            } 
-            String type = "" + paramValue.get("type");
-            if (value != null) {
-                if ("date".equalsIgnoreCase(type)) {
-
-                    SimpleDateFormat df1 = new SimpleDateFormat(gp.getDateTimeFormat());
-                    java.util.Date date = Date.from( Instant.parse("" + value));
-
-                    value = df1.format(date);
-                }
-
-                if (paramValue.has("default")) {
-                    Object defaultVal = paramValue.get("default");
-                    if(value.toString().equals(defaultVal.toString())) {
-                        continue;
-                    }
-                }
-                Map<String, Object> paramData = new LinkedHashMap<String, Object>();
-                paramData.put(paramName, value);
-                //log.info("createTaskDMParams - paramName: " + paramName + ", ParamValue: <" + value + ">");
-                String insertSql  = "broadway " + luName + ".InsertIntoGenDataParamMappings task_id=" + taskId + 
-                    ", param_name=" + paramName + ", param_type=" +  "'" + type + 
-                    "', param_value=" + "'" + value + "'";
-                //log.info("insertSql: " + insertSql);
-                fabric().execute(insertSql);
-            }
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-        
-    }
+				    
+		for (String paramName : params.keySet()) {
+		Map<String, Object> paramValues = (Map<String,Object>)params.get(paramName);
+		JSONObject paramValue = JSONObject.getJSONObject(paramName);
+		    Object value = null;
+		    if (paramValue.has("value")) {
+		        value = paramValue.get("value");
+		    } 
+		    String type = "" + paramValue.get("type");
+		    if (value != null) {
+		        if (paramValue.has("default")) {
+		            Object defaultVal = paramValue.get("default");
+		            if(value.toString().equals(defaultVal.toString())) {
+		                continue;
+		            }
+		        }
+		        Map<String, Object> paramData = new LinkedHashMap<String, Object>();
+		        paramData.put(paramName, value);
+		        //log.info("createTaskDMParams - paramName: " + paramName + ", ParamValue: <" + value + ">");
+		        String insertSql  = "broadway " + luName + ".InsertIntoGenDataParamMappings task_id=" + taskId + 
+		            ", param_name='" + paramName + "', param_type='" + type + 
+		            "', param_value='" + value + "'";
+		        //log.info("insertSql: " + insertSql);
+		        fabric().execute(insertSql);
+		    }
+		}
+		} catch (Exception e) {
+		log.error("Failed to insert Params of Generate Task: " + e.getMessage());
+		e.printStackTrace();
+		    }
+	}
 
     
 	public static Db.Rows fnGetTasks(String task_ids) throws Exception {

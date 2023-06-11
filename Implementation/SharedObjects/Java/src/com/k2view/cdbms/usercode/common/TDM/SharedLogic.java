@@ -938,7 +938,7 @@ public class SharedLogic {
 				if(entitiesArrarySize == -1 || totNumOfCopiedEntities <= entitiesArrarySize)
 				{
 					innerCopiedEntitiesMap.put(entityId, entityId);
-					innerCopiedUIDMap.put(entityId, row.get("entityid"));
+					innerCopiedUIDMap.put(entityId, UID[0]);
 					Copied_entities_list.add((Object)innerCopiedEntitiesMap);
 					Copied_UID_list.add((Object)innerCopiedUIDMap);
 				}
