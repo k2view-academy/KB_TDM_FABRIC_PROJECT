@@ -255,7 +255,6 @@
                     "actors": [
                         {
                             "name": "Create TDMDB",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -286,14 +285,13 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "craetePGDBS",
-                            "isDisabled": true,
+                            "name": "createPGDBS",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "craetePGDBS"
+                                        "const": "createPGDBS"
                                     },
                                     {
                                         "name": "is_first_deploy",
@@ -319,7 +317,6 @@
                     "actors": [
                         {
                             "name": "populatePGDBS",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -351,7 +348,6 @@
                     "actors": [
                         {
                             "name": "Create Masking Keyspace",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -520,7 +516,7 @@
                 "name": "is_first_deploy"
             },
             "rightPort": {
-                "actor": "craetePGDBS",
+                "actor": "createPGDBS",
                 "name": "is_first_deploy"
             }
         },
