@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="DB_CASSANDRA" type="genericdb" version="7.1.0.31">
   <Active>true</Active>
-  <DataSource>host.docker.internal</DataSource>
+  <DataSource>dev-cassandra-service</DataSource>
   <PortNum>9042</PortNum>
   <UserId>cassandra</UserId>
   <Password>Czb+q5MCcCDyHnCj11eaGpeXsefqP7NI6vnX+P6/qQg=:mjstg7qOokJb8fvLKw5nb5xaB0Bl1VpW1xkvdwCuARk=</Password>
-  <ConnectionStringServerSide>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</ConnectionStringServerSide>
+  <ConnectionStringServerSide>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

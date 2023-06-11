@@ -5,77 +5,109 @@
     <Environment enabled="true" name="SRC">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>Z4vNIG2vZYpbvk7YshA94BAOFvXCqZOzcSQTSZQz1PM=:zz9GHja0iUOmP/dbVafciM4jTY10Fm1+trk0MhvYMGM=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
           <dbPasswordEncrypted>oPyNv420dIR79vmUJhrqr6YVXo2XjSGLd31R9jlk9Pw=:CZJ6OLSxnElR0RgoEcgiNh1Ov20l+khXVkj4goKOBTY=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-cassandra-service</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>+suLEUL/JlMp2jFA17J+0n+4QGYNY2zUM//pynb3mwA=:fdZqiDXqips6X607ApOD03aJLl7v476iM5G4RCP3SUc=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>ORDERING_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>6sZR40JP5KtkTEPfYQgMrGX+XtTRin80uAQ3QT4C8AI=:Hp8csxAT7jTAenOK1w1avPQLO3Jf89yqUn2OwE4V/U0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
           <dbPasswordEncrypted>5cjORV8tT00d/sGXQAwOxjHirHMkAtFzIDgoVUG2fXI=:SKaKGzxDPDGlsaTK7W7EQPaIbmFx52X3e2Ln8Xj9LEo=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/postgres?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/BILLING_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>COLLECTION_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>ORDERING_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>YmnnbUnvJ7HScTj4lS38ykxRLF71tRaDtnjP2nEB1LQ=:W2qTnZQuBxfvnhdimCCd/DcyyZjMSBUBDiWVK++jyog=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -280,77 +312,121 @@
     <Environment enabled="true" name="TAR">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
           <dbPasswordEncrypted>xW3rdFtCkBf/yYx39QPDq8p/spBB2TzGngCV2OxtPiw=:PCLwZUMQA4jYNeL2V5z/dHGJ8tau9nhE2qVgvFkgeK8=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_COLLECTION</dbScheme>
           <dbUser>TAR_COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>8GkuYaWe7yCugB0SmGEG+9asqwFJuL4MzJOwimg41mU=:lPzSD6uTKP5tZ/x6ucBbrBeykNDl+qeG6RZYbPu4THM=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_COLLECTION?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
           <dbUser>TAR_CRM_USER</dbUser>
           <dbPasswordEncrypted>v4632VfuExM84dq+LkFqMmgEwen35SEnaqJsVExokL4=:XXpo0Zv46xP8EEjQMZFVjPc+B9+kq8b2g5J+4XnlInM=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-cassandra-service</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_ORDERING</dbScheme>
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>GPUF2jh6+3X4CP9WdRiHvg+zFHnVEJQNoYax3tSej34=:neK1998noqwmt7b4Lh/POgfLOsdSCrxuWBAQBXh1HLk=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_ORDERING?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERING?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
           <dbPasswordEncrypted>Yl52y085M1bTzUjR22JejPsjfJSWS5C10sOJKd9Rm+s=:YtIh+sVkU6QZPD7Dm3UVkw9TjtOewVDnQRHaP2PalAg=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/postgres?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_BILLING_DB</dbScheme>
+          <dbUser>TAR_BILLING_USER</dbUser>
+          <dbPasswordEncrypted>Q+6X3WO9ndCB8KpywYhEHFyiGnuYWo3JiEuKUrNBwA8=:T+oJBEgBWE3rnT4MH8vUUlpmG6tyq6JSmsiPcefQxA4=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_COLLECTION</dbScheme>
+          <dbUser>TAR_COLLECTION_USER</dbUser>
+          <dbPasswordEncrypted>/UivfOebV4U4M6R6E1YpWKsyp9jNOK/D7ArALNliaiU=:8XW91o8t6bxhtQkvnxqaVlFnof6KUNwbmxXLPx5OWVk=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_ORDERING</dbScheme>
+          <dbUser>TAR_ORDERING_USER</dbUser>
+          <dbPasswordEncrypted>+O58C8swddwGQSvsFSLeeejNxxNeltYAfn84uxsWcN8=:GsWJQEEfVX5DfKo/ZQLp998aN1WqfO2/8a2z4HzpgMw=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERING?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>25bCsRipnXFpnhsSW9nQTXwxgmfM8xcq5WDSdDqWYTM=:M5/7p59Hq/VHH2fO7LlPVY9hsUpPpuz9Nkb6exUVw0o=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -555,77 +631,109 @@
     <Environment enabled="true" name="Synthetic">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
           <dbPasswordEncrypted>2vnUPqcVC1yNnRxE7XcMrgL9UAfhuNA71GV4prnpVNg=:uSkFJo6jljAI8uzS2A4mkTBmxYXprvEuyzj3iTxsKSc=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/BILLING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
           <dbPasswordEncrypted>P9nNW0Ak4E9dAjOs+XSOSYuqBfymkk2YTOzrKaNrGcg=:v0XfOjyWJtadmDlOFLW3mSKTQnpyNjAdm6Fq8XP6XDk=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
           <dbPasswordEncrypted>NYVRJtsKq0OdLPRGMQhjXD3nAORi73M8Uxm9cgQK9yw=:NVpCTaZ4YXsgYjGr88TJR8tVRrv5u+icknVKoMXd6LE=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/CRM_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-cassandra-service</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
           <dbPasswordEncrypted>gZ1BeYQS1dy9MwoggKoStA6Oo6WHtkpw/ZdSCHFDFHQ=:K8KHqc34wNBcL1L78MmqkPeHdQPYscqBR9JKdDdMJ+U=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>ORDERING_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>koTYl/zpEbj4LzNpWHStKqW5xia5VX96xQJkLOapiJw=:fDWZkjumiDGn8KNoAvhvtCFqgUa3SPg9mbckse9D8lU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
           <dbPasswordEncrypted>0iSKGOd+rD5G/u6bYTYqAsoVxQgE5P2RAEOgUrtgU2I=:D80affKciSqO5n/1no4E0piP0ZHUSrYxF49euIx1CJE=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/postgres?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/BILLING_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>COLLECTION_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>ORDERING_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>host.docker.internal</dbHost>
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
           <dbPasswordEncrypted>57QIl2gl5gjk6hAK9FG6yJ1tMbfLD9Qvxtqg5QK5+Tw=:hkr54OQNdzzhpgK8VWu2yQTetJo74G37V1P7OPJIOB0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="false">
+          <dbPort>5432</dbPort>
+          <dbScheme>CRM_DB</dbScheme>
+          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
