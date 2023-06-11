@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="7.1.0.31">
   <Active>true</Active>
-  <DataSource>dev-pg-service</DataSource>
+  <DataSource>host.docker.internal</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>TDMDB</DataBase>
   <UserId>tdm</UserId>
   <Password>luJGpApwvoZjOlUGXYb02e6VpCs31IsL+tMawr1q0sE=:eV+t1+ac5jDq2C/BycGhGErWHld4ULubbWhGpQHY4fc=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
+  <ConnectionStringServerSide>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
