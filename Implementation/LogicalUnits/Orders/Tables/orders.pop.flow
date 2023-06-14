@@ -9,6 +9,35 @@
                     "isTransactional": false,
                     "actors": [
                         {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "order_id",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "order_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "name": "Get Variable TDM_SYNC_SOURCE_DATA",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -187,35 +216,6 @@
                     ],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "order_id",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "order_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
                         {
                             "name": "Init Instance As Not Found",
                             "actorType": {
@@ -563,6 +563,26 @@
     "connections": [
         {
             "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Variable TDM_SYNC_SOURCE_DATA",
                 "name": "result"
             },
@@ -623,26 +643,6 @@
         },
         {
             "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Check if Instance Was Not Found In Source",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Query",
                 "name": "result"
             },
@@ -685,21 +685,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Delete Root Table",
-                "name": "table"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "order_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
                 "name": "order_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Delete Root Table",
+                "name": "table"
             }
         },
         {

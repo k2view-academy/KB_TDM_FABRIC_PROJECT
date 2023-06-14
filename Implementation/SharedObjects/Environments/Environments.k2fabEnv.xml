@@ -160,10 +160,6 @@
           <Value>order_id</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
           <Value>1</Value>
           <Comment></Comment>
@@ -184,32 +180,8 @@
           <Value>false</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="Orders">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Customer">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Customer">
           <Value>CUSTOMER</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Billing">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="k2_ws">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Collection">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_LIBRARY">
-          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -220,16 +192,12 @@
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="k2_ref">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_Reference">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BUILD_TDMDB" luName="">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="clone_id" luName="">
@@ -386,12 +354,9 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CassandraLoader" enabled="true" version="">
-          <Name>CASSANDRA_LD</Name>
+        <GenericInterface type="" enabled="" version="">
+          <Name></Name>
           <Properties>
-            <Property name="section">
-              <Value>default</Value>
-            </Property>
           </Properties>
         </GenericInterface>
         <GenericInterface type="LOCAL" enabled="false" version="">
@@ -665,10 +630,6 @@
           <Value>order_id</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
           <Value>1</Value>
           <Comment></Comment>
@@ -689,32 +650,8 @@
           <Value>false</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="Orders">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Customer">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Customer">
           <Value>CUSTOMER</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Billing">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="k2_ws">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Collection">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_LIBRARY">
-          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -725,16 +662,12 @@
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="k2_ref">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_Reference">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BUILD_TDMDB" luName="">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="clone_id" luName="">
@@ -1170,10 +1103,6 @@
           <Value>order_id</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
           <Value>1</Value>
           <Comment></Comment>
@@ -1194,32 +1123,8 @@
           <Value>false</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="Orders">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Customer">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="ROOT_TABLE_NAME" luName="Customer">
           <Value>CUSTOMER</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Billing">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="k2_ws">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="Collection">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_LIBRARY">
-          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
@@ -1230,16 +1135,12 @@
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="k2_ref">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_Reference">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BUILD_TDMDB" luName="">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="clone_id" luName="">
