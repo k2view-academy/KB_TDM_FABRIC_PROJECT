@@ -417,29 +417,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Const1",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "OMERRRR IS THE BESTTT :)"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -528,16 +505,6 @@
             "rightPort": {
                 "actor": "populatePGDBS",
                 "name": "is_first_deploy"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "value"
             }
         }
     ]
