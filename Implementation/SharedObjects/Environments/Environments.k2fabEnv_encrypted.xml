@@ -20,7 +20,7 @@
                               
                     <dbUser>BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:885hhqH8saOFTU91bmTokr6LX4p/dTITqQ9YZENSPmx8DyZnHj8YlR93w20=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:HFojJFYuEioGj57m547PLo8vRgu5WnLWMyRVAwHoLU/2wRqRQ/EELfOYFdY=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype=unspecified</connString>
                               
@@ -42,7 +42,7 @@
                               
                     <dbUser>COLLECTION_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:G1z9gZmHvxV3p7iaNQjRTNeLhl8kxVWZOQ1HjgegInVyXEyQu1eRPXQMlAWiY4o=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:WShzpjXog77UXfQz75G/sdcHu3w7S/p/6ngC35gZq1FHe/FM2r9Zst1LT9leej0=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
                               
@@ -64,7 +64,7 @@
                               
                     <dbUser>CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:PDGibjLGVc/JgWdJa7cDH6RO5BFEdZqubr+StsiVJ1vFuooNlRNBpA==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:BudtxV/ExsUzI4wEmE7CYP4AklvNwONuDu0Jv4o6geQp3LxFh7FmEQ==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype=unspecified</connString>
                               
@@ -86,7 +86,7 @@
                               
                     <dbUser>cassandra</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:1RmpDMT9G21ePBXrnhdamGwF1ULWsLnr26OuIG71/m5xF5kuTHZjnOs=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:tzjAc17kdyTP0IsDKbZbkDh/sIf1RZ4mSTynEAaL0mPfoCjZydzImXU=</dbPasswordEncrypted>
                               
                     <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
                               
@@ -108,7 +108,7 @@
                               
                     <dbUser>ORDERS_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:Uf/8GEkKVZtwmXSJUV/2pV9zG5qDhxP60WrlXNvzRTqv6j70FMxG7ynq8w==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:5DWv2l7aQSsE/rZS2nRTg4z/mIqCW2qGTnJ2pNMo88VTbNYjeLPXlpcTTQ==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/ORDERING_DB?stringtype=unspecified</connString>
                               
@@ -130,7 +130,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:CwIl3D6diMnv/PJPokqRt/86hbt0+K7BWL6SGUI1SNT4CQ9XR4lJfw==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:sQBRZ0LSyNP90ZO0eyFUY1IPGv9tyia7s1SP2zc+oPag6MJRLjKe5g==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -176,7 +176,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:YiE293X8lbt30U+nUH6VsRDsS24ZXJSj6FOskYNgPRmBVDs=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:5PrAxXxeksrw3w+B6z9h33dSR2ToGuhai2V+RTA/6DlV7Hs=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -257,14 +257,6 @@
                             
                 </Global>
                         
-                <Global luName="TDM" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="TDM" name="INSTANCES_RANDOM_MIN">
                               
                     <Value>1</Value>
@@ -305,57 +297,9 @@
                             
                 </Global>
                         
-                <Global luName="Orders" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Customer" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="Customer" name="ROOT_TABLE_NAME">
                               
                     <Value>CUSTOMER</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Billing" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="k2_ws" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Collection" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="TDM_LIBRARY" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
                               
                     <Comment/>
                             
@@ -377,25 +321,17 @@
                             
                 </Global>
                         
-                <Global luName="k2_ref" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="TDM_Reference" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="" name="BE_ID">
                               
                     <Value>0</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="BUILD_TDMDB">
+                              
+                    <Value>true</Value>
                               
                     <Comment/>
                             
@@ -709,19 +645,12 @@
                   
             <GenericInterfacesList>
                         
-                <GenericInterface enabled="true" type="CassandraLoader" version="">
+                <GenericInterface enabled="" type="" version="">
                               
-                    <Name>CASSANDRA_LD</Name>
+                    <Name/>
                               
                     <Properties>
-                                    
-                        <Property name="section">
-                                          
-                            <Value>default</Value>
-                                        
-                        </Property>
-                                  
-                    </Properties>
+          </Properties>
                             
                 </GenericInterface>
                         
@@ -847,7 +776,7 @@
                               
                     <dbUser>TAR_BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:w+emADHfUbO5jrQjqqz14VqwzhfkWKE0ksVh44Cu2vUoTJu++tHMjV8T2SI3Jx37</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:9jtv71rNH+vw65Vk6rySlfgbLQ2oEOJOrfFDdvqPaQ1xItsKOREFSTMsLQy+hNQ6</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
                               
@@ -869,7 +798,7 @@
                               
                     <dbUser>TAR_COLLECTION_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:tBizQynAJrVn7e7I3zZZXPN7JriuubEVceD56MOBV06F0DA0s3TY8e55VqAleJ2HFvtj</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:eEVDgAPXt9Sotr9c/LHgxOIMfbdeVOgf4bpe3jfYp6G4bCC0nxmZdAz5sx+hbZ2hT/9+</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION?stringtype=unspecified</connString>
                               
@@ -891,7 +820,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:KHqwQMKqY8MnK+pNqiRCwa9MuBNxPMNGZ+SgiM8iLbpKtnDrr6Vsb0XgczU=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:1MU9tC3k17m8v6KAaLnpL5TcmA2SxF3dRbmsb+ek5rm6mYqH5mo42QQIE3E=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -913,7 +842,7 @@
                               
                     <dbUser>cassandra</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:y0GveVhxNiBHKRdAOc6KPuD5zDQ90JfBO4/Z5M8gg8OR6lB/rTMdOtM=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:bAEKvMeQN3XOndB1TzNVakd1mQ0ge1W3/G4JtvyVyRdjf5kg4YiRb8w=</dbPasswordEncrypted>
                               
                     <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
                               
@@ -935,7 +864,7 @@
                               
                     <dbUser>TAR_ORDERING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:c/jOq5MKBwV4J3kSbMuimLwuKclt3neZr0LJhxyTqPFSGspoOpySD2ZWNOwhveOjeA==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:oLjIX+aLfYX53A+9Hj/uAscUzIQvwXnw1z4mozPCVU7A5dkDph/PJCYJKG7clOjvdA==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERING?stringtype=unspecified</connString>
                               
@@ -957,7 +886,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:GhCzg25crvJXppAke8DQWFHtmdhPeqn7UCZ2ojC1cH2wJ+E+o4SvEQ==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:c6qvaTIpn96VRzOQg3sGOlz3v1Qx5g5u8ELI0KFqLhYF9DRqf/wEMA==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -979,7 +908,7 @@
                               
                     <dbUser>TAR_BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:taSth135+hedsIWIfzbkTOtigSvRObyteG8mXLTiu7llNdlD9QitV1He7u2UHab4</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:G1nL4PGYcPP/QYPfgZTPBoW8P6HjLyVSIfVTAsq1p2l94Dt/7ZBUfsEk3gancKrp</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
                               
@@ -1001,7 +930,7 @@
                               
                     <dbUser>TAR_COLLECTION_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:sSajYy1E9vifkPaRP0aFYcJ4tOg4RyAq+HQL/bSzyqURRlxFAK10llxiYe1yFVhxYyYh</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:b52Yp4MD9I/PlJDX/SuYaxjVGNvrTTBkfIw/R40mBJdVcLg/WMuUhM/24cRo8LlQZT1Y</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION?stringtype=unspecified</connString>
                               
@@ -1023,7 +952,7 @@
                               
                     <dbUser>TAR_ORDERING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:v5uTi+PqBjiL2DVMIY2yutyLdjH+D9OvS8w1Wr7VZtVF52Z/nBhBwDbBppvIaYrwRQ==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:bRUUazba7J6uks8CvIoWXpDGZXwDQz9ri8vHTwRwEbwQZRUnsHkeRqipJEjWeMeKmA==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERING?stringtype=unspecified</connString>
                               
@@ -1045,7 +974,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:tHus6Nyizc5p8wDTPrDvphH6NZWI4zrhQR4rJu/ncp9XX8E=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:QD1fakadWmuKb0NHoa9CSium+M30zD1MS+XoT4D8gS+RCNk=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -1067,7 +996,7 @@
                               
                     <dbUser>TAR_CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:4Sqv1VvU9+Hqqh9X8qgnApM7O3vZkKR3BU5BtB3lYNlfbtzlxLITw2SEEq4=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:xb1d+ggZhQmRMmci3xx1CRq4t1H7WNt70/yzU9XSRxPMPiEzD31gX9AUTHo=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype=unspecified</connString>
                               
@@ -1147,14 +1076,6 @@
                             
                 </Global>
                         
-                <Global luName="TDM" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="TDM" name="INSTANCES_RANDOM_MIN">
                               
                     <Value>1</Value>
@@ -1195,57 +1116,9 @@
                             
                 </Global>
                         
-                <Global luName="Orders" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Customer" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="Customer" name="ROOT_TABLE_NAME">
                               
                     <Value>CUSTOMER</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Billing" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="k2_ws" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Collection" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="TDM_LIBRARY" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
                               
                     <Comment/>
                             
@@ -1267,25 +1140,17 @@
                             
                 </Global>
                         
-                <Global luName="k2_ref" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="TDM_Reference" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="" name="BE_ID">
                               
                     <Value>0</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="BUILD_TDMDB">
+                              
+                    <Value>true</Value>
                               
                     <Comment/>
                             
@@ -1737,7 +1602,7 @@
                               
                     <dbUser>BILLING_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:wXJId5svmtXJ36v3LYcoW9/l7nq7nQUHdyZ/sbGnSAuqBJE0x9piBzlBhIA=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:DPI7hkgQnfBdEzBpBG9dGVoPmqpvy8n82d+F1nC2Kgzzh4aNV23rPFL/+Mo=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype=unspecified</connString>
                               
@@ -1759,7 +1624,7 @@
                               
                     <dbUser>COLLECTION_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:owibk2NcPJ8+4zsaIdvezXwxQ0mgsN2Htv1N+DEuiYbSXU9Y+b9Vtet+QxG9Whw=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:ie10/Oi3dM0JXfCZ8gp+Fr5TlRoG/JNe7ITkJZMBwIFvtSfK0di0L7tuqa+UK4E=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype=unspecified</connString>
                               
@@ -1781,7 +1646,7 @@
                               
                     <dbUser>CRM_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:PUcBtW9nTWwtKbuIXLtiwnn9FylrLfsAGY+Q22fKn4lf0jalS8AWbg==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:3U05ME+zI8J2xgnUw4+Ew+23/8todKPX3BCnfNpRU0IUCz66Vbwp0Q==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype=unspecified</connString>
                               
@@ -1803,7 +1668,7 @@
                               
                     <dbUser>cassandra</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:OmkzZJDkpZUJ49Pxsvdd/JpkR6rWOH0+ZUsPEeOY5UNFc4s2iy2wZwM=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:a5WLiOKPsO77KIQ6IoIsFuWeeUiDLG5rTL/bLlCujSwpmVLyX0AH7ls=</dbPasswordEncrypted>
                               
                     <connString>jdbc:cassandra://dev-cassandra-service:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
                               
@@ -1825,7 +1690,7 @@
                               
                     <dbUser>ORDERS_USER</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:MXH36GKnM9JGIcND4e1W+ivqpYq7njs5tPSZGunk2D/1ZSOkiauvcpo2wQ==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:fXfb3NNBBQg4JM8R1fBRJsZsKNKON+Y6+wX0YT+ZZALp8HK1AZtDibkFWA==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/ORDERING_DB?stringtype=unspecified</connString>
                               
@@ -1847,7 +1712,7 @@
                               
                     <dbUser>postgres</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:7Lzar69Ck9/UTmj2utHZIV6SaLJdMod1oYVGovFrHIV0flOHBrAD5A==</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:Vw4bYg20emQ6B/TMj6aGPhS5G8htsOD8a9NbTZVNdFm1EZs6ibHc4w==</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</connString>
                               
@@ -1893,7 +1758,7 @@
                               
                     <dbUser>tdm</dbUser>
                               
-                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:w+0OlHPiUyncivX00zqR8rj1nBJ+JOMEXAak00ljKAIqMgY=</dbPasswordEncrypted>
+                    <dbPasswordEncrypted>~encsMK0~AAABiKsA1oY=:UWOai9DYSDn9zXdky+e8V5qmYUdfCTT7lG8Paa0bN5U5sq0=</dbPasswordEncrypted>
                               
                     <connString>jdbc:postgresql://dev-pg-service:5432/TDMDB?stringtype=unspecified</connString>
                               
@@ -1974,14 +1839,6 @@
                             
                 </Global>
                         
-                <Global luName="TDM" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="TDM" name="INSTANCES_RANDOM_MIN">
                               
                     <Value>1</Value>
@@ -2022,57 +1879,9 @@
                             
                 </Global>
                         
-                <Global luName="Orders" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Customer" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="Customer" name="ROOT_TABLE_NAME">
                               
                     <Value>CUSTOMER</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Billing" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="k2_ws" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="Collection" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="TDM_LIBRARY" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
                               
                     <Comment/>
                             
@@ -2094,25 +1903,17 @@
                             
                 </Global>
                         
-                <Global luName="k2_ref" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
-                <Global luName="TDM_Reference" name="BUILD_TDMDB">
-                              
-                    <Value>true</Value>
-                              
-                    <Comment/>
-                            
-                </Global>
-                        
                 <Global luName="" name="BE_ID">
                               
                     <Value>0</Value>
+                              
+                    <Comment/>
+                            
+                </Global>
+                        
+                <Global luName="" name="BUILD_TDMDB">
+                              
+                    <Value>true</Value>
                               
                     <Comment/>
                             
