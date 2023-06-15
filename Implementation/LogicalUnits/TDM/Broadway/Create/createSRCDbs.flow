@@ -104,7 +104,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/DEMO/ordering_create.sql",
+                                        "const": "TDM/DEMO/collection_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -132,7 +132,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/DEMO/collection_create.sql",
+                                        "const": "TDM/DEMO/ordering_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
