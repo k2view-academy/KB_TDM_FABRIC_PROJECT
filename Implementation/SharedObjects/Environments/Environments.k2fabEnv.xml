@@ -115,13 +115,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="false">
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -354,11 +354,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="" enabled="" version="">
-          <Name></Name>
-          <Properties>
-          </Properties>
-        </GenericInterface>
         <GenericInterface type="LOCAL" enabled="false" version="">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
@@ -373,100 +368,11 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="REDIS" enabled="false" version="">
-          <Name>FabricRedis</Name>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
           <Properties>
-            <Property name="Servers">
-              <Value>localhost:6379</Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="ConnectionTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="SoTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="MaxAttempts">
-              <Value>10</Value>
-            </Property>
-            <Property name="MaxTotal">
-              <Value>128</Value>
-            </Property>
-            <Property name="MaxIdle">
-              <Value>128</Value>
-            </Property>
-            <Property name="MinIdle">
-              <Value>16</Value>
-            </Property>
-            <Property name="TestOnBorrow">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestOnReturn">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestWhileIdle">
-              <Value>True</Value>
-            </Property>
-            <Property name="MinEvictableIdle">
-              <Value>60000</Value>
-            </Property>
-            <Property name="EvictionRunIntervals">
-              <Value>30000</Value>
-            </Property>
-            <Property name="TestPerEviction">
-              <Value>3</Value>
-            </Property>
-            <Property name="BlockWhenExhausted">
-              <Value>False</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>httpTest</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTP</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>80</Value>
-            </Property>
-            <Property name="Path">
-              <Value>http://localhost:3213/api</Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Basic</Value>
-            </Property>
-            <Property name="User">
-              <Value>admin</Value>
-            </Property>
-            <Property name="Password">
-              <Value>cQOKt1rAQsYjgiDebDbJMflSefwpXK5WVx6lXXXdYTo&#x3D;:7E3JWKgQ3DozyntTDQxM+chPkF2v3iUBptSU1QTg9dk&#x3D;</Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
-              <Value></Value>
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -585,12 +491,12 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="true">
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="true">
           <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
           <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>25bCsRipnXFpnhsSW9nQTXwxgmfM8xcq5WDSdDqWYTM&#x3D;:M5/7p59Hq/VHH2fO7LlPVY9hsUpPpuz9Nkb6exUVw0o&#x3D;</dbPasswordEncrypted>
+          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
           <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
@@ -842,103 +748,6 @@
               <Value></Value>
             </Property>
             <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="REDIS" enabled="false" version="">
-          <Name>FabricRedis</Name>
-          <Properties>
-            <Property name="Servers">
-              <Value>localhost:6379</Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="ConnectionTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="SoTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="MaxAttempts">
-              <Value>10</Value>
-            </Property>
-            <Property name="MaxTotal">
-              <Value>128</Value>
-            </Property>
-            <Property name="MaxIdle">
-              <Value>128</Value>
-            </Property>
-            <Property name="MinIdle">
-              <Value>16</Value>
-            </Property>
-            <Property name="TestOnBorrow">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestOnReturn">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestWhileIdle">
-              <Value>True</Value>
-            </Property>
-            <Property name="MinEvictableIdle">
-              <Value>60000</Value>
-            </Property>
-            <Property name="EvictionRunIntervals">
-              <Value>30000</Value>
-            </Property>
-            <Property name="TestPerEviction">
-              <Value>3</Value>
-            </Property>
-            <Property name="BlockWhenExhausted">
-              <Value>False</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>httpTest</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTP</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>80</Value>
-            </Property>
-            <Property name="Path">
-              <Value>http://localhost:3213/api</Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Basic</Value>
-            </Property>
-            <Property name="User">
-              <Value>admin</Value>
-            </Property>
-            <Property name="Password">
-              <Value>cQOKt1rAQsYjgiDebDbJMflSefwpXK5WVx6lXXXdYTo&#x3D;:7E3JWKgQ3DozyntTDQxM+chPkF2v3iUBptSU1QTg9dk&#x3D;</Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
               <Value></Value>
             </Property>
           </Properties>
@@ -1058,13 +867,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1309,109 +1118,12 @@
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
-              <Value></Value>
+              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
             </Property>
             <Property name="FilesFilter">
               <Value></Value>
             </Property>
             <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="REDIS" enabled="false" version="">
-          <Name>FabricRedis</Name>
-          <Properties>
-            <Property name="Servers">
-              <Value>localhost:6379</Value>
-            </Property>
-            <Property name="Password">
-              <Value></Value>
-            </Property>
-            <Property name="ConnectionTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="SoTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="MaxAttempts">
-              <Value>10</Value>
-            </Property>
-            <Property name="MaxTotal">
-              <Value>128</Value>
-            </Property>
-            <Property name="MaxIdle">
-              <Value>128</Value>
-            </Property>
-            <Property name="MinIdle">
-              <Value>16</Value>
-            </Property>
-            <Property name="TestOnBorrow">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestOnReturn">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestWhileIdle">
-              <Value>True</Value>
-            </Property>
-            <Property name="MinEvictableIdle">
-              <Value>60000</Value>
-            </Property>
-            <Property name="EvictionRunIntervals">
-              <Value>30000</Value>
-            </Property>
-            <Property name="TestPerEviction">
-              <Value>3</Value>
-            </Property>
-            <Property name="BlockWhenExhausted">
-              <Value>False</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>httpTest</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTP</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>80</Value>
-            </Property>
-            <Property name="Path">
-              <Value>http://localhost:3213/api</Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Basic</Value>
-            </Property>
-            <Property name="User">
-              <Value>admin</Value>
-            </Property>
-            <Property name="Password">
-              <Value>cQOKt1rAQsYjgiDebDbJMflSefwpXK5WVx6lXXXdYTo&#x3D;:7E3JWKgQ3DozyntTDQxM+chPkF2v3iUBptSU1QTg9dk&#x3D;</Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
               <Value></Value>
             </Property>
           </Properties>

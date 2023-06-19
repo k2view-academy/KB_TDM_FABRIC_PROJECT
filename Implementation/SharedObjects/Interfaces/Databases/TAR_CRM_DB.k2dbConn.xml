@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TRA_CRM_DB" type="genericdb" version="7.1.0.31">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TAR_CRM_DB" type="genericdb" version="7.1.0.31">
   <Active>true</Active>
   <DataSource>dev-pg-service</DataSource>
   <PortNum>5432</PortNum>
