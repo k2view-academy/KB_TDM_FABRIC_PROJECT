@@ -115,55 +115,19 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TRA_CRM_DB" dbType="genericdb" active="false">
-          <dbHost></dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="false">
+          <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser></dbUser>
-          <dbPasswordEncrypted></dbPasswordEncrypted>
-          <connString>jdbc:postgresql://:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_TABLE_NAME" luName="Orders">
-          <Value>orders</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Orders">
-          <Value>order_id</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
           <Comment></Comment>
@@ -338,59 +302,12 @@
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
-              <Value></Value>
+              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
             </Property>
             <Property name="FilesFilter">
               <Value></Value>
             </Property>
             <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="HTTP" enabled="false" version="">
-          <Name>httpTest</Name>
-          <Properties>
-            <Property name="ProtocolType">
-              <Value>HTTP</Value>
-            </Property>
-            <Property name="HOST">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="PORT">
-              <Value>80</Value>
-            </Property>
-            <Property name="Path">
-              <Value>http://localhost:3213/api</Value>
-            </Property>
-            <Property name="AuthenticationType">
-              <Value>Basic</Value>
-            </Property>
-            <Property name="User">
-              <Value>admin</Value>
-            </Property>
-            <Property name="Password">
-              <Value>cQOKt1rAQsYjgiDebDbJMflSefwpXK5WVx6lXXXdYTo&#x3D;:7E3JWKgQ3DozyntTDQxM+chPkF2v3iUBptSU1QTg9dk&#x3D;</Value>
-            </Property>
-            <Property name="Token">
-              <Value></Value>
-            </Property>
-            <Property name="AccessTokenUrl">
-              <Value></Value>
-            </Property>
-            <Property name="ClientId">
-              <Value></Value>
-            </Property>
-            <Property name="ClientSecret">
-              <Value></Value>
-            </Property>
-            <Property name="Scope">
-              <Value></Value>
-            </Property>
-            <Property name="TokenTimeout">
-              <Value>0</Value>
-            </Property>
-            <Property name="TestConnectionValidStatus">
               <Value></Value>
             </Property>
           </Properties>
