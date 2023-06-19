@@ -77,7 +77,7 @@
 		"LocalDeployWeb": true,
 		"__actor__editor__temp*.flow": true,
 		".svnignore": true,
-		"**/Translations": false,
+		"**/Translations": true,
 		"**/Parsers": true,
 		"**/Jobs": true,
 		"**/IidFinder": true,
