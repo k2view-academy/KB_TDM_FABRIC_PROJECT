@@ -116,12 +116,12 @@
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="false">
-          <dbHost>dev-pg-service</dbHost>
+          <dbHost></dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
-          <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -735,6 +735,24 @@
           <Properties>
             <Property name="section">
               <Value>default</Value>
+            </Property>
+            <Property name="IsCustomConnectionStringServerSide">
+              <Value>false</Value>
+            </Property>
+            <Property name="MinConnectionsNumber">
+              <Value>0</Value>
+            </Property>
+            <Property name="MaxConnectionsNumber">
+              <Value>60</Value>
+            </Property>
+            <Property name="UseSelectAsteriskInAutoCreatedQueries">
+              <Value>true</Value>
+            </Property>
+            <Property name="AutomaticMetadataLoading">
+              <Value>false</Value>
+            </Property>
+            <Property name="OfflineMode">
+              <Value>true</Value>
             </Property>
           </Properties>
         </GenericInterface>
