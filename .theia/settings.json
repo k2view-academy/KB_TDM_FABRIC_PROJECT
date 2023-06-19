@@ -32,15 +32,12 @@
     "java.project.outputPath": ".studioWeb/java/bin",
     "java.project.sourcePaths": [
 		"Implementation/SharedObjects/Java/src",	
-		"Implementation/LogicalUnits/k2_ref/Java/src",	
-		"Implementation/LogicalUnits/Orders/Java/src",	
-		"Implementation/LogicalUnits/Customer/Java/src",	
-		"Implementation/LogicalUnits/TDM/Java/src",	
 		"Implementation/LogicalUnits/k2_ws/Java/src",	
-		"Implementation/LogicalUnits/TDM_Reference/Java/src",	
+		"Implementation/LogicalUnits/k2_ref/Java/src",	
 		"Implementation/LogicalUnits/TDM_LIBRARY/Java/src",	
-		"Implementation/LogicalUnits/Collection/Java/src",	
-		"Implementation/LogicalUnits/Billing/Java/src"	
+		"Implementation/LogicalUnits/TDM/Java/src",	
+		"Implementation/LogicalUnits/TDM_Reference/Java/src",	
+		"Implementation/LogicalUnits/Orders/Java/src"	
 	],
 	"java.project.resourceFilters": [
         "node_modules",
@@ -80,7 +77,7 @@
 		"LocalDeployWeb": true,
 		"__actor__editor__temp*.flow": true,
 		".svnignore": true,
-		"**/Translations": true,
+		"**/Translations": false,
 		"**/Parsers": true,
 		"**/Jobs": true,
 		"**/IidFinder": true,
@@ -159,5 +156,6 @@
            ]
        }
     ],
-	"logViewer.showStatusBarItemOnChange": false
+    "logViewer.showStatusBarItemOnChange": false,
+    "debug.javascript.debugByLinkOptions": "on"
 }
