@@ -9,25 +9,7 @@
                     "name": "Start",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "FabricSet ENV",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "environment"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "TAR"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
+                    "actors": []
                 }
             ]
         },
@@ -194,7 +176,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "CRM_DB"
+                                        "const": "TAR_CRM_DB"
                                     },
                                     {
                                         "name": "sql",
@@ -211,7 +193,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "BILLING_DB"
+                                        "const": "TAR_BILLING_DB"
                                     },
                                     {
                                         "name": "sql",
@@ -228,7 +210,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "COLLECTION_DB"
+                                        "const": "TAR_COLLECTION_DB"
                                     },
                                     {
                                         "name": "sql",
@@ -245,7 +227,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "ORDERS_DB"
+                                        "const": "TAR_ORDERS_DB"
                                     },
                                     {
                                         "name": "sql",
