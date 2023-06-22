@@ -125,5 +125,7 @@ public class SharedGlobals {
 	@category("TDM_DEMO")
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
+    @category("TDM")
+	public static String TDM_DELETE_TABLES_PREFIX = "TAR_";
 
 }

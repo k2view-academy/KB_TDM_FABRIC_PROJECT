@@ -1,14 +1,17 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
                 {
-                    "name": "Stage 5",
+                    "name": "Get List Of tables to be filtered Out",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "TDMFilterOutTargetTables1",
+                            "name": "TDM Filter Out Target Tables",
                             "actorType": {
                                 "parentType": "TDMFilterOutTargetTables",
                                 "inputs": [],
@@ -28,6 +31,9 @@
                                                     },
                                                     "lu_name": {
                                                         "type": "string"
+                                                    },
+                                                    "generator_filterout": {
+                                                        "type": "boolean"
                                                     }
                                                 }
                                             }
@@ -37,7 +43,7 @@
                             }
                         },
                         {
-                            "name": "JavaScript2",
+                            "name": "Initiate Flag",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -63,13 +69,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Change Case",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Uppercase1",
-                            "minHeight": 198,
+                            "name": "Upper Case of Table Name from List",
                             "actorType": {
                                 "parentType": "Uppercase",
                                 "inputs": [],
@@ -77,7 +82,7 @@
                             }
                         },
                         {
-                            "name": "Uppercase2",
+                            "name": "Uppercase Input Table",
                             "actorType": {
                                 "parentType": "Uppercase",
                                 "inputs": [],
@@ -91,7 +96,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 4",
+                    "name": "Filter Out Table?",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -145,12 +150,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Set Flag",
                     "dependsOnList": [],
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "JavaScript1",
+                            "name": "Set Filter Out Flag",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -197,7 +202,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 3",
+                    "name": "Output",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -211,7 +216,7 @@
                             }
                         },
                         {
-                            "name": "Const2",
+                            "name": "Table Name",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -241,7 +246,7 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "TDMFilterOutTargetTables1",
+                "actor": "TDM Filter Out Target Tables",
                 "name": "table"
             },
             "rightPort": {
@@ -255,11 +260,11 @@
         },
         {
             "leftPort": {
-                "actor": "TDMFilterOutTargetTables1",
+                "actor": "TDM Filter Out Target Tables",
                 "name": "table"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Set Filter Out Flag",
                 "name": "luName"
             },
             "iterate": "Iterate",
@@ -269,11 +274,11 @@
         },
         {
             "leftPort": {
-                "actor": "TDMFilterOutTargetTables1",
+                "actor": "TDM Filter Out Target Tables",
                 "name": "table"
             },
             "rightPort": {
-                "actor": "Uppercase1",
+                "actor": "Upper Case of Table Name from List",
                 "name": "string"
             },
             "iterate": "Iterate",
@@ -283,7 +288,7 @@
         },
         {
             "leftPort": {
-                "actor": "Uppercase1",
+                "actor": "Upper Case of Table Name from List",
                 "name": "string"
             },
             "rightPort": {
@@ -293,7 +298,7 @@
         },
         {
             "leftPort": {
-                "actor": "Uppercase2",
+                "actor": "Uppercase Input Table",
                 "name": "string"
             },
             "rightPort": {
@@ -307,13 +312,13 @@
                 "name": "strings"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Set Filter Out Flag",
                 "name": "match"
             }
         },
         {
             "leftPort": {
-                "actor": "JavaScript1",
+                "actor": "Set Filter Out Flag",
                 "name": "result"
             },
             "rightPort": {
@@ -327,7 +332,7 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "Uppercase2",
+                "actor": "Uppercase Input Table",
                 "name": "string"
             }
         },
@@ -337,7 +342,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Set Filter Out Flag",
                 "name": "luType"
             }
         },
@@ -347,13 +352,13 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "Const2",
+                "actor": "Table Name",
                 "name": "value"
             }
         },
         {
             "leftPort": {
-                "actor": "Const2",
+                "actor": "Table Name",
                 "name": "value"
             },
             "rightPort": {

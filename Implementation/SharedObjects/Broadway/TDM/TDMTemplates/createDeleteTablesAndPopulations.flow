@@ -6,7 +6,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Get List of Tables",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -23,6 +23,10 @@
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         },
                                         "mandatory": false
                                     }
@@ -41,46 +45,18 @@
                             }
                         },
                         {
-                            "name": "Set Target Environment",
+                            "name": "Get Delete Table Prefix",
                             "actorType": {
-                                "parentType": "FabricSet",
+                                "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "ENVIRONMENT",
+                                        "const": "TDM_DELETE_TABLES_PREFIX",
                                         "isDefault": false
                                     }
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Create Folder",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createFolderForFlows"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": "DeleteFlows",
-                                        "name": "FOLDER_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -89,38 +65,33 @@
         {
             "stages": [
                 {
-                    "name": "Stage 7",
+                    "name": "Create the Name Of Delete Table",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Set Target Table Name",
-                            "actorType": {
-                                "parentType": "SetTargetTableName",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 10",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Flow Name",
-                            "minHeight": 191,
+                            "name": "Build Delete Table Name",
+                            "minHeight": 235,
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "delete_${0}.flow"
+                                        "const": "${prefix}${table}"
+                                    },
+                                    {
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -133,14 +104,14 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Check If Table Already Exists",
                     "dependsOnList": [
-                        "Stage 10"
+                        "Create the Name Of Delete Table"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "Override Existing Table?",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -163,14 +134,20 @@
                             }
                         },
                         {
-                            "name": "CheckIfFlowExists1",
-                            "minHeight": 232,
+                            "name": "Check If Table Exists",
                             "actorType": {
                                 "parentType": "CheckIfFlowExists",
                                 "inputs": [
                                     {
-                                        "name": "FOLDER_NAME",
-                                        "const": "DeleteFlows"
+                                        "name": "flowName",
+                                        "const": "CheckIfTableExists"
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -186,58 +163,53 @@
                     ]
                 },
                 {
-                    "name": "Stage 5",
+                    "name": "Create Table Always",
                     "dependsOnList": [
-                        "Stage 10"
+                        "Create the Name Of Delete Table"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
                         {
-                            "name": "create Delete Flow",
+                            "name": "Create Table",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "createDeleteTableFromTargetFlow"
-                                    },
-                                    {
-                                        "name": "LU_TABLE",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "TARGET_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "TARGET_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "TARGET_TABLE",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "const": "createDeleteTablesFiles"
                                     },
                                     {
                                         "name": "luType",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         }
                                     },
                                     {
-                                        "name": "FLOW_NAME",
+                                        "name": "table",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TARGET_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TARGET_INTERFACE",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -250,14 +222,14 @@
         {
             "stages": [
                 {
-                    "name": "Stage 3",
+                    "name": "Create New",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Check If Table Already Exists"
                     ],
                     "isLast": 1,
                     "actors": [
                         {
-                            "name": "Equals2",
+                            "name": "If table Does Not Exists",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -280,49 +252,44 @@
                             }
                         },
                         {
-                            "name": "create New Delete Flow",
+                            "name": "Create New Table",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "createDeleteTableFromTargetFlow"
-                                    },
-                                    {
-                                        "name": "LU_TABLE",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "TARGET_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "TARGET_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "TARGET_TABLE",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "const": "createDeleteTablesFiles"
                                     },
                                     {
                                         "name": "luType",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
                                         }
                                     },
                                     {
-                                        "name": "FLOW_NAME",
+                                        "name": "table",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TARGET_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TARGET_INTERFACE",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -331,22 +298,22 @@
                     ]
                 },
                 {
-                    "name": "Stage 8",
+                    "name": "Table Already Exists",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Check If Table Already Exists"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
                         {
-                            "name": "Logger1",
+                            "name": "Report to Log",
                             "actorType": {
                                 "parentType": "Logger",
                                 "inputs": [
                                     {
                                         "name": "message",
-                                        "const": "The DELETE Flow for table: <${TABLE_NAME}> Exists and it will not recreated. If you want to recreate it please delete its related flow"
+                                        "const": "The table: <${TABLE_NAME}> already Exists"
                                     },
                                     {
                                         "name": "level",
@@ -367,11 +334,57 @@
                 {
                     "name": "Stage 6",
                     "dependsOnList": [
-                        "Stage 5"
+                        "Create Table Always"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
+                    "hasElse": false,
                     "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update LU's Schema",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Tables to LU's Schema",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "AddDeleteTablesToSchema"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -383,8 +396,8 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "create Delete Flow",
-                "name": "LU_TABLE"
+                "actor": "Build Delete Table Name",
+                "name": "table"
             },
             "iterate": "Iterate"
         },
@@ -394,101 +407,60 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "Set Target Table Name",
+                "actor": "Create Table",
+                "name": "table"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "geLuTables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "Create New Table",
+                "name": "table"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "geLuTables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "Report to Log",
                 "name": "TABLE_NAME"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "geLuTables",
-                "name": "res"
+                "actor": "Get Delete Table Prefix",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "create New Delete Flow",
-                "name": "LU_TABLE"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "geLuTables",
-                "name": "res"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "TABLE_NAME"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "Set Target Table Name",
-                "name": "TARGET_TABLE_NAME"
-            },
-            "rightPort": {
-                "actor": "create New Delete Flow",
-                "name": "TARGET_TABLE"
+                "actor": "Build Delete Table Name",
+                "name": "prefix"
             }
         },
         {
             "leftPort": {
-                "actor": "Set Target Table Name",
-                "name": "TARGET_TABLE_NAME"
-            },
-            "rightPort": {
-                "actor": "create Delete Flow",
-                "name": "TARGET_TABLE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Set Target Table Name",
-                "name": "TARGET_TABLE_NAME"
-            },
-            "rightPort": {
-                "actor": "Flow Name",
-                "name": "params"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Flow Name",
+                "actor": "Build Delete Table Name",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "create Delete Flow",
-                "name": "FLOW_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Flow Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "create New Delete Flow",
-                "name": "FLOW_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Flow Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "CheckIfFlowExists1",
+                "actor": "Check If Table Exists",
                 "name": "FLOW_FILE_NAME"
             }
         },
         {
             "leftPort": {
-                "actor": "CheckIfFlowExists1",
+                "actor": "Check If Table Exists",
                 "name": "SKIP_TABLE"
             },
             "rightPort": {
-                "actor": "Equals2",
+                "actor": "If table Does Not Exists",
                 "name": "a"
             }
         },
@@ -505,40 +477,10 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "TARGET_ENVIRONMENT"
-            },
-            "rightPort": {
-                "actor": "Set Target Environment",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "Create Folder",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "Set Target Table Name",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "OVERRIDE_EXISTING_FLOWS"
             },
             "rightPort": {
-                "actor": "Equals1",
+                "actor": "Override Existing Table?",
                 "name": "a"
             }
         },
@@ -548,28 +490,8 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "CheckIfFlowExists1",
+                "actor": "Check If Table Exists",
                 "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "create Delete Flow",
-                "name": "TARGET_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "create Delete Flow",
-                "name": "TARGET_SCHEMA"
             }
         },
         {
@@ -578,28 +500,28 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "create Delete Flow",
+                "actor": "Create Table",
                 "name": "luType"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
+                "name": "TARGET_SCHEMA"
             },
             "rightPort": {
-                "actor": "create New Delete Flow",
-                "name": "TARGET_INTERFACE"
+                "actor": "Create Table",
+                "name": "TARGET_SCHEMA"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
+                "name": "TARGET_INTERFACE"
             },
             "rightPort": {
-                "actor": "create New Delete Flow",
-                "name": "TARGET_SCHEMA"
+                "actor": "Create Table",
+                "name": "TARGET_INTERFACE"
             }
         },
         {
@@ -608,8 +530,58 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "create New Delete Flow",
+                "actor": "Create New Table",
                 "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "Create New Table",
+                "name": "TARGET_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "Create New Table",
+                "name": "TARGET_INTERFACE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Add Tables to LU's Schema",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "Add Tables to LU's Schema",
+                "name": "schemaName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "Add Tables to LU's Schema",
+                "name": "interfaceName"
             }
         }
     ]

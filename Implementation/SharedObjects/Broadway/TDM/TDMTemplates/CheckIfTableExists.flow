@@ -6,12 +6,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 5",
+                    "name": "Get Main Folder",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "InnerFlow1",
+                            "name": "Get Project's Folder",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -37,21 +37,28 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Format Folder Full Path",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "flow folder",
+                            "name": "Object folder",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${PROJECT_DIRECTORY}/SharedObjects/Broadway/Sequences"
+                                        "const": "${PROJECT_DIRCTORY}/LogicalUnits/${LU_NAME}/Tables"
                                     },
                                     {
-                                        "name": "PROJECT_DIRECTORY",
+                                        "name": "PROJECT_DIRCTORY",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -62,7 +69,7 @@
                             }
                         },
                         {
-                            "name": "StringFormat1",
+                            "name": "Format Search For File Name",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
@@ -87,12 +94,12 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Search For File",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ls1",
+                            "name": "List Files",
                             "actorType": {
                                 "parentType": "ls",
                                 "inputs": [
@@ -149,14 +156,14 @@
         {
             "stages": [
                 {
-                    "name": "Stage 3",
+                    "name": "If File Exists?",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Search For File"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "IsNull1",
+                            "name": "File Not Found",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "IsNull",
@@ -165,7 +172,7 @@
                             }
                         },
                         {
-                            "name": "Const1",
+                            "name": "False",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -190,16 +197,16 @@
                     ]
                 },
                 {
-                    "name": "Stage 4",
+                    "name": "File Exists",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Search For File"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
                         {
-                            "name": "Const2",
+                            "name": "True",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -229,41 +236,41 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "InnerFlow1",
+                "actor": "Get Project's Folder",
                 "name": "PROJECT_FOLDER"
             },
             "rightPort": {
-                "actor": "flow folder",
-                "name": "PROJECT_DIRECTORY"
+                "actor": "Object folder",
+                "name": "PROJECT_DIRCTORY"
             }
         },
         {
             "leftPort": {
-                "actor": "flow folder",
+                "actor": "Object folder",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "ls1",
+                "actor": "List Files",
                 "name": "interface"
             }
         },
         {
             "leftPort": {
-                "actor": "StringFormat1",
+                "actor": "Format Search For File Name",
                 "name": "string"
             },
             "rightPort": {
-                "actor": "ls1",
+                "actor": "List Files",
                 "name": "pattern"
             }
         },
         {
             "leftPort": {
-                "actor": "ls1",
+                "actor": "List Files",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "IsNull1",
+                "actor": "File Not Found",
                 "name": "value"
             },
             "path": [
@@ -273,16 +280,26 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Object folder",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "FLOW_FILE_NAME"
             },
             "rightPort": {
-                "actor": "StringFormat1",
+                "actor": "Format Search For File Name",
                 "name": "FLOW_FILE_NAME"
             }
         },
         {
             "leftPort": {
-                "actor": "Const1",
+                "actor": "False",
                 "name": "value"
             },
             "rightPort": {
@@ -292,7 +309,7 @@
         },
         {
             "leftPort": {
-                "actor": "Const2",
+                "actor": "True",
                 "name": "value"
             },
             "rightPort": {

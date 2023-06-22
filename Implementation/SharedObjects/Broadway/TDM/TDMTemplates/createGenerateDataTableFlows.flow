@@ -17,7 +17,7 @@
                                 "inputs": [
                                     {
                                         "name": "functionName",
-                                        "const": "getLuTables"
+                                        "const": "getLuTablesForGenerate"
                                     },
                                     {
                                         "name": "luName",
@@ -74,51 +74,6 @@
                                     }
                                 ],
                                 "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "FilterOut Tables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "filter Out Tables",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "filterOutGenertors"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "tableNameOut",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
                             }
                         }
                     ]
@@ -410,15 +365,26 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "filter Out Tables",
+                "actor": "create Flow",
+                "name": "table"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "geLuTables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "create Generator Flow Name",
                 "name": "tableName"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "filter Out Tables",
-                "name": "tableNameOut"
+                "actor": "geLuTables",
+                "name": "res"
             },
             "rightPort": {
                 "actor": "create Flow for New Table",
@@ -428,34 +394,12 @@
         },
         {
             "leftPort": {
-                "actor": "filter Out Tables",
-                "name": "tableNameOut"
+                "actor": "geLuTables",
+                "name": "res"
             },
             "rightPort": {
                 "actor": "Report to Log",
                 "name": "TABLE_NAME"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "create Flow",
-                "name": "table"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "create Generator Flow Name",
-                "name": "tableName"
             },
             "iterate": "Iterate"
         },
@@ -520,16 +464,6 @@
             "rightPort": {
                 "actor": "Create Folder",
                 "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "filter Out Tables",
-                "name": "luName"
             }
         },
         {
