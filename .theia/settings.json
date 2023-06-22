@@ -80,7 +80,7 @@
 		"**/Parsers": true,
 		"**/Jobs": true,
 		"**/IidFinder": true,
-		"**/Templates": true,
+		"**/Templates": false,
 		"**/Environments": false,
 		"ItemsProperties.k2projItems.xml": true,
 		"*.k2proj": true,
