@@ -48,6 +48,10 @@
                                     {
                                         "name": "interface",
                                         "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select * from {{LU_NAME}}.{{DELETE_TABLE}}"
                                     }
                                 ],
                                 "outputs": [
@@ -120,8 +124,16 @@
                                     },
                                     {
                                         "name": "keys",
-                                        "const": []
+                                        "const": [
+										   {{#each TARGET_TABLE_PKS~}}
+                                           "{{this}}"{{#if @last}}{{^}},{{/if}}
+										   {{/each}}]
+                                    }{{#each TARGET_TABLE_PKS~}},
+									{
+                                        "name": "{{this}}",
+                                        "schema": {}
                                     }
+									{{~/each}}
                                 ],
                                 "outputs": []
                             }
