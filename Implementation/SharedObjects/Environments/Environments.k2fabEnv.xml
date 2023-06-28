@@ -52,10 +52,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>ORDERING_DB</dbScheme>
+          <dbScheme>ORDERS_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>koTYl/zpEbj4LzNpWHStKqW5xia5VX96xQJkLOapiJw&#x3D;:fDWZkjumiDGn8KNoAvhvtCFqgUa3SPg9mbckse9D8lU&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERING_DB?stringtype&#x3D;unspecified</connString>
+          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERS_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -464,6 +464,34 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
+        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
           <Comment></Comment>
@@ -628,39 +656,20 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="" enabled="" version="">
-          <Name></Name>
+        <GenericInterface type="LOCAL" enabled="false" version="">
+          <Name>TDM_APIDOC_JSON</Name>
           <Properties>
+            <Property name="WorkingDir">
+              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
+            </Property>
+            <Property name="FilesFilter">
+              <Value></Value>
+            </Property>
+            <Property name="Affinity">
+              <Value></Value>
+            </Property>
           </Properties>
         </GenericInterface>
       </GenericInterfacesList>
@@ -791,6 +800,34 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
+        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
           <Comment></Comment>
@@ -955,39 +992,20 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="" enabled="" version="">
-          <Name></Name>
+        <GenericInterface type="LOCAL" enabled="false" version="">
+          <Name>TDM_APIDOC_JSON</Name>
           <Properties>
+            <Property name="WorkingDir">
+              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
+            </Property>
+            <Property name="FilesFilter">
+              <Value></Value>
+            </Property>
+            <Property name="Affinity">
+              <Value></Value>
+            </Property>
           </Properties>
         </GenericInterface>
       </GenericInterfacesList>
@@ -1118,6 +1136,34 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
+        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
           <Comment></Comment>
@@ -1282,39 +1328,20 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="" enabled="" version="">
-          <Name></Name>
+        <GenericInterface type="LOCAL" enabled="false" version="">
+          <Name>TDM_APIDOC_JSON</Name>
           <Properties>
+            <Property name="WorkingDir">
+              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
+            </Property>
+            <Property name="FilesFilter">
+              <Value></Value>
+            </Property>
+            <Property name="Affinity">
+              <Value></Value>
+            </Property>
           </Properties>
         </GenericInterface>
       </GenericInterfacesList>
