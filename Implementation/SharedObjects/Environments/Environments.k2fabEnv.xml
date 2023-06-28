@@ -336,6 +336,14 @@
             </Property>
           </Properties>
         </GenericInterface>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
+          <Properties>
+            <Property name="section">
+              <Value>default</Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
       </GenericInterfacesList>
     </Environment>
     <Environment enabled="true" name="PROD">
@@ -669,6 +677,32 @@
             </Property>
             <Property name="Affinity">
               <Value></Value>
+            </Property>
+            <Property name="IsCustomConnectionStringServerSide">
+              <Value>false</Value>
+            </Property>
+            <Property name="MinConnectionsNumber">
+              <Value>0</Value>
+            </Property>
+            <Property name="MaxConnectionsNumber">
+              <Value>60</Value>
+            </Property>
+            <Property name="UseSelectAsteriskInAutoCreatedQueries">
+              <Value>true</Value>
+            </Property>
+            <Property name="AutomaticMetadataLoading">
+              <Value>false</Value>
+            </Property>
+            <Property name="OfflineMode">
+              <Value>true</Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
+          <Properties>
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -1023,6 +1057,14 @@
             </Property>
             <Property name="OfflineMode">
               <Value>true</Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
+          <Properties>
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
