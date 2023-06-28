@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
 );
 
 
-ALTER TABLE public.orders OWNER TO "TAR_ORDERING_USER";
+ALTER TABLE public.orders OWNER TO "TAR_ORDERS_USER";
 
 --
 -- TOC entry 2849 (class 2606 OID 16728)
