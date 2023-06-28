@@ -114,7 +114,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/DEMO/ordering_create.sql",
+                                        "const": "TDM/DEMO/orders_create.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
