@@ -714,10 +714,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>BILLING_DB</dbScheme>
-          <dbUser>BILLING_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~zan02CBXZPD+RaE2/eOQNw&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_BILLING_DB</dbScheme>
+          <dbUser>TAR_BILLING_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~oP9jOzE7rOHV/J3NZ8PdMxW2dW0zjXP12dQdzt8WnzQ&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -725,10 +725,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
           <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>COLLECTION_DB</dbScheme>
-          <dbUser>COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~wlety9qVdCSnEmRRjoIXnQ&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/COLLECTION_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_COLLECTION_DB</dbScheme>
+          <dbUser>TAR_COLLECTION_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~23BCg7ZCdomtEXS3YinzJsKCv8fNAbuKIJjiGe++WC8&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -736,10 +736,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
           <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>CRM_DB</dbScheme>
-          <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~XO/VnBrwdcsZsEuLuF3PKw&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/CRM_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_CRM_DB</dbScheme>
+          <dbUser>TAR_CRM_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -758,10 +758,10 @@
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>dev-pg-service</dbHost>
           <dbPort>5432</dbPort>
-          <dbScheme>ORDERS_DB</dbScheme>
-          <dbUser>ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~mm6ts+MpH7gWMAt4HCi6bA&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/ORDERS_DB?stringtype&#x3D;unspecified</connString>
+          <dbScheme>TAR_ORDERS_DB</dbScheme>
+          <dbUser>TAR_ORDERS_USER</dbUser>
+          <dbPasswordEncrypted>~encs0~t7pMZ/E1oEUI1qMEKmRzWQ&#x3D;&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -777,46 +777,46 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_BILLING_DB" dbType="genericdb" active="false">
+          <dbHost></dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
-          <dbUser>TAR_BILLING_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~oP9jOzE7rOHV/J3NZ8PdMxW2dW0zjXP12dQdzt8WnzQ&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_BILLING_DB?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/TAR_BILLING_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_COLLECTION_DB" dbType="genericdb" active="false">
+          <dbHost></dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_COLLECTION_DB</dbScheme>
-          <dbUser>TAR_COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~23BCg7ZCdomtEXS3YinzJsKCv8fNAbuKIJjiGe++WC8&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/TAR_COLLECTION_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_CRM_DB" dbType="genericdb" active="false">
+          <dbHost></dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
-          <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~+tVQPy1Q4mL8dAd64jcwrA&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/TAR_CRM_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>dev-pg-service</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TAR_ORDERS_DB" dbType="genericdb" active="false">
+          <dbHost></dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_ORDERS_DB</dbScheme>
-          <dbUser>TAR_ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs0~t7pMZ/E1oEUI1qMEKmRzWQ&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://:5432/TAR_ORDERS_DB?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -834,34 +834,6 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
           <Comment></Comment>
@@ -1026,8 +998,44 @@
           <Value>admin</Value>
           <Comment></Comment>
         </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
+          <Properties>
+            <Property name="section">
+              <Value>default</Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
         <GenericInterface type="LOCAL" enabled="false" version="">
           <Name>TDM_APIDOC_JSON</Name>
           <Properties>
@@ -1039,32 +1047,6 @@
             </Property>
             <Property name="Affinity">
               <Value></Value>
-            </Property>
-            <Property name="IsCustomConnectionStringServerSide">
-              <Value>false</Value>
-            </Property>
-            <Property name="MinConnectionsNumber">
-              <Value>0</Value>
-            </Property>
-            <Property name="MaxConnectionsNumber">
-              <Value>60</Value>
-            </Property>
-            <Property name="UseSelectAsteriskInAutoCreatedQueries">
-              <Value>true</Value>
-            </Property>
-            <Property name="AutomaticMetadataLoading">
-              <Value>false</Value>
-            </Property>
-            <Property name="OfflineMode">
-              <Value>true</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="CassandraLoader" enabled="true" version="">
-          <Name>CASSANDRA_LD</Name>
-          <Properties>
-            <Property name="section">
-              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
