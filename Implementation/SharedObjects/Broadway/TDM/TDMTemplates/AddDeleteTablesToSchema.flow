@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -573,7 +576,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "vdb.k2vdb1.xml"
+                                        "const": "vdb.k2vdb.xml"
                                     }
                                 ],
                                 "outputs": []
