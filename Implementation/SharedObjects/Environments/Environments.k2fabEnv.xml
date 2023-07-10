@@ -264,6 +264,10 @@
           <Value>false</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
         </Global>
+        <Global name="TDM_DELETE_TABLES_PREFIX" luName="">
+          <Value>TAR_</Value>
+          <Comment></Comment>
+        </Global>
         <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
           <Value>2592000</Value>
           <Comment>The TTL for external entity list for non jdbc source DB</Comment>
@@ -639,6 +643,10 @@
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
           <Value>false</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
+        </Global>
+        <Global name="TDM_DELETE_TABLES_PREFIX" luName="">
+          <Value>TAR_</Value>
+          <Comment></Comment>
         </Global>
         <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
           <Value>2592000</Value>
@@ -1033,6 +1041,10 @@
         <Global name="TDM_DELETE_BEFORE_LOAD" luName="">
           <Value>false</Value>
           <Comment>Indicator to delete the instance to target DB</Comment>
+        </Global>
+        <Global name="TDM_DELETE_TABLES_PREFIX" luName="">
+          <Value>TAR_</Value>
+          <Comment></Comment>
         </Global>
         <Global name="TDM_EXTERNAL_ENTITY_LIST_TTL" luName="">
           <Value>2592000</Value>

@@ -1,4 +1,2 @@
 lu_name,source_env_name,interface_name,ig_sql,external_table_flow
-,,,,
-,,,,
-,,,,
+Customer,,CRM_DB,Select customer_id From customer Limit 10,

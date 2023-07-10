@@ -1,1 +1,4 @@
 parent_lu,child_lu,child_lu_eid_sql,child_lu_tar_eid_sql
+Customer,Billing,Select CONTRACT_ID From CONTRACT,Select TAR_CONTRACT.CONTRACT_ID From Customer.TAR_CONTRACT
+Customer,Orders,Select Customer.ORDERS.ORDER_ID From Customer.ORDERS,Select TAR_ORDERS.ORDER_ID From Customer.TAR_ORDERS
+Customer,Collection,Select collection_id from collection,select collection_id from tar_collection
