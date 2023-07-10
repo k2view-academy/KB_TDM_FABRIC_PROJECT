@@ -20,16 +20,6 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
-						{{#eq MAIN_TABLE_IND "true"}}
-						{
-							"name": "Set Target Environment",
-							"actorType": {
-                                "parentType": "setTargetEnv_Actor",
-                                "inputs": [],
-                                "outputs": []
-                            }
-						},
-						{{/eq}}
                         {
                             "name": "Initiate TDM Delete",
                             "actorType": {

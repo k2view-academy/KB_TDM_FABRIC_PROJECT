@@ -1,17 +1,53 @@
 {
-    "tags": [
-        "TDM"
-    ],
     "levels": [
         {
             "stages": [
                 {
-                    "name": "Get Data",
+                    "name": "Stage 1",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Run Select",
+                            "name": "FabricSetRead2",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "FabricSetRead1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbCommand1",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -21,10 +57,17 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from @TDMDB_SCHEMA@.tdm_generate_task_field_mappings\r\nwhere task_id = ${task_id}\r\norder by param_order"
+                                        "const": "select param_name, param_type, param_value from ${@SCHEMA}.tdm_generate_task_field_mappings\r\nwhere task_id = ${taskId}"
                                     },
                                     {
-                                        "name": "task_id",
+                                        "name": "SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskId",
                                         "schema": {
                                             "type": "integer"
                                         },
@@ -39,9 +82,6 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "task_id": {
-                                                        "type": "integer"
-                                                    },
                                                     "param_name": {
                                                         "type": "string"
                                                     },
@@ -50,9 +90,6 @@
                                                     },
                                                     "param_value": {
                                                         "type": "string"
-                                                    },
-                                                    "param_order": {
-                                                        "type": "integer"
                                                     }
                                                 }
                                             }
@@ -68,15 +105,14 @@
         {
             "stages": [
                 {
-                    "name": "In case of Object",
+                    "name": "Stage 3",
                     "dependsOnList": [
-                        "Get Data"
+                        "Stage 2"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Parse the Object",
-                            "minHeight": 127,
+                            "name": "Equals1",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -107,12 +143,7 @@
                                     {
                                         "name": "object",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "city": {
-                                                    "type": "string"
-                                                }
-                                            }
+                                            "type": "string"
                                         }
                                     }
                                 ]
@@ -121,9 +152,9 @@
                     ]
                 },
                 {
-                    "name": "Not Object",
+                    "name": "Stage 5",
                     "dependsOnList": [
-                        "Get Data"
+                        "Stage 2"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -156,13 +187,12 @@
         {
             "stages": [
                 {
-                    "name": "Add to Output Map",
+                    "name": "Stage 4",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Create Map for Value",
-                            "minHeight": 181,
+                            "name": "MapBuild1",
                             "actorType": {
                                 "parentType": "MapBuild",
                                 "inputs": [
@@ -171,7 +201,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "value"
+                                        "const": "param_name"
                                     }
                                 ],
                                 "outputs": [
@@ -180,34 +210,7 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "city": {
-                                                    "type": "string"
-                                                },
-                                                "contract_ref_id": {
-                                                    "type": "string"
-                                                },
-                                                "crm_cases_number_of_records": {}
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "previous",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "maximum": {
-                                                    "type": "string"
-                                                },
-                                                "distribution": {
-                                                    "type": "string"
-                                                },
-                                                "round": {
-                                                    "type": "boolean"
-                                                },
-                                                "type": {
-                                                    "type": "string"
-                                                },
-                                                "minimum": {
+                                                "param_value": {
                                                     "type": "string"
                                                 }
                                             }
@@ -217,7 +220,7 @@
                             }
                         },
                         {
-                            "name": "Create Map for Order",
+                            "name": "MapBuild2",
                             "actorType": {
                                 "parentType": "MapBuild",
                                 "inputs": [
@@ -226,13 +229,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "order"
-                                    },
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "const": "param_value"
                                     }
                                 ],
                                 "outputs": [
@@ -241,64 +238,34 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "city": {
+                                                "param_name": {
                                                     "type": "string"
-                                                },
-                                                "contract_ref_id": {
-                                                    "type": "string"
-                                                },
-                                                "crm_cases_number_of_records": {}
+                                                }
                                             }
                                         }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Merge Maps",
-                            "minHeight": 228,
-                            "actorType": {
-                                "parentType": "MapMerge",
-                                "inputs": [],
-                                "outputs": [
+                                    },
                                     {
-                                        "name": "map",
+                                        "name": "previous",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "value": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "maximum": {
-                                                            "type": "string"
-                                                        },
-                                                        "distribution": {
-                                                            "type": "string"
-                                                        },
-                                                        "round": {
-                                                            "type": "boolean"
-                                                        },
-                                                        "type": {
-                                                            "type": "string"
-                                                        },
-                                                        "minimum": {
-                                                            "type": "string"
+                                                "distribution": {
+                                                    "type": "string"
+                                                },
+                                                "round": {
+                                                    "type": "boolean"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "weights": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
                                                         }
                                                     }
-                                                },
-                                                "order": {
-                                                    "type": "integer"
                                                 }
                                             }
                                         }
@@ -313,35 +280,64 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Stage 6",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Add to Output",
+                            "name": "MapMerge1",
                             "actorType": {
-                                "parentType": "MapBuild",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
+                                "parentType": "MapMerge",
+                                "inputs": [],
                                 "outputs": [
                                     {
                                         "name": "map",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "city": {
+                                                "param_name": {
                                                     "type": "string"
                                                 },
-                                                "contract_ref_id": {
+                                                "param_value": {
                                                     "type": "string"
-                                                },
-                                                "crm_cases_number_of_records": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder1",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "param_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "param_value": {
+                                                        "type": "string"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -356,35 +352,40 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Run Select",
+                "actor": "FabricSetRead2",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Create Map for Order",
+                "actor": "DbCommand1",
+                "name": "taskId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FabricSetRead1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbCommand1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapBuild1",
                 "name": "value"
             },
-            "iterate": "Iterate",
             "path": [
-                "param_order"
+                "param_name"
             ]
         },
         {
             "leftPort": {
-                "actor": "Run Select",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Const1",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "param_value"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Run Select",
+                "actor": "DbCommand1",
                 "name": "result"
             },
             "rightPort": {
@@ -398,11 +399,11 @@
         },
         {
             "leftPort": {
-                "actor": "Run Select",
+                "actor": "DbCommand1",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Parse the Object",
+                "actor": "Equals1",
                 "name": "a"
             },
             "iterate": "Iterate",
@@ -412,16 +413,16 @@
         },
         {
             "leftPort": {
-                "actor": "Run Select",
+                "actor": "DbCommand1",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Add to Output",
-                "name": "key"
+                "actor": "Const1",
+                "name": "value"
             },
             "iterate": "Iterate",
             "path": [
-                "param_name"
+                "param_value"
             ]
         },
         {
@@ -430,7 +431,7 @@
                 "name": "object"
             },
             "rightPort": {
-                "actor": "Create Map for Value",
+                "actor": "MapBuild2",
                 "name": "value"
             }
         },
@@ -440,76 +441,47 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Create Map for Value",
+                "actor": "MapBuild2",
                 "name": "value"
             }
         },
         {
             "leftPort": {
-                "actor": "Create Map for Value",
+                "actor": "MapBuild1",
                 "name": "map"
             },
             "rightPort": {
-                "actor": "Merge Maps",
+                "actor": "MapMerge1",
                 "name": "maps"
             },
             "arrayPosition": 0
         },
         {
             "leftPort": {
-                "actor": "Create Map for Order",
+                "actor": "MapBuild2",
                 "name": "map"
             },
             "rightPort": {
-                "actor": "Merge Maps",
+                "actor": "MapMerge1",
                 "name": "maps"
             },
             "arrayPosition": 1
         },
         {
             "leftPort": {
-                "actor": "Merge Maps",
+                "actor": "MapMerge1",
                 "name": "map"
             },
             "rightPort": {
-                "actor": "Add to Output",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "task_id"
+                "actor": "ArrayBuilder1",
+                "name": "input"
             },
-            "rightPort": {
-                "actor": "Run Select",
-                "name": "task_id"
-            }
+            "arrayPosition": 0
         },
         {
             "leftPort": {
-                "actor": "Create Map for Value",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Create Map for Order",
-                "name": "map"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Add to Output",
-                "name": "map"
+                "actor": "ArrayBuilder1",
+                "name": "array"
             },
             "rightPort": {
                 "actor": "flowArgs",

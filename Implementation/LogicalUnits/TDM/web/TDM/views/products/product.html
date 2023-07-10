@@ -10,7 +10,6 @@
                 <div class="col-lg-2 pull-right">
                     <a uib-tooltip="Delete System" tooltip-placement="left" type="button" role-handler role="0" ng-if="!productCtrl.disableChange" class="pull-right"
                        mwl-confirm
-                       id="system_delete"
                        message="{{productCtrl.hasActiveEnvironment.length > 0 ? 'System ' + productCtrl.productData.product_name + ' is attached to testing environments. If you remove this system,  system will be removed from environments. Tasks for this Systems will be also deleted. Are you sure you want to delete it ?' : 'Are you sure you want to delete System ?'}}"
                        confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>" cancel-text="No <i class='glyphicon glyphicon-remove'></i>" placement="left"
                        on-confirm="productCtrl.deleteProduct()" on-cancel="cancelClicked = true" confirm-button-type="danger" cancel-button-type="default">
@@ -33,13 +32,13 @@
                         <div class="form-group col-lg-6">
                             <label class="col-sm-2 control-label">{{"DESCRIPTION" | translate}}</label>
                             <div class="col-sm-10">
-                                <input id="system_description" type="text" class="form-control1" ng-model="productCtrl.productData.product_description" ng-disabled="productCtrl.disableChange">
+                                <input type="text" class="form-control1" ng-model="productCtrl.productData.product_description" ng-disabled="productCtrl.disableChange">
                             </div>
                         </div>
                         <div class="form-group col-lg-6">
                             <label class="col-sm-2 control-label">{{"VENDOR" | translate}}</label>
                             <div class="col-sm-10">
-                                <input id="system_version" type="text" class="form-control1" ng-model="productCtrl.productData.product_vendor" ng-disabled="productCtrl.disableChange">
+                                <input type="text" class="form-control1" ng-model="productCtrl.productData.product_vendor" ng-disabled="productCtrl.disableChange">
                             </div>
                         </div>
                         <div class="form-group col-lg-6">
@@ -63,7 +62,6 @@
                                         popover-placement="left" popover-append-to-body="true"
                                         uib-popover-template="'addProductVersionTemplate.html'"
                                         popover-title="'Add version'"
-                                        id="system_version_popup"
                                         popover-is-open="productCtrl.isOpen"
                                         ng-click="productCtrl.initAddVersionPopup()" type="button"
                                         class="btn k2-primary-btn"><i class="fa fa-plus"></i></button>
@@ -73,7 +71,7 @@
                                             <div class="col-lg-12">
                                                 <div class="form-group">
                                                     <label>Please type in new version:</label>
-                                                    <input id="system_version" type="text" ng-model="productCtrl.versionToAdd" class="form-control1">
+                                                    <input type="text" ng-model="productCtrl.versionToAdd" class="form-control1">
                                                 </div>
                                             </div>
                                         </div>
@@ -86,10 +84,10 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-xs-6">
-                                                <button id="system_version_add" type="button" class="btn btn-block k2-primary-btn" ng-click="productCtrl.addVersion(productCtrl.versionToAdd)">Add</button>
+                                                <button type="button" class="btn btn-block k2-primary-btn" ng-click="productCtrl.addVersion(productCtrl.versionToAdd)">Add</button>
                                             </div>
                                             <div class="col-xs-6">
-                                                <button id="system_version_cancel" type="button" class="btn btn-block" ng-click="productCtrl.isOpen = false">Cancel</button>
+                                                <button type="button" class="btn btn-block" ng-click="productCtrl.isOpen = false">Cancel</button>
                                             </div>
                                         </div>
                                     </div>
@@ -98,8 +96,7 @@
                         </div>
                         <div class="form-group col-lg-6"></div>
                         <div class="form-group col-lg-6" style="padding-right: 30px;">
-                            <button id="system_save"
-                                    class="btn k2-primary-btn  pull-right" style="margin-top:5px;" role-handler role="0"
+                            <button class="btn k2-primary-btn  pull-right" style="margin-top:5px;" role-handler role="0"
                                     ng-if="!productCtrl.disableChange" type="submit">{{"SAVE_CHANGES" | translate}}
                             </button>
                         </div>

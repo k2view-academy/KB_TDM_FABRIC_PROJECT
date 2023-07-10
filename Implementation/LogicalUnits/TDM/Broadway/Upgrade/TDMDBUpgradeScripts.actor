@@ -92,11 +92,6 @@
                     "version_name": "8.0",
                     "script_id": 17,
                     "script_name": "update_tdmdb_from_v7.6_to_v8.0.sql"
-                },
-                {
-                    "version_name": "8.1",
-                    "script_id": 18,
-                    "script_name": "update_tdmdb_from_v8.0_to_v8.1.sql"
                 }
             ],
             "final": true,

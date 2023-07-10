@@ -10,22 +10,6 @@
         <div class="fields-container" ng-if="!requestedEntitiesCtrl.taskData.generateTask">
             <div class="fields-row" style="position: relative">
                 <div>
-                    <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && 
-                        (!requestedEntitiesCtrl.taskData.version_ind || 
-                        (requestedEntitiesCtrl.taskData.sync_mode === 'FORCE' || !requestedEntitiesCtrl.taskData.sync_mode))">
-                        <div style="display: flex; align-items: center;">
-                            <input type="radio" ng-disabled="requestedEntitiesCtrl.userRoleType !== 'admin' && !sourceEnvOwner && !targetEnvOwner"
-                                ng-value="'ALL'" name="requestedEntitiesRadio"
-                                ng-change="requestedEntitiesCtrl.selectionMethodChange()"
-                                ng-model="requestedEntitiesCtrl.taskData.selection_method" />
-                            <label style="margin-top: 5px;margin-left: 6px;position: relative;" >
-                                <span>
-                                    Select a Predefined Entity List
-                                </span>
-                                <small ng-show="requestedEntitiesCtrl.userRoleType !== 'admin' && !sourceEnvOwner && !targetEnvOwner">(Not Allowed)</small>&nbsp;&nbsp;
-                            </label>
-                        </div>
-                    </div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'EXTRACT' || 
                         requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.version_ind">
                         <div style="display: flex; align-items: center;">
@@ -269,7 +253,7 @@
                             <small class="text-danger">Please Choose Parameters <span style="color: red">*</span>
                             </small>
                             </div>
-                            <p style="margin: 10px 0px;white-space: pre-line;">{{requestedEntitiesCtrl.taskData.selection_param_value}}</p>
+                            <p style="margin: 10px 0px;">{{requestedEntitiesCtrl.taskData.selection_param_value}}</p>
                         </div>
                     </div>
                 </div>
@@ -487,15 +471,9 @@
                                         {{generationType}} 
                                     </span>
                                 </span>
-                                <span ng-show="
-                                    ( !widgetRefContent.DataManParamsTemp[generationType].mandatory ||
-                                    widgetRefContent.DataManParamsTemp.refData.state.values[generationType].value ) &&
-                                    requestedEntitiesCtrl.generationTypeChosen.indexOf(generationType) >= 0"
+                                <span ng-show="requestedEntitiesCtrl.generationTypeChosen.indexOf(generationType) >= 0"
                                     ng-click="requestedEntitiesCtrl.dataGenerationRevert(generationType)" style="cursor: pointer;">
                                     <img style="width: 15px;" src="img/revert_icon.svg">
-                                </span>
-                                <span ng-show="widgetRefContent.DataManParamsTemp[generationType].mandatory && !widgetRefContent.DataManParamsTemp.refData.state.values[generationType].value">
-                                    <img style="width: 15px;" src="img/revert_icon_disabled.svg">
                                 </span>
                             </li>
                         </ul>
@@ -504,8 +482,6 @@
                 <div class="data-generation-window"
                     generate-data ng-if="requestedEntitiesCtrl.generationTypeChosen.length > 0"
                     chosen-items="requestedEntitiesCtrl.generationTypeChosen"
-                    mandatory-fields="requestedEntitiesCtrl.generateMandatoryFields"
-                    form="form"
                     data="widgetRefContent.DataManParamsTemp">
                 </div>
             </div> 

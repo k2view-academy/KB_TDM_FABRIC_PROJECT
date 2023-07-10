@@ -195,17 +195,7 @@ public class SharedLogic {
 		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
 		map.put("TARGET_TABLE_PKS", targetTableData[1]);
 		
-		Object mainTableName = fabric().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue();
 		
-		List<String> mainTables = new ArrayList<>();
-		if (mainTableName != null) {
-			mainTables = Arrays.asList(mainTableName.toString().split(","));
-		}
-		String mainTable = "false";
-		log.info("LU_NAME:" + luName + ", mainTables: " + mainTables + ", mainTableName: " + mainTableName);
-		if (mainTables.contains(luTable)) {
-			mainTable = "true";
-		}
 		if ("".equals(tableIidFieldName)) {
 			seqIID = "NO_ID";
 			seqName = "";
@@ -232,8 +222,6 @@ public class SharedLogic {
 		} else {
 			map.put("TABLE_SEQ_DATA", null);
 		}
-		map.put("MAIN_TABLE_IND", mainTable);
-		log.info("MAIN_TABLE_IND: " + mainTable + ", table: " + luTable);
 		
 		return map;
 	}
@@ -658,7 +646,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		if (rel != null) {
 			for (Object key : rel.keySet()) {
 			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
-			    	//log.info("getPopArgumentListForDelete handling key:"  + key);
+			    	log.info("getPopArgumentListForDelete handling key:"  + key);
 			        Map<String, String> map = new HashMap<>();
 					String parentTable = key.toString();
 					if (!"FABRIC_TDM_ROOT".equalsIgnoreCase(parentTable)) {

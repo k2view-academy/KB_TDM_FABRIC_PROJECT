@@ -163,18 +163,18 @@
         {
             "stages": [
                 {
-                    "name": "Get Table Fields",
+                    "name": "Find Count Method",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "refListLookup",
+                            "name": "fnGetRefTableData",
                             "actorType": {
-                                "parentType": "InnerFlow",
+                                "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "flowName",
-                                        "const": "refListLookup"
+                                        "name": "functionName",
+                                        "const": "fnGetRefTableData"
                                     },
                                     {
                                         "name": "luName",
@@ -186,56 +186,76 @@
                                     {
                                         "name": "refTableName",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "result",
+                                        "name": "schemaName",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "lu_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "id": {
-                                                        "type": "string"
-                                                    },
-                                                    "reference_table_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "interface_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "schema_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_ref_table_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_interface_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "target_schema_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "table_pk_list": {},
-                                                    "truncate_indicator": {
-                                                        "type": "string"
-                                                    },
-                                                    "count_indicator": {
-                                                        "type": "string"
-                                                    },
-                                                    "count_flow": {}
-                                                }
-                                            }
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetSchemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetInterfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "countIndicator",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "trnLuName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "trnTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetRefTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "targetTablePK",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "countFlow",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "truncateIndicator",
+                                        "schema": {
+                                            "type": "boolean"
                                         }
                                     }
                                 ]
@@ -250,7 +270,7 @@
                 {
                     "name": "Get Count",
                     "dependsOnList": [
-                        "Get Table Fields"
+                        "Find Count Method"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -323,7 +343,7 @@
                 {
                     "name": "Ref Table Count",
                     "dependsOnList": [
-                        "Get Table Fields"
+                        "Find Count Method"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -625,18 +645,7 @@
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "contract_ref_id": {
-                                                    "type": "string"
-                                                },
-                                                "offer_ref_id": {
-                                                    "type": "string"
-                                                },
-                                                "offer_contract_description": {
-                                                    "type": "string"
-                                                }
-                                            }
+                                            "type": "object"
                                         }
                                     }
                                 ]
@@ -870,10 +879,9 @@
                 "name": "parent_rows"
             },
             "rightPort": {
-                "actor": "refListLookup",
+                "actor": "fnGetRefTableData",
                 "name": "refTableName"
             },
-            "iterate": "First",
             "path": [
                 "table_name"
             ]
@@ -914,152 +922,119 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "refListLookup",
+                "actor": "fnGetRefTableData",
                 "name": "luName"
             }
         },
         {
             "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "table"
-            },
-            "path": [
-                "reference_table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "fnGetTableInJson",
-                "name": "tableName"
-            },
-            "path": [
-                "reference_table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "refTableName"
-            },
-            "path": [
-                "reference_table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "fnGetTableInJson",
-                "name": "interfaceName"
-            },
-            "path": [
-                "interface_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "dbInterfaceName"
-            },
-            "path": [
-                "interface_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "interface"
-            },
-            "path": [
-                "interface_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "fnGetTableInJson",
-                "name": "schemaName"
-            },
-            "path": [
-                "schema_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "catalogSchema"
-            },
-            "path": [
-                "schema_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "refSchema"
-            },
-            "path": [
-                "schema_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
+                "actor": "fnGetRefTableData",
+                "name": "countIndicator"
             },
             "rightPort": {
                 "actor": "Count Method",
                 "name": "indicator"
-            },
-            "path": [
-                "count_indicator"
-            ]
+            }
         },
         {
             "leftPort": {
-                "actor": "refListLookup",
-                "name": "result"
+                "actor": "fnGetRefTableData",
+                "name": "trnTableName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "countFlow"
             },
             "rightPort": {
                 "actor": "Count Method",
                 "name": "bf_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "interfaceName"
             },
-            "path": [
-                "count_flow"
-            ]
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "refSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "dbInterfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "catalogSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "trnTableName"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "interfaceName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "schemaName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRefTableData",
+                "name": "trnTableName"
+            },
+            "rightPort": {
+                "actor": "fnGetTableInJson",
+                "name": "tableName"
+            }
         },
         {
             "leftPort": {

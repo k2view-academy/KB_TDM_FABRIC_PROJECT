@@ -178,8 +178,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
     product_name character varying(200),
     lu_parent_name character varying(200),
     product_id bigint,
-    CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id),
-    CONSTRAINT product_logical_units_unique_pair UNIQUE (lu_name, lu_parent_name)
+    lu_dc_name character varying(200), 
+    CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id)
+        --, CONSTRAINT product_logical_units_lu_name_key UNIQUE (lu_name)
 );
 
 -- Table: ${@schema}.products
@@ -740,7 +741,6 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
     param_name text COLLATE pg_catalog."default",
     param_type text COLLATE pg_catalog."default" NOT NULL,
     param_value text COLLATE pg_catalog."default",
-	param_order bigint,
     CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
 );
 

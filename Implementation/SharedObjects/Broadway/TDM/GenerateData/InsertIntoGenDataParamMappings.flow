@@ -1,7 +1,4 @@
 {
-    "tags": [
-        "TDM"
-    ],
     "levels": [
         {
             "stages": [
@@ -10,9 +7,20 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
                     "actors": [
                         {
-                            "name": "Insert Parameters",
+                            "name": "DbCommand1",
                             "actorType": {
                                 "parentType": "DbCommand",
                                 "inputs": [
@@ -22,7 +30,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "insert into @TDMDB_SCHEMA@.tdm_generate_task_field_mappings (task_id, param_name, param_type, param_value, param_order) \r\nvalues (${task_id}, ${param_name}, ${param_type},${param_value}, ${param_order})"
+                                        "const": "insert into public.tdm_generate_task_field_mappings (task_id, param_name, param_type, param_value) \r\nvalues (${task_id}, ${param_name}, ${param_type},${param_value})"
                                     },
                                     {
                                         "name": "task_id",
@@ -49,13 +57,6 @@
                                         "name": "param_value",
                                         "schema": {},
                                         "mandatory": false
-                                    },
-                                    {
-                                        "name": "param_order",
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -73,7 +74,7 @@
                 "name": "task_id"
             },
             "rightPort": {
-                "actor": "Insert Parameters",
+                "actor": "DbCommand1",
                 "name": "task_id"
             }
         },
@@ -83,7 +84,7 @@
                 "name": "param_name"
             },
             "rightPort": {
-                "actor": "Insert Parameters",
+                "actor": "DbCommand1",
                 "name": "param_name"
             }
         },
@@ -93,7 +94,7 @@
                 "name": "param_type"
             },
             "rightPort": {
-                "actor": "Insert Parameters",
+                "actor": "DbCommand1",
                 "name": "param_type"
             }
         },
@@ -103,18 +104,8 @@
                 "name": "param_value"
             },
             "rightPort": {
-                "actor": "Insert Parameters",
+                "actor": "DbCommand1",
                 "name": "param_value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "param_order"
-            },
-            "rightPort": {
-                "actor": "Insert Parameters",
-                "name": "param_order"
             }
         }
     ]

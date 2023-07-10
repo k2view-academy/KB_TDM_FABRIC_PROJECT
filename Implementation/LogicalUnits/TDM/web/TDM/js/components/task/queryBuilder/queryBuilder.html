@@ -56,8 +56,8 @@
           ></query-builder>
         </div>
         <div ng-switch-default="ng-switch-default">
-          <div class="form-inline" style="position: relative;display: flex">
-            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 200px; max-width: 300px;">
+          <div class="form-inline">
+            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 200px; max-width: 250px;">
               <select
                 required
                 name="paramsKey_{{$index}}_{{rule.index}}"
@@ -72,13 +72,13 @@
               <option ng-repeat="param in params | orderBy:'param_name' " ng-value="param.param_name">{{param.param_name}}</option>
             </select>
             </div>
-            
+
             <select
               name="paramsOper_{{$index}}_{{index}}"
               required
               ng-disabled="disablechange"
               ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
-              ng-if="!rule.validValues || rule.validValues.length <=0 || rule.validValues == '\\N'"
+              ng-if="rule.type !== 'combo'"
               ng-init="condition = rule.condition"
               style="margin-left: 5px;width: auto;"
               ng-options="c.id as c.name for c in conditions"
@@ -91,7 +91,7 @@
               required
               ng-disabled="disablechange"
               ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
-              ng-if="rule.validValues != '\\N' && rule.validValues.length > 0"
+              ng-if="rule.type === 'combo'"
               ng-init="condition = rule.condition"
               style="margin-left: 5px;width: auto;"
               ng-options="c.name as c.name for c in comboConditions"
@@ -144,15 +144,13 @@
               class="form-control1"
               ng-change="changeData(rule,data)"
             />
-            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 250px;max-width: 300px;">
+            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 200px;max-width: 250px;">
               <select
-              style="width: 300px;"
                 name="parametersField_{{$index}}_{{index}}"
                 required
                 chosen
-                multiple
                 ng-disabled="disablechange"
-                ng-if="rule.comboIndicator === 'true' && rule.disableThird === false && (rule.condition === 'IN' || rule.condition === 'NOT IN')"
+                ng-if="rule.comboIndicator === 'true' && rule.disableThird === false"
                 ng-init="data = rule.data"
                 style="margin-left: 5px;"
                 ng-options="t as t for t in rule.validValues"
@@ -160,29 +158,14 @@
                 class="form-control1"
                 ng-change="changeData(rule,data)"
               >
-                <option></option>
-              </select>
-              <select
-                name="parametersField_{{$index}}_{{index}}"
-                required
-                chosen
-                ng-disabled="disablechange"
-                ng-if="rule.comboIndicator === 'true' && rule.disableThird === false && rule.condition !== 'IN' && rule.condition !== 'NOT IN'"
-                ng-init="data = rule.data"
-                style="margin-left: 5px;"
-                ng-options="t as t for t in rule.validValues"
-                ng-model="data"
-                class="form-control1"
-                ng-change="changeData(rule,data)"
-              >
-                <option></option>
-              </select>
+              <option></option>
+            </select>
             </div>
 
             <span
               ng-if="!disablechange"
               ng-click="removeCondition($index)"
-              style="margin-left: 5px; margin-bottom: 0px; color: #ec4758;position: absolute;right: 20px;top : 5px;"
+              style="margin-left: 5px; margin-bottom: 0px; color: #ec4758"
             >
               <span class="glyphicon glyphicon-minus-sign"></span>
             </span>

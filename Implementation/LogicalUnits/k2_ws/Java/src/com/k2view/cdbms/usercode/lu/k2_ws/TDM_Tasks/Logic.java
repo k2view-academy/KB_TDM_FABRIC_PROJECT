@@ -4,20 +4,21 @@
 
 package com.k2view.cdbms.usercode.lu.k2_ws.TDM_Tasks;
 
+import com.k2view.cdbms.lut.LUType;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
 import com.k2view.fabric.api.endpoint.Endpoint.*;
 import com.k2view.fabric.common.Json;
 import com.k2view.fabric.common.ParamConvertor;
-import com.k2view.fabric.common.VirtualMap;
-import org.json.JSONObject;
 
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import org.json.JSONObject;
 
 import static com.k2view.cdbms.usercode.common.SharedGlobals.MAX_NUMBER_OF_ENTITIES_IN_LIST;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
@@ -71,12 +72,12 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		String errorCode="";
 		try{
-String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
-					"INNER JOIN " + TDMDB_SCHEMA + ".products p " +
+			String sql= "SELECT * FROM \"" + TDMDB_SCHEMA + "\".product_logical_units lu " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".products p " +
 					"ON (lu.product_id = p.product_id AND p.product_status = \'Active\') " +
-					"INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".environment_products ep " +
 					"ON (lu.product_id = ep.product_id AND ep.status = \'Active\') " +
-					"INNER JOIN " + TDMDB_SCHEMA + ".business_entities be " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".business_entities be " +
 					"ON (be.be_id = lu.be_id) " +
 					"WHERE environment_id = " + envId + " AND be_status = \'Active\'";
 			Db.Rows rows= db(TDM).fetch(sql);
@@ -652,10 +653,10 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		String message=null;
 		String errorCode="";
 		try{
-			String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
-					"INNER JOIN " + TDMDB_SCHEMA + ".products p " +
+			String sql= "SELECT * FROM \"" + TDMDB_SCHEMA + "\".product_logical_units lu " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".products p " +
 					"ON (lu.product_id = p.product_id) " +
-					"INNER JOIN " + TDMDB_SCHEMA + ".environment_products ep " +
+					"INNER JOIN \"" + TDMDB_SCHEMA + "\".environment_products ep " +
 					"ON (lu.product_id = ep.product_id " +
 					"AND ep.status = \'Active\') " +
 					"WHERE be_id = " + beId + " AND environment_id = " + envId;
@@ -796,7 +797,17 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String,Object> generateParams) throws Exception {
+	public static Object wsCreateTaskV2(@param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, 
+            Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, 
+            String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, 
+            Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, 
+            String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, 
+            String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, 
+            Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, 
+            String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, 
+            List<Map<String,Object>> globals, String reference, List<Map<String,Object>> postExecutionProcesses, 
+            @param(required=true) List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, 
+            Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String, Object> DataManParams) throws Exception {
 		Long taskId;
 		
 		if ("LOAD".equals(task_type) && !"ALL".equals(selection_method) && !"REF".equals(selection_method) && num_of_entities == null) {
@@ -811,7 +822,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 				scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name,
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, 
 				selected_ref_version_datetime, selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference,
-				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, generateParams);
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, DataManParams);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
 				return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -1022,7 +1033,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		}
 		
 		try{
-			String sql= "INSERT INTO " + TDMDB_SCHEMA + ".tasks (be_id, environment_id, scheduler, delete_before_load," +
+			String sql= "INSERT INTO \"" + TDMDB_SCHEMA + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
 					"num_of_entities,selection_method,selection_param_value,entity_exclusion_list, task_execution_status, " +
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, task_title, parameters, refresh_reference_data,replace_sequences, " +
 					"source_environment_id, source_env_name, load_entity, task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, " +
@@ -1035,7 +1046,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 					.withZone(ZoneOffset.UTC)
 					.format(Instant.now());
 			String username=sessionUser().name();
-		          if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
+            if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
 				retention_period_value = -1;
 			}
 			Db.Row row = db(TDM).fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
@@ -1067,7 +1078,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 					
 					try {
 						/* TDM 7.4 - LU Name is sent separately in Globals input
-						String insertGlobalSql = "INSERT INTO " + schema + ".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
+						String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
 						for(Map<String,Object> global:globals){
 							db(TDM).execute(insertGlobalSql,taskId, global.get("global_name").toString(), global.get("global_value").toString());
 						}*/
@@ -1080,14 +1091,17 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 				}
 			}
 		
-		    // TDM 8.0 - In case of Synthetic task, add the input parameters of the population flows to the TDMDB tdm_generate_task_field_mappings
-			//log.info("wsCreateTaskV1 - params size: " + DataManParams.size());
-			if (source_environment_id == -1 && DataManParams != null) {
-				createTaskGEnerateParams(taskId, DataManParams);
-			}
+			try {
+		               // TDM 8.0 - In case of Synthetic task, add the input parameters of the population flows to the TDMDB tdm_generate_task_field_mappings
+		               //log.info("wsCreateTaskV1 - params size: " + DataManParams.size());
+		              createTaskDMParams(taskId, DataManParams);
 		
-			String activityDesc = "Task " + task_title + " was created";
-			fnInsertActivity("create", "Tasks", activityDesc);
+				String activityDesc = "Task " + task_title + " was created";
+				fnInsertActivity("create", "Tasks", activityDesc);
+			} catch(Exception e){
+		              e.printStackTrace();
+				log.error(e.getMessage());
+			}
 		
 			result.put("id",taskId);
 			errorCode="SUCCESS";
@@ -1201,7 +1215,18 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, String reserve_note, Boolean filterout_reserved, HashMap<String,Object> generateParams) throws Exception {
+	public static Object wsUpdateTaskV2(@param(required=true) Long taskId, Boolean copy, String task_status, @param(required=true) Long be_id, 
+            Long environment_id, Long source_environment_id, String scheduler, Boolean delete_before_load, Integer num_of_entities, 
+            String selection_method, String selection_param_value, String entity_exclusion_list, @param(required=true) String task_title, 
+            String parameters, Boolean refresh_reference_data, Boolean replace_sequences, String source_env_name, Boolean load_entity, 
+            @param(required=true) String task_type, String scheduling_end_date, Boolean version_ind, String retention_period_type, 
+            Integer retention_period_value, String selected_version_task_name, String selected_version_datetime, 
+            Integer selected_version_task_exe_id, Boolean task_globals, Integer selected_ref_version_task_exe_id, 
+            String selected_ref_version_datetime, String selected_ref_version_task_name, String sync_mode, Boolean selectAllEntites, 
+            List<Map<String,Object>> refList, List<Map<String,Object>> globals, String reference, String task_created_by, 
+            String task_creation_date, List<Map<String,Object>> postExecutionProcesses, List<Map<String,Object>> logicalUnits, 
+            Boolean reserve_ind, String reserve_retention_period_type, Integer reserve_retention_period_value, 
+            String reserve_note, Boolean filterout_reserved, HashMap<String, Object> DataManParams) throws Exception {
 		Long newTaskId = null;
 		
 		db(TDM).beginTransaction();
@@ -1212,7 +1237,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 				task_type, scheduling_end_date, version_ind, retention_period_type, retention_period_value, selected_version_task_name, 
 				selected_version_datetime, selected_version_task_exe_id, task_globals, selected_ref_version_task_exe_id, selected_ref_version_datetime, 
 				selected_ref_version_task_name, sync_mode, selectAllEntites, refList, globals, reference, task_created_by, task_creation_date,
-				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, generateParams);
+				reserve_ind, reserve_retention_period_type, reserve_retention_period_value, reserve_note, filterout_reserved, DataManParams);
 			if (!checkWsResponse(result)) {
 				db(TDM).rollback();
 				return wrapWebServiceResults("FAILED", result.get("message"), null);
@@ -1464,7 +1489,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		String errorCode="";
 		
 		try {
-			db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".tasks SET " +
+			db(TDM).execute("UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET " +
 							"task_status=(?) WHERE task_id = " + taskId, copy != null && copy ? task_status : "Inactive");
 		
 		/* Keep the entity list as is, the leading and trailing spaces will be trimmed when the entities are processed,
@@ -1505,7 +1530,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 			if (selectAllEntites != null && selectAllEntites) {
 				selection_method = "ALL";
 			}
-			String sql = "INSERT INTO " + TDMDB_SCHEMA + ".tasks (be_id, environment_id, scheduler, delete_before_load," +
+			String sql = "INSERT INTO \"" + TDMDB_SCHEMA + "\".tasks (be_id, environment_id, scheduler, delete_before_load," +
 					"num_of_entities, selection_method,selection_param_value,entity_exclusion_list, task_execution_status," +
 					"task_created_by, task_creation_date, task_last_updated_date, task_last_updated_by, task_status, " +
 					"task_title, parameters,refresh_reference_data, replace_sequences, source_environment_id, source_env_name, load_entity, task_type, " +
@@ -1552,7 +1577,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 			if(globals != null && globals.size() > 0 && task_globals){
 				try {
 					/* TDM 7.4 - LU Name is sent separately in Globals input
-					String insertGlobalSql = "INSERT INTO " + schema + ".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
+					String insertGlobalSql = "INSERT INTO \"" + schema + "\".task_globals (task_id, global_name,global_value) VALUES (?, ?,?)";
 					for(Map<String,Object> global:globals){
 						db(TDM).execute(insertGlobalSql,id, global.get("global_name").toString(), global.get("global_value").toString());
 					}*/
@@ -1575,11 +1600,8 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 						String luList = "" + db(TDM).fetch("select STRING_AGG(lu_name, ',') from tasks_logical_units where task_id = ?", 
 							taskId).firstValue();
 						DataManParams = (HashMap<String, Object>)((Map<String,Object>)wsGetDMPopParams(luList,taskId)).get("result");
-					}
-		                  if (DataManParams != null) {
-					    createTaskGEnerateParams(id, DataManParams);
-		                  }
-		
+					}	
+					createTaskDMParams(id, DataManParams);	
 				}
 				
 				String activityDesc = "Task " + task_title + " was updated";
@@ -1754,7 +1776,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".TASKS_POST_EXE_PROCESS  WHERE task_id =" + taskId;
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".TASKS_POST_EXE_PROCESS  WHERE task_id =" + taskId;
 			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> result=new ArrayList<>();
 			List<String> columnNames = rows.getColumnNames();
@@ -1812,7 +1834,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".tasks_logical_units WHERE task_id =" + taskId;
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".tasks_logical_units WHERE task_id =" + taskId;
 			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
@@ -1863,7 +1885,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".task_globals WHERE task_globals.task_id = " + taskId;
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".task_globals WHERE task_globals.task_id = " + taskId;
 			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
@@ -1910,29 +1932,31 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		try {
 		
 			if (task_type.equals("EXTRACT") || (task_type.equals("LOAD") && (version_ind == null || !version_ind))){
+				//Object resultList = com.k2view.cdbms.usercode.lu.k2_ws.TDM.Logic.wsGetRefTablesByLu(luArray);
+		
+				List<Object> refTablesList = new ArrayList<Object>();
+				Map<String,Map<String, String>> trnRefListValues = getTranslationsData("trnRefList");
+				List<String> luNamesList = logicalUnits;
+		
+				Set<String> keys = trnRefListValues.keySet();
 				String luName;
 				String prevLuName="";
-List<Object> refTablesList = new ArrayList<Object>();
-				List<String> luNamesList = logicalUnits;
-				String broadwayCommand = "broadway TDM.refListLookup;";
-				Db.Rows rows = fabric().fetch(broadwayCommand);
-				for(Db.Row row:rows){
-					Iterable<? extends Map<?, ?>> maps = ParamConvertor.toIterableOf(row.get("result"), ParamConvertor::toMap);
-					for (Map<?,?> map : maps) {
-						luName =  "" + map.get("lu_name");
-						if (luNamesList.contains(luName)) {
-							Map<String, Object> refInfo = new HashMap<>();
-							refInfo.put("logical_unit_name", luName);
-							Set fields = map.keySet();
-							for(Object f:fields){
-								refInfo.put((String) f, map.get(f));
+				for(String trnLuKey:keys){
+					luName = trnLuKey.substring(0, trnLuKey.indexOf("@") );
+					if(luNamesList.contains(luName)) {
+						Map<String,Object> refInfo = new HashMap<>();
+						refInfo.put("logical_unit_name", luName);
+						Set<String> internalKeys = trnRefListValues.get(trnLuKey).keySet();
+						String paramValue;
+						for(String paramKey:internalKeys) {
+							paramValue = trnRefListValues.get(trnLuKey).get(paramKey);
+							refInfo.put(paramKey, paramValue);
 						}
 						refTablesList.add(refInfo);
 					}
 				}
 		
-				}
-						List<Object> ans=new ArrayList<>();
+				List<Object> ans=new ArrayList<>();
 				for(Object ref:refTablesList){
 					((Map<String,Object>)ref).put("reference_table_name", ((Map<String,String>)ref).get("reference_table_name").trim());
 					ans.add(ref);
@@ -2595,6 +2619,7 @@ List<Object> refTablesList = new ArrayList<Object>();
 			"      \"lu_parent_id\": null,\r\n" +
 			"      \"refresh_reference_data\": false,\r\n" +
 			"      \"task_execution_id\": 1,\r\n" +
+			"      \"lu_dc_name\": null,\r\n" +
 			"      \"refcount\": 0,\r\n" +
 			"      \"lu_parent_name\": null,\r\n" +
 			"      \"process_name\": null,\r\n" +
@@ -3827,7 +3852,7 @@ List<Object> refTablesList = new ArrayList<Object>();
 		String message=null;
 		String errorCode="";
 		try {
-			String sql="UPDATE " + TDMDB_SCHEMA + ".tasks SET task_execution_status = \'onHold\' WHERE tasks.task_id = " + taskId + "RETURNING tasks.task_title";
+			String sql="UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET task_execution_status = \'onHold\' WHERE \"" + schema + "\".tasks.task_id = " + taskId + "RETURNING \"" + schema + "\".tasks.task_title";
 			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Object task_name = row.cell(0);
 			try {
@@ -3883,7 +3908,7 @@ List<Object> refTablesList = new ArrayList<Object>();
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "UPDATE " + TDMDB_SCHEMA + ".tasks SET task_execution_status = \'Active\' WHERE tasks.task_id = " + taskId + "RETURNING tasks.task_title";
+			String sql = "UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET task_execution_status = \'Active\' WHERE \"" + schema + "\".tasks.task_id = " + taskId + "RETURNING \"" + schema + "\".tasks.task_title";
 			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Object taskTitle= row.get("task_title");
 		
@@ -3962,7 +3987,7 @@ List<Object> refTablesList = new ArrayList<Object>();
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "SELECT * FROM " + TDMDB_SCHEMA + ".task_ref_tables where task_id = " + task_id;
+			String sql = "SELECT * FROM \"" + TDMDB_SCHEMA + "\".task_ref_tables where task_id = " + task_id;
 			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> referenceTableData=new ArrayList<>();
@@ -4937,7 +4962,7 @@ List<Object> refTablesList = new ArrayList<Object>();
 				.format(Instant.now());
 
 		try {
-			String sql = "UPDATE " + TDMDB_SCHEMA + ".tasks SET " +
+			String sql = "UPDATE \"" + TDMDB_SCHEMA + "\".tasks SET " +
 					"task_status=(?), task_execution_status=(?), " +
 					"task_last_updated_date=(?), " +
 					"task_last_updated_by=(?) " +
@@ -5443,8 +5468,8 @@ List<Object> refTablesList = new ArrayList<Object>();
 			"\t\"message\": null\r\n" +
 			"}")
 	public static Object wsGetDMPopParams(String luList, Long taskId) throws Exception {
-		LinkedHashMap<String, HashMap<String, Object>> result = new LinkedHashMap<>();
-		SortedMap<String, HashMap<String, Object>> flowsParams = new TreeMap<>();
+		      
+		SortedMap<String, HashMap<String, Object>> result = new TreeMap<>();
 		
 		try {
 		        luList = luList.replaceAll("\\s+", "");
@@ -5500,68 +5525,69 @@ List<Object> refTablesList = new ArrayList<Object>();
 							map.put("type", row.get("type"));
 							map.put("mandatory", row.get("mandatory"));
 							map.put("default", row.get("default"));
-		
-							String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+		                    String description = ("" + row.get("remark")).replaceAll("/n", "\n");
 							map.put("description", description);
-							map.put("order", 99999999);
 		                          
-							flowsParams.put(name, map);
+							result.put(name, map);
 						}
 					}
 				}
 		
-		        // Add the distribution of each table in the LU
-		        List<String> tablesList = getLuTablesList(luName);
-		        for (String tableName : tablesList) {
+		              // Add the distribution of each table in the LU
+		              List<String> tablesList = getLuTablesList(luName);
+		              for (String tableName : tablesList) {
 		                  if (!rootTableName.equalsIgnoreCase(tableName)) {
 		                      HashMap<String, Object> map = new HashMap<>();
-		                      HashMap<Object, Object> editorMap = new HashMap<>();
-		                String distParamName = luName.toLowerCase() + "_" + tableName.toLowerCase() + "_number_of_records";
-		                String contextString = "{" + distParamName + 
-		                    "={self=distribution},distribution={const={distribution=uniform,round=true,type=integer,minimum=1,maximum=3}}}";
-		                Map<?, ?> distDefault = Json.get().fromJson("{distribution=uniform,round=true,type=integer,minimum=1,maximum=3}");
-		                Map<?, ?> context = Json.get().fromJson(contextString);
-		                editorMap.put("id","com.k2view.distribution");
-		                editorMap.put("name", distParamName);
+				        HashMap<Object, Object> editorMap = new HashMap<>();
+		                      String distParamName = luName.toLowerCase() + "_" + tableName.toLowerCase() + "_number_of_records";
+		                      String contextString = "{" + distParamName + 
+		                          "={self=distribution},distribution={const={distribution=uniform,round=true,type=integer,minimum=1,maximum=3}}}";
+		                      Map<?, ?> distDefault = Json.get().fromJson("{distribution=uniform,round=true,type=integer,minimum=1,maximum=3}");
+		                      Map<?, ?> context = Json.get().fromJson(contextString);
+		                      editorMap.put("id","com.k2view.distribution");
+		                      editorMap.put("name", distParamName);
 					    editorMap.put("schema", Json.get().fromJson("{type=integer}"));
-		                editorMap.put("context", context);
-						editorMap.put("mandatory", false);
-		                map.put("editor", editorMap);
+		                      editorMap.put("context", context);
+		                      map.put("editor", editorMap);
 				        map.put("type", "any");
-				        map.put("mandatory", false);
+				        map.put("mandatory", "false");
 				        map.put("default", distDefault);
 				        map.put("description", "Distribution Of Records Of table " + tableName);
-				        flowsParams.put(distParamName, map);
-						map.put("order", 99999999);
-		            }
-		        }
+				        result.put(distParamName, map);
+		                  }
+		              }
 			}
 		          
 		          //log.info("wsGetDMPopParams - taskId: " + taskId);
-		    if (taskId != null && taskId > 0) {
-		        String luName = getLuType().luName;
-		        String selectSql = "broadway " + luName + ".GetGenerateParamsByTaskId task_id=?" + ", RESULT_STRUCTURE=ROW";
-		        //log.info("wsGetDMPopParams - sql: " + selectSql);
-		        Db.Row taskParams = fabric().fetch(selectSql, taskId).firstRow();
-				Map<String, Object> taskParamsMap = (HashMap)taskParams.get("value");
-				if (taskParamsMap != null && !taskParamsMap.isEmpty()) {
-					for (String paramName : taskParamsMap.keySet()) {
-						//log.info("wsGetDMPopParams - paramName: " + paramName);
-						HashMap<String,Object> paramMap  = flowsParams.get(paramName);
-						if (paramMap != null) {
-							Object newValue = ((Map<String, Object>)taskParamsMap.get(paramName)).get("value");
-							Long order = (Long)((Map<String, Object>)taskParamsMap.get(paramName)).get("order");
-							//log.info("wsGetDMPopParams - paramValue: " + taskParamsMap.get(paramName));
-							paramMap.put("value", newValue);
-							paramMap.put("order", order);
-							flowsParams.remove(paramName);
-							result.put(paramName, paramMap);
-						}   
-					}
-				}
-			}
-			result.putAll(flowsParams);
-		 } catch (Exception e) {
+		          if (taskId != null && taskId > 0) {
+		                String luName = getLuType().luName;
+		                String selectSql = "broadway " + luName + ".GetDMParamsByTaskId task_id=?" + ", RESULT_STRUCTURE=ROW";
+		              //log.info("wsGetDMPopParams - sql: " + selectSql);
+		              Db.Rows taskParamss = fabric().fetch(selectSql, taskId);
+		              
+		              Db.Row taskParams = taskParamss.firstRow();
+		              
+		              Map<String, Object> taskParamsMap = (HashMap)taskParams.get("value");
+		              if (taskParamsMap != null && !taskParamsMap.isEmpty()) {
+		                  for (String paramName : taskParamsMap.keySet()) {
+		                      //log.info("wsGetDMPopParams - paramName: " + paramName);
+		                      HashMap<String,Object> paramMap  = result.get(paramName);
+		                      if (paramMap != null) {
+		                          Object newValue = null;
+		                          //log.info("wsGetDMPopParams - paramValue: " + taskParamsMap.get(paramName));
+		                          try {
+		                              JSONObject JSONObject = new JSONObject("" + taskParamsMap.get(paramName));
+		                              newValue = JSONObject;
+		                          } catch (Exception e) {
+		                              newValue = taskParamsMap.get(paramName);
+		                          }
+		
+		                          paramMap.put("value", newValue);
+		                      }   
+		                  }
+		              }
+		          }
+		} catch (Exception e) {
 		          //log.error
 		          e.printStackTrace();
 		          log.error(e.getMessage());

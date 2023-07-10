@@ -4,7 +4,6 @@
 
 package com.k2view.cdbms.usercode.lu.TDM.TDM;
 
-import com.k2view.cdbms.lut.DbInterface;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.Utils;
 import com.k2view.cdbms.shared.user.UserCode;
@@ -14,13 +13,12 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.type;
 import com.k2view.cdbms.usercode.lu.TDM.TdmTaskScheduler;
 import com.k2view.cdbms.utils.K2TimestampWithTimeZone;
 import com.k2view.fabric.common.Util;
-import com.k2view.fabric.common.mtable.MTable;
-import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
@@ -29,6 +27,23 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.UserJo
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import java.util.Date;
+import java.sql.*;
+import java.math.*;
+import java.io.*;
+import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.shared.Globals;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
+import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends UserCode {
@@ -1044,13 +1059,6 @@ public class Logic extends UserCode {
 		TdmTaskScheduler.fnTdmTaskScheduler();
 	}
 
-
-	@desc("Function to call reject instance with given message")
-	public static void fnRejectInstance(String msg) throws Exception {
-		fnUpdateTaskSummaryTable();
-		rejectInstance(msg);
-	}
-
 	private static String getBatchStatus(Object originalStatus) {
 		if (originalStatus == null) {
 			return null;
@@ -1067,181 +1075,6 @@ public class Logic extends UserCode {
 		}
 
 		return originalStatus.toString().toLowerCase();
-	}
-    public static Map<String, String> getCommandForAll(
-			String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator,
-			String closeSeparator, String taskName, String timeStamp, String dcName, Long luId) throws Exception {
-
-		String modified_sql = "";
-		String batchCommand = "";
-		String interface_name = null;
-		String sql = null;
-		String externalTableFlow = null;
-		// TDM 8.1 using Mtables
-		Map<String, String> batchStrings = new HashMap<>();
-		Map<String, Object> migrateListInputs = new HashMap<>();
-		migrateListInputs.put("lu_name",luName);
-		migrateListInputs.put("source_env_name",sourceEnvName);
-		List<Map<String, Object>> migrateList = MtableLookup("MigrateList", migrateListInputs, MTable.Feature.caseInsensitive);
-		for(Map<String, Object> t : migrateList){
-			interface_name = "" + t.get("interface_name");
-			sql = "" + t.get("ig_sql");
-			externalTableFlow =  "" + t.get("external_table_flow");
-
-		}
-		// TDM 5.1- If no translation record was found for the combination of lu name + source env- get the translation with null value of source env as input
-		if (interface_name == null) {
-			migrateListInputs.put("source_env_name",null);
-			migrateList = MtableLookup("MigrateList", migrateListInputs,MTable.Feature.caseInsensitive);
-			for(Map<String, Object> t : migrateList){
-				interface_name = "" + t.get("interface_name");
-				sql = "" + t.get("ig_sql");
-				externalTableFlow =  "" + t.get("external_table_flow");
-
-			}
-		}
-		if(migrateList.size()>1){
-			log.warn("More than one Row matches the Mtable lookup, last row is picked by default");
-		}
-
-		if ((interface_name == null || "null".equalsIgnoreCase(interface_name))
-				&& (sql == null || "null".equalsIgnoreCase(sql))
-				&& (externalTableFlow == null || "null".equalsIgnoreCase(externalTableFlow))) {
-
-			throw new RuntimeException("No entry found for LU_NAME: " + luName + " in Mtable MigrateList");
-		}
-
-		interface_name = ("null".equalsIgnoreCase(interface_name)) ? "" : interface_name;
-		sql = ("null".equalsIgnoreCase(sql)) ? "" : sql.replaceAll("\n", " ");
-		externalTableFlow = ("null".equalsIgnoreCase(externalTableFlow)) ? "" : externalTableFlow;
-
-		if (externalTableFlow.isEmpty() || "null".equalsIgnoreCase(externalTableFlow)) {
-			if (interface_name.isEmpty() || "null".equalsIgnoreCase(interface_name)) {
-				throw new RuntimeException("No Interface found to run query : " + sql + " in Mtable MigrateList");
-			}
-			String splitSQL[] = StringUtils.split(sql.toLowerCase());
-			String qry_entity_col = "";
-			for (int i = 0; i < splitSQL.length; i++) {
-				if (splitSQL[i].equals("from")) {
-					qry_entity_col = splitSQL[i - 1].replaceAll("\\s+", "");
-					break;
-				}
-			}
-
-			// get original SQL statement "select" including the next SQL command like "distinct"
-			String select = StringUtils.substringBefore(sql.toLowerCase(), qry_entity_col);
-			String sql_part2 = sql.substring(sql.toLowerCase().indexOf(" from ")).replace("'", "''");
-
-			//Using trnMigrateListQueryFormats to support DBs that don't accept || as concatenation operator
-
-			String interface_type = null ;
-			DbInterface dbObj = com.k2view.cdbms.lut.InterfacesManager.getInstance().getTypedInterface(interface_name, sourceEnvName);
-			if(dbObj!=null) {
-				interface_type = dbObj.jdbcDriver;
-			}
-			Map<String, Object> migrateListQueryFormatsInput = new HashMap<>();
-			migrateListQueryFormatsInput.put("interface_type", interface_type);
-			migrateListQueryFormatsInput.put("version_ind", versionInd);
-			List<Map<String, Object>> migrateListQueryFormats = MtableLookup("MigrateListQueryFormats", migrateListQueryFormatsInput, MTable.Feature.caseInsensitive);
-			String query_format = null;
-			for (Map<String, Object> t : migrateListQueryFormats) {
-				query_format = "" + t.get("query_format");
-
-			}
-			if (!(query_format == null || query_format.isEmpty() || "null".equalsIgnoreCase(query_format))){
-				// TDM 5.1- add the handle of configurable separator for special formats- the separator may need to be added to the trnMigrateListQueryFormats
-				String sql_part1 = StringUtils.substringBefore(sql.toLowerCase(), qry_entity_col) + query_format;
-
-				if (!openSeparator.equals("") && !closeSeparator.equals("")) // if the open and close separators for the entity id are populated
-				{
-					StringBuffer sqlStr = new StringBuffer(query_format);
-					// Get the substring between source env and entity id
-
-					String formatSeparator = query_format.substring(query_format.indexOf("<source_env_name>") + "<source_env_named>".length(), query_format.indexOf("<entity_id>"));
-					formatSeparator = formatSeparator.replaceFirst("'" + separator + "'", "");
-					String insertOpenStr = "'" + openSeparator + "'" + formatSeparator;
-					String insertCloseStr = formatSeparator + "'" + closeSeparator + "'";
-					sqlStr.insert(sqlStr.indexOf("<entity_id>"), insertOpenStr);
-					sqlStr.insert(sqlStr.indexOf("<entity_id>") + "<entity_id>".length(), insertCloseStr);
-					sql_part1 = select + " " + sqlStr.toString();
-				}
-
-				if (versionInd.equals("true")) {
-					//Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp> according to supplied query format
-					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
-					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
-					sql_part1 = sql_part1.replace("<task_name>", "'" + taskName + "'");
-					sql_part1 = sql_part1.replace("<timestamp>", "'" + timeStamp + "'");
-					modified_sql = sql_part1.replace("'", "''") + sql_part2;
-				} else {
-					//Modify entities to be in the format of <source_env>_<entity_id>  according to supplied query format
-					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
-					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
-					modified_sql = sql_part1.replace("'", "''") + sql_part2;
-				}
-			}
-			//No query format --> modify query by using || concatenation operator
-			else {
-				// TDM 5.1- concatenate the open and close separators to the qry_entity_col variables
-
-				if (!openSeparator.equals(""))
-					qry_entity_col = "''" + openSeparator + "''||" + qry_entity_col;
-
-				if (!closeSeparator.equals(""))
-					qry_entity_col = qry_entity_col + "||''" + closeSeparator + "''";
-
-				if (versionInd.equals("true")) { //Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp>
-					modified_sql = select + " ''" + sourceEnvName + separator + "''||" + qry_entity_col + "||''" + separator + taskName + separator + timeStamp + "''" + sql_part2;
-				} else { ////Modify entities to be in the format of <source_env>_<entity_id>
-					modified_sql = select + " ''" + sourceEnvName + separator + "''||" + qry_entity_col + sql_part2;
-				}
-			}
-			batchStrings.put("mode","query");
-
-		} else { //External Flow was supplied to create the entity list table.
-
-			interface_name = "DB_CASSANDRA";
-			modified_sql = getCommandForAllCL(luName, externalTableFlow, taskExecutionId, luId, dcName);
-			batchStrings.put("mode","external_flow");
-
-		}
-
-		if (dcName != null && !dcName.isEmpty()) {
-			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
-		} else {// input DC is empty
-			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
-		}
-
-		batchStrings.put("batchCommand", batchCommand);
-		batchStrings.put("usingClause", modified_sql);
-		batchStrings.put("interface",interface_name);
-		return batchStrings;
-	}
-
-
-	public static String getCommandForAllCL(String luName, String externalTableFlow, String taskExecutionId, Long luId, String dcName) throws Exception {
-		// TDM 7.5.1 - If the entity List table does not exists create it
-		String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable luName = " + luName;
-		//log.info("createEntityListTab: " + createEntityListTab);
-		fabric().execute(createEntityListTab);
-
-		String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
-		String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true";
-		//log.info("Custom Logic batchCommand: " + batchCommand);
-
-		String broadwayCommand = "broadway " + luName + "."  +  externalTableFlow +  " iid=?, LU_NAME='" + luName + "'";
-		//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
-		String batchId = "" + fabric().fetch(batchCommand, broadwayCommand).firstValue();
-		db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list set execution_status = 'STARTEXECUTIONREQUESTED', fabric_execution_id = ? " +
-				"WHERE task_execution_id=? and lu_id = ?", batchId, taskExecutionId, luId);
-
-		String waitForBatch = "broadway " + luName + ".WaitForCustomLogicFlow luName = " + luName + ", batchId = '" + batchId + "', RESULT_STRUCTURE=ROW";
-		//log.info("Custom Logic waitForBatch: " + waitForBatch);
-		Db.Row entityListTableRec = fabric().fetch(waitForBatch).firstRow();
-		String entityListTable = "" + entityListTableRec.get("value");
-
-		return "select tdm_eid from " + entityListTable + " where task_execution_id = '" +  taskExecutionId + "'";
-
 	}
 
 }

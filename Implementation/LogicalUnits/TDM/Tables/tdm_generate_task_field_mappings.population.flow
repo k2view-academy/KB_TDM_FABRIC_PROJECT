@@ -72,7 +72,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * FROM @TDMDB_SCHEMA@.tdm_generate_task_field_mappings"
+                                        "const": "SELECT * FROM public.tdm_generate_task_field_mappings"
                                     }
                                 ],
                                 "outputs": [

@@ -4,21 +4,35 @@
 
 package com.k2view.cdbms.usercode.lu.TDM.TDM_Extract;
 
-
-import com.k2view.cdbms.shared.Db;
-import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.shared.utils.UserCodeDescribe.out;
-import com.k2view.fabric.common.Util;
+import java.util.*;
+import java.sql.*;
+import java.math.*;
+import java.io.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
-import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIdSeparatorsFromTDM;
+import com.k2view.cdbms.shared.*;
+import com.k2view.cdbms.shared.Globals;
+import com.k2view.cdbms.shared.user.UserCode;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
+import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.cdbms.usercode.lu.TDM.*;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import com.k2view.fabric.common.Util;
+
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.usercode.common.SharedLogic.*;
+import static com.k2view.cdbms.usercode.lu.TDM.Globals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
-import static com.k2view.cdbms.usercode.lu.TDM.Globals.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.lu.TDM.TDM.Logic.getCommandForAll;
+import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIdSeparatorsFromTDM;
 
 @SuppressWarnings({"DefaultAnnotationParam"})
 public class Logic extends UserCode {
@@ -34,7 +48,7 @@ public class Logic extends UserCode {
 		if (sourceEnvName != null && !sourceEnvName.isEmpty()) {
 			ludb().execute("set environment='" + sourceEnvName + "'");
 		}
-		
+			
 		String batchCommand = "";
 		String entityList = "";
 		String migrationInfo = "";
@@ -179,7 +193,7 @@ public class Logic extends UserCode {
 		
 			} else {
 		
-				Map <String, String> batchStrings = getCommandForAll(luName, taskExecutionId, sourceEnvName, versionInd, 
+				Map <String, String> batchStrings = getCommandForExtractAll(luName, taskExecutionId, sourceEnvName, versionInd, 
 														separator, openSeparator, closeSeparator, taskName, timeStamp, dcName, luId);
 				batchCommand = batchStrings.get("batchCommand");
 				entityList = batchStrings.get("usingClause");
@@ -204,5 +218,146 @@ public class Logic extends UserCode {
 		
 		return migInfo;
 	}
-    
+	
+	private static Map<String, String> getCommandForExtractAll(
+		String luName, String taskExecutionId, String sourceEnvName, String versionInd, String separator, String openSeparator, 
+		String closeSeparator, String taskName, String timeStamp, String dcName, Long luId) throws Exception {
+
+		String modified_sql = "";		
+		String batchCommand = "";
+		Object[] trnMigrateList_input = {luName, sourceEnvName};
+
+		Map<String, String> trnMigrateList_values = getTranslationValues("trnMigrateList", trnMigrateList_input);
+
+		// TDM 5.1- If no translation record was found for the combination of lu name + source env- get the translation with null value of source env as input
+		if (trnMigrateList_values.get("interface_name") == null) {
+			Object[] trnMigrateList_input2 = {luName, ""};
+			trnMigrateList_values = getTranslationValues("trnMigrateList", trnMigrateList_input2);
+		}
+		if ((trnMigrateList_values.get("interface_name") == null || trnMigrateList_values.get("ig_sql") == null) && trnMigrateList_values.get("external_table_flow") == null) {
+			throw new RuntimeException("No entry found for LU_NAME: " + luName + " in translation trnMigrateList");
+		}
+
+		String interface_name = (trnMigrateList_values.get("interface_name") == null) ? "" : "" + trnMigrateList_values.get("interface_name");
+		String sql = (trnMigrateList_values.get("ig_sql") == null) ? "" : "" + trnMigrateList_values.get("ig_sql").replaceAll("\n", " ");
+		String externalTableFlow = (trnMigrateList_values.get("external_table_flow") == null) ? "" : "" + trnMigrateList_values.get("external_table_flow");
+		
+		if (externalTableFlow == null || externalTableFlow.isEmpty() || "null".equalsIgnoreCase(externalTableFlow)) {
+			String splitSQL[] = StringUtils.split(sql.toLowerCase());
+			String qry_entity_col = "";
+			for (int i = 0; i < splitSQL.length; i++) {
+				if (splitSQL[i].equals("from")) {
+					qry_entity_col = splitSQL[i - 1].replaceAll("\\s+", "");
+					break;
+				}
+			}
+	
+			// get original SQL statement "select" including the next SQL command like "distinct"
+			String select = StringUtils.substringBefore(sql.toLowerCase(), qry_entity_col);
+			String sql_part2 = sql.substring(sql.toLowerCase().indexOf(" from ")).replace("'", "''");
+	
+			//Using trnMigrateListQueryFormats to support DBs that don't accept || as concatenation operator
+	
+			// 1-May-19- Fix the function- remove the casting (Miron's fix)
+			DbInterface dbObj = com.k2view.cdbms.lut.InterfacesManager.getInstance().getTypedInterface(interface_name, sourceEnvName);
+	
+			String interface_type = dbObj.jdbcDriver;
+			Object[] trnMigrateListQueryFormats_input = {interface_type, versionInd};
+			Map<String, String> trnMigrateListQueryFormats_values = getTranslationValues("trnMigrateListQueryFormats", trnMigrateListQueryFormats_input);
+			String query_format = trnMigrateListQueryFormats_values.get("query_format");
+	
+			//Query format is supplied --> modify the query acording to the given query format in trnMigrateListQueryFormats
+			if (query_format != null && !query_format.isEmpty()) {
+				// TDM 5.1- add the handle of configurable separator for special formats- the separator may need to be added to the trnMigrateListQueryFormats
+				String sql_part1 = StringUtils.substringBefore(sql.toLowerCase(), qry_entity_col) + query_format;
+	
+				if (!openSeparator.equals("") && !closeSeparator.equals("")) // if the open and close separators for the entity id are populated
+				{
+					StringBuffer sqlStr = new StringBuffer(query_format);
+					// Get the substring between source env and entity id
+	
+					String formatSeparator = query_format.substring(query_format.indexOf("<source_env_name>") + "<source_env_named>".length(), query_format.indexOf("<entity_id>"));
+					formatSeparator = formatSeparator.replaceFirst("'" + separator + "'", "");
+					String insertOpenStr = "'" + openSeparator + "'" + formatSeparator;
+					String insertCloseStr = formatSeparator + "'" + closeSeparator + "'";
+					sqlStr.insert(sqlStr.indexOf("<entity_id>"), insertOpenStr);
+					sqlStr.insert(sqlStr.indexOf("<entity_id>") + "<entity_id>".length(), insertCloseStr);
+					sql_part1 = select + " " + sqlStr.toString();
+				}
+	
+				if (versionInd.equals("true")) {
+					//Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp> according to supplied query format
+					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
+					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
+					sql_part1 = sql_part1.replace("<task_name>", "'" + taskName + "'");
+					sql_part1 = sql_part1.replace("<timestamp>", "'" + timeStamp + "'");
+					modified_sql = sql_part1.replace("'", "''") + sql_part2;
+				} else {
+					//Modify entities to be in the format of <source_env>_<entity_id>  according to supplied query format
+					sql_part1 = sql_part1.replace("<source_env_name>", "'" + sourceEnvName + "'");
+					sql_part1 = sql_part1.replace("<entity_id>", qry_entity_col);
+					modified_sql = sql_part1.replace("'", "''") + sql_part2;
+				}
+			}
+			//No query format --> modfiy query by using || concatenation operator
+			else {
+				// TDM 5.1- concatenate the open and close separators to the qry_entity_col variables
+	
+				if (!openSeparator.equals(""))
+					qry_entity_col = "''" + openSeparator + "''||" + qry_entity_col;
+	
+				if (!closeSeparator.equals(""))
+					qry_entity_col = qry_entity_col + "||''" + closeSeparator + "''";
+	
+				if (versionInd.equals("true")) { //Modify entities to be in the format of <source_env>_<entity_id>_<task_name>_<timestamp>
+					modified_sql = select + " ''" + sourceEnvName + separator + "''||" + qry_entity_col + "||''" + separator + taskName + separator + timeStamp + "''" + sql_part2;
+				} else { ////Modify entities to be in the format of <source_env>_<entity_id>
+					modified_sql = select + " ''" + sourceEnvName + separator + "''||" + qry_entity_col + sql_part2;
+				}
+			}
+			
+		} else { //External Flow was supplied to create the entity list table.
+			
+			interface_name = "DB_CASSANDRA";
+			modified_sql = getCommandForExtractAllCL(luName, externalTableFlow, taskExecutionId, luId, dcName);
+			
+		}
+
+		if (dcName != null && !dcName.isEmpty()) {
+			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH AFFINITY='" + dcName + "' ASYNC=true";
+		} else {// input DC is empty
+			batchCommand = "batch " + luName + " from " + interface_name + " using (?) FABRIC_COMMAND=\"sync_instance " + luName + ".?\" WITH ASYNC=true";
+		}		
+		
+		Map<String, String> batchStrings = new HashMap<>(); 
+		batchStrings.put("batchCommand", batchCommand);
+		batchStrings.put("usingClause", modified_sql);
+		return batchStrings;
+	}
+
+	private static String getCommandForExtractAllCL(String luName, String externalTableFlow, String taskExecutionId, Long luId, String dcName) throws Exception {
+			// TDM 7.5.1 - If the entity List table does not exists create it
+			String createEntityListTab = "broadway " + luName + ".createLuExternalEntityListTable luName = " + luName;
+			//log.info("createEntityListTab: " + createEntityListTab);
+			fabric().execute(createEntityListTab);
+			
+			String affinity = !Util.isEmpty(dcName) ? "affinity='" + dcName + "'" : "";
+			String batchCommand = "BATCH " + luName + ".(CL_"+ luName + "_" + taskExecutionId + ") fabric_command=? with " + affinity + " async=true";
+			//log.info("Custom Logic batchCommand: " + batchCommand);
+
+			String broadwayCommand = "broadway " + luName + "."  +  externalTableFlow +  " iid=?, LU_NAME='" + luName + "'";
+			//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
+			String batchId = "" + fabric().fetch(batchCommand, broadwayCommand).firstValue();
+			db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list set execution_status = 'STARTEXECUTIONREQUESTED', fabric_execution_id = ? " + 
+				"WHERE task_execution_id=? and lu_id = ?", batchId, taskExecutionId, luId);
+
+			String waitForBatch = "broadway " + luName + ".WaitForCustomLogicFlow luName = " + luName + ", batchId = '" + batchId + "', RESULT_STRUCTURE=ROW";
+			//log.info("Custom Logic waitForBatch: " + waitForBatch);
+			Db.Row entityListTableRec = fabric().fetch(waitForBatch).firstRow();
+			String entityListTable = "" + entityListTableRec.get("value");
+						
+			return "select tdm_eid from " + entityListTable + " where task_execution_id = '" +  taskExecutionId + "'";
+		
+	}
+
 }
