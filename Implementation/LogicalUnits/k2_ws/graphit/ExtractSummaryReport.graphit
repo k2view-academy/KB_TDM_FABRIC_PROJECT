@@ -197,6 +197,7 @@
         },
         {
           "name": "List of Root Entities",
+          "collapsed": true,
           "children": [
             {
               "name": "Number of Copied Entities",
@@ -227,22 +228,22 @@
             {
               "name": "Number of Copied Reference Tables",
               "type": "sql",
-              "code": "Select Count(1) as count\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' and execution_status = 'completed'"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
             },
             {
               "name": "List of Copied Reference Tables",
               "type": "sql",
-              "code": "select target_entity_id as table_name, lu_name\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' And execution_status = 'completed'"
+              "code": "select ref_table_name , number_of_records_to_process as number_of_records , number_of_processed_records\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
             },
             {
               "name": "Number of Failed Reference Tables",
               "type": "sql",
-              "code": "Select Count(1) as count\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' and execution_status <> 'completed'"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats where execution_status <> 'completed'"
             },
             {
               "name": "List of Failed Reference Tables",
               "type": "sql",
-              "code": "select target_entity_id as table_name, lu_name\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' And execution_status <> 'completed'"
+              "code": "select ref_table_name , number_of_records_to_process as number_of_records , number_of_processed_records , error_msg\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'"
             }
           ]
         },

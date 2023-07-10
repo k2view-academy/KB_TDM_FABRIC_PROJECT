@@ -88,11 +88,6 @@
       <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@UPGRADE</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
-      <NodeName>tdm_insert.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\DEMO&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\DEMO\tdm_insert.sql</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@DEMO</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
       <NodeName>tar_billing_create.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\DEMO&lt;/span&gt;</NodeName>
       <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\DEMO\tar_billing_create.sql</RelativePath>
       <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@DEMO</CategoryKey>
@@ -120,11 +115,6 @@
     <ProjectItemProp>
       <NodeName>orders.sql.gz&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\DEMO&lt;/span&gt;</NodeName>
       <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\DEMO\orders.sql.gz</RelativePath>
-      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@DEMO</CategoryKey>
-    </ProjectItemProp>
-    <ProjectItemProp>
-      <NodeName>ordering_create.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\DEMO&lt;/span&gt;</NodeName>
-      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\DEMO\ordering_create.sql</RelativePath>
       <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@DEMO</CategoryKey>
     </ProjectItemProp>
     <ProjectItemProp>
@@ -196,6 +186,11 @@
       <NodeName>query_get_extract_globals.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\fnTdmExecuteTask&lt;/span&gt;</NodeName>
       <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\fnTdmExecuteTask\query_get_extract_globals.sql</RelativePath>
       <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@TASKS</CategoryKey>
+    </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>orders_create.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\DEMO&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\DEMO\orders_create.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@DEMO</CategoryKey>
     </ProjectItemProp>
   </ProjectItemPropList>
   <ProjectItemsCategoryList>

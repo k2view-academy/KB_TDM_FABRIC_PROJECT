@@ -16,13 +16,13 @@
                             }
                         },
                         {
-                            "name": "fnGetRefTableData",
+                            "name": "refListLookup",
                             "actorType": {
-                                "parentType": "LuFunction",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
-                                        "name": "functionName",
-                                        "const": "fnGetRefTableData"
+                                        "name": "flowName",
+                                        "const": "refListLookup"
                                     },
                                     {
                                         "name": "luName",
@@ -41,69 +41,46 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "schemaName",
+                                        "name": "result",
                                         "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "interfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetSchemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetInterfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "countIndicator",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "trnLuName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "trnTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetRefTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetTablePK",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "truncateIndicator",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "countFlow",
-                                        "schema": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
                                         }
                                     }
                                 ]
@@ -147,6 +124,16 @@
                                         "name": "interface",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database",
+                                                "CassandraLoader"
+                                            ],
+                                            "interfaces": [
+                                                "fabric"
+                                            ]
                                         },
                                         "mandatory": false
                                     },
@@ -686,73 +673,94 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "schemaName"
-            },
-            "rightPort": {
-                "actor": "REF_SCHEMA",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "REF_INTERFACE",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "countIndicator"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "indicator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "schemaName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "refSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "trnTableName"
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Count Method",
                 "name": "refTableName"
-            }
+            },
+            "path": [
+                "reference_table_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "fnGetRefTableData",
-                "name": "countFlow"
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "REF_INTERFACE",
+                "name": "value"
+            },
+            "path": [
+                "interface_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "REF_SCHEMA",
+                "name": "value"
+            },
+            "path": [
+                "schema_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "refSchema"
+            },
+            "path": [
+                "schema_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "indicator"
+            },
+            "path": [
+                "count_indicator"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Count Method",
                 "name": "bf_name"
-            }
+            },
+            "path": [
+                "count_flow"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "interface"
+            },
+            "path": [
+                "interface_name"
+            ]
         },
         {
             "leftPort": {
@@ -902,7 +910,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "fnGetRefTableData",
+                "actor": "refListLookup",
                 "name": "luName"
             }
         },
@@ -912,7 +920,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "fnGetRefTableData",
+                "actor": "refListLookup",
                 "name": "refTableName"
             }
         },
