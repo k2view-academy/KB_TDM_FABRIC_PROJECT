@@ -7,33 +7,7 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "get5GCustomers",
-                    "DESCRIPTION": "Get 5G customers by the contract status"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersByAddress",
-                    "DESCRIPTION": "Get customers by their state"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersBySQL",
-                    "DESCRIPTION": "Get customers by input SQL and input parameters on the CRM DB"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersBySQL2",
-                    "DESCRIPTION": "Get customers by input SQL on the CRM DB"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getAll5GCustomers",
-                    "DESCRIPTION": "Get all 5G customers"
-                }
-            ],
+            "const": [],
             "schema": {
                 "type": "array",
                 "items": {

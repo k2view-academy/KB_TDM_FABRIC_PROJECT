@@ -117,6 +117,9 @@ public class SharedGlobals {
 	public static String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
 	@category("TDM")
+	public static String TDM_DELETE_TABLES_PREFIX = "TAR_";
+
+	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
 	@category("TDM")
 	public static String BUILD_TDMDB = "true";

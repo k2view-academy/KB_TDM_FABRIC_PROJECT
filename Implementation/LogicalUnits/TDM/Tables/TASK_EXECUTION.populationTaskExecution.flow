@@ -138,31 +138,7 @@
                                 ],
                                 "outputs": []
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "Do nothing",
-                    "dependsOnList": [
-                        "Cast"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Call Function",
-                    "dependsOnList": [
-                        "Not Null Or Zero"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
+                        },
                         {
                             "name": "getRetention",
                             "actorType": {
@@ -200,12 +176,13 @@
                     ]
                 },
                 {
-                    "name": "Do nothing 2",
+                    "name": "Do nothing",
                     "dependsOnList": [
-                        "Do nothing"
+                        "Cast"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
+                    "hasElse": true,
                     "actors": []
                 }
             ]
@@ -215,7 +192,7 @@
                 {
                     "name": "Set not Zero",
                     "dependsOnList": [
-                        "Call Function"
+                        "Not Null Or Zero"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -241,9 +218,9 @@
                     ]
                 },
                 {
-                    "name": "Do nothing 3",
+                    "name": "Do nothing 2",
                     "dependsOnList": [
-                        "Do nothing 2"
+                        "Do nothing"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -260,9 +237,9 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "task_execution_list",
+                            "name": "Get Count Of unfinished LUs",
                             "actorType": {
-                                "parentType": "DbCommand",
+                                "parentType": "DbFetchField",
                                 "inputs": [
                                     {
                                         "name": "interface",
@@ -284,37 +261,29 @@
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "count": {
-                                                        "type": "integer"
-                                                    }
-                                                }
-                                            }
+                                            "type": "number"
                                         }
                                     }
                                 ]
                             }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
+                        },
                         {
-                            "name": "ToNumber1",
+                            "name": "Reject Message",
                             "actorType": {
-                                "parentType": "ToNumber",
-                                "inputs": [],
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "Task Execution ID ${TASK_EXECUTION_ID} is not completed yet"
+                                    },
+                                    {
+                                        "name": "TASK_EXECUTION_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -327,7 +296,7 @@
                 {
                     "name": "Count Check",
                     "dependsOnList": [
-                        "Stage 1"
+                        "SELECT count(*)"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -356,7 +325,7 @@
                                         "const": "fnRejectInstance"
                                     },
                                     {
-                                        "name": "TASK_EXECUTION_ID",
+                                        "name": "msg",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -371,7 +340,7 @@
                 {
                     "name": "Count is zero",
                     "dependsOnList": [
-                        "Stage 1"
+                        "SELECT count(*)"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -412,7 +381,9 @@
                                     },
                                     {
                                         "name": "task_execution_id",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
@@ -451,26 +422,6 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "task_execution_list",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Reject Instance",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
                 "actor": "task_execution_id",
                 "name": "value"
             }
@@ -482,6 +433,26 @@
             },
             "rightPort": {
                 "actor": "TASK_EXECUTION",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Reject Message",
+                "name": "TASK_EXECUTION_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Get Count Of unfinished LUs",
                 "name": "task_execution_id"
             }
         },
@@ -537,26 +508,22 @@
         },
         {
             "leftPort": {
-                "actor": "task_execution_list",
+                "actor": "Get Count Of unfinished LUs",
                 "name": "result"
-            },
-            "rightPort": {
-                "actor": "ToNumber1",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "count"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "ToNumber1",
-                "name": "number"
             },
             "rightPort": {
                 "actor": "Count Greater Than 0",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Reject Message",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Reject Instance",
+                "name": "msg"
             }
         },
         {

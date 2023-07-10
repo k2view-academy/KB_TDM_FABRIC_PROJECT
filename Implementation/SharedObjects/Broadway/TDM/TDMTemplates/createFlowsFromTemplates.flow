@@ -33,7 +33,15 @@
                             "name": "Create Load Table Flows From Template",
                             "actorType": {
                                 "parentType": "createLoadTableFlows",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "LU_NAME",
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -71,7 +79,15 @@
                             "name": "Create Delete Table Flows From Template",
                             "actorType": {
                                 "parentType": "createDeleteTableFlows",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "LU_NAME",
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        }
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }

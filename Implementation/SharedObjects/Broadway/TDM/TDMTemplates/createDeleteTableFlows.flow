@@ -89,25 +89,6 @@
         {
             "stages": [
                 {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "filter Out TDM Tables",
-                            "actorType": {
-                                "parentType": "filterOutTDMTables",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Stage 7",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -393,16 +374,6 @@
                     "actors": []
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 9",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
         }
     ],
     "connections": [
@@ -412,26 +383,15 @@
                 "name": "res"
             },
             "rightPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableName"
+                "actor": "create Delete Flow",
+                "name": "LU_TABLE"
             },
             "iterate": "Iterate"
         },
         {
             "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
-            },
-            "rightPort": {
-                "actor": "Logger1",
-                "name": "TABLE_NAME"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
+                "actor": "geLuTables",
+                "name": "res"
             },
             "rightPort": {
                 "actor": "Set Target Table Name",
@@ -441,8 +401,8 @@
         },
         {
             "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
+                "actor": "geLuTables",
+                "name": "res"
             },
             "rightPort": {
                 "actor": "create New Delete Flow",
@@ -452,12 +412,12 @@
         },
         {
             "leftPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "tableNameOut"
+                "actor": "geLuTables",
+                "name": "res"
             },
             "rightPort": {
-                "actor": "create Delete Flow",
-                "name": "LU_TABLE"
+                "actor": "Logger1",
+                "name": "TABLE_NAME"
             },
             "iterate": "Iterate"
         },
@@ -560,16 +520,6 @@
             "rightPort": {
                 "actor": "Create Folder",
                 "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "filter Out TDM Tables",
-                "name": "luName"
             }
         },
         {
