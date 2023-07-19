@@ -7,34 +7,56 @@
         {
             "stages": [
                 {
-                    "name": "Inputs",
+                    "name": "Get All Lu Names",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Input",
-                            "remark": "for shared objects set it as empty\n",
+                            "name": "LIST LUT",
                             "actorType": {
-                                "parentType": "Const",
+                                "parentType": "DbCommand",
                                 "inputs": [
                                     {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "LIST LUT"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "value",
+                                        "name": "result",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "Project Version": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
                         {
                             "name": "PROJECT_DIR",
                             "actorType": {
@@ -54,84 +76,30 @@
                                     }
                                 ]
                             }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Target Lu",
-                    "dependsOnList": [
-                        "Inputs"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "empty",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "EqualsIgnoreCase",
-                                "inputs": [
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         },
                         {
-                            "name": "Target",
+                            "name": "Filter LUS",
                             "actorType": {
-                                "parentType": "Const",
+                                "parentType": "JavaScript",
                                 "inputs": [
                                     {
-                                        "name": "value",
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function customFilter(inputArray) {\r\nconst arr = [];\r\nfor (let i = 0; i < inputArray.length; i++) {\r\n  const name = inputArray[i];\r\n  \r\n  if (name !== \"TDM_LIBRARY\" && name !== \"TDM_Reference\") {\r\n        arr.push(name);\r\n    }\r\n  }\r\n  arr.push(\"k2_ref\")\r\n  return arr;\r\n}\r\nconst filteredArray = customFilter(input);\r\nfilteredArray;",
+                                            "script": "function customFilter(inputArray) {\n  var arr = [];\n\n  for (var i = 0; i < inputArray.length; i++) {\n    var name = inputArray[i];\n\n    if (name !== \"TDM_LIBRARY\" && name !== \"TDM_Reference\") {\n      arr.push(name);\n    }\n  }\n\n  arr.push(\"k2_ref\");\n  return arr;\n}\n\nvar filteredArray = customFilter(input);\nfilteredArray;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "k2_ref"
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "Get Source Lu",
-                    "dependsOnList": [
-                        "Inputs"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Source",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
+                                        "name": "result",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -157,6 +125,9 @@
                                 "inputs": [
                                     {
                                         "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "const": null
                                     }
                                 ],
@@ -422,7 +393,7 @@
                     ]
                 },
                 {
-                    "name": "Stage 3",
+                    "name": "Stage 1",
                     "dependsOnList": [
                         "non TDM LIB"
                     ],
@@ -484,9 +455,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 4",
+                    "name": "Stage 2",
                     "dependsOnList": [
-                        "Stage 3"
+                        "Stage 1"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -528,9 +499,9 @@
                     "actors": []
                 },
                 {
-                    "name": "Stage 5",
+                    "name": "Stage 3",
                     "dependsOnList": [
-                        "Stage 4"
+                        "Stage 2"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -541,7 +512,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 6",
+                    "name": "build translation path",
                     "dependsOnList": [
                         "Mtable for Shared",
                         "Mtable for Lus"
@@ -565,9 +536,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 7",
+                    "name": "Stage 4",
                     "dependsOnList": [
-                        "Stage 5"
+                        "Stage 3"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -578,9 +549,9 @@
         {
             "stages": [
                 {
-                    "name": "Stage 8",
+                    "name": "convert inner flow",
                     "dependsOnList": [
-                        "Stage 6"
+                        "build translation path"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
@@ -629,9 +600,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 9",
+                    "name": "Stage 5",
                     "dependsOnList": [
-                        "Stage 7"
+                        "Stage 4"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
@@ -642,10 +613,58 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Next Lu",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "ChildLink",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "convertChildLink",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "convertChildLink"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Lu Params",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "convertLuParams",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "convertLuParams"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -653,43 +672,27 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Input",
-                "name": "value"
+                "actor": "LIST LUT",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "empty",
-                "name": "a"
-            }
+                "actor": "Filter LUS",
+                "name": "input"
+            },
+            "path": [
+                "LU_NAME"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Input",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Source",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Target",
-                "name": "value"
+                "actor": "Filter LUS",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Lu Name  ",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Source",
-                "name": "value"
             },
-            "rightPort": {
-                "actor": "Lu Name  ",
-                "name": "value"
-            }
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
@@ -893,16 +896,6 @@
             "rightPort": {
                 "actor": "convertTranslationToMTable",
                 "name": "translationPath"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "sourceLU"
-            },
-            "rightPort": {
-                "actor": "Input",
-                "name": "value"
             }
         }
     ]

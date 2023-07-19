@@ -32,53 +32,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "ChildLink",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "LuParams"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Build Mtable Name",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Concat",
-                            "actorType": {
-                                "parentType": "Concat",
-                                "inputs": [
-                                    {
-                                        "name": "delimiter",
-                                        "const": ""
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -98,7 +51,21 @@
                                 "inputs": [
                                     {
                                         "name": "mtable",
-                                        "const": null
+                                        "const": "LuParams"
+                                    },
+                                    {
+                                        "name": "mtableCaseSensitive",
+                                        "const": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -109,13 +76,13 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "INDEX": {
+                                                    "lu_name": {
                                                         "type": "string"
                                                     },
-                                                    "COLUMN_NAME": {
+                                                    "column_name": {
                                                         "type": "string"
                                                     },
-                                                    "SQL": {
+                                                    "sql": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -193,6 +160,21 @@
                                                     }
                                                 }
                                             }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Count",
+                            "actorType": {
+                                "parentType": "Count",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
                                         }
                                     }
                                 ]
@@ -374,30 +356,8 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Concat",
-                "name": "elements"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "ChildLink",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Concat",
-                "name": "elements"
-            },
-            "arrayPosition": 1
-        },
-        {
-            "leftPort": {
-                "actor": "Concat",
-                "name": "string"
-            },
-            "rightPort": {
                 "actor": "LuParams",
-                "name": "mtable"
+                "name": "lu_name"
             }
         },
         {
@@ -411,7 +371,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "COLUMN_NAME"
+                "column_name"
             ]
         },
         {
@@ -425,21 +385,7 @@
             },
             "iterate": "Iterate",
             "path": [
-                "SQL"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "LuParams",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Data",
-                "name": "key"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "INDEX"
+                "sql"
             ]
         },
         {
@@ -463,6 +409,16 @@
                 "name": "maps"
             },
             "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Count",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Data",
+                "name": "key"
+            }
         },
         {
             "leftPort": {

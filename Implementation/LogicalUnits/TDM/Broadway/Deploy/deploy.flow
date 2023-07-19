@@ -397,6 +397,30 @@
         {
             "stages": [
                 {
+                    "name": "Add Web Role",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "AddWebRole",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "AddWebRole"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "End",
                     "dependsOnList": [],
                     "isLast": 0,

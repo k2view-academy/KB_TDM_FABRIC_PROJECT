@@ -98,12 +98,36 @@
         {
             "stages": [
                 {
-                    "name": "ChildLink   ",
+                    "name": "Split",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "ChildLink",
+                            "name": "luName",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "LuParams"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LuParams",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lu Params",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
@@ -112,7 +136,7 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "ChildLink"
+                                        "const": "LuParams"
                                     }
                                 ],
                                 "outputs": [
@@ -137,7 +161,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "LuChildLink",
+                            "name": "NameLuParam",
                             "actorType": {
                                 "parentType": "Concat",
                                 "inputs": [
@@ -268,7 +292,7 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${0}/Implementation/LogicalUnits/k2_ref/Mtable/ChildLink.csv"
+                                        "const": "${0}/Implementation/LogicalUnits/k2_ref/Mtable/LuParams.csv"
                                     }
                                 ],
                                 "outputs": []
@@ -290,7 +314,7 @@
         {
             "stages": [
                 {
-                    "name": "childLink Lookup",
+                    "name": "LuParams Lookup",
                     "dependsOnList": [
                         "Get Details of MTable"
                     ],
@@ -314,13 +338,13 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "child_lu": {
+                                                    "INDEX": {
                                                         "type": "string"
                                                     },
-                                                    "child_lu_eid_sql": {
+                                                    "COLUMN_NAME": {
                                                         "type": "string"
                                                     },
-                                                    "child_lu_tar_eid_sql": {
+                                                    "SQL": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -348,7 +372,7 @@
                 {
                     "name": "Record Build",
                     "dependsOnList": [
-                        "childLink Lookup"
+                        "LuParams Lookup"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -358,39 +382,23 @@
                                 "parentType": "MapCreate",
                                 "inputs": [
                                     {
-                                        "name": "parent_lu",
+                                        "name": "lu_name",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "child_lu",
+                                        "name": "column_name",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "child_lu_eid_sql",
+                                        "name": "sql",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "child_lu_tar_eid_sql",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            }
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -458,10 +466,9 @@
                                     {
                                         "name": "columns",
                                         "const": [
-                                            "parent_lu",
-                                            "child_lu",
-                                            "child_lu_eid_sql",
-                                            "child_lu_tar_eid_sql"
+                                            "lu_name",
+                                            "column_name",
+                                            "sql"
                                         ]
                                     }
                                 ],
@@ -683,46 +690,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "MtableFolder",
-                "name": "sourceLU"
-            },
-            "path": [
-                "LU_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "list MTABLE ",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "MapCreate",
-                "name": "parent_lu"
-            },
-            "path": [
-                "LU_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "list MTABLE ",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "LuChildLink",
-                "name": "elements"
-            },
-            "path": [
-                "LU_NAME"
-            ],
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "list MTABLE ",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "Search",
                 "name": "string"
             },
@@ -733,18 +700,65 @@
         },
         {
             "leftPort": {
-                "actor": "ChildLink",
+                "actor": "list MTABLE ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "luName",
+                "name": "string"
+            },
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "NameLuParam",
+                "name": "elements"
+            },
+            "iterate": "First",
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MapCreate",
+                "name": "lu_name"
+            },
+            "iterate": "First"
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "MtableFolder",
+                "name": "sourceLU"
+            },
+            "iterate": "First"
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Params",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "LuChildLink",
+                "actor": "NameLuParam",
                 "name": "elements"
             },
             "arrayPosition": 1
         },
         {
             "leftPort": {
-                "actor": "LuChildLink",
+                "actor": "NameLuParam",
                 "name": "string"
             },
             "rightPort": {
@@ -754,7 +768,7 @@
         },
         {
             "leftPort": {
-                "actor": "LuChildLink",
+                "actor": "NameLuParam",
                 "name": "string"
             },
             "rightPort": {
@@ -764,7 +778,7 @@
         },
         {
             "leftPort": {
-                "actor": "LuChildLink",
+                "actor": "NameLuParam",
                 "name": "string"
             },
             "rightPort": {
@@ -775,7 +789,7 @@
         },
         {
             "leftPort": {
-                "actor": "LuChildLink",
+                "actor": "NameLuParam",
                 "name": "string"
             },
             "rightPort": {
@@ -821,11 +835,11 @@
             },
             "rightPort": {
                 "actor": "MapCreate",
-                "name": "child_lu"
+                "name": "column_name"
             },
             "iterate": "Iterate",
             "path": [
-                "child_lu"
+                "COLUMN_NAME"
             ]
         },
         {
@@ -835,25 +849,11 @@
             },
             "rightPort": {
                 "actor": "MapCreate",
-                "name": "child_lu_eid_sql"
+                "name": "sql"
             },
             "iterate": "Iterate",
             "path": [
-                "child_lu_eid_sql"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Lookup",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "MapCreate",
-                "name": "child_lu_tar_eid_sql"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "child_lu_tar_eid_sql"
+                "SQL"
             ]
         },
         {

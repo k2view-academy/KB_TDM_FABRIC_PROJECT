@@ -942,6 +942,14 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "JsonStringify",
+                            "actorType": {
+                                "parentType": "JsonStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -984,6 +992,56 @@
                                     }
                                 ],
                                 "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JavaScript Data",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let inputArray = JSON.parse(str);\r\nconst transformedArray = inputArray.map(obj => {\r\n  const transformedObj = {};\r\n  for (const key in obj) {\r\n    if (obj.hasOwnProperty(key)) {\r\n      transformedObj[key] = obj[key]._value || \"\";\r\n    }\r\n  }\r\n  return transformedObj;\r\n});\r\ntransformedArray;",
+                                            "script": "var inputArray = JSON.parse(str);\nvar transformedArray = inputArray.map(function (obj) {\n  var transformedObj = {};\n\n  for (var key in obj) {\n    if (obj.hasOwnProperty(key)) {\n      transformedObj[key] = obj[key]._value || \"\";\n    }\n  }\n\n  return transformedObj;\n});\ntransformedArray;"
+                                        }
+                                    },
+                                    {
+                                        "name": "str",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "source_env_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "ig_sql": {
+                                                        "type": "string"
+                                                    },
+                                                    "external_table_flow": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -1195,6 +1253,34 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Mtable",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MTableLoad",
+                            "actorType": {
+                                "parentType": "MTableLoad",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "columns",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "connections": [
@@ -1283,6 +1369,19 @@
         },
         {
             "leftPort": {
+                "actor": "JsonParser Diffgram",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JsonStringify",
+                "name": "object"
+            },
+            "path": [
+                "_value"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "JsonParser Columns",
                 "name": "object"
             },
@@ -1325,6 +1424,16 @@
         },
         {
             "leftPort": {
+                "actor": "Build Columns",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "MTableLoad",
+                "name": "columns"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "CsvBuilder For Non Empty List",
                 "name": "csv"
             },
@@ -1355,12 +1464,32 @@
         },
         {
             "leftPort": {
+                "actor": "JsonStringify",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "JavaScript Data",
+                "name": "str"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Replace  ",
                 "name": "string"
             },
             "rightPort": {
                 "actor": "Replace    ",
                 "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MTableLoad",
+                "name": "data"
             }
         },
         {
@@ -1392,6 +1521,16 @@
             "rightPort": {
                 "actor": "File Name",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Mtable Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MTableLoad",
+                "name": "mtable"
             }
         },
         {
