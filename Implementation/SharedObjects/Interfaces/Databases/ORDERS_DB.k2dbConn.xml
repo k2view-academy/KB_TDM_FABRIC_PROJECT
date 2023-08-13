@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="ORDERS_DB" type="genericdb" version="7.1.0.31">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="ORDERS_DB" type="genericdb" version="7.2.0.11">
   <Active>true</Active>
   <DataSource>host.docker.internal</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>ORDERING_DB</DataBase>
   <UserId>ORDERS_USER</UserId>
-  <Password>4NKN+BZfrRSLusJE6FGF5vyWOcZV1zFBpqPLVfzkzIo=:dT/RhDzL2gwMLVbpAQx07MblRd1b98OC5epVbHCcVys=</Password>
+  <Password>~encs2~+ywbe+R0lPucGkJBVEBPI6IuD6iFv2abgx0wSaasRdent2xGkT3EypvA7Q==</Password>
   <ConnectionStringServerSide>jdbc:postgresql://host.docker.internal:5432/ORDERING_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>

@@ -1,0 +1,670 @@
+{
+    "tags": [
+        "TDM",
+        "TDMCustomLogic"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init Counter And Set Session Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Init Record Count",
+                            "actorType": {
+                                "parentType": "InitRecordCount",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.loadedRecCnt = -1;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Session Globals",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "TDMSetSessionGlobals"
+                                    },
+                                    {
+                                        "name": "SESSION_GLOBALS",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if SQL Got Parameters",
+                    "dependsOnList": [
+                        "Init Counter And Set Session Globals"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Parameters Equals \"null\"?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "null"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set to Empty String",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Keep As is",
+                    "dependsOnList": [
+                        "Init Counter And Set Session Globals"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "SQLParams",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Join Stages",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If Params Are Given",
+                    "dependsOnList": [
+                        "Join Stages"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Params Is Not Empty?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Trim Params",
+                            "actorType": {
+                                "parentType": "Trim",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "No Parameters are Given",
+                    "dependsOnList": [
+                        "Join Stages"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare The Params",
+                    "dependsOnList": [
+                        "If Params Are Given"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Split The Params",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "No Parameters are Given"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Run SQL",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Run Input SQL",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "source_iid": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Split The Result To Record By Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Split Records",
+                            "actorType": {
+                                "parentType": "ArrayGrouper",
+                                "inputs": [
+                                    {
+                                        "name": "size",
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "source_iid": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Filter Reserved And Create TDM EIDs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Filter Reserved Entities",
+                            "actorType": {
+                                "parentType": "Filter",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "CheckIfReserved"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "values",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "source_iid": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check The result",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "If Instance Can be Processed?",
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 1
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check If The requested Number Of Instances Was Reached",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check Number Of Instances And Stop Loop",
+                            "actorType": {
+                                "parentType": "CheckAndStopLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format IID",
+                            "actorType": {
+                                "parentType": "Mapper",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "buildTDMEidForCustomLogic"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "values",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Group Instances",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Set to Empty String",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Params Is Not Empty?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set to Empty String",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Trim Params",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Params Is Not Empty?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Trim Params",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Trim Params",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Split The Params",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split The Params",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Run Input SQL",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Run Input SQL",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Split Records",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Filter Reserved Entities",
+                "name": "values"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Filter Reserved Entities",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "Format IID",
+                "name": "values"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Filter Reserved Entities",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "If Instance Can be Processed?",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "If Instance Can be Processed?",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check Number Of Instances And Stop Loop",
+                "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format IID",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "Group Instances",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SESSION_GLOBALS"
+            },
+            "rightPort": {
+                "actor": "Set Session Globals",
+                "name": "SESSION_GLOBALS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SQLParams"
+            },
+            "rightPort": {
+                "actor": "Parameters Equals \"null\"?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SQLParams"
+            },
+            "rightPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Run Input SQL",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sql"
+            },
+            "rightPort": {
+                "actor": "Run Input SQL",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "Check Number Of Instances And Stop Loop",
+                "name": "NUM_OF_ENTITIES"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Group Instances",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

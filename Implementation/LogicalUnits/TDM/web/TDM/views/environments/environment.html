@@ -110,6 +110,12 @@
                                     <option value=""></option>
                             </select>
                         </div>
+                        <div style="display: flex;align-items: flex-end;" class="form-group col-lg-12" ng-if="['Source','Both'].indexOf(environmentCtrl.envType) >= 0">
+                            <input type="checkbox"
+                                ng-model="environmentCtrl.environmentData.mask_sensitive_data"/>
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Mask Sensitive Data</label>
+                        </div>
                     </div>
                     <div class="col-lg-6" style="padding-right: 0;">
                         <div class="form-group col-lg-6">

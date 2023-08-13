@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="7.1.0.31">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="CRM_DB" type="genericdb" version="7.2.0.11">
   <Active>true</Active>
   <DataSource>host.docker.internal</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>CRM_DB</DataBase>
   <UserId>CRM_USER</UserId>
-  <Password>15cKQ47hOqX5oDXywL1D3e9qI45HcudcK2Vx716Lv7s=:isNU25fJ+cZ/Y4PFKXHUU3UDvq+xv1Jqsw2ACppCD0M=</Password>
+  <Password>~encs2~6SIaGbrg6/2cLb5dJuXGJZ11XLbKY2bb5hOrDtZ9UiN6DLDxKlOmkw==</Password>
   <ConnectionStringServerSide>jdbc:postgresql://host.docker.internal:5432/CRM_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>

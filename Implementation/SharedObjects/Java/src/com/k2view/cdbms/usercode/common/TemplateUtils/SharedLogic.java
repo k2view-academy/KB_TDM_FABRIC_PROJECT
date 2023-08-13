@@ -4,38 +4,32 @@
 
 package com.k2view.cdbms.usercode.common.TemplateUtils;
 
-import java.lang.reflect.Type;
 import java.util.*;
 import java.sql.*;
-import java.math.*;
-import java.io.*;
-import java.util.regex.Pattern;						   
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.jknack.handlebars.*;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.k2view.cdbms.shared.*;
-import com.k2view.cdbms.shared.Globals;
-import com.k2view.cdbms.shared.user.UserCode;
-import com.k2view.cdbms.sync.*;
 import com.k2view.cdbms.lut.*;
-import com.k2view.cdbms.lut.LUType.BroadwayFiles;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
-import com.k2view.cdbms.shared.logging.LogEntry.*;
-//import com.k2view.cdbms.usercode.*;										 
-import com.k2view.fabric.common.Json;
+//import com.k2view.cdbms.usercode.*;
 import com.k2view.fabric.common.Util;
-import com.k2view.fabric.events.*;
-import com.k2view.fabric.fabricdb.datachange.TableDataChange;
-import com.k2view.broadway.model.*;
 
 import static com.k2view.cdbms.shared.user.UserCode.*;
-import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.shared.user.ProductFunctions.*;
-import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
+import java.math.*;
+import java.io.*;
+import com.k2view.cdbms.shared.user.UserCode;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.k2view.fabric.events.*;
+import com.k2view.fabric.fabricdb.datachange.TableDataChange;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 
 @SuppressWarnings({"DefaultAnnotationParam", "unchecked"})
 public class SharedLogic {
@@ -86,11 +80,11 @@ public class SharedLogic {
 		
 		handlebars.registerHelper("getGDActorName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
-                String actorName = map.get("ACTOR");
+		              String actorName = map.get("ACTOR");
 				int actorNameEnd = actorName.lastIndexOf(".actor");
-                if (actorNameEnd > 0) {
-                    actorName = actorName.substring(0, actorNameEnd);
-                }
+		              if (actorNameEnd > 0) {
+		                  actorName = actorName.substring(0, actorNameEnd);
+		              }
 				return actorName;
 			}
 		});
@@ -108,16 +102,16 @@ public class SharedLogic {
 		
 		handlebars.registerHelper("getSequenceName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
-                String seqeunceName = map.get("SEQUENCE_NAME");
-                try {
-                    Object generateFlow = fabric().fetch("set GENERATE_FLOW").firstValue();
-                    if (generateFlow != null && "true".equalsIgnoreCase(generateFlow.toString())) {
-                        seqeunceName = "Gen_" + seqeunceName;
-                    }
-
-                } catch (Exception e) {
-                    log.error("Failed to get Sequence Name");
-                }
+		              String seqeunceName = map.get("SEQUENCE_NAME");
+		              try {
+		                  Object generateFlow = fabric().fetch("set GENERATE_FLOW").firstValue();
+		                  if (generateFlow != null && "true".equalsIgnoreCase(generateFlow.toString())) {
+		                      seqeunceName = "Gen_" + seqeunceName;
+		                  }
+		
+		              } catch (Exception e) {
+		                  log.error("Failed to get Sequence Name");
+		              }
 				return seqeunceName;
 			}
 		});
@@ -127,7 +121,6 @@ public class SharedLogic {
 				return map.get("SEQUENCE_NAME") + "_Actor";
 			}
 		});
-		
 		
 		handlebars.registerHelper("if_even", new Helper<Integer>(){
 			public Boolean apply(Integer index, Options options) {
@@ -147,6 +140,29 @@ public class SharedLogic {
 			}
 		});
 		
+		handlebars.registerHelper("getDeleleColumnName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("name");
+			}
+		});
+		
+		handlebars.registerHelper("getDeleleColumnType", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("datatype");
+			}
+		});
+		
+		handlebars.registerHelper("getInputFieldName", new Helper<Map<String, String>>() {
+			public String apply(Map<String, String> map, Options options) {
+				return map.get("FIELD_NAME");
+			}
+		});
+		
+		handlebars.registerHelper("getSeqCacheInterface", new Helper<String>() {
+			public String apply(String luName, Options options) {
+				return getGlobal("SEQ_CACHE_INTERFACE", luName);
+			}
+		});
 		
 		handlebars.registerHelper("eq", ConditionalHelpers.eq);
 		handlebars.registerHelper("neq", ConditionalHelpers.neq);
@@ -176,6 +192,7 @@ public class SharedLogic {
 		Map<String, Object> map = new TreeMap<>();
 		map.put("LU_NAME", luName);
 		map.put("LU_TABLE", luTable);
+		map.put("DELETE_TABLE", TDM_DELETE_TABLES_PREFIX + luTable);
 		map.put("LU_TABLE_COLUMNS", luTableColumns);
 		map.put("TARGET_INTERFACE", targetDbInterface);
 		map.put("TARGET_SCHEMA", targetDbSchema);
@@ -183,7 +200,17 @@ public class SharedLogic {
 		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
 		map.put("TARGET_TABLE_PKS", targetTableData[1]);
 		
+		Object mainTableName = fabric().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue();
 		
+		List<String> mainTables = new ArrayList<>();
+		if (mainTableName != null) {
+			mainTables = Arrays.asList(mainTableName.toString().split(","));
+		}
+		String mainTable = "false";
+		//log.info("LU_NAME:" + luName + ", mainTables: " + mainTables + ", mainTableName: " + mainTableName);
+		if (mainTables.contains(luTable)) {
+			mainTable = "true";
+		}
 		if ("".equals(tableIidFieldName)) {
 			seqIID = "NO_ID";
 			seqName = "";
@@ -210,6 +237,8 @@ public class SharedLogic {
 		} else {
 			map.put("TABLE_SEQ_DATA", null);
 		}
+		map.put("MAIN_TABLE_IND", mainTable);
+		//log.info("MAIN_TABLE_IND: " + mainTable + ", table: " + luTable);
 		
 		return map;
 	}
@@ -243,7 +272,57 @@ public class SharedLogic {
 		
 		if(luType == null)
 			return al;
-		luType.ludbTables.forEach((s, s2) -> al.add(s));
+		LUType finalLuType = luType;
+		luType.ludbTables.forEach((s, s2) -> {
+			Db.Rows checkTable = null;
+			try {
+				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutTDMTables tableName='" +
+						s + "', luName=" + finalLuType.luName + ", RESULT_STRUCTURE=ROW");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		
+			if (checkTable != null && checkTable.firstValue() != null) {
+				al.add(s);
+			}
+			if (checkTable != null) {
+				checkTable.close();
+			}
+		});
+		
+		
+		return al;
+	}
+
+	@out(name = "res", type = List.class, desc = "")
+	public static List<String> getLuTablesForGenerate(String luName) throws Exception {
+		List<String> al = new ArrayList<>();
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+
+		if(luType == null)
+			return al;
+		LUType finalLuType = luType;
+		luType.ludbTables.forEach((s, s2) -> {
+			Db.Rows checkTable = null;
+			try {
+				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutGenertors tableName='" +
+						s + "', luName=" + finalLuType.luName + ", RESULT_STRUCTURE=ROW");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			if (checkTable != null && checkTable.firstValue() != null) {
+				al.add(s);
+			}
+			if (checkTable != null) {
+				checkTable.close();
+			}
+		});
 		return al;
 	}
 
@@ -290,6 +369,9 @@ public class SharedLogic {
 				tableFiltered = "" + checkTable.firstValue();
 			}
 			
+			if (checkTable != null) {
+				checkTable.close();
+			}
 			if( !tables.contains(originalTableName)  && !Util.isEmpty(tableFiltered)) {
 				tmpBucket.add(originalTableName);
 				tables.add(originalTableName);
@@ -315,7 +397,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	
 	ResultSet schemas = md.getSchemas();
 	while (schemas.next()) {
-		//log.info("getDbTableColumns - Schema: " + schemas.getString("TABLE_SCHEM"));
+		//log.info("getDBCollection - Schema: " + schemas.getString("TABLE_SCHEM"));
 		if (catalogSchema.equalsIgnoreCase(schemas.getString("TABLE_SCHEM"))) {
 			 schema = schemas.getString("TABLE_SCHEM");
 			 break;
@@ -324,7 +406,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	if (schema == null) {
 		ResultSet catalogs = md.getCatalogs();
 		while (catalogs.next()) {
-			//log.info("getDbTableColumns - Catalog: " + catalogs.getString("TABLE_CAT"));
+			//log.info("getDBCollection - Catalog: " + catalogs.getString("TABLE_CAT"));
 			if (catalogSchema.equalsIgnoreCase(catalogs.getString("TABLE_CAT"))) {
 				catalog = catalogs.getString("TABLE_CAT");
 				break;
@@ -340,8 +422,8 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String catalogSchema, String table) throws Exception {
 		ResultSet rs = null;
-        ResultSet rs1 = null;
-        ResultSet rs2 = null;
+		      ResultSet rs1 = null;
+		      ResultSet rs2 = null;
 		String[] types = {"TABLE"};
 		String targetTableName = table;
 		
@@ -380,9 +462,9 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		} finally {
 			if (rs != null)
 				rs.close();
-                if (rs1 != null)
+		 	if (rs1 != null)
 				rs1.close();
-                if (rs2 != null)
+			if (rs2 != null)
 				rs2.close();
 		}
 	}
@@ -458,13 +540,13 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		if(luType == null || !luType.ludbObjects.containsKey(table)) 
 			return tableData;
 			
-        HashMap<String, LudbColumn> m1 = new HashMap<>(luType.ludbObjects.get(table).getLudbColumnMap());
+        HashMap<String, LudbColumn> m1 = new HashMap<>(luType.ludbObjects.get(table).getLudbObjectColumns());
         for (Map.Entry<String, LudbColumn> entry : m1.entrySet()) {
             HashMap<String, String> map = new HashMap<String, String>();
             String columnName = entry.getKey();
             LudbColumn columnData = entry.getValue();
             String columnType = columnData.columnType;
-            map.put("columnName", columnName.toUpperCase());
+            map.put("columnName", columnName);
             map.put("columnType",columnType);
             
             tableData.add(map);
@@ -475,31 +557,99 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	}
 
 	@out(name = "result", type = List.class, desc = "")
-	public static List<Map<String,String>> getPopulationsList(String luName) throws Exception {
-		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+	public static List<Map<String,Object>> getPopulationsList(String luName) throws Exception {
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		final LUType luType = LUType.getTypeByName(luName);
-		
-		
+
 		luType.getPopulationCollection().forEach((tableEntry) -> {
 		    //String table = tableEntry.getLudbObjectName();
 		    String table = tableEntry.getTableObject().schemaAndTableName;
 		    String popName =  tableEntry.getPopulationName();
+			int tableOrder = tableEntry.gettablePopulationOrder();
 		    
 			//log.info("getPopulationsList - table: " + table + ", popName: " + popName);
 			int flowNameEnd = popName.lastIndexOf(".flow");
 			if (flowNameEnd > 0) {
-				Map<String, String> map = new HashMap<String, String>();
+				Map<String, Object> map = new HashMap<String, Object>();
 				map.put("tableName", table);
 				map.put("populationName", popName.substring(0, flowNameEnd));
+				map.put("tableOrder", tableOrder);
 				result.add(map);
 			} else {
 				log.warn("Table " + table + " has a population that is not a Broadway Flow, No Generator will be created for such population");
 			}
-		});                  
+		});
 		return result;
 	}
 
 	@out(name = "result", type = List.class, desc = "")
+	public static List<Map<String,Object>> getPopulationsListForDelete(String luName) throws Exception {
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		final LUType luType = LUType.getTypeByName(luName);
+		LinkedHashMap<String, Object> tablesMaps  = new LinkedHashMap<>();
+		luType.getPopulationCollection().forEach((tableEntry) -> {
+			//String table = tableEntry.getLudbObjectName();
+			String table = tableEntry.getTableObject().schemaAndTableName;
+			String popName =  tableEntry.getPopulationName();
+			int tableOrder = tableEntry.gettablePopulationOrder();
+			Db.Rows checkTable = null;
+			try {
+				checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+						table + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			if (checkTable != null && checkTable.firstValue() != null) {
+				//log.info("getPopulationsListForDelete - table: " + table + ", popName: " + popName);
+				int flowNameEnd = popName.lastIndexOf(".flow");
+				if (flowNameEnd > 0) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put("tableName", table);
+					map.put("populationName", popName.substring(0, flowNameEnd));
+					map.put("tableOrder", tableOrder);
+					if (!tablesMaps.containsKey(table)) {
+						tablesMaps.put(table, map);
+						result.add(map);
+					}
+				} else {
+					log.warn("Table " + table + " has a population that is not a Broadway Flow, No Generator will be created for such population");
+				}
+			}
+			if (checkTable != null) {
+				checkTable.close();
+			}
+		});
+		return result;
+	}
+
+	@out(name = "result", type = Integer.class, desc = "")
+	public static Integer getMaxPopulationOrder(String luName) throws Exception {
+		final LUType luType = LUType.getTypeByName(luName);
+		AtomicInteger maxTableOrder = new AtomicInteger(0);
+		luType.getPopulationCollection().forEach((tableEntry) -> {
+			String tableFiltered = "";
+			try (Db.Rows checkTable = fabric().fetch("broadway " + luType.luName + ".filterOutTDMTables tableName='" +
+					tableEntry.getTableObject().schemaAndTableName + "', luName=" + luType.luName + ", RESULT_STRUCTURE=ROW")) {
+
+
+				if (checkTable != null && checkTable.firstValue() != null) {
+					tableFiltered = "" + checkTable.firstValue();
+				}
+			} catch (SQLException throwables) {
+				throwables.printStackTrace();
+			}
+			if (!Util.isEmpty(tableFiltered)) {
+				if (tableEntry.gettablePopulationOrder() > maxTableOrder.get()) {
+					maxTableOrder.set(tableEntry.gettablePopulationOrder());
+				}
+			}
+		});
+		return maxTableOrder.intValue();
+	}
+
+
+	@out(name = "result", type = Set.class, desc = "")
 	public static Set<Map<String,String>> getPopArgumentList(String luName, String tableName) throws Exception {
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
@@ -510,13 +660,41 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			        Map<String, String> map = new HashMap<>();
 		    	    map.put("PARENT_TABLE", key.toString());
 		        	map.put("PARENT_FIELD_NAME", ri.to.get("column"));
-			        map.put("FIELD_NAME", ri.to.get("column").toUpperCase());
+			        map.put("FIELD_NAME", ri.to.get("column"));
 		    	    result.add(map);
 		    	}
 			}
 		}
 		return result;
 	}
+	
+	@out(name = "result", type = Set.class, desc = "")
+	public static Set<Map<String,String>> getPopArgumentListForDelete(String luName, String tableName) throws Exception {
+		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
+		LUType luType = LUType.getTypeByName(luName);
+		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+		if (rel != null) {
+			for (Object key : rel.keySet()) {
+			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
+			    	//log.info("getPopArgumentListForDelete handling key:"  + key);
+			        Map<String, String> map = new HashMap<>();
+					String parentTable = key.toString();
+					if (!"FABRIC_TDM_ROOT".equalsIgnoreCase(parentTable)) {
+						parentTable = TDM_DELETE_TABLES_PREFIX + parentTable;
+					}
+		    	    map.put("PARENT_TABLE", parentTable);
+		        	map.put("PARENT_FIELD_NAME", ri.from.get("column"));
+			        map.put("FIELD_NAME", ri.to.get("column"));
+			        map.put("FIELD_TYPE", luType.ludbObjects.get(tableName).getLudbColumnMap().get(ri.to.get("column")).columnType);
+
+		    	    result.add(map);
+		    	}
+			    break;
+			}
+		}
+		return result;
+	}
+
     @out(name = "result", type = List.class, desc = "")
     public static  List<Map<String, String>>  filerOutSequences(List<Map<String, String>> Sequences, List<Map<String, String>> parentRec) throws Exception {
         List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);
@@ -533,5 +711,45 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	
         return result;
     }
+
+	@out(name = "pks", type = List.class, desc = "")
+	public static List<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table) throws Exception {
+		ResultSet rs = null;
+		ResultSet rs1 = null;
+		String[] types = {"TABLE"};
+		String targetTableName = table;
+		
+		try {
+			DatabaseMetaData md = getConnection(dbInterfaceName).getMetaData();
+			
+			String[] dbSchemaType = getDBCollection(md, catalogSchema);
+			String catalog = dbSchemaType[0];
+			String schema = dbSchemaType[1];
+			//log.info("getDbTableColumns - Catalog: " + catalog + ", Schema: " + schema);
+			rs = md.getTables(catalog, schema, "%", types);
+			
+			while (rs.next()) {
+				if (table.equalsIgnoreCase(rs.getString(3))) {
+					targetTableName = rs.getString(3);
+					//log.info("getDbTableColumns - tableName: " + targetTableName);
+					break;
+				}
+			}
+
+			// get PKs
+			rs1 = md.getPrimaryKeys(catalog, schema, targetTableName);
+			List<String> pkList = new ArrayList<>();
+			while (rs1.next()) {
+				pkList.add(rs1.getString("COLUMN_NAME"));
+			}
+
+			return pkList;
+		} finally {
+			if (rs != null)
+				rs.close();
+			if (rs1 != null)
+				rs1.close();
+		}
+	}
 
 }

@@ -76,7 +76,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": "{{getSeqCacheInterface __LU_NAME}}"
                                     },
                                     {
                                         "name": "TTL",

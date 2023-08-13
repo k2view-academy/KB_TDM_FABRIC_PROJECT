@@ -3,7 +3,7 @@
   <Name>TDM_APIDOC_JSON</Name>
   <Properties>
     <Property name="WorkingDir">
-      <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
+      <Value>C:\k2view\TDM_APIDOC</Value>
     </Property>
     <Property name="FilesFilter">
       <Value />

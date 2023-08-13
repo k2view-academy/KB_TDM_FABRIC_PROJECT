@@ -92,12 +92,6 @@
                                         "schema": {
                                             "type": "string"
                                         }
-                                    },
-                                    {
-                                        "name": "rootEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
                                     }
                                 ]
                             }

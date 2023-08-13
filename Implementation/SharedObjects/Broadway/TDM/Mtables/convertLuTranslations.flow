@@ -1,0 +1,902 @@
+{
+    "tags": [
+        "convert",
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get All Lu Names",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LIST LUT",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "LIST LUT"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "Project Version": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PROJECT_DIR",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_DIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Filter LUS",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function customFilter(inputArray) {\r\nconst arr = [];\r\nfor (let i = 0; i < inputArray.length; i++) {\r\n  const name = inputArray[i];\r\n  \r\n  if (name !== \"TDM_LIBRARY\" && name !== \"TDM_Reference\") {\r\n        arr.push(name);\r\n    }\r\n  }\r\n  arr.push(\"k2_ref\")\r\n  return arr;\r\n}\r\nconst filteredArray = customFilter(input);\r\nfilteredArray;",
+                                            "script": "function customFilter(inputArray) {\n  var arr = [];\n\n  for (var i = 0; i < inputArray.length; i++) {\n    var name = inputArray[i];\n\n    if (name !== \"TDM_LIBRARY\" && name !== \"TDM_Reference\") {\n      arr.push(name);\n    }\n  }\n\n  arr.push(\"k2_ref\");\n  return arr;\n}\n\nvar filteredArray = customFilter(input);\nfilteredArray;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Lu Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lu Name  ",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Translation Folder",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TranslationsFolder",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let path;\r\nif(sourceLU != \"k2_ref\"){\r\n    path = PROJECT_DIR.value + \"\\\\Implementation\\\\LogicalUnits\\\\\" + sourceLU + \"\\\\Translations\";\r\n} else {\r\n    path = PROJECT_DIR.value + \"\\\\Implementation\\\\SharedObjects\\\\Translations\";\r\n}\r\npath;",
+                                            "script": "var path;\n\nif (sourceLU != \"k2_ref\") {\n  path = PROJECT_DIR.value + \"\\\\Implementation\\\\LogicalUnits\\\\\" + sourceLU + \"\\\\Translations\";\n} else {\n  path = PROJECT_DIR.value + \"\\\\Implementation\\\\SharedObjects\\\\Translations\";\n}\n\npath;"
+                                        }
+                                    },
+                                    {
+                                        "name": "sourceLU",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get All Translations",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "getTranslations",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://"
+                                    },
+                                    {
+                                        "name": "pattern",
+                                        "const": "*.k2trans.xml"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    },
+                                                    "createTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastModifiedTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastAccessTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "directory": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Remove Suffix",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "k2transxml",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": ".k2trans.xml"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Translation Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Switch Case",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n    case \"trnTDMCleanUp\" :\r\n        output = \"TDMCleanUp\"\r\n        break;\r\n    case \"trnMigrateList\" :\r\n        output = \"MigrateList\"\r\n        break;\r\n    case \"trnMigrateListQueryFormats\" :\r\n        output = \"MigrateListQueryFormats\"\r\n        break;\r\n    case \"trnRefList\" :\r\n        output = \"RefList\"\r\n        break;\r\n    case \"trnLuParams\" :\r\n        output = \"LuParams\"\r\n        break;\r\n    case \"trnChildLink\" :\r\n        output = \"ChildLink\"\r\n        break;\r\n    case \"trnPostProcessList\":\r\n        output=\"PostProcessList\";\r\n        break;\r\n    default :\r\n        output=\"none\";\r\n        break;\r\n}\r\noutput;",
+                                            "script": "var name = input;\nvar output;\n\nswitch (name) {\n  case \"trnTDMCleanUp\":\n    output = \"TDMCleanUp\";\n    break;\n\n  case \"trnMigrateList\":\n    output = \"MigrateList\";\n    break;\n\n  case \"trnMigrateListQueryFormats\":\n    output = \"MigrateListQueryFormats\";\n    break;\n\n  case \"trnRefList\":\n    output = \"RefList\";\n    break;\n\n  case \"trnLuParams\":\n    output = \"LuParams\";\n    break;\n\n  case \"trnChildLink\":\n    output = \"ChildLink\";\n    break;\n\n  case \"trnPostProcessList\":\n    output = \"PostProcessList\";\n    break;\n\n  default:\n    output = \"none\";\n    break;\n}\n\noutput;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "TDM LIB translations",
+                    "dependsOnList": [
+                        "Translation Name"
+                    ],
+                    "isLast": 0,
+                    "hasElse": true,
+                    "actors": []
+                },
+                {
+                    "name": "non TDM LIB",
+                    "dependsOnList": [
+                        "Translation Name"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "None",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "none"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Special Mtables",
+                    "dependsOnList": [
+                        "TDM LIB translations"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lu Params  ",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "LuParams"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Child Link",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "ChildLink"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "non TDM LIB"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LUs",
+                    "dependsOnList": [
+                        "Special Mtables"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Or1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Or",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Shared",
+                    "dependsOnList": [
+                        "Special Mtables"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "mTableName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Mtable for Lus",
+                    "dependsOnList": [
+                        "LUs"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Prefix",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Mtable for Shared",
+                    "dependsOnList": [
+                        "Shared"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Stage 2"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "build translation path",
+                    "dependsOnList": [
+                        "Mtable for Shared",
+                        "Mtable for Lus"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "TranslationPath",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "\\"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "convert inner flow",
+                    "dependsOnList": [
+                        "build translation path"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "convertTranslationToMTable",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "convertTranslationToMTable"
+                                    },
+                                    {
+                                        "name": "translationPath",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "translationFileName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "mTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LuName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Next Lu",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "ChildLink",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "convertChildLink",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "convertChildLink"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Lu Params",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "convertLuParams",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "convertLuParams"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "LIST LUT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Filter LUS",
+                "name": "input"
+            },
+            "path": [
+                "LU_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Filter LUS",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Lu Name  ",
+                "name": "value"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Name  ",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "convertTranslationToMTable",
+                "name": "LuName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Name  ",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "TranslationsFolder",
+                "name": "sourceLU"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Name  ",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Prefix",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "TranslationsFolder",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "getTranslations",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TranslationsFolder",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TranslationPath",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "getTranslations",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TranslationPath",
+                "name": "elements"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "getTranslations",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "convertTranslationToMTable",
+                "name": "translationFileName"
+            },
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "getTranslations",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "k2transxml",
+                "name": "string"
+            },
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "k2transxml",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Switch Case",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Switch Case",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "mTableName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Switch Case",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Prefix",
+                "name": "elements"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Switch Case",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Lu Params  ",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Switch Case",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "None",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Switch Case",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Child Link",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lu Params  ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Or1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Child Link",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Or1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "mTableName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "convertTranslationToMTable",
+                "name": "mTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Prefix",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "convertTranslationToMTable",
+                "name": "mTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TranslationPath",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "convertTranslationToMTable",
+                "name": "translationPath"
+            }
+        }
+    ]
+}

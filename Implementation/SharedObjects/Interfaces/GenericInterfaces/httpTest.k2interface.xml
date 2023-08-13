@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<GenericInterface xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="HTTP" displayName="HTTP" enabled="false" version="1.6">
+<GenericInterface xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="HTTP" displayName="HTTP" enabled="false" version="1.8">
   <Name>httpTest</Name>
   <Properties>
     <Property name="ProtocolType">
@@ -21,7 +21,28 @@
       <Value>admin</Value>
     </Property>
     <Property name="Password">
-      <Value>cQOKt1rAQsYjgiDebDbJMflSefwpXK5WVx6lXXXdYTo=:7E3JWKgQ3DozyntTDQxM+chPkF2v3iUBptSU1QTg9dk=</Value>
+      <Value>~encs2~mWTLj/PlFGWXqtxkOBSab4Kfc/cHHtRQjGqKCswpVkJT3NTMmg==</Value>
+    </Property>
+    <Property name="Token">
+      <Value />
+    </Property>
+    <Property name="AccessTokenUrl">
+      <Value />
+    </Property>
+    <Property name="ClientId">
+      <Value />
+    </Property>
+    <Property name="ClientSecret">
+      <Value />
+    </Property>
+    <Property name="Scope">
+      <Value />
+    </Property>
+    <Property name="TokenTimeout">
+      <Value>0</Value>
+    </Property>
+    <Property name="TestConnectionValidStatus">
+      <Value />
     </Property>
   </Properties>
 </GenericInterface>

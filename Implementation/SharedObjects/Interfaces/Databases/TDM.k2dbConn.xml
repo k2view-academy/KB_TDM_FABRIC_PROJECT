@@ -1,14 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="7.1.0.31">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TDM" type="genericdb" version="7.0.0.24">
   <Active>true</Active>
-  <DataSource>host.docker.internal</DataSource>
+  <DataSource>dev-pg-service</DataSource>
   <PortNum>5432</PortNum>
-  <DataBase>TDMDB</DataBase>
-  <UserId>tdm</UserId>
-  <Password>luJGpApwvoZjOlUGXYb02e6VpCs31IsL+tMawr1q0sE=:eV+t1+ac5jDq2C/BycGhGErWHld4ULubbWhGpQHY4fc=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</ConnectionStringServerSide>
+  <DataBase>postgres</DataBase>
+  <UserId>postgres</UserId>
+  <Password>~encs0~2gGOxmfcfJIkLhW+j+X+HA==</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://dev-pg-service:5432/postgres?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
+  <SchemaFilter />
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
   <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
   <OfflineMode>true</OfflineMode>

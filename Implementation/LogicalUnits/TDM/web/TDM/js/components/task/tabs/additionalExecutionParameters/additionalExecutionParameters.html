@@ -271,6 +271,16 @@
                             </label>
                         </div>
                     </div>
+                    <div>
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox"
+                                ng-disabled="additionalExecutionParametersCtrl.taskData.env_mask_data"
+                                ng-model="additionalExecutionParametersCtrl.taskData.mask_sensitive_data" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Mask Sensitive Data
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

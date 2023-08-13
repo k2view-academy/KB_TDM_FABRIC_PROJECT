@@ -83,6 +83,10 @@
                                         "const": "{{INITIATE_VALUE_FLOW}}"
                                     },
 									{
+                                        "name": "sequenceId",
+                                        "const": "{{SEQUENCE_NAME}}"
+                                    },
+									{
                                         "name": "TTL",
                                         "const": 0
                                     }
@@ -126,13 +130,49 @@
                             }
                         },
                         {
-                            "name": "Populate TDM_SEQ_MAPPING",
+                            "name": "Populate TDM_SEQ_MAPPING Table",
                             "actorType": {
-                                "parentType": "SeqMappingStore",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
+                                        "name": "flowName",
+                                        "const": "PopulateTdmSeqMappingTable"
+                                    },
+                                    {
                                         "name": "seq_name",
-                                        "const": "{{SEQUENCE_NAME}}"
+                                        "const": "{{SEQUENCE_NAME}}",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "column_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "source_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "target_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -146,42 +186,12 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get Task Exec ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Original IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "lu_type"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get next Value of Sequence",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "target_value"
+                "actor": "Populate TDM_SEQ_MAPPING Table",
+                "name": "target_id"
             }
         },
         {
@@ -220,7 +230,7 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
+                "actor": "Populate TDM_SEQ_MAPPING Table",
                 "name": "table_name"
             }
         },
@@ -230,7 +240,7 @@
                 "name": "columName"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
+                "actor": "Populate TDM_SEQ_MAPPING Table",
                 "name": "column_name"
             }
         },
@@ -240,8 +250,8 @@
                 "name": "OriginalSeqValue"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "source_value"
+                "actor": "Populate TDM_SEQ_MAPPING Table",
+                "name": "source_id"
             }
         }
     ]

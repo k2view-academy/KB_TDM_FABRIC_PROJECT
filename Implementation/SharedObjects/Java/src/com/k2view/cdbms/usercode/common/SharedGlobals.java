@@ -8,9 +8,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 
 public class SharedGlobals {
 
-
-
-
 	@desc("Maximum values of combo box input object")
 	@category("TDM")
 	public static String COMBO_MAX_COUNT = "49";
@@ -109,21 +106,48 @@ public class SharedGlobals {
 	public static String clone_id = "0";
 
 	@category("TDM")
-	public static String EXTRACT_MASKING_FLAG = "true";
-	@category("TDM")
 	public static String LOAD_MASKING_FLAG = "false";
 
 	@category("TDM")
 	public static String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
 	@category("TDM")
+	public static String TDM_DELETE_TABLES_PREFIX = "TAR_";
+
+	@category("TDM")
+	public static final String TDM_BATCH_LIMIT = "10000";
+
+	@category("TDM")
+	public static final String TDM_SEQ_REPORT = "true";
+
+
+	@category("TDM")
+	public static String EXTRACT_MASKING_FLAG = "true";
+
+
+
+
+	@desc("Indicates whether to run add TDM statitics")
+	@category("TDM")
+	public static String TDM_POPULATE_JMX_STATS = "false";
+
+	@desc("The interface of the DB that will hold the caching of Sequences.")
+	@category("TDM")
+	public static final String SEQ_CACHE_INTERFACE = "DB_CASSANDRA";
+
+	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
+	@desc("The interface of the DB that will hold the caching of Sequences.")
+	@category("TDM")
+	public static final String SEQ_CACHE_INTREFACE = "DB_CASSANDRA";
+	@desc("The interface of the DB that will hold the caching of Sequences.")
+	@category("TDM")
+	public static final String SEQUENCES_INTERFACE = "DB_CASSANDRA";
 	@category("TDM")
 	public static String BUILD_TDMDB = "true";
 	@category("TDM_DEMO")
 	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
 	@category("TDM_DEMO")
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
-
 
 }

@@ -3,144 +3,8 @@
         {
             "stages": [
                 {
-                    "name": "check if exists",
+                    "name": "Stage 1",
                     "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "DbCommand1",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "POSTGRESQL_ADMIN"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select datname from pg_catalog.pg_database where datname='TDMDB'"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "datname": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "DbCommand2",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "POSTGRESQL_ADMIN"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "select rolname from pg_catalog.pg_roles where rolname='tdm'"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "rolname": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "is null",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "IsNull1",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "IsNull2",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "no database and role",
-                    "dependsOnList": [
-                        "is null"
-                    ],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "And",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "And",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                },
-                {
-                    "name": "exists",
-                    "dependsOnList": [
-                        "is null"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "get create db and role",
-                    "dependsOnList": [
-                        "no database and role"
-                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -172,26 +36,39 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [
-                        "exists"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "create db and role",
-                    "dependsOnList": [
-                        "get create db and role"
-                    ],
+                    "name": "Stage 2",
+                    "dependsOnList": [],
                     "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Split",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ";"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 1,
                     "actors": [
                         {
                             "name": "Create TDMDB Error Handler",
@@ -237,15 +114,6 @@
                             }
                         }
                     ]
-                },
-                {
-                    "name": "Stage 8",
-                    "dependsOnList": [
-                        "Stage 7"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": []
                 }
             ]
         }
@@ -253,49 +121,24 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "DbCommand1",
+                "actor": "Get  SQL Resource File To Create TDMDB Schema And User",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "IsNull1",
-                "name": "value"
-            },
-            "path": [
-                "datname"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "DbCommand2",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "IsNull2",
-                "name": "value"
-            },
-            "path": [
-                "rolname"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "IsNull1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "And",
-                "name": "a"
+                "actor": "Split",
+                "name": "string"
             }
         },
         {
             "leftPort": {
-                "actor": "IsNull2",
-                "name": "result"
+                "actor": "Split",
+                "name": "strings"
             },
             "rightPort": {
-                "actor": "And",
-                "name": "b"
-            }
+                "actor": "Create TDMDB User and Schema",
+                "name": "sql"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
@@ -303,8 +146,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Create TDMDB User and Schema",
-                "name": "sql"
+                "actor": "flowArgs",
+                "name": "result"
             }
         }
     ]

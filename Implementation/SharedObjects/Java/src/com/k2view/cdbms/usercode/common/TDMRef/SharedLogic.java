@@ -78,7 +78,7 @@ public class SharedLogic {
         
                 //log.info("fnTdmReference - execution_status: " + execStatus);
         
-                Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, e.environment_name as target_env_name,e.environment_id as environment_id, t.version_ind, " +
+                Db.Row taskParams = db(TDM).fetch("Select l.source_env_name, l.data_center_name as dc_name, e.environment_name as target_env_name,e.environment_id as environment_id, t.version_ind, " +
                                 "t.retention_period_type, t.retention_period_value, t.selection_method, t.selected_ref_version_task_name, " +
                                 "t.selected_ref_version_datetime, t.selected_ref_version_task_exe_id " +
                                 "from " + TASKS + " t, " + TASK_EXECUTION_LIST + " l, " + ENVIRONMENTS + " e " +
@@ -96,15 +96,14 @@ public class SharedLogic {
                 Float retVal = (retPeriodVal != null) ? Float.valueOf(retPeriodVal.toString()) : 0;
                 Integer ttl = getRetention(retType, retVal);
         
-                Db.Row luData = db(TDM).fetch("select p.lu_id, p.lu_dc_name from " + TASKS_LOGICAL_UNITS + " t, "
+                Db.Row luData = db(TDM).fetch("select p.lu_id from " + TASKS_LOGICAL_UNITS + " t, "
                                 + PRODUCT_LOGICAL_UNITS + " p where t.lu_name = ? and t.task_id = ? and t.lu_name = p.lu_name and t.lu_id = p.lu_id ",
                         luName, taskID).firstRow();
         
                 String luID = "" + luData.get("lu_id");
-                String luDCName = "" + luData.get("lu_dc_name");
-        
+
                 String affinity = "";
-        
+                String luDCName = "" + taskParams.get("dc_name");
                 if (luDCName != null && !"".equals(luDCName) && !"null".equals(luDCName)) {
                     affinity = " AFFINITY='" + luDCName + "'";
                 }

@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name>FABRIC_TDM</Name>
+  <Name>TDM_DEMO_TELCO</Name>
   <CreateDate>2021-02-16T20:22:44.1650338+02:00</CreateDate>
-  <ProductVersion>7.1.0.27</ProductVersion>
+  <ProductVersion>7.2.0.11</ProductVersion>
   <Mdm>false</Mdm>
   <ProjectHasDiagramBinFiles>false</ProjectHasDiagramBinFiles>
   <DataChangeIndicators>

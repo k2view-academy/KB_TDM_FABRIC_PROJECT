@@ -61,7 +61,7 @@
                             </div>
                             <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_write">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
-                                <input style="width: 100%" type="number" class="form-control1" min="1" 
+                                <input style="width: 100%" type="number" class="form-control1" min="0" 
                                     ng-disabled="environmentCtrl.disableChangeRole"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy" ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy"/>
                             </div>
@@ -220,7 +220,8 @@
                             <label class="option-button-label">
                                 Max Number of Reserved Entities On Env
                             </label>
-                            <input ng-disabled="environmentCtrl.disableChangeRole" style="width: 100%" type="number" class="form-control1" min="0"
+                            <input ng-disabled="environmentCtrl.disableChangeRole" style="width: 100%" type="number" class="form-control1" 
+                            min="{{!environmentCtrl.roleData.allowed_number_of_entities_to_copy && environmentCtrl.envType === 'Target' ? 1 : 0}}"
                                 ng-model="environmentCtrl.roleData.allowed_number_of_reserved_entities" />
                         </div>
                     </div>

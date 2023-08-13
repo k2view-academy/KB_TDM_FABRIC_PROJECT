@@ -44,37 +44,28 @@ public class SharedLogic {
 	public static final String TDM = "TDM";
     public static final Log log = Log.a(UserCode.class);
 
-	public static int fnValidateNumberOfReadEntities(Integer numberOfEntities, String role_id, String sourceEnvName) throws Exception {
-		return fnValidateNumberOfEntities(numberOfEntities, role_id, "allowed_number_of_entities_to_read", sourceEnvName);
-	}
+    public static int fnValidateNumberOfReadEntities(String role_id, String sourceEnvName) throws Exception {
+        return fnValidateNumberOfEntities(role_id, "allowed_number_of_entities_to_read", sourceEnvName);
+    }
 
 
-	public static int fnValidateNumberOfCopyEntities(Integer numberOfEntities, String role_id, String targetEnvName) throws Exception {
-		return fnValidateNumberOfEntities(numberOfEntities, role_id, "allowed_number_of_entities_to_copy", targetEnvName);
-	}
+    public static int fnValidateNumberOfCopyEntities(String role_id, String targetEnvName) throws Exception {
+        return fnValidateNumberOfEntities(role_id, "allowed_number_of_entities_to_copy", targetEnvName);
+    }
+    public static int fnValidateNumberOfReserveEntities( String role_id, String targetEnvName) throws Exception {
+        return fnValidateNumberOfEntities(role_id, "allowed_number_of_reserved_entities", targetEnvName);
+    }
 
-
-    private static int fnValidateNumberOfEntities(Integer numberOfEntities, String role_id, String columnName, String envName) throws Exception {
-		if (numberOfEntities == -1 || "admin".equalsIgnoreCase(role_id) || "owner".equalsIgnoreCase(role_id)) {
-		            return 1;
-		        }
-				//log.info("Inputs: numberOfEntities: " + numberOfEntities + ", role_id: " + role_id +", columnName: " + columnName + ", envName: " + envName);
-				String numberOfEntities_sql = "select " + columnName + " as number_of_entities from " + 
-												TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA + ".environment_roles r where " + 
-												"e.environment_name = ? and lower(e.environment_status) = 'active' and " + 
-												"e.environment_id = r.environment_id and r.role_id = ? ";
-				//log.info("numberOfEntities_sql: " + numberOfEntities_sql);
-		        Long num = (Long)UserCode.db(TDM).fetch(numberOfEntities_sql, envName, role_id).firstValue();
-				
-				if (numberOfEntities == null) numberOfEntities = 0;
-				if (num >= numberOfEntities) {
-					//The role always handling the given number of entities
-					return num.intValue();
-				}
-			
-				//If this point is reached then the task is trying to process more entities than allowed for the user
-		        return -1;
-	}
+    private static int fnValidateNumberOfEntities( String role_id, String columnName, String envName) throws Exception {
+        //log.info("Inputs: numberOfEntities: " + numberOfEntities + ", role_id: " + role_id +", columnName: " + columnName + ", envName: " + envName);
+        String numberOfEntities_sql = "select " + columnName + " as number_of_entities from " +
+                TDMDB_SCHEMA + ".environments e, " + TDMDB_SCHEMA + ".environment_roles r where " +
+                "e.environment_name = ? and lower(e.environment_status) = 'active' and " +
+                "e.environment_id = r.environment_id and r.role_id = ? ";
+        //log.info("numberOfEntities_sql: " + numberOfEntities_sql);
+        Long num = (Long)UserCode.db(TDM).fetch(numberOfEntities_sql, envName, role_id).firstValue();
+        return num.intValue();
+    }
 
 
     public static Boolean fnValidateParallelExecutions(Long taskId, Map<String, Object> overrideParameters) throws Exception {
@@ -368,6 +359,10 @@ public class SharedLogic {
                 }
             }
         }
+		
+		if (taskList != null) {
+			taskList.close();
+		}
         if(luList.size() > 0) {
             result.put("errorMessage", "Not ALL the requested LUs were part of the given extract task");
             return result;

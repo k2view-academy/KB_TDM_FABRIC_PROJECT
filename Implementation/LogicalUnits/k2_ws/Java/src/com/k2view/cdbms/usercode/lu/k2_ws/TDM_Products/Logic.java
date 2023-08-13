@@ -68,7 +68,7 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM \"" + schema + "\".products";
+			String sql = "SELECT * FROM " + schema + ".products";
 			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> result=new ArrayList<>();
 			Map<String,Object> product;
@@ -88,6 +88,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			response.put("result", result);
 			errorCode= "SUCCESS";
+			if (rows != null) {
+				rows.close();
+			}
 		
 		}
 		catch(Exception e){
@@ -125,8 +128,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM \"" + schema + "\".products " +
-					"WHERE \"" + schema + "\".products.product_id = " + prodId;
+			String sql = "SELECT * FROM " + schema + ".products " +
+					"WHERE product_id = " + prodId;
 			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Map<String,Object> product;
 			if(!row.isEmpty()) {
@@ -185,7 +188,7 @@ public class Logic extends WebServiceUserCode {
 				.format(Instant.now());
 		
 		try {
-			String sql= "INSERT INTO \"" + schema + "\".products " +
+			String sql= "INSERT INTO " + schema + ".products " +
 					"(product_name, product_description, product_vendor, product_versions, product_created_by, " +
 					"product_creation_date, product_last_updated_date, product_last_updated_by, product_status) " +
 					"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING product_id";
@@ -240,7 +243,7 @@ public class Logic extends WebServiceUserCode {
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 		try {
-			String sql = "UPDATE \"" + schema + "\".products SET " +
+			String sql = "UPDATE " + schema + ".products SET " +
 			"product_name=(?)," +
 					"product_description=(?)," +
 					"product_vendor=(?)," +
@@ -282,7 +285,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"be_status\": \"Active\",\r\n" +
 			"      \"be_creation_date\": \"date\",\r\n" +
 			"      \"be_last_updated_date\": \"date\",\r\n" +
-			"      \"lu_dc_name\": \"DC1\",\r\n" +
 			"      \"be_created_by\": \"k2view\",\r\n" +
 			"      \"product_name\": \"PROD\",\r\n" +
 			"      \"be_name\": \"BE\",\r\n" +
@@ -303,9 +305,9 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM \"" + schema + "\".product_logical_units " +
-			"INNER JOIN \"" + schema + "\".business_entities ON (\"" + schema + "\".product_logical_units.be_id = \"" + schema + "\".business_entities.be_id) " +
-					"WHERE product_logical_units.product_id = " + prodId;
+			String sql = "SELECT * FROM " + schema + ".product_logical_units p " +
+			"INNER JOIN " + schema + ".business_entities b ON (p.be_id = b.be_id) " +
+					"WHERE p.product_id = " + prodId;
 			Db.Rows rows = db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> productLogicalUnits=new ArrayList<>();
@@ -323,7 +325,6 @@ public class Logic extends WebServiceUserCode {
 				productLogicalUnit.put("product_name", row.get("product_name"));
 				productLogicalUnit.put("lu_parent_name", row.get("lu_parent_name"));
 				productLogicalUnit.put("product_id", Long.parseLong(row.get("product_id").toString()));
-				productLogicalUnit.put("lu_dc_name", row.get("lu_dc_name"));
 				//business_entities
 				productLogicalUnit.put("be_name", row.get("be_name"));
 				productLogicalUnit.put("be_description", row.get("be_description"));
@@ -337,6 +338,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode= "SUCCESS";
 			response.put("result", productLogicalUnits);
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		catch(Exception e){
 			errorCode= "FAILED";
@@ -359,7 +363,6 @@ public class Logic extends WebServiceUserCode {
 			"      \"be_status\": \"Active\",\r\n" +
 			"      \"be_creation_date\": \"date\",\r\n" +
 			"      \"be_last_updated_date\": \"date\",\r\n" +
-			"      \"lu_dc_name\": \"dcName\",\r\n" +
 			"      \"be_created_by\": \"k2view\",\r\n" +
 			"      \"product_name\": \"null\",\r\n" +
 			"      \"be_name\": \"BE\",\r\n" +
@@ -381,8 +384,8 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM \"" + schema + "\".product_logical_units " +
-			"INNER JOIN \"" + schema + "\".business_entities ON (\"" + schema + "\".product_logical_units.be_id = \"" + schema + "\".business_entities.be_id) " +
+			String sql = "SELECT * FROM " + schema + ".product_logical_units p " +
+			"INNER JOIN " + schema + ".business_entities b ON (p.be_id = b.be_id) " +
 					"WHERE product_id = -1 AND be_status = 'Active'";
 			Db.Rows rows = db(TDM).fetch(sql);
 			List<Map<String,Object>> productLogicalUnits=new ArrayList<>();
@@ -399,7 +402,6 @@ public class Logic extends WebServiceUserCode {
 				productLogicalUnit.put("product_name", row.get("product_name"));
 				productLogicalUnit.put("lu_parent_name", row.get("lu_parent_name"));
 				productLogicalUnit.put("product_id", Long.parseLong(row.get("product_id").toString()));
-				productLogicalUnit.put("lu_dc_name", row.get("lu_dc_name"));
 		
 				//business_entities
 				productLogicalUnit.put("be_name", row.get("be_name"));
@@ -414,6 +416,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode= "SUCCESS";
 			response.put("result", productLogicalUnits);
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		catch(Exception e){
 			errorCode= "FAILED";
@@ -447,21 +452,21 @@ public class Logic extends WebServiceUserCode {
 		}
 		
 		try {
-			String sql= "UPDATE \"" + schema + "\".products  SET " +
+			String sql= "UPDATE " + schema + ".products  SET " +
 					"product_status=(?) " +
 					"WHERE product_id = " + prodId + " RETURNING product_name";
 			Db.Row row = db(TDM).fetch(sql,"Inactive").firstRow();
 			String prodName = row.get("product_name").toString();
 		
 			{
-				String updateProductLogicalUnits = "UPDATE \"" + schema + "\".product_logical_units " +
+				String updateProductLogicalUnits = "UPDATE " + schema + ".product_logical_units " +
 						"SET product_id=(?), product_name=(?) " +
 						"WHERE product_id = " + prodId;
 				db(TDM).execute(updateProductLogicalUnits,-1,"");
 			}
 		
 			{
-				String updateEnvironmentProducts = "UPDATE \"" + schema + "\".environment_products " +
+				String updateEnvironmentProducts = "UPDATE " + schema + ".environment_products " +
 						"SET status=(?) " +
 						"WHERE product_id = " + prodId ;
 				db(TDM).execute(updateEnvironmentProducts,"Inactive");
@@ -529,11 +534,11 @@ public class Logic extends WebServiceUserCode {
 		String message=null;
 		
 		try{
-			String sql = "SELECT * FROM \"" + schema + "\".environment_products " +
-			"INNER JOIN \"" + schema + "\".environments " +
-					"ON (\"" + schema + "\".environments.environment_id = \"" + schema + "\".environment_products.environment_id AND \"" + schema + "\".environments.environment_status = \'Active\' )" +
-					"WHERE \"" + schema + "\".environment_products.product_id = " +  productId +
-					" AND \"" + schema + "\".environment_products.status = 'Active'";
+			String sql = "SELECT * FROM " + schema + ".environment_products p " +
+			"INNER JOIN " + schema + ".environments e " +
+					"ON (e.environment_id = p.environment_id AND e.environment_status = \'Active\' )" +
+					"WHERE p.product_id = " +  productId +
+					" AND p.status = 'Active'";
 			Db.Rows rows = db(TDM).fetch(sql);
 		
 			HashMap<String,Object> env;
@@ -571,6 +576,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode= "SUCCESS";
 			response.put("result", result);
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		catch(Exception e){
 			errorCode= "FAILED";
@@ -610,11 +618,11 @@ public class Logic extends WebServiceUserCode {
 		      final String SYNTHETIC = "Synthetic";
 		
 		try{
-			String sql="SELECT \"" + schema + "\".products.product_id,\"" + schema + "\".products.product_versions,\"" + schema + "\".products.product_name,COUNT(\"" + schema + "\".product_logical_units.lu_id) as lus " +
-					"FROM \"" + schema + "\".products " +
-					"LEFT JOIN \"" + schema + "\".product_logical_units ON (\"" + schema + "\".product_logical_units.product_id = \"" + schema + "\".products.product_id) " +
-					"WHERE \"" + schema + "\".products.product_status = 'Active' " +
-					"GROUP BY \"" + schema + "\".products.product_id ";
+			String sql="SELECT products.product_id, products.product_versions, products.product_name, COUNT(product_logical_units.lu_id) as lus " +
+					"FROM " + schema + ".products " +
+					"LEFT JOIN " + schema + ".product_logical_units ON (product_logical_units.product_id = products.product_id) " +
+					"WHERE products.product_status = 'Active' " +
+					"GROUP BY products.product_id ";
 			Db.Rows rows= db(TDM).fetch(sql);
 		
 			List<Map<String,Object>> result=new ArrayList<>();
@@ -633,6 +641,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			response.put("result", result);
 			errorCode= "SUCCESS";
+			if (rows != null) {
+				rows.close();
+			}
 		
 		}
 		catch(Exception e){
@@ -651,7 +662,7 @@ public class Logic extends WebServiceUserCode {
 				.withZone(ZoneOffset.UTC)
 				.format(Instant.now());
 
-		String sql = "UPDATE \"" + schema + "\".products SET " +
+		String sql = "UPDATE " + schema + ".products SET " +
 				"product_last_updated_date=(?)," +
 				"product_last_updated_by=(?) " +
 				"WHERE product_id = " + prodId;
@@ -664,7 +675,7 @@ public class Logic extends WebServiceUserCode {
 				.format(Instant.now());
 		String username = sessionUser().name();
 		String userId = username;
-		String sql= "INSERT INTO \"" + schema + "\".activities " +
+		String sql= "INSERT INTO " + schema + ".activities " +
 				"(date, action, entity, user_id, username, description) " +
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);

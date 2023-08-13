@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -14,7 +17,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "http://localhost:3214/"
+                                        "const": "http://localhost:3213/"
                                     },
                                     {
                                         "name": "path",

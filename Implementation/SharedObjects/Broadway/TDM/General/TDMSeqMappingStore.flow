@@ -1,0 +1,309 @@
+{
+    "tags": [
+        "TDM",
+        "TDMGeneral"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Seq Indicator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get enable_sequences",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDM_SEQ_REPORT",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SEQ_REPORT",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if Sequencing was part of the task",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "If sequences enabled and report requested",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "And",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Insert into k2masking table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "INSERT INTO k2masking.tdm_seq_mapping (task_execution_id, iid, lu_type, seq_name, table_name, column_name, source_value, target_value) VALUES (${task_execution_id}, ${iid}, ${lu_type}, ${seq_name}, ${table_name}, ${column_name}, ${source_value}, ${target_value}) USING TTL ${TTL}"
+                                    },
+                                    {
+                                        "name": "batch",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_type",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "seq_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "column_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "source_value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "target_value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TTL",
+                                        "const": 86400,
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get enable_sequences",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If sequences enabled and report requested",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDM_SEQ_REPORT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If sequences enabled and report requested",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "params"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "batch"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "batch"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_type"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "lu_type"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "seq_name"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "seq_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table_name"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "table_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "column_name"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "column_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "source_value"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "source_value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "target_value"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "target_value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TTL"
+            },
+            "rightPort": {
+                "actor": "Insert into k2masking table",
+                "name": "TTL"
+            }
+        }
+    ]
+}

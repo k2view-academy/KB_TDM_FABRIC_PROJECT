@@ -11,7 +11,6 @@
         },
         {
           "name": "Source Environment",
-          "collapsed": true,
           "children": [
             {
               "name": "Environment Name",
@@ -21,14 +20,14 @@
             {
               "name": "Source Environment Products",
               "type": "sql",
-              "code": "select distinct product_name, source_product_version\nfrom task_execution_list"
+              "code": "select distinct product_name, source_product_version\nfrom task_execution_list\nWHERE product_name IS NOT NULL AND source_product_version IS NOT NULL;"
             }
           ]
         },
         {
           "name": "Task Execution Summary",
           "type": "sql",
-          "code": "select ifnull(fabric_execution_id, -1) as fabric_execution_id, lu_id, lu_name, process_id, process_name from task_execution_list Where LU_NAME = ${i_luName}",
+          "code": "SELECT IFNULL(NULLIF(fabric_execution_id, ''), -1) as fabric_execution_id, lu_id, lu_name, process_id, process_name from task_execution_list Where LU_NAME = ${i_luName}",
           "collapsed": true,
           "children": [
             {
@@ -45,7 +44,7 @@
                     },
                     {
                       "type": "condition",
-                      "code": "fabric_execution_id != \"null\"",
+                      "code": "fabric_execution_id != -1",
                       "children": [
                         {
                           "name": "LU Migration Summary",
@@ -62,6 +61,7 @@
         },
         {
           "name": "List of Root Entities",
+          "collapsed": true,
           "children": [
             {
               "name": "Number of Copied Entities",
@@ -92,22 +92,22 @@
             {
               "name": "Number of Copied Reference Tables",
               "type": "sql",
-              "code": "Select Count(1) as count\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' and execution_status = 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'\nAnd lu_name = ${i_luName}"
             },
             {
               "name": "List of Copied Reference Tables",
               "type": "sql",
-              "code": "select target_entity_id as table_name, lu_name\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' And execution_status = 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'\nAnd lu_name = ${i_luName}"
             },
             {
               "name": "Number of Failed Reference Tables",
               "type": "sql",
-              "code": "Select Count(1) as count\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' and execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats \nWhere execution_status <> 'completed' \nAnd lu_name = ${i_luName}"
             },
             {
               "name": "List of Failed Reference Tables",
               "type": "sql",
-              "code": "select target_entity_id as table_name, lu_name\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' And execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records ,error_msg\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
             }
           ]
         },

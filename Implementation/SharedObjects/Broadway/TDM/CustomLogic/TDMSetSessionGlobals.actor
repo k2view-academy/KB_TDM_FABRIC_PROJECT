@@ -1,0 +1,18 @@
+{
+    "type": "TDMSetSessionGlobals",
+    "badge": "SG",
+    "inputs": [
+        {
+            "name": "sessionGlobals",
+            "schema": {
+                "type": "object"
+            },
+            "mandatory": false
+        }
+    ],
+    "outputs": [],
+    "tags": [
+        "TDM"
+    ],
+    "actorClass": "com.k2view.cdbms.usercode.common.TDMSetSessionGlobals"
+}

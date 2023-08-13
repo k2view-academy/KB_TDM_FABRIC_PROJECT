@@ -17,5 +17,8 @@ out
 Implementation/SharedObjects/Java/*.iml
 Implementation/LogicalUnits/*/Java/*.iml
 .studio
+.studioWeb
 FabricHome
 LocalDeploy
+LocalDeployWeb
+*.DS_Store

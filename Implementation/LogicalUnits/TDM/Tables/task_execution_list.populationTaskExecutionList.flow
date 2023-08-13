@@ -526,15 +526,12 @@
         {
             "stages": [
                 {
-                    "name": "Target Product Version",
-                    "dependsOnList": [
-                        "Task Type"
-                    ],
+                    "name": "Reserve or Load",
+                    "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Load",
-                            "condition": "result",
+                            "name": "Load  ",
                             "actorType": {
                                 "parentType": "EqualsIgnoreCase",
                                 "inputs": [
@@ -543,9 +540,47 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "const": "load"
+                                        "const": "LOAD"
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Reserve",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "RESERVE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Target Product Version",
+                    "dependsOnList": [
+                        "Reserve or Load"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Reserve or Load Task",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Or",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -602,16 +637,27 @@
                                     },
                                     {
                                         "name": "product_id",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "integer"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "environment_id",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "integer"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -619,7 +665,7 @@
                 {
                     "name": "Source Product Version",
                     "dependsOnList": [
-                        "Task Type"
+                        "Reserve or Load"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -640,16 +686,27 @@
                                     },
                                     {
                                         "name": "product_id",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "integer"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "environment_id",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "integer"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -923,7 +980,9 @@
                                     },
                                     {
                                         "name": "DATA_CENTER_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
@@ -989,7 +1048,9 @@
                                     },
                                     {
                                         "name": "SOURCE_PRODUCT_VERSION",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
@@ -1586,8 +1647,38 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Load",
+                "actor": "Load  ",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "task_type",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Reserve",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Load  ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Reserve or Load Task",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Reserve",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Reserve or Load Task",
+                "name": "b"
             }
         },
         {

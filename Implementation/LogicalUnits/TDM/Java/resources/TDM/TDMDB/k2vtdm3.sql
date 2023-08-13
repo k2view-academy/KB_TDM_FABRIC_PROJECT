@@ -144,6 +144,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environments
     allow_write boolean NOT NULL DEFAULT true,
     allow_read boolean NOT NULL DEFAULT false,
     sync_mode character varying(20) DEFAULT 'ON',
+    mask_sensitive_data boolean NOT NULL DEFAULT true, -- TDM 8.1
     CONSTRAINT environments_pkey PRIMARY KEY (environment_id)
 );
 
@@ -178,9 +179,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
     product_name character varying(200),
     lu_parent_name character varying(200),
     product_id bigint,
-    lu_dc_name character varying(200), 
     CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id)
-        --, CONSTRAINT product_logical_units_lu_name_key UNIQUE (lu_name)
 );
 
 -- Table: ${@schema}.products
@@ -304,6 +303,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     reserve_retention_period_value numeric,
     reserve_note text, -- TDM 7.5.2
     filterout_reserved boolean DEFAULT true, --TDM 7.6
+    mask_sensitive_data boolean default true, -- TDM 8.1
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
@@ -374,7 +374,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   fabric_get_time bigint,
   total_processing_time bigint,
   clone_no text DEFAULT '0',
-  root_entity_id text,
+  root_entity_id text, -- TDM 8.0
+  root_lu_name text, -- TDM 8.1
   CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id)
 );
 
@@ -741,6 +742,7 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
     param_name text COLLATE pg_catalog."default",
     param_type text COLLATE pg_catalog."default" NOT NULL,
     param_value text COLLATE pg_catalog."default",
+	param_order bigint,
     CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
 );
 
@@ -901,8 +903,9 @@ LANGUAGE plpgsql;
 INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
 	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
 	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
-	allow_read, sync_mode) 
-	VALUES ('Synthetic','This is the synthetic environment.',NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE') ON CONFLICT DO NOTHING;
+	allow_read, sync_mode,mask_sensitive_data) 
+	VALUES ('Synthetic','This is the synthetic environment.',
+        NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE', false) ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, 
 	allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, allowed_number_of_entities_to_copy, role_id, role_created_by, 
