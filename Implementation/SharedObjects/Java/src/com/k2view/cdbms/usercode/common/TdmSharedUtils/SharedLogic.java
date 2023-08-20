@@ -503,8 +503,8 @@ public class SharedLogic {
 		String rootEntityIdSql = "SELECT e.root_lu_name, e.root_entity_id " +
 		        "FROM " + TDMDB_SCHEMA + ".task_execution_entities e, " + TDMDB_SCHEMA + ".tdm_lu_type_relation_eid t " +
 		        "WHERE e.task_execution_id = ? AND e.lu_name = ? " +
-		        "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ?" +
-		        "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ?" +
+		        "AND e.iid = t.lu_type1_eid AND t.lu_type_1 = ? " +
+		        "AND t.lu_type_2 =  ? AND t.lu_type2_eid = ? " +
 		        "AND t.source_env = ?";
 		
 		Object parenLUName = db(TDM).fetch(parentLuSql, taskExecId, luId).firstValue();

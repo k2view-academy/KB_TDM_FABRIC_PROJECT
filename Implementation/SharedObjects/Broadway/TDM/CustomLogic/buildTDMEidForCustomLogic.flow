@@ -408,7 +408,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Format DataFlux EID",
+                "actor": "Format Simple EID",
                 "name": "sourceIID"
             },
             "path": [
@@ -421,7 +421,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Format Simple EID",
+                "actor": "Format DataFlux EID",
                 "name": "sourceIID"
             },
             "path": [

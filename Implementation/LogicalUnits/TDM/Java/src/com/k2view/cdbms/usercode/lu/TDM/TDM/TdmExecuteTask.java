@@ -336,7 +336,7 @@ public class TdmExecuteTask {
 		String entityInclusionOverride = "";
 
 
-		String syncMode = getSyncModeForLoad(taskProperties);
+		String syncMode = getSyncModeForLoad(taskProperties); 
 
 		// TDM 8.1 Call fucntion to set TTL
 		//Calculate retention date + set TTL

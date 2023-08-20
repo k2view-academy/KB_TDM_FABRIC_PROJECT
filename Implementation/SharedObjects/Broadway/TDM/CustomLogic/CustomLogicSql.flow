@@ -262,12 +262,98 @@
                                     {
                                         "name": "result",
                                         "schema": {
+                                            "type": "array"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Data Array",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
                                             "type": "array",
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "source_iid": {
+                                                    "customer_id": {
                                                         "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Transform to source_iid",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JavaScript",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "const output = [];\r\nfor (var obj in input) {\r\n  for (var key in input[obj]) {\r\n    const value = input[obj][key];\r\n    const newObj = {\r\n      \"source_iid\": value\r\n    };\r\n    output.push(newObj);\r\n    break; // Assuming each object only has one key to replace\r\n  }\r\n}\r\noutput;",
+                                            "script": "var output = [];\n\nfor (var obj in input) {\n  for (var key in input[obj]) {\n    var value = input[obj][key];\n    var newObj = {\n      \"source_iid\": value\n    };\n    output.push(newObj);\n    break; // Assuming each object only has one key to replace\n  }\n}\n\noutput;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "customer_id": {
+                                                            "type": "integer"
+                                                        }
                                                     }
                                                 }
                                             }
@@ -538,6 +624,26 @@
         {
             "leftPort": {
                 "actor": "Run Input SQL",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "JavaScript",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript",
                 "name": "result"
             },
             "rightPort": {

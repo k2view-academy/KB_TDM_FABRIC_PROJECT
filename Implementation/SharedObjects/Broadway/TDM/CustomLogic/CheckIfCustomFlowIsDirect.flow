@@ -303,32 +303,17 @@
                             }
                         },
                         {
-                            "name": "Return Direct Flow Indicator",
+                            "name": "Return Direct Flow Indicator ",
                             "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
                             }
                         }
                     ]
                 },
                 {
-                    "name": "Stage 2",
+                    "name": "False",
                     "dependsOnList": [
                         "Stage 1"
                     ],
@@ -344,15 +329,16 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "boolean"
-                                        }
+                                            "type": "string"
+                                        },
+                                        "const": "false"
                                     }
                                 ],
                                 "outputs": [
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "boolean"
+                                            "type": "string"
                                         }
                                     }
                                 ]
@@ -410,7 +396,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Return Direct Flow Indicator",
+                "actor": "Indicator Not Empty?",
                 "name": "value"
             },
             "path": [
@@ -423,7 +409,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Indicator Not Empty?",
+                "actor": "Return Direct Flow Indicator ",
                 "name": "value"
             },
             "path": [
@@ -449,7 +435,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Return Direct Flow Indicator",
+                "actor": "Return Direct Flow Indicator ",
                 "name": "value"
             },
             "path": [
@@ -488,8 +474,8 @@
         },
         {
             "leftPort": {
-                "actor": "Return Direct Flow Indicator",
-                "name": "value"
+                "actor": "Return Direct Flow Indicator ",
+                "name": "string"
             },
             "rightPort": {
                 "actor": "flowArgs",

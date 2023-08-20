@@ -58,6 +58,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~pnDT9SL+qPvAXcptKAitBUxsYV1XLsDagJEpCBl5ySWNoklQl1QViw==</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5433</dbPort>
@@ -247,9 +258,27 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
+        <Global name="BUILD_TDMDB" luName="TDM_BCK">
+          <Value>true</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
+          <Value>1</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
+          <Value>10</Value>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
+          <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers">
@@ -379,6 +408,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~EKfua8MKSduCMNzIn9KRGKOZhOIkaxPYV1H6RQHSQzwuVAtXllVsuQ==</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5433</dbPort>
@@ -568,9 +608,27 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
+        <Global name="BUILD_TDMDB" luName="TDM_BCK">
+          <Value>true</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
+          <Value>1</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
+          <Value>10</Value>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
+          <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers">
@@ -644,7 +702,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-	<Environment enabled="true" name="UAT1">
+    <Environment enabled="true" name="UAT1">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -696,6 +754,17 @@
           <dbUser>TAR_ORDERING_USER</dbUser>
           <dbPasswordEncrypted>~encs2~3LHoFCyMIMe4V/D1uRsk86RNsdTApb0roF+e3P/c950YDLy06bjENduSDzjlj7FHRw==</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5433/TAR_ORDERING?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~BqOMCnV9tWkpRed6KxXdHX0YMgA+QTiGS7MCLATkT6AnFOHqnAC9gg==</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -889,9 +958,27 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
+        <Global name="BUILD_TDMDB" luName="TDM_BCK">
+          <Value>true</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
+          <Value>1</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
+          <Value>10</Value>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
+          <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers">
@@ -1017,6 +1104,17 @@
           <dbUser>ORDERS_USER</dbUser>
           <dbPasswordEncrypted>~encs2~Ac76LlcKC1kdaaieGx2de7/HX7E+gU8ZjEf2if1NqkuJtH0V1sHK8od3fQ==</dbPasswordEncrypted>
           <connString>jdbc:postgresql://localhost:5433/ORDERING_DB?stringtype=unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
+          <dbHost>localhost</dbHost>
+          <dbPort>5433</dbPort>
+          <dbScheme>postgres</dbScheme>
+          <dbUser>postgres</dbUser>
+          <dbPasswordEncrypted>~encs2~EOVN+2Zwey30LL+6C4C9//WbQshjplYe8KzdzkPFFH+TVBAdY9tWrw==</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1211,9 +1309,27 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
+        <Global name="BUILD_TDMDB" luName="TDM_BCK">
+          <Value>true</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
+          <Value>1</Value>
+        </Global>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
+          <Value>10</Value>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
+          <Value>Synthetic</Value>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
+          <Value>false</Value>
+        </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="true" version="1.8">
+        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
             <Property name="Servers">

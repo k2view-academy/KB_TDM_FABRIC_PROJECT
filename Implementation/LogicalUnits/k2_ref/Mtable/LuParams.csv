@@ -1,1 +1,35 @@
 lu_name,column_name,sql
+Billing,TOTAL_BALANCE_AMOUNT,"Select Sum(ifNull(BALANCE.AVAILABLE_AMOUNT, 0)) As total_balance_amount
+From Billing.BALANCE"
+Billing,NO_OF_OPEN_INVOICES,"Select count(*) As NUMBER_OF_OPEN_INVOICES
+From Billing.INVOICE
+Where Upper(INVOICE.STATUS) = 'OPEN'"
+Billing,TOTAL_PAYMENT_AMOUNT,"Select Sum(ifNull(PAYMENT.AMOUNT, 0)) As tot_amt
+From Billing.PAYMENT"
+Billing,VIP_STATUS,"Select Distinct VIP_STATUS
+From Billing.SUBSCRIBER"
+Billing,SUBSCRIBER_TYPE,"Select Distinct SUBSCRIBER.SUBSCRIBER_TYPE
+From Billing.SUBSCRIBER"
+Collection,COLLECTION_STATUS,"Select distinct COLLECTION.COLLECTION_STATUS
+From Collection.COLLECTION"
+Orders,ORDER_TYPE,"Select distinct ORDERS.ORDER_TYPE
+From Orders.ORDERS"
+Orders,ORDER_STATUS,"Select distinct ORDERS.ORDER_STATUS
+From Orders.ORDERS"
+Customer,FIRST_NAME,"Select CUSTOMER.FIRST_NAME
+ From Customer.CUSTOMER"
+Customer,LAST_NAME,"Select CUSTOMER.LAST_NAME 
+From Customer.CUSTOMER"
+Customer,LINE_NUMBER,"Select CONTRACT.ASSOCIATED_LINE
+ From Customer.CONTRACT"
+Customer,NO_OF_OPEN_CASES,"Select count(*) as no_of_open_cases 
+From Customer.CASES where upper(status) <> 'CLOSED'"
+Customer,OPEN_CASE_DATE,"Select CASE_DATE 
+From Customer.CASES where upper(status) <> 'CLOSED'"
+Customer,NO_OF_SUBSCRIBERS,"Select count(*) AS NO_OF_CONTRACT 
+From Customer.CONTRACT"
+Customer,CITY,"Select Distinct ADDRESS.CITY
+ From Customer.ADDRESS"
+Customer,STATE,"Select Distinct ADDRESS.STATE
+ From Customer.ADDRESS"
+Customer,ACTIVITY_NOTE,select activity_note from activity 

@@ -11,6 +11,18 @@ import java.util.*;
 import com.k2view.cdbms.shared.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import java.sql.*;
+import java.math.*;
+import java.io.*;
+import com.k2view.cdbms.sync.*;
+import com.k2view.cdbms.lut.*;
+import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
+import com.k2view.cdbms.shared.logging.LogEntry.*;
+import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.k2view.cdbms.func.oracle.OracleRownum;
+import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
+import static com.k2view.cdbms.shared.user.ProductFunctions.*;
+import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class Logic extends WebServiceUserCode {
 	
@@ -48,7 +60,7 @@ public class Logic extends WebServiceUserCode {
 
 
 	@desc("Provides all mappings between TDM permission groups and Fabric roles")
-	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -80,7 +92,7 @@ public class Logic extends WebServiceUserCode {
 			r.keySet().forEach(col -> pgMapping.put(col, r.get(col)));
 			result.add(pgMapping);
 		});
-		return wrapWebServiceResults("SUCCESS", null, result);
+		return wrapWebServiceResults("SUCCESS", null, result); 
 	}
 
 

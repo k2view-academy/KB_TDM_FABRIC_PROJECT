@@ -780,7 +780,7 @@ public class SharedLogic {
 
 	public static List<Map<String, Object>> fnGetActiveTaskForActivation(Long taskId) throws Exception {
 		String clientQuery = "SELECT *, " +
-				"( SELECT COUNT(*) FROM " + schema + ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id ) AS refcount " +
+				"(SELECT COUNT(*) FROM " + schema + ".task_ref_tables WHERE task_ref_tables.task_id = tasks.task_id) AS refcount " +
 				"FROM " + schema + ".tasks " +
 				"INNER JOIN " + schema + ".tasks_logical_units " +
 				"ON (tasks.task_id = tasks_logical_units.task_id) " +
