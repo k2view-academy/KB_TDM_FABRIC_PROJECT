@@ -229,8 +229,8 @@ public class SharedLogic {
 							//Skip null values
 							if (row.cell(0) != null) {
 								String val = "" + row.cell(0);
-								val.replace("\"", "\\\"");
-								values.append("\""+ val +"\",");
+								val = val.replace("\"", "\\\""); // Capture the result of the replace()
+								values.append("\"" + val + "\",");
 							}
 						}
 		

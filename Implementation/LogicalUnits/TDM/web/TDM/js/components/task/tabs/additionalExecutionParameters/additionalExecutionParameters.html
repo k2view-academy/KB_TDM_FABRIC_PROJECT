@@ -271,7 +271,9 @@
                             </label>
                         </div>
                     </div>
-                    <div>
+                    <div ng-if="!(additionalExecutionParametersCtrl.taskData.task_type === 'RESERVE' || 
+                        (additionalExecutionParametersCtrl.taskData.delete_before_load && !additionalExecutionParametersCtrl.taskData.load_entity) || 
+                        (additionalExecutionParametersCtrl.taskData.task_type === 'LOAD' && additionalExecutionParametersCtrl.taskData.sync_mode === 'OFF'))">
                         <div style="display: flex; align-items: center;">
                             <input type="checkbox"
                                 ng-disabled="additionalExecutionParametersCtrl.taskData.env_mask_data"

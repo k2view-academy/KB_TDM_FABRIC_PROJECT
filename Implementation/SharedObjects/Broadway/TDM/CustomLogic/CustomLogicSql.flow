@@ -659,8 +659,7 @@
             "rightPort": {
                 "actor": "Filter Reserved Entities",
                 "name": "values"
-            },
-            "iterate": "Iterate"
+            }
         },
         {
             "leftPort": {
@@ -670,7 +669,8 @@
             "rightPort": {
                 "actor": "Format IID",
                 "name": "values"
-            }
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
@@ -680,7 +680,8 @@
             "rightPort": {
                 "actor": "If Instance Can be Processed?",
                 "name": "test"
-            }
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

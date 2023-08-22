@@ -60,6 +60,7 @@
                         align-items: center;
                         max-width: 100px;position: absolute; top: 77px; left: 17px;width: 60px;">
                         <input type="checkbox" 
+                            id="reserve_entities_select_all"
                             ng-model="reservedEntitiesTableCtrl.all_selected" ng-change="reservedEntitiesTableCtrl.toggleAll()"/>
                         <img 
                             class="activties-icon"
@@ -71,13 +72,13 @@
                     </div>
                     <div off-click="reservedEntitiesTableCtrl.activtiesView = false" off-click-activator="reservedEntitiesTableCtrl.activtiesView"  style="position: relative" ng-if="reservedEntitiesTableCtrl.activtiesView">
                         <ul class="activties-box">
-                            <li ng-click="reservedEntitiesTableCtrl.releaseEntities()">
+                            <li id="reserve_entities_release_entity" ng-click="reservedEntitiesTableCtrl.releaseEntities()">
                                 Release Entity
                             </li>
-                            <li ng-click="reservedEntitiesTableCtrl.extendReservationPeriod()">
+                            <li id="reserve_entities_update_reservation_period" ng-click="reservedEntitiesTableCtrl.extendReservationPeriod()">
                                 Update Reservation Period
                             </li>
-                            <li ng-click="reservedEntitiesTableCtrl.addNote()">
+                            <li id="reserve_entities_add_note" ng-click="reservedEntitiesTableCtrl.addNote()">
                                 Add a note
                             </li>
                         </ul>

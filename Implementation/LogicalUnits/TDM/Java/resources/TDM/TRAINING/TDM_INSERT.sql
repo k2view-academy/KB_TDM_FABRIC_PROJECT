@@ -1,5 +1,5 @@
 
-INSERT INTO public.business_entities (be_name, be_description, be_id, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) VALUES ('Customer360', 'This is a Business Entity created for the TDM GUI for testers course.', 1, 'admin', '2022-12-01 13:27:20.522', '2022-12-01 13:38:25.987', 'admin', 'Active') ON CONFLICT DO NOTHING;
+INSERT INTO public.business_entities (be_name, be_description, be_id, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) VALUES ('Customer', 'This is a Business Entity created for the TDM GUI for testers course.', 1, 'admin', '2022-12-01 13:27:20.522', '2022-12-01 13:38:25.987', 'admin', 'Active') ON CONFLICT DO NOTHING;
 
 -- Source Env
 

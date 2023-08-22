@@ -1263,12 +1263,9 @@ public class Logic extends UserCode {
 		Map<String, String> result = new HashMap<>();
 		
 		// TDM 8.1 - Check if the flow is direct flow that does not require Table
-		Boolean directFlow = (Boolean)fabric().fetch("broadway " + luName + ".CheckIfCustomFlowIsDirect LU_NAME = '" + luName +
-			"', FLOW_NAME = '" + customLogicFlow + "'").firstValue();
+		Boolean directFlow = Boolean.parseBoolean((String) fabric().fetch("broadway " + luName + ".CheckIfCustomFlowIsDirect LU_NAME = '" + luName +
+				"', FLOW_NAME = '" + customLogicFlow + "' RESULT_STRUCTURE=COLUMN").firstValue());
 		
-		if (directFlow == null) {
-			directFlow = false;
-		}
 		flowParams = flowParams.replaceAll("\\\\n","").replaceAll("\\\\t","");
 		//log.info("flowParams after replace: " + flowParams);
 		
@@ -1284,9 +1281,10 @@ public class Logic extends UserCode {
 			List<Map <String, Object>> clFlowParamList = clFlowParamJson.get("inputs");
 			for (Map <String, Object> clFlowParamMap : clFlowParamList) {
 				Object paramValue = clFlowParamMap.get("value");
-				if (paramValue != null) {
-					fabricCommandParams += ", " + clFlowParamMap.get("name") + "=\"" + paramValue + "\"";
+				if("".equals(paramValue)){
+					paramValue=null;
 				}
+				fabricCommandParams += ", " + clFlowParamMap.get("name") + "=\"" + paramValue + "\"";
 			}
 		}
 		

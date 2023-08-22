@@ -1158,10 +1158,20 @@ public class SharedLogic {
 		clientQuery += " order by task_id, task_execution_id;";
 		//log.info("fnGetVersionsForLoad - clientQuery: " + clientQuery);
 		Db.Rows rows = db(TDM).fetch(clientQuery);
+        List<String> columnNames = rows.getColumnNames();
+        List<Map<String, Object>> rowsList = new ArrayList<>();
 
+        for (Db.Row row : rows) {
+            ResultSet resultSet = row.resultSet();
+            Map<String, Object> rowMap = new HashMap<>();
+            for (String columnName : columnNames) {
+                rowMap.put(columnName, resultSet.getObject(columnName));
+            }
+            rowsList.add(rowMap);
+        }
 		//TDM7.4 - 26/1/2022 - Check for each entity if it is reserved by other user.
 
-		result.put("ListOfVersions", rows);
+		result.put("ListOfVersions", rowsList);
 		Map<String, Object> validation = new HashMap<>();
 		if (entitiesList != null && entitiesList.length() > 0) {
 			//log.info("target_env_name: " + target_env_name);
