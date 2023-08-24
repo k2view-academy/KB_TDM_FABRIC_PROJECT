@@ -1038,6 +1038,14 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		          if("Do Not Delete".equalsIgnoreCase(retention_period_type)){
 				retention_period_value = -1;
 			}
+            			
+			if (source_environment_id == null) {
+				source_environment_id = environment_id;	
+			}
+			if (environment_id == null) {
+				environment_id = source_environment_id;	
+			}
+            
 			Db.Row row = db(TDM).fetch(sql,be_id, ((environment_id!=null) ? environment_id: source_environment_id),
 					scheduler, 
 		                  ((delete_before_load != null) ? delete_before_load : false),
