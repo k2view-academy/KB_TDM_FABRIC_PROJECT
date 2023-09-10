@@ -15,7 +15,7 @@ import com.k2view.fabric.common.io.IoSession;
 
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.setGlobals;
 
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TDMSetSessionGlobals implements Actor {
     public static final Log log = Log.a(UserCode.class);
 

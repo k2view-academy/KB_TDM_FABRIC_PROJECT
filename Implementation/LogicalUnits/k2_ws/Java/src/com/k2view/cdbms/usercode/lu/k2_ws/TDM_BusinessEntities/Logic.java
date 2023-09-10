@@ -32,7 +32,10 @@ import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
+import com.cronutils.utils.StringUtils;
 import com.k2view.cdbms.func.oracle.OracleRownum;
+
+import org.apache.commons.lang3.math.NumberUtils;
 import org.json.JSONObject;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
@@ -129,7 +132,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	@desc("Creates a New Business Entity.")
-	@webService(path = "businessentity", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"be_id\": 17,\r\n" +
@@ -145,7 +148,6 @@ public class Logic extends WebServiceUserCode {
 			"  \"message\": null\r\n" +
 			"}")
 	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {
-		
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if ("admin".equals(permissionGroup)) {
 			try {
@@ -153,9 +155,9 @@ public class Logic extends WebServiceUserCode {
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
 				String sql = "INSERT INTO " + schema + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) " +
-						"VALUES (?, ?, ?, ?, ?, ?, ?)" +
+						"VALUES (?, ?, ?, ?, ?, ?, ?) " +
 						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status";
-
+		
 				String username = sessionUser().name();
 				Db.Row row = db(TDM).fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active").firstRow();
 				HashMap<String,Object> businessEntity=new HashMap<>();
@@ -167,7 +169,7 @@ public class Logic extends WebServiceUserCode {
 				businessEntity.put("be_last_updated_date", row.get("be_last_updated_date"));
 				businessEntity.put("be_last_updated_by", row.get("be_last_updated_by"));
 				businessEntity.put("be_status", row.get("be_status"));
-
+		
 				String activityDesc = "Business entity " + be_name + " was created";
 				try {
 					fnInsertActivity("create", "Business entities", activityDesc);
@@ -175,7 +177,7 @@ public class Logic extends WebServiceUserCode {
 				catch(Exception e){
 					log.error(e.getMessage());
 				}
-
+		
 				return wrapWebServiceResults("SUCCESS",null,businessEntity);
 			}
 			catch (Exception e){
@@ -210,7 +212,7 @@ public class Logic extends WebServiceUserCode {
 						"SET be_description=(?)," +
 						"be_last_updated_date=(?)," +
 						"be_last_updated_by=(?) " +
-						"WHERE be_id = " + beId + "RETURNING be_name";
+						"WHERE be_id = " + beId + " RETURNING be_name";
 
 				Db.Row row = db(TDM).fetch(sql, be_description,now,username).firstRow();
 				errorCode= "SUCCESS";
@@ -312,15 +314,36 @@ public class Logic extends WebServiceUserCode {
 
 
 
-	@desc("Gets a list of deployed Logical Units.")
+	@desc("Gets a list of deployed Logical Units with potential parents .")
 	@webService(path = "logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    \"luName1\",\r\n" +
-			"    \"luName2\"\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
+	@resultMetaData(mediaType = Produce.JSON, example = "{\n" +
+			"    \"result\": [\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Orders\",\n" +
+			"            \"lu_parents\": [\n" +
+			"                \"Customer\",\n" +
+			"                \"Billing\"\n" +
+			"            ]\n" +
+			"        },\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Customer\",\n" +
+			"            \"lu_parents\": []\n" +
+			"        },\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Billing\",\n" +
+			"            \"lu_parents\": [\n" +
+			"                \"Customer\"\n" +
+			"            ]\n" +
+			"        },\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Collection\",\n" +
+			"            \"lu_parents\": [\n" +
+			"                \"Customer\"\n" +
+			"            ]\n" +
+			"        }\n" +
+			"    ],\n" +
+			"    \"errorCode\": \"SUCCESS\",\n" +
+			"    \"message\": null\n" +
 			"}")
 	public static Object wsGetLogicalUnits() throws Exception {
 		ArrayList result=new ArrayList();
@@ -349,10 +372,16 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("Gets the list of all available Post Execution Processes that can be added to the Business Entity.")
 	@webService(path = "postexecutionprocesses", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"translations\": {},\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
+	@resultMetaData(mediaType = Produce.JSON, example ="{\n" +
+    "    \"result\": {\n" +
+    "        \"postTaskExeUpdateEndTime\": {\n" +
+    "            \"lu_name\": null\n" +
+    "        },\n" +
+    "        \"postTaskExePrintToLog\": {\n" +
+    "            \"lu_name\":\"Customer\"\n" +
+    "        }\n" +
+    "    },\n" +
+    "    \"message\": null\n" +
 			"}")
 	public static Object wsGetPostExecutionProcesses() throws Exception {
 		Map<String,Object> response=new HashMap<>();
@@ -1236,96 +1265,74 @@ public class Logic extends WebServiceUserCode {
 				
 	}
 
-	//from logic.TDM
-	private static Object fnGetListOfParamsForBE(String beID, String sourceEnvName) throws Exception {
+    private static Object fnGetListOfParamsForBE(String beID, String sourceEnvName) throws Exception {
 		final String env = Util.isEmpty(sourceEnvName) ? "_dev" : sourceEnvName;
 
+        Map<String, Map<String, Object>> beParametersColumnTypes = new HashMap<>();
 		Db tdmDB = db(TDM);
 		Db.Rows luRes = tdmDB.fetch(LU_SQL, beID);
+        int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
+		for(Db.Row luRow : luRes) {
+			String luName = luRow.get("logicalunitname").toString();
+			
+            String getDistinctValuesSQL = "SELECT *, array_length(field_values, 1) as len FROM " + schema +".tdm_params_distinct_values " +
+                    "WHERE lu_name = ?";
 
-		Map<String, Iterable<Db.Row>> metaDataMap = new HashMap<>();
-		for(Db.Row luRow : luRes){
-			ResultSet resultSet = luRow.resultSet();
-			String logicalUnitName = resultSet.getString("logicalunitname");
-			Db.Rows luParamsRes = tdmDB.fetch("SELECT distinct column_name  FROM information_schema.columns WHERE table_schema = '" + schema + "' AND table_name = ?", logicalUnitName.toLowerCase() + "_params");
-			metaDataMap.put(logicalUnitName, luParamsRes.getResults());
+            Db.Rows luFieldsValues = tdmDB.fetch(getDistinctValuesSQL, luName.toUpperCase());
+            for (Db.Row fieldValuesRec : luFieldsValues) {
+                String fieldName = fieldValuesRec.get("field_name").toString();
+                String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
+                String fieldValues = fieldValuesRec.get("field_values").toString();
+                int columnDistinctValue = (int)fieldValuesRec.get("len");
+                
+                if (columnDistinctValue > 0 && columnDistinctValue < maxNumOfValues) {
+                    fieldValues = fieldValues.replace("{", "");
+                    fieldValues = fieldValues.replace("}", "");
+                    fieldValues = fieldValues.replace("\"", "");
+                    List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
+                    
+                   	beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
+                                                                    PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"true", 
+                                                                    VALID_VALUES, columnDistinctValues, MIN_VALUE, "\\N", MAX_VALUE, "\\N", 
+                                                                    LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
+                } else {
+					//int colNum = getColNumber(env, tdmDB, fieldName, beTableName);
+                    fieldValues = fieldValues.replace("{", "");
+                    fieldValues = fieldValues.replace("}", "");
+                    List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
+                    boolean isNumeric = true;
+                    for (String value : columnDistinctValues) {
+                        if (NumberUtils.isCreatable(value)) {
+                            isNumeric = false;
+                            break;
+                        }
+                    }
+					if (isNumeric) {
+						// In case it is, prepare the query to bring the column's min and max values
+						Map<String, String> minMax = getMinMaxValues(columnDistinctValues);
+                        String min = minMax.get("MIN").equals("\\N") ? "\\N" : minMax.get("MIN");
+                        String max = minMax.get("MAX").equals("\\N") ? "\\N" : minMax.get("MAX");
+						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
+							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE,
+							min, MAX_VALUE, max, LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
+						));
+					} else {
+						// Mark it as text
+						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
+                                                    PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"false", VALID_VALUES, 
+                                                    "\\N", MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
+						));
+					}
+				}
+
+            }
 		}
 		if (luRes != null) {
 			luRes.close();
 		}
-		Map<String, Map<String, Object>> beParametersColumnTypes = new HashMap<>();
-
-		metaDataMap.forEach((luName, colNames) -> {
-			StreamSupport.stream(colNames.spliterator(), false).map(col -> Util.rte(() -> col.resultSet().getString("column_name"))).filter(col -> !col.equals("root_lu_name")).filter(col -> !col.equals("root_iid")).filter(col -> !col.equals("entity_id")).filter(col -> !col.equals("source_environment")).forEach(colName -> {
-				String[] columnNameArr = colName.split("\\.");
-				String logicalUnitName = columnNameArr[0].toUpperCase();
-				String beTableName = schema + "." + logicalUnitName + "_PARAMS";
-				String colNameUpper = colName.toUpperCase();
-
-                int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
-				String columnDistinctValueSQL = "SELECT COUNT(1) AS CNT FROM (SELECT DISTINCT \"" + colName + "\" FROM (" +
-						"SELECT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable " +
-                        "limit " + maxNumOfValues + ") a";
-
-				long columnDistinctValue = Util.rte(() -> (Long) tdmDB.fetch(columnDistinctValueSQL).firstValue());
-				// Initiate the parameter that will hold the distinct list of values for the column
-				List<String> columnDistinctValues = new ArrayList<>();
-				if (columnDistinctValue > 0 && columnDistinctValue < maxNumOfValues) {
-					// Prepare the SQL Statement to retrieve the distinct list of values for that column
-					//log.info("Creating list of values");
-					String columnDistinctListSQL = "SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "'";
-
-					Iterator<Db.Row> iter = Util.rte(() -> tdmDB.fetch(columnDistinctListSQL).getResults().iterator());
-					while (iter.hasNext()) {
-						Util.rte(() -> columnDistinctValues.add(iter.next().resultSet().getString(colName)));
-					}
-					//int val = Interger.valueOf(columnDistinctValues.get(0));
-					columnDistinctValues.sort(String::compareTo);
-					String s =columnDistinctValues.get(0);
-					if(isNumeric(s)) {
-						String min = columnDistinctValues.get(0);
-						String max = columnDistinctValues.get(columnDistinctValues.size()-1);
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.NUMBER.getName(),COMBO_INDICATOR,"true", VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
-					}
-					else {
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"true", VALID_VALUES, columnDistinctValues, MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
-					}
-				} else {
-					int colNum = getColNumber(env, tdmDB, colName, beTableName);
-
-					if (colNum == 1) {
-						// In case it is, prepare the query to bring the column's min and max values
-						String columnMinMaxSQL = getColumnMinMaxSQL(env, colName, beTableName);
-
-						Db.Row columnMinMaxRow = Util.rte(() -> tdmDB.fetch(columnMinMaxSQL).firstRow());
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE,
-							Util.rte(() -> columnMinMaxRow.cell(0)), MAX_VALUE, Util.rte(() -> columnMinMaxRow.cell(1)), LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-						));
-					} else {
-						// Mark it as text
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-						));
-					}
-				}
-			});
-		});
+		        
 		return wrapWebServiceResults("SUCCESS", null, beParametersColumnTypes);
 	}
-
-
-	private static String getColumnMinMaxSQL(String env, String colName, String beTableName) {
-		return "SELECT MIN(CAST(\"" + colName + "\" AS DOUBLE PRECISION)) AS \"MIN_" + colName + "\", MAX(CAST(\"" + colName + "\" AS DOUBLE PRECISION)) AS \"MAX_" + colName + "\" FROM (SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable";
-	}
-
-	private static Integer getColNumber(String env, Db tdmDB, String colName, String beTableName) {
-		return Util.rte(() -> {
-			Object value = tdmDB.fetch("SELECT DISTINCT CASE WHEN CAST(\"" + colName + "\" AS TEXT) ~ '^([0-9]+[.]?[0-9]*|[.][0-9]+)$' THEN 1 ELSE 0 END isNumber FROM (SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable ORDER BY  1 ASC LIMIT 1").firstValue();
-			return value != null ? (int) value: 0;
-		});
-	}
-	//end from logic.TDM
-
 
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
@@ -1359,10 +1366,75 @@ public class Logic extends WebServiceUserCode {
 		}
 		try {
 			intValue = Integer.parseInt(string);
-			return true;
+			
 		} catch (NumberFormatException e) {
-			System.out.println("Input String cannot be parsed to Integer.");
+			
 		}
 		return false;
 	}
+
+    private static Map<String, String> getMinMaxValues(List<String> columnDistinctValues) {
+        Map<String, String> result = new HashMap<String, String>();
+        
+        result.put("MIN", "\\N");
+        result.put("MAX", "\\N");
+        String min = null;
+        String max = null;
+
+        for (String value : columnDistinctValues) {
+            Integer intValue = null;
+            Long longValue = null;
+            Double doubleValue = null;
+            value = value.replace("\"", "");
+
+            try {
+                intValue = Integer.parseInt(value);
+                if (min == null || intValue < Integer.parseInt(min)) {
+                    min = value;
+                }
+                if (max == null || intValue > Integer.parseInt(max)) {
+                    max = value;
+                }
+            } catch (NumberFormatException e) {
+                // Do nothing
+            }
+            if (intValue == null) {
+                try {
+                    longValue = Long.parseLong(value);
+                    if (min == null || longValue <Long.parseLong(min)) {
+                        min = value;
+                    }
+                    if (max == null || longValue > Long.parseLong(max)) {
+                        max = value;
+                    }
+
+                } catch (NumberFormatException e) {
+                    // Do nothing
+                }
+            }
+
+            if (intValue == null && longValue == null) {
+                try {
+                    doubleValue = Double.parseDouble(value);
+                    if (min == null || doubleValue < Double.parseDouble(min)) {
+                        min = value;
+                    }
+                    if (max == null || doubleValue > Double.parseDouble(max)) {
+                        max = value;
+                    }
+                } catch (NumberFormatException e) {
+                    // Do nothing
+                }
+                if (min == null) {
+                    return result;
+                }
+            }
+        }
+
+        result.put("MIN", min);
+        result.put("MAX", max);
+        
+        return result;
+    }
+
 }

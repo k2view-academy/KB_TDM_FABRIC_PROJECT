@@ -35,19 +35,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "root_iid",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "root_iid"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -56,10 +43,27 @@
         {
             "stages": [
                 {
-                    "name": "Sequence Fields",
+                    "name": "Generate fields",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "FirstNames1",
+                            "actorType": {
+                                "parentType": "FirstNames",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LastNames1",
+                            "actorType": {
+                                "parentType": "LastNames",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -232,42 +236,18 @@
                             }
                         },
                         {
-                            "name": "FIRST_NAME",
+                            "name": "First Name",
                             "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "FIRST_NAME_${root_id}"
-                                    },
-                                    {
-                                        "name": "root_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
+                                "parentType": "RandomFromCollection",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "LAST_NAME",
+                            "name": "Last Name",
                             "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "LAST_NAME_${root_id}"
-                                    },
-                                    {
-                                        "name": "root_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
+                                "parentType": "RandomFromCollection",
+                                "inputs": [],
                                 "outputs": []
                             }
                         }
@@ -292,22 +272,22 @@
         },
         {
             "leftPort": {
-                "actor": "root_iid",
-                "name": "result"
+                "actor": "FirstNames1",
+                "name": "strings"
             },
             "rightPort": {
-                "actor": "FIRST_NAME",
-                "name": "root_id"
+                "actor": "First Name",
+                "name": "collection"
             }
         },
         {
             "leftPort": {
-                "actor": "root_iid",
-                "name": "result"
+                "actor": "LastNames1",
+                "name": "strings"
             },
             "rightPort": {
-                "actor": "LAST_NAME",
-                "name": "root_id"
+                "actor": "Last Name",
+                "name": "collection"
             }
         },
         {
@@ -402,8 +382,8 @@
         },
         {
             "leftPort": {
-                "actor": "FIRST_NAME",
-                "name": "string"
+                "actor": "First Name",
+                "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",
@@ -412,8 +392,8 @@
         },
         {
             "leftPort": {
-                "actor": "LAST_NAME",
-                "name": "string"
+                "actor": "Last Name",
+                "name": "value"
             },
             "rightPort": {
                 "actor": "flowArgs",

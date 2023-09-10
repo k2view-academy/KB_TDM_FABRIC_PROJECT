@@ -356,44 +356,48 @@ public class SharedLogic {
     }
 
 
-	@out(name = "result", type = Object.class, desc = "")												  
+	@out(name = "result", type = Object.class, desc = "")
 	public static Object fnGetNumberOfMatchingEntities(String whereStmt, String sourceEnvName, String targetEnvName, Long beID, Boolean filteroutReserved) throws Exception {
-        String sourceEnv = !Util.isEmpty(sourceEnvName) ? sourceEnvName : "_dev";
-        //String getEntitiesSql = generateListOfMatchingEntitiesQuery(beID, whereStmt, sourceEnv);
-        String rootLUsList = db(TDM).fetch("select ARRAY_AGG(lu_name) from " +TDMDB_SCHEMA+ ".product_logical_units where lu_parent_id is null and be_id = ?", beID).firstValue().toString();
-        String paramsQuery = whereStmt.replaceAll("WHERE ", "WHERE root_lu_name = ANY('" + rootLUsList + "') AND source_environment = '" + sourceEnvName + "' AND ");
-        String userID = sessionUser().name();
-        //String srcEnvID = "" + db(TDM).fetch("select environment_id from "+ TDMDB_SCHEMA + ".environments where environment_name = ? and environment_status = 'Active'", sourceEnv).firstValue();
-        String tarEnvID = "" + db(TDM).fetch("select environment_id from "+ TDMDB_SCHEMA + ".environments where environment_name = ? and environment_status = 'Active'", targetEnvName).firstValue();
-        Db.Rows rows =  null;
-        String query = "";
-        if (filteroutReserved) {
-            query = "SELECT COUNT(distinct root_iid) FROM (" + paramsQuery
-                    + " EXCEPT SELECT iid FROM "
-                    + TDMDB_SCHEMA + ".tdm_reserved_entities tr, " + TDMDB_SCHEMA + ".task_execution_entities te"
-                    + " WHERE tr.env_id = ? and tr.be_id = ? and tr.reserve_owner != ?"
-                    + " and (tr.end_datetime is null or tr.end_datetime > CURRENT_TIMESTAMP)"
-                    + " and te.target_entity_id = tr.entity_id and te.env_id = ? "
-                    + " and te.task_execution_id = cast (tr.task_execution_id as text) "
-                    + " and te.lu_name in (select lu_name from "+ TDMDB_SCHEMA + ".task_execution_list l, "+ TDMDB_SCHEMA + ".tasks_logical_units u "
-                    + " where l.task_execution_id = tr.task_execution_id and l.parent_lu_id is null and l.lu_id = u.lu_id and l.task_id = u.task_id)"
-                    + " ) AS final_count";
-
-			//log.info("fnGetNumberOfMatchingEntities1 - query: " + query);													
-            rows =  db(TDM).fetch(query, tarEnvID, beID, userID, tarEnvID);
-
-        } else {
-            query = "SELECT COUNT(distinct root_iid) FROM (" + paramsQuery + " ) AS final_count";
-			//log.info("fnGetNumberOfMatchingEntities2 - query: " + query);													
-            rows =  db(TDM).fetch(query);
-        }
-
+		String sourceEnv = !Util.isEmpty(sourceEnvName) ? sourceEnvName : "_dev";
+		//String getEntitiesSql = generateListOfMatchingEntitiesQuery(beID, whereStmt, sourceEnv);
+		String rootLUsList = db(TDM).fetch("select ARRAY_AGG(lu_name) from " + TDMDB_SCHEMA +
+			".product_logical_units where lu_parent_id is null and be_id = ?", beID).firstValue().toString();
+		String paramsQuery = whereStmt.replaceAll("WHERE ", "WHERE root_lu_name = ANY('" + rootLUsList + "') AND source_environment = '" +
+				sourceEnvName + "' AND ");
+		paramsQuery = paramsQuery.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
+		
+		String userID = sessionUser().name();
+		//String srcEnvID = "" + db(TDM).fetch("select environment_id from "+ TDMDB_SCHEMA + ".environments where environment_name = ? and environment_status = 'Active'", sourceEnv).firstValue();
+		String tarEnvID = "" + db(TDM).fetch("select environment_id from "+ TDMDB_SCHEMA + ".environments where environment_name = ? and environment_status = 'Active'", targetEnvName).firstValue();
+		Db.Rows rows =  null;
+		String query = "";
+		if (filteroutReserved) {
+		    query = "SELECT COUNT(distinct root_iid) FROM (" + paramsQuery
+		            + " EXCEPT SELECT iid FROM "
+		            + TDMDB_SCHEMA + ".tdm_reserved_entities tr, " + TDMDB_SCHEMA + ".task_execution_entities te"
+		            + " WHERE tr.env_id = ? and tr.be_id = ? and tr.reserve_owner != ?"
+		            + " and (tr.end_datetime is null or tr.end_datetime > CURRENT_TIMESTAMP)"
+		            + " and te.target_entity_id = tr.entity_id and te.env_id = ? "
+		            + " and te.task_execution_id = cast (tr.task_execution_id as text) "
+		            + " and te.lu_name in (select lu_name from "+ TDMDB_SCHEMA + ".task_execution_list l, "+ TDMDB_SCHEMA + ".tasks_logical_units u "
+		            + " where l.task_execution_id = tr.task_execution_id and l.parent_lu_id is null and l.lu_id = u.lu_id and l.task_id = u.task_id)"
+		            + " ) AS final_count";
+		
+		//log.info("fnGetNumberOfMatchingEntities1 - query: " + query);													
+		    rows =  db(TDM).fetch(query, tarEnvID, beID, userID, tarEnvID);
+		
+		} else {
+		    query = "SELECT COUNT(distinct root_iid) FROM (" + paramsQuery + " ) AS final_count";
+		//log.info("fnGetNumberOfMatchingEntities2 - query: " + query);													
+		    rows =  db(TDM).fetch(query);
+		}
+		
 		Object numberOfMatches = rows.firstValue();
 		if (rows != null) {
-			rows.close();
-		}
-        return wrapWebServiceResults("SUCCESS", null, numberOfMatches);
-    }
+		rows.close();
+				}
+		return wrapWebServiceResults("SUCCESS", null, numberOfMatches);
+	}
 
 
 	public static HashMap<String, Object> fnMigrateStatusWs(String migrateId, List<String> runModes) throws Exception {

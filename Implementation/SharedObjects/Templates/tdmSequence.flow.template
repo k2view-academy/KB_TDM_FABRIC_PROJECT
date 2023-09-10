@@ -22,20 +22,6 @@
                             }
                         },
                         {
-                            "name": "Get Original IID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "INPUT_IID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get LU Type",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -72,7 +58,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "{{CACHE_DB_NAME}}"
+                                        "const": "{{getSeqCacheInterface __LU_NAME}}"
                                     },
                                     {
                                         "name": "sequenceInterface",
@@ -81,10 +67,6 @@
                                     {
                                         "name": "initialValue",
                                         "const": "{{INITIATE_VALUE_FLOW}}"
-                                    },
-									{
-                                        "name": "sequenceId",
-                                        "const": "{{SEQUENCE_NAME}}"
                                     },
 									{
                                         "name": "TTL",
@@ -130,49 +112,13 @@
                             }
                         },
                         {
-                            "name": "Populate TDM_SEQ_MAPPING Table",
+                            "name": "Populate TDM_SEQ_MAPPING",
                             "actorType": {
-                                "parentType": "InnerFlow",
+                                "parentType": "SeqMappingStore",
                                 "inputs": [
                                     {
-                                        "name": "flowName",
-                                        "const": "PopulateTdmSeqMappingTable"
-                                    },
-                                    {
                                         "name": "seq_name",
-                                        "const": "{{SEQUENCE_NAME}}",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "table_name",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "column_name",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "source_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "target_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "const": "{{SEQUENCE_NAME}}"
                                     }
                                 ],
                                 "outputs": []
@@ -186,12 +132,32 @@
     "connections": [
         {
             "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Populate TDM_SEQ_MAPPING",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Type",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Populate TDM_SEQ_MAPPING",
+                "name": "lu_type"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get next Value of Sequence",
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING Table",
-                "name": "target_id"
+                "actor": "Populate TDM_SEQ_MAPPING",
+                "name": "target_value"
             }
         },
         {
@@ -230,7 +196,7 @@
                 "name": "tableName"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING Table",
+                "actor": "Populate TDM_SEQ_MAPPING",
                 "name": "table_name"
             }
         },
@@ -240,7 +206,7 @@
                 "name": "columName"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING Table",
+                "actor": "Populate TDM_SEQ_MAPPING",
                 "name": "column_name"
             }
         },
@@ -250,8 +216,8 @@
                 "name": "OriginalSeqValue"
             },
             "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING Table",
-                "name": "source_id"
+                "actor": "Populate TDM_SEQ_MAPPING",
+                "name": "source_value"
             }
         }
     ]

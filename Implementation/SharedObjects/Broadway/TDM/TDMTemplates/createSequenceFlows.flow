@@ -114,9 +114,6 @@
                                                     },
                                                     "INITIATE_VALUE_OR_FLOW": {
                                                         "type": "string"
-                                                    },
-                                                    "CACHE_DB_NAME": {
-                                                        "type": "string"
                                                     }
                                                 }
                                             }
@@ -289,20 +286,7 @@
                                         "const": "buildSeqTemplateData"
                                     },
                                     {
-                                        "const": "TDM",
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
                                         "name": "seqName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "cacheDBName",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -497,20 +481,6 @@
             "iterate": "Iterate",
             "path": [
                 "SEQUENCE_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "TDMSeqList2",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "cacheDBName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "CACHE_DB_NAME"
             ]
         },
         {

@@ -17,7 +17,7 @@ import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
 import com.k2view.fabric.common.mtable.MTables;
 import java.util.Date;
-
+import java.util.stream.Collectors;
 import java.sql.SQLException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -162,6 +162,10 @@ public class SharedLogic {
 		String stringInsertFabricLuParam = "INSERT OR REPLACE INTO " + tblNameFabric + " (ROOT_LU_NAME, ROOT_IID ,ENTITY_ID, SOURCE_ENVIRONMENT, PARAMS_JSON) " +
 				" VALUES(?, ?, ?, ?, ?)";
 		//log.info("fnEnrichmentLuParams is Starting");
+        // TDM 8.1 - Add TDMDB  tdm_params_distinct_values to hold the different values of each param field
+        String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES (LU_NAME, FIELD_NAME, FIELD_VALUES) " +
+            "VALUES (?, ? ,?) ON CONFLICT ON CONSTRAINT TDM_PARAMS_DISTINCT_VALUES_PKEY Do update set FIELD_VALUES = ?";
+
 		Object[] insRs = fnValidateNdGetInstance();
 		Db.Rows rows= null;
 		
@@ -174,8 +178,20 @@ public class SharedLogic {
 		boolean tdmLuParamAltered = false;
 		ciTDM.beginTransaction();
 		
-		//add a drop of the view of the related BEs when the <LU_NAME>_PARAMS TDMDB table is altered
 		try{
+            // TDM 8.1 - Get the existing distinct values of the LU's Parameters
+            Map<String, HashSet<String>> disitnctValuesMap = new HashMap<>();
+            String getDistinctValuesSql = "SELECT field_name, field_values from " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES WHERE lu_name = ?";
+            Db.Rows distinctValues = ciTDM.fetch(getDistinctValuesSql, luName.toUpperCase());
+            for (Db.Row row: distinctValues) {
+                String value = row.get("field_values").toString();
+                value = value.replace("{", "");
+                value = value.replace("}", "");
+
+                HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(",")).collect(Collectors.toSet()));
+                disitnctValuesMap.put(row.get("field_name").toString(), values);
+            }
+
 			Db.Rows cols= ciTDM.fetch(tblInfoSql, tblName, TDMDB_SCHEMA);
 			for (Db.Row row:cols) {
 				if(row.get("column_name") != null)
@@ -196,11 +212,11 @@ public class SharedLogic {
 				StringBuilder sqlInsertTDMBind = new StringBuilder().append(" values (");
 				ArrayList params = new ArrayList<>();
 				int i=0;
-		
+
 				if(paramData.resultSet()!=null){
 		
 					prefix = "";
-		
+                    
 					for(Db.Row indx:paramData){
 						String luParamColName = indx.get("COLUMN_NAME").toString().trim();
 						luColsList.add(LuName.toUpperCase() + "." + luParamColName.toUpperCase());
@@ -213,6 +229,7 @@ public class SharedLogic {
 						sqlInsertTDMBind.append(prefix + " ? ");
 		
 						StringBuilder values = new StringBuilder();
+                        HashSet<String> valuesSet = new HashSet<>();
 						String sql = indx.get("SQL").toString();
 		
 						//Check if SQL query contains distinct and add it if not
@@ -229,8 +246,11 @@ public class SharedLogic {
 							//Skip null values
 							if (row.cell(0) != null) {
 								String val = "" + row.cell(0);
-								val = val.replace("\"", "\\\""); // Capture the result of the replace()
+								val = val.replaceAll("[\\\\\"\'\n\r\t\0\f\b]", "\\\\$0");
 								values.append("\"" + val + "\",");
+                                if (!val.isEmpty()) {
+                                    valuesSet.add("\"" + val + "\"");
+                                }
 							}
 						}
 		
@@ -250,6 +270,16 @@ public class SharedLogic {
 						i++;
 						prefix = ",";
 						rs1.close();
+
+                        if (disitnctValuesMap.containsKey(columnName)) {
+                            HashSet <String> curreValues = disitnctValuesMap.get(columnName);
+                            curreValues.addAll(valuesSet);
+                            disitnctValuesMap.put(columnName,curreValues);
+                        } else {
+                            if (!valuesSet.isEmpty()) {
+                                disitnctValuesMap.put(columnName,valuesSet);
+                            }
+                        }
 					}
 				}
 				sbCreStmt.append(", CONSTRAINT " + tblName + "_pkey PRIMARY KEY (root_lu_name, root_iid, entity_id, source_environment))");
@@ -316,27 +346,7 @@ public class SharedLogic {
 						ciTDM.execute(sbAltStmtRem.toString());
 					}
 				}
-		
-				//drop the view from the TDMDB if that LU table was altered
-		//		if(tdmLuParamAltered)
-		//		{
-		//			// Get the related BEs of the logical unit
-		//			String sql_be_list = "SELECT be.be_name FROM " + TDMDB_SCHEMA + ".product_logical_units lu, " + TDMDB_SCHEMA + ".business_entities be " +
-		//					"WHERE lower(lu.lu_name) = ? and lu.be_id = be.be_id and be.be_status = 'Active'";
-		//
-		//			String env_name = ""+ insRs[1];
-		//
-		//			Db.Rows rsBeList = ciTDM.fetch(sql_be_list, getLuType().luName.toLowerCase());
-		//			for (Db.Row beRow : rsBeList) {
-		//				// DROP the view for the BE if exists
-		//				String viewName = "lu_relations_" + beRow.get("be_name") + "_" + env_name;
-		//				ciTDM.execute("DROP MATERIALIZED VIEW IF EXISTS " + TDMDB_SCHEMA + ".\"" + viewName + "\"");
-		//			}
-		
-				//	if (rsBeList != null) rsBeList.close();
-		
-				//} // end  if(tdmLuParamAltered)
-		
+
 				//TDM 8.1 - Get the ROOT_IID
 				String rootIid = "" + fabric().fetch("set ROOT_IID").firstValue();
 				String rootLuName = "" + fabric().fetch("set ROOT_LU_NAME").firstValue();
@@ -366,6 +376,13 @@ public class SharedLogic {
 					sqlInsertTDMBind.append(", ?, ?, ?, ?) ");
 					//log.info("sqlInsertTDM: " + sqlInsertTDM);
 					ciTDM.execute(sqlInsertTDM.toString() + sqlInsertTDMBind.toString() + sqlUpdateTDM.toString(),finParams);
+                    for (String key: disitnctValuesMap.keySet()) {
+                        HashSet<String> valuesSet = disitnctValuesMap.get(key);
+                        String value = String.join(",", valuesSet);
+
+                        value = "{" + value + "}";
+                        ciTDM.execute(insertDistintValuesSql, luName.toUpperCase(), key, value, value);
+                    }
 		
 					//TDM 8.1 - The LU Param Table will hold all the fields in one Json field
 					String paramsJson = fabric().fetch("broadway TDM.CreateJson fieldsNames=?, fieldsValues=?", luColsList, params).firstValue().toString();
@@ -381,7 +398,6 @@ public class SharedLogic {
 					ciTDM.execute("insert into " + TDMDB_SCHEMA + "." + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)" +
 							" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
 		
-		
 					// Tali- TDM 5.5- fix- add concatenate the lu_name to the table name
 					fabric().execute("insert or replace into "+ tblNameFabric + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)", bind_for_no_params);
 				}
@@ -389,7 +405,9 @@ public class SharedLogic {
 				ciTDM.commit();
 			}
 		
-		}finally
+		} catch (Exception e) {
+            log.error("Lu Params Had Failed: " + e.getMessage());
+        } finally
 		{
 			if(rows != null) rows.close();
 			//log.info("fnEnrichmentLuParams IS DONE");

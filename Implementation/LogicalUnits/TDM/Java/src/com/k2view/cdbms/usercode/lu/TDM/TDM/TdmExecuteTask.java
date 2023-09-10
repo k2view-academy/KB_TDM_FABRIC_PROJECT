@@ -33,14 +33,14 @@ import static com.k2view.cdbms.usercode.lu.TDM.TDM.TdmExecuteTask.TASK_TYPES.LOA
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class TdmExecuteTask {
 
-	public static final String TDM = "TDM";
 	public static final Log log = Log.a(TdmExecuteTask.class);
 	public static final String TDMDB = "TDM";
+	public static final String FABRIC = "fabric";
+	public static final String INTERFACE = "interface";
 	public static final String POST_EXECUTIONS = "Select t.process_id , t.process_name, t.execution_order from " +
 			TDMDB_SCHEMA + ".tasks_post_exe_process t, " + TDMDB_SCHEMA + ".task_execution_list l " +
 			"where l.task_execution_id = ? and l.process_id = t.process_id and upper(l.execution_status) = 'PENDING' and l.task_id = t.task_id " +
 			"order by t.execution_order;";
-	public static final String FABRIC = "fabric";
 	public static final String POST_EXECUTIONS_COUNT = "select count(*) from " + TDMDB_SCHEMA + ".tasks_post_exe_process tt, " + TDMDB_SCHEMA + ".task_execution_list ll " +
 			"where ll.task_execution_id =? and ll.process_id = tt.process_id and tt.execution_order < ? and ll.execution_status NOT IN ('stopped','completed','failed','killed');";
 	public static Map<String, String> entityInclusions = new HashMap<>();
@@ -284,7 +284,7 @@ public class TdmExecuteTask {
 			}else{// the parent id is populated- handle the child luID
 				entityInclusionOverride = getEntityInclusionForChildLU(taskProperties, luName);
 			}
-			String entityInclusionInterface = entityInclusions.getOrDefault("interface", TDMDB);
+			String entityInclusionInterface = entityInclusions.getOrDefault(INTERFACE, TDMDB);
 			String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
 			String affinity = !Util.isEmpty(dcName) ? "affinity='" + DATA_CENTER_NAME.get(taskProperties) + "'" : "";
 
@@ -336,7 +336,7 @@ public class TdmExecuteTask {
 		String entityInclusionOverride = "";
 
 
-		String syncMode = getSyncModeForLoad(taskProperties); 
+		String syncMode = getSyncModeForLoad(taskProperties);
 
 		// TDM 8.1 Call fucntion to set TTL
 		//Calculate retention date + set TTL
@@ -364,10 +364,10 @@ public class TdmExecuteTask {
 		//log.info(" entity inclusion: " + entityInclusionOverride);
 		// TDM 7.4 - For Custom Logic the source DB is Cassandra
 		//TDM 8.1 - TDMDB is used for all entity list tables.
-		String entityInclusionInterface = entityInclusions.getOrDefault("interface", TDMDB);
+		String entityInclusionInterface = entityInclusions.getOrDefault(INTERFACE, TDMDB);
 
 		// TDM 7.3 - If the selection method is cloning data , then the sync of entities will be executed before calling the broadway to make sure each orignal instance is sync at most once
-		if ("CLONE".equalsIgnoreCase(selectionMethod)) {
+		if (selectionMethod.toUpperCase().contains("CLONE")) {
 			//log.info("executeFabricBatch - Handling Cloning Entity");
 			syncInstanceForCloning(entityInclusionOverride, taskProperties);
 			syncMode = "off";
@@ -409,8 +409,6 @@ public class TdmExecuteTask {
 		//log.info("executeFabricBatch - luName: " + luName + ", isChild: " + isChildLU(taskProperties));
 		// check the selection method only for root LUs. Build only once the root selection method per task execution
 
-		String entityInclusionInterface = entityInclusions.getOrDefault("interface", TDMDB);
-
 		//TDM 7.4 - In case of Reserve only on Root LU will be processed, and all child LUs will be ignored
 		if(!isChildLU(taskProperties)){
 			String entityInclusion = entityInclusions.getOrDefault(taskExecutionID, "");
@@ -423,6 +421,7 @@ public class TdmExecuteTask {
 			// No need to run the LU
 			return "NA";
 		}
+		String entityInclusionInterface = entityInclusions.getOrDefault(INTERFACE, TDMDB);
 
 		//log.info(" entity inclusion: " + entityInclusionOverride);
 
@@ -467,7 +466,7 @@ public class TdmExecuteTask {
 			}
 		}else{// the parent id is populated- handle the child luID
 			entityInclusionOverride = getEntityInclusionForChildLU(taskProperties, luName);
-			batchDB = entityInclusions.getOrDefault("interface", TDMDB);
+			batchDB = entityInclusions.getOrDefault(INTERFACE, TDMDB);
 		}
 
 		String dcName = DATA_CENTER_NAME.get(taskProperties).toString();
@@ -496,7 +495,7 @@ public class TdmExecuteTask {
 				luName = "" + t.get("lu_name");
 			}
 
-			if (luName == null || "null".equalsIgnoreCase(luName) || luName.isEmpty()) {
+			if ((luName == null || luName.isEmpty()) && postProcessList.size()>0) {
 				luName = "TDM";
 			}
 			String broadwayCommand = "broadway " + luName + "." + processName + " iid=?," + fabricCommandParams;
@@ -581,7 +580,7 @@ public class TdmExecuteTask {
 			versionClause = " and rel.version_name ='''' ";
 		}
 
-		if ("CLONE".equals(selectionMethod)) {
+		if (selectionMethod.toUpperCase().contains("CLONE")) {
 
 			entityIdSelectChildID = entityIdSelectChildID + "||'#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}'";
 		}
@@ -615,7 +614,7 @@ public class TdmExecuteTask {
 		}
 
 		//log.info("getEntityInclusionForChildLU - entityInclusion: " + entityInclusion);
-		entityInclusions.put("interface", TDMDB);
+		entityInclusions.put(INTERFACE, TDMDB);
 		return entityInclusion;
 	}
 
@@ -645,10 +644,12 @@ public class TdmExecuteTask {
 		String filterOutReserved = "" + FILTEROUT_RESERVED.get(taskProperties);
 		// Reservation is not relevant in case of replace sequence.
 		// And in case of entity list the reservation will be checked by the batch process to fail the entity like any other failure
-		if ("true".equals(filterOutReserved) && !"L".equals(selectionMethod) && !"CLONE".equals(selectionMethod) && !"true".equals(replaceSequences) && !"extract".equalsIgnoreCase(taskType)) {
+		if ("true".equals(filterOutReserved) && !"L".equals(selectionMethod) && !selectionMethod.toUpperCase().contains("CLONE") && !"true".equals(replaceSequences) && !"extract".equalsIgnoreCase(taskType)) {
 			entityExclusionListWhere = getReserveCondition(taskProperties);
 		}
 		String entityInclusion = "";
+		//Initiate interface for batch query to TDMDB
+		entityInclusions.put(INTERFACE, TDMDB);
 		//log.info("getEntityInclusion - separator: " + separator);
 		switch(selectionMethod){
 			case "L": // In case the task lists the entities to run
@@ -678,6 +679,11 @@ public class TdmExecuteTask {
 			case "CLONE": // In case the task requests to Clone entities
 				entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesList) + "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
 				break;
+			case "CLONE_PARAM": // In case the task requests to Clone an entity based on parameters
+				listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties)) + " limit 1";
+				entitiesList = "" + db(TDM).fetch(listOfMatchingEntities).firstValue();
+				entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesList) + "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
+				break;
 			case "P": // In case the task has criteria based on parameters
 				listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
 				entityInclusion = "SELECT entity_id FROM (SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 " + entityExclusionListWhere + " LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
@@ -702,9 +708,9 @@ public class TdmExecuteTask {
 							SOURCE_ENVIRONMENT_NAME.get(taskProperties), "" + VERSION_IND.get(taskProperties), separator, openSeparator, closeSeparator, 
 							"" + TASK_TITLE.get(taskProperties), "" + VERSION_DATETIME.get(taskProperties), "" + DATA_CENTER_NAME.get(taskProperties), 
 							Long.valueOf("" + LU_ID.get(taskProperties)), sessionGlobals);
-					String entityInclusionInterface = batchStrings.get("interface");
+					String entityInclusionInterface = batchStrings.get(INTERFACE);
 					entityInclusion = batchStrings.get("usingClause");
-					entityInclusions.put("interface", entityInclusionInterface);
+					entityInclusions.put(INTERFACE, entityInclusionInterface);
 					entityInclusions.put("mode", batchStrings.get("mode"));
 
 				}
@@ -730,7 +736,7 @@ public class TdmExecuteTask {
 						Long.parseLong("" + NUM_OF_ENTITIES.get(taskProperties).toString()), PARAMETERS.get(taskProperties),
 						sessionGlobals);
 				entityInclusion = BFCmdAndInterface.get("batchQuery");
-				entityInclusions.put("interface", BFCmdAndInterface.get("batchInterface"));
+				entityInclusions.put(INTERFACE, BFCmdAndInterface.get("batchInterface"));
 				break;
 
 			// TDM 8.0 - New selection method - Generate Synthetic
@@ -739,7 +745,7 @@ public class TdmExecuteTask {
 				luName = LU_NAME.get(taskProperties);
 				broadwayCommand = "broadway TDM.GenerateIIDs " + " source_env_name =" + SOURCE_ENVIRONMENT_NAME.get(taskProperties) +
 						", num_of_entities=" + Long.parseLong("" + NUM_OF_ENTITIES.get(taskProperties));
-
+				entityInclusions.put(INTERFACE,FABRIC);
 				entityInclusion = broadwayCommand;
 				break;
 			default: // This column is populated automatically by the application and should not include any other options
@@ -755,10 +761,16 @@ public class TdmExecuteTask {
 		String envID = "" + ENVIRONMENT_ID.get(taskProperties);
 		String beID = "" + BE_ID.get(taskProperties);
 		String userID = "" + TASK_EXECUTED_BY.get(taskProperties);
-		String rersevedExclusionListWhere = Util.rte(() -> " WHERE cast (entity_id as text) NOT IN (SELECT " + buildEntityReserved(env, taskProperties) + " FROM " +
+        String taskType = "" + TASK_TYPE.get(taskProperties);
+        String rersevedExclusionListWhere = Util.rte(() -> " WHERE cast (entity_id as text) NOT IN (SELECT " + buildEntityReserved(env, taskProperties) + " FROM " +
 				TDMDB_SCHEMA + ".tdm_reserved_entities WHERE env_id = " + envID + " and be_id = " + beID + " and reserve_owner != '" + userID +
 				"' and (end_datetime is null or end_datetime > CURRENT_TIMESTAMP))");
-
+        if ("reserve".equalsIgnoreCase(taskType)) {
+            rersevedExclusionListWhere =  Util.rte(() -> " WHERE cast (entity_id as text) NOT IN (SELECT " + buildEntityReserved(env, taskProperties) + " FROM " +
+				TDMDB_SCHEMA + ".tdm_reserved_entities WHERE env_id = " + envID + " and be_id = " + beID +
+				" and (end_datetime is null or end_datetime > CURRENT_TIMESTAMP))");
+        }
+		
 		return rersevedExclusionListWhere;
 
 	}
@@ -791,8 +803,8 @@ public class TdmExecuteTask {
 		globals.put("TDM_TASK_EXE_ID", "" + TASK_EXECUTION_ID.get(taskProperties));
 		globals.put("execution_id", "" + TASK_EXECUTION_ID.get(taskProperties));
 		globals.put("clone_id", "NO_CLONE_ID");
-		globals.put("TDM_REPLACE_SEQUENCES", selectionMethod.equals("CLONE") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
-		globals.put("enable_sequences", selectionMethod.equals("CLONE") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
+		globals.put("TDM_REPLACE_SEQUENCES", selectionMethod.toUpperCase().contains("CLONE") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
+		globals.put("enable_sequences", selectionMethod.toUpperCase().contains("CLONE") ? "true" : REPLACE_SEQUENCES.get(taskProperties));
 		globals.put("TASK_TYPE", TASK_TYPE.get(taskProperties).toString().toUpperCase());
 		Object minDist = Util.rte(() -> db(TDM).fetch("SELECT param_value FROM " + TDMDB_SCHEMA +
 				".tdm_general_parameters WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MIN'").firstValue());
@@ -829,7 +841,7 @@ public class TdmExecuteTask {
 			globals.putAll(overrideGlobals);
 		}
 
-		if (selectionMethod.equals("CLONE")) {
+		if (selectionMethod.toUpperCase().contains("CLONE")) {
 			globals.keySet().removeIf(key -> key.contains("LOAD_MASKING_FLAG"));
 			globals.put("LOAD_MASKING_FLAG", "true");
 		}
@@ -1092,7 +1104,7 @@ public class TdmExecuteTask {
 		return selectionMethod.equals("GEN") ? "true" : "false";
 	}
 	private static String getCloningData(String selectionMethod) {
-		return selectionMethod.equals("CLONE") ? "true" : "false";
+		return selectionMethod.toUpperCase().contains("CLONE") ? "true" : "false";
 	}
 	private static String buildEntityExclusion(String environment, String selectionMethod, String versionInd, String selectedVersionTaskName, String selectedVersionDateTime, String entityID) {
 
@@ -1228,7 +1240,7 @@ public class TdmExecuteTask {
 							break;
 						case "dataflux_retention_params":
 							Map rentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
-							taskProperties.put("retention_period_type", "" + rentionPeriodInfo.get("unit"));
+							taskProperties.put("retention_period_type", "" + rentionPeriodInfo.get("units"));
 							taskProperties.put("retention_period_value", "" + rentionPeriodInfo.get("value"));
 							break;
 						case "reserve_ind":
@@ -1236,7 +1248,7 @@ public class TdmExecuteTask {
 							break;
 						case "reserve_retention_params":
 							Map reserveRentionPeriodInfo = Json.get().fromJson((String) overrideValue, Map.class);
-							taskProperties.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("unit"));
+							taskProperties.put("reserve_retention_period_type", "" + reserveRentionPeriodInfo.get("units"));
 							taskProperties.put("reserve_retention_period_value", "" + reserveRentionPeriodInfo.get("value"));
 							break;
 						// TDM 7.4 - End of Change

@@ -115,7 +115,7 @@ public class SharedGlobals {
 	public static String TDM_DELETE_TABLES_PREFIX = "TAR_";
 
 	@category("TDM")
-	public static final String TDM_BATCH_LIMIT = "10000";
+	public static final String TDM_BATCH_LIMIT = "-1";
 
 	@category("TDM")
 	public static final String TDM_SEQ_REPORT = "true";
@@ -131,15 +131,20 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_POPULATE_JMX_STATS = "false";
 
+
+	@category("TDM")
+	public static String SEQ_DO_TRUNCATE = "false";
+	@category("TDM")
+	public static String SEQ_DROP_KEYSPACE = "false";
+
+	@category("TDM")
+	public static String SEQ_CACHE_INTREFACE = "DB_CASSANDRA";
+
 	@desc("The interface of the DB that will hold the caching of Sequences.")
 	@category("TDM")
 	public static final String SEQ_CACHE_INTERFACE = "DB_CASSANDRA";
-
 	@category("TDM")
 	public static String TDM_SYNTHETIC_DATA = "false";
-	@desc("The interface of the DB that will hold the caching of Sequences.")
-	@category("TDM")
-	public static final String SEQ_CACHE_INTREFACE = "DB_CASSANDRA";
 	@desc("The interface of the DB that will hold the caching of Sequences.")
 	@category("TDM")
 	public static final String SEQUENCES_INTERFACE = "DB_CASSANDRA";

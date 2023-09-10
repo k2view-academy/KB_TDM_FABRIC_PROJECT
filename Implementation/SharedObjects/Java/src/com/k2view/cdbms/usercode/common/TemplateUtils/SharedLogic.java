@@ -122,6 +122,12 @@ public class SharedLogic {
 			}
 		});
 		
+		handlebars.registerHelper("getSeqCacheInterface", new Helper<String>() {
+			public String apply(String luName, Options options) {
+                return getGlobal("SEQ_CACHE_INTREFACE", "TDM");
+			}
+		});
+		
 		handlebars.registerHelper("if_even", new Helper<Integer>(){
 			public Boolean apply(Integer index, Options options) {
 				return ((index % 2) == 0);
@@ -155,12 +161,6 @@ public class SharedLogic {
 		handlebars.registerHelper("getInputFieldName", new Helper<Map<String, String>>() {
 			public String apply(Map<String, String> map, Options options) {
 				return map.get("FIELD_NAME");
-			}
-		});
-		
-		handlebars.registerHelper("getSeqCacheInterface", new Helper<String>() {
-			public String apply(String luName, Options options) {
-				return getGlobal("SEQ_CACHE_INTERFACE", luName);
 			}
 		});
 		
@@ -492,10 +492,9 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object buildSeqTemplateData(String seqName, String cacheDBName, String redisOrDBName, String initiationScriptOrValue) throws Exception {
+	public static Object buildSeqTemplateData(String seqName, String redisOrDBName, String initiationScriptOrValue) throws Exception {
 		Map<String, Object> map = new TreeMap<>();
 		map.put("SEQUENCE_NAME", seqName);
-		map.put("CACHE_DB_NAME", cacheDBName);
 		map.put("SEQUENCE_REDIS_DB", redisOrDBName);
 		map.put("INITIATE_VALUE_FLOW", initiationScriptOrValue);
 		return map;
@@ -695,22 +694,21 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		return result;
 	}
 
-    @out(name = "result", type = List.class, desc = "")
-    public static  List<Map<String, String>>  filerOutSequences(List<Map<String, String>> Sequences, List<Map<String, String>> parentRec) throws Exception {
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);
-
+	@out(name = "result", type = List.class, desc = "")
+	public static List<Map<String,String>> filerOutSequences(List<Map<String,String>> Sequences, List<Map<String,String>> parentRec) throws Exception {
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);
+		
 		for (Map<String, String> parentMap : parentRec) {
 			for (Map<String, String> seqMap : Sequences) {
 				if (seqMap.get("TARGET_FIELD_NAME").equalsIgnoreCase(parentMap.get("FIELD_NAME"))) {
 					result.remove(seqMap);
-                    break;
+					break;
 				}
 			}
 		}
-       
-	
-        return result;
-    }
+		
+		return result;
+	}
 
 	@out(name = "pks", type = List.class, desc = "")
 	public static List<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table) throws Exception {

@@ -1,7 +1,6 @@
 {
     "tags": [
-        "TDM",
-        "TDMGeneral"
+        "TDM"
     ],
     "levels": [
         {
@@ -40,14 +39,27 @@
                             }
                         },
                         {
-                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "name": "Get TDMDB Schema",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "const": "TDMDB_SCHEMA",
                                         "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Environment",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "variableName",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
                                     }
                                 ],
                                 "outputs": []
@@ -60,7 +72,7 @@
         {
             "stages": [
                 {
-                    "name": "Check if Sequencing was part of the task",
+                    "name": "Check If Sequences Enabled And Report is required",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -74,86 +86,247 @@
                             }
                         },
                         {
-                            "name": "Insert into k2masking table",
+                            "name": "Check If Root Table And Field",
                             "actorType": {
-                                "parentType": "DbCommand",
+                                "parentType": "CheckIfRootTableAndField",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if Instance ID",
+                    "dependsOnList": [
+                        "Check If Sequences Enabled And Report is required"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Instance ID?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "target_id",
+                            "minHeight": 224,
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Instance Indicator is No",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Y"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Check If Sequences Enabled And Report is required"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Instance Indicator is Yes__1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "N"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Target Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data to TDM_SEQ_MAPPING",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Insert into TDM_SEQ_MAPPING table",
+                            "minHeight": 339,
+                            "actorType": {
+                                "parentType": "DbLoad",
                                 "inputs": [
                                     {
                                         "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
                                         "const": null
                                     },
                                     {
-                                        "name": "sql",
-                                        "const": "INSERT INTO k2masking.tdm_seq_mapping (task_execution_id, iid, lu_type, seq_name, table_name, column_name, source_value, target_value) VALUES (${task_execution_id}, ${iid}, ${lu_type}, ${seq_name}, ${table_name}, ${column_name}, ${source_value}, ${target_value}) USING TTL ${TTL}"
+                                        "name": "table",
+                                        "const": "tdm_seq_mapping"
                                     },
                                     {
-                                        "name": "batch",
-                                        "const": null
+                                        "name": "fields",
+                                        "const": [
+                                            "task_execution_id",
+                                            "lu_type",
+                                            "source_env",
+                                            "entity_target_id",
+                                            "seq_name",
+                                            "table_name",
+                                            "column_name",
+                                            "source_id",
+                                            "target_id",
+                                            "is_instance_id"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
                                     },
                                     {
                                         "name": "task_execution_id",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
                                     },
                                     {
                                         "name": "lu_type",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
+                                    },
+                                    {
+                                        "name": "source_env",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "entity_target_id",
+                                        "schema": {}
                                     },
                                     {
                                         "name": "seq_name",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
                                     },
                                     {
                                         "name": "table_name",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
                                     },
                                     {
                                         "name": "column_name",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
                                     },
                                     {
-                                        "name": "source_value",
+                                        "name": "source_id",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
                                     },
                                     {
-                                        "name": "target_value",
+                                        "name": "target_id",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "mandatory": false
+                                        }
                                     },
                                     {
-                                        "name": "TTL",
-                                        "const": 86400,
-                                        "schema": {
-                                            "type": "integer"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
+                                        "name": "is_instance_id",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -187,52 +360,72 @@
         },
         {
             "leftPort": {
-                "actor": "Get SEQ_CACHE_INTERFACE",
+                "actor": "Get TDMDB Schema",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "interface"
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "schema"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "params"
+                "actor": "Get Source Environment",
+                "name": "variableValue"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "params"
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "source_env"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "batch"
+                "actor": "Check If Root Table And Field",
+                "name": "root_indicator"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "batch"
+                "actor": "Instance ID?",
+                "name": "a"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "task_execution_id"
+                "actor": "target_id",
+                "name": "value"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "task_execution_id"
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "entity_target_id"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "iid"
+                "actor": "Instance Indicator is No",
+                "name": "value"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "iid"
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "is_instance_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Instance Indicator is Yes__1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "is_instance_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Target Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "entity_target_id"
             }
         },
         {
@@ -241,7 +434,47 @@
                 "name": "lu_type"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
+                "actor": "Get Source Environment",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_type"
+            },
+            "rightPort": {
+                "actor": "Check If Root Table And Field",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "target_id"
+            },
+            "rightPort": {
+                "actor": "target_id",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_type"
+            },
+            "rightPort": {
+                "actor": "Insert into TDM_SEQ_MAPPING table",
                 "name": "lu_type"
             }
         },
@@ -251,7 +484,7 @@
                 "name": "seq_name"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
+                "actor": "Insert into TDM_SEQ_MAPPING table",
                 "name": "seq_name"
             }
         },
@@ -261,7 +494,7 @@
                 "name": "table_name"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
+                "actor": "Insert into TDM_SEQ_MAPPING table",
                 "name": "table_name"
             }
         },
@@ -271,7 +504,7 @@
                 "name": "column_name"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
+                "actor": "Insert into TDM_SEQ_MAPPING table",
                 "name": "column_name"
             }
         },
@@ -281,28 +514,18 @@
                 "name": "source_value"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "source_value"
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "source_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "target_value"
+                "name": "target_id"
             },
             "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "target_value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TTL"
-            },
-            "rightPort": {
-                "actor": "Insert into k2masking table",
-                "name": "TTL"
+                "actor": "Insert into TDM_SEQ_MAPPING table",
+                "name": "target_id"
             }
         }
     ]

@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Deploy"
+    ],
     "levels": [
         {
             "stages": [
@@ -277,28 +280,73 @@
         {
             "stages": [
                 {
-                    "name": "Create k2masking Keyspace if it does not exists",
+                    "name": "Get Globals For k2masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Create Masking Keyspace",
+                            "name": "SEQ_CACHE_INTREFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTREFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SEQ_DROP_KEYSPACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_DROP_KEYSPACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SEQ_DO_TRUNCATE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_DO_TRUNCATE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create k2masking if it does not exists",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "maskingCreateCacheTable",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "maskingCreateCacheTable"
+                                        "const": "masking-create-cache-table"
                                     },
                                     {
-                                        "const": false,
-                                        "name": "dropKeySpace",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "const": "DB_CASSANDRA",
                                         "name": "interface",
                                         "schema": {
                                             "type": "string"
@@ -312,14 +360,22 @@
                                             "interfaces": [
                                                 "fabric"
                                             ]
-                                        }
+                                        },
+                                        "mandatory": false
                                     },
                                     {
-                                        "const": false,
+                                        "name": "dropKeySpace",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
                                         "name": "doTruncate",
                                         "schema": {
                                             "type": "boolean"
-                                        }
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -410,6 +466,36 @@
             "rightPort": {
                 "actor": "Deploy Environments",
                 "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SEQ_CACHE_INTREFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "maskingCreateCacheTable",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SEQ_DROP_KEYSPACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "maskingCreateCacheTable",
+                "name": "dropKeySpace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SEQ_DO_TRUNCATE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "maskingCreateCacheTable",
+                "name": "doTruncate"
             }
         },
         {

@@ -1,0 +1,635 @@
+{
+    "tags": [
+        "Create"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "SQL dialect",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbSqlDialect1",
+                            "actorType": {
+                                "parentType": "DbSqlDialect",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "SQL queries",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "queryCreateKeyspace",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var sql = {\r\n  generic: \"CREATE SCHEMA k2masking\",\r\n  cassandra: \"CREATE KEYSPACE IF NOT EXISTS k2masking WITH REPLICATION = {'class':'SimpleStrategy', 'replication_factor':1};\",\r\n  postgres: \"CREATE SCHEMA IF NOT EXISTS k2masking\"\r\n};\r\nif (sql[dialect]) {\r\n  sql[dialect]\r\n} else {\r\n  sql[\"generic\"]\r\n}",
+                                            "script": "var sql = {\n  generic: \"CREATE SCHEMA k2masking\",\n  cassandra: \"CREATE KEYSPACE IF NOT EXISTS k2masking WITH REPLICATION = {'class':'SimpleStrategy', 'replication_factor':1};\",\n  postgres: \"CREATE SCHEMA IF NOT EXISTS k2masking\"\n};\n\nif (sql[dialect]) {\n  sql[dialect];\n} else {\n  sql[\"generic\"];\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "queryDropKeyspace",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var sql = {\r\n  generic: \"DROP SCHEMA k2masking\",\r\n  cassandra: \"DROP KEYSPACE IF EXISTS k2masking\",\r\n  postgres:\"DROP SCHEMA IF EXISTS k2masking CASCADE\",\r\n};\r\nif (sql[dialect]) {\r\n  sql[dialect]\r\n} else {\r\n  sql[\"generic\"]\r\n}",
+                                            "script": "var sql = {\n  generic: \"DROP SCHEMA k2masking\",\n  cassandra: \"DROP KEYSPACE IF EXISTS k2masking\",\n  postgres: \"DROP SCHEMA IF EXISTS k2masking CASCADE\"\n};\n\nif (sql[dialect]) {\n  sql[dialect];\n} else {\n  sql[\"generic\"];\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Drop schema",
+                    "dependsOnList": [
+                        "SQL queries"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "performDrop",
+                            "condition": "value",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "DropKeyspace",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "SQL queries"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create DB schema",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "This flow creates the database keyspace and tables needed for the masking actor cache.\n\nRun the flow and select the correct Cassandra interface where you want the keyspace to reside.\n\nSwitch truncate to \"true\" if you want to clean up the table of masking caching in case the table already exists.\n\n",
+                    "actors": [
+                        {
+                            "name": "CreateKeyspace",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CreateCacheTable",
+                            "actorType": {
+                                "parentType": "DbCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "k2masking.masking_cache"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "environment",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "execution_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "masking_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "instance_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "original_value_hash",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "masked_value",
+                                                "type": "TEXT",
+                                                "pk": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "clone_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "cassandra"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CreateUniquenessTable",
+                            "actorType": {
+                                "parentType": "DbCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "k2masking.uniqueness"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "environment",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "execution_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "masking_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "masked_value",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "cassandra"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CreateRelationsTable",
+                            "actorType": {
+                                "parentType": "DbCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "k2masking.tdm_seq_mapping"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "task_execution_id",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "lu_type",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "seq_name",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "table_name",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "column_name",
+                                                "type": "TEXT",
+                                                "pk": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "source_value",
+                                                "type": "TEXT",
+                                                "pk": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "target_value",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "iid",
+                                                "type": "TEXT",
+                                                "pk": true,
+                                                "mandatory": true
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "cassandra"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Truncate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "performTruncate",
+                            "condition": "value",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Truncate cache table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "truncate k2masking.masking_cache;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Truncate uniqueness table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "truncate k2masking.uniqueness;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Truncate relations table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "truncate k2masking.tdm_seq_mapping;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "DbSqlDialect1",
+                "name": "dialect"
+            },
+            "rightPort": {
+                "actor": "queryCreateKeyspace",
+                "name": "dialect"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DbSqlDialect1",
+                "name": "dialect"
+            },
+            "rightPort": {
+                "actor": "queryDropKeyspace",
+                "name": "dialect"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "queryCreateKeyspace",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CreateKeyspace",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "queryDropKeyspace",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DropKeyspace",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "DbSqlDialect1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "dropKeySpace"
+            },
+            "rightPort": {
+                "actor": "performDrop",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "DropKeyspace",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "CreateKeyspace",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "CreateCacheTable",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "CreateUniquenessTable",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "CreateRelationsTable",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "doTruncate"
+            },
+            "rightPort": {
+                "actor": "performTruncate",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Truncate cache table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Truncate uniqueness table",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "Truncate relations table",
+                "name": "interface"
+            }
+        }
+    ]
+}

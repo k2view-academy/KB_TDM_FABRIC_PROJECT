@@ -47,6 +47,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORACLE_TEST" dbType="genericdb" active="true">
+          <dbHost>10.21.2.64</dbHost>
+          <dbPort>1521</dbPort>
+          <dbScheme>XE</dbScheme>
+          <dbUser>TDM_SOURCE</dbUser>
+          <dbPasswordEncrypted>~encs2~X2Tq3h+pT1vf1N6yMok55rXYWyVg40g9nFyOhdO2FRUnFJiRnjs5PHvW</dbPasswordEncrypted>
+          <connString>jdbc:oracle:thin:@10.21.2.64:1521/XE</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>Oracle</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
@@ -397,6 +408,14 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORACLE_TEST" dbType="genericdb" active="false">
+          <dbPort>1521</dbPort>
+          <dbScheme>XE</dbScheme>
+          <connString>jdbc:oracle:thin:@:1521/XE</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>Oracle</JdbcDriverName>
+        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
@@ -746,6 +765,14 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORACLE_TEST" dbType="genericdb" active="false">
+          <dbPort>1521</dbPort>
+          <dbScheme>XE</dbScheme>
+          <connString>jdbc:oracle:thin:@:1521/XE</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>

@@ -14,6 +14,16 @@ from (select m2.*, row_number() over (PARTITION BY task_id order by task_id) as 
 where m.task_id = m2.task_id
 and m.param_name = m2.param_name;
 
+-- add a new row in tdm_general_params for max retention days for tester 
+INSERT INTO ${@schema}.tdm_general_parameters (param_name,param_value)
+VALUES ('MAX_RETENTION_DAYS_FOR_TESTER','90');
+
+-- Seperate Avaliable Options For Reservation And Retention 
+UPDATE ${@schema}.tdm_general_parameters
+SET param_value = '{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
+WHERE param_name = 'tdm_gui_params';
+
+
 
 ALTER TABLE ${@schema}.environments 
 ADD COLUMN IF NOT EXISTS mask_sensitive_data boolean NOT NULL DEFAULT true;
@@ -26,6 +36,56 @@ ADD COLUMN IF NOT EXISTS mask_sensitive_data boolean NOT NULL DEFAULT true;
 update ${@schema}.tasks t set mask_sensitive_data = (select e.mask_sensitive_data from ${@schema}.environments e where e.environment_id = t.source_environment_id);
 
 ALTER TABLE ${@schema}.task_execution_entities ADD COLUMN IF NOT EXISTS root_lu_name text;
+
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values
+(
+    lu_name text NOT NULL,
+    field_name text NOT NULL,
+    field_values text[],
+    CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
+);
+
+CREATE OR REPLACE PROCEDURE ${@schema}.update_params_tables(schemaName text)
+LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	rec record;
+	curs cursor for select table_name, column_name from  information_schema.columns 
+			where table_schema = '${@schema}' 
+			and table_name like '%_params' and column_name like '%.%'
+			order by table_name;
+	currTableName text = '';
+	tableFullName text;
+	pkName text;
+BEGIN
+
+	open curs;
+	LOOP
+		fetch from curs into rec;
+		exit when not found;
+		
+		tableFullName := schemaName || '.' || rec.table_name;
+		pkName := rec.table_name || '_pkey';
+		
+		if currTableName != rec.table_name THEN
+			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_lu_name text');
+			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_iid text');
+			EXECUTE format('ALTER TABLE ' || tableFullName || ' DROP CONSTRAINT '||pkName);
+			currTableName := rec.table_name;
+		END IF;
+								
+		EXECUTE format('ALTER TABLE ' || tableFullName || ' ALTER COLUMN "'|| rec.column_name || '" TYPE TEXT[] USING "' || rec.column_name||'"::TEXT[]');
+	END LOOP;
+	CLOSE curs;
+END;
+$BODY$;
+
+ALTER PROCEDURE ${@schema}.update_params_tables(IN TEXT)
+    OWNER TO tdm;
+
+call ${@schema}.update_params_tables('${@schema}');
+
+drop procedure ${@schema}.update_params_tables(IN TEXT);
 
 CREATE OR REPLACE PROCEDURE ${@schema}.update_root_info(schemaName text)
 LANGUAGE 'plpgsql'
@@ -128,16 +188,15 @@ call ${@schema}.update_root_info('${@schema}');
 
 drop procedure ${@schema}.update_root_info(IN TEXT);
 
-CREATE OR REPLACE PROCEDURE ${@schema}.update_params_tables(schemaName text)
+CREATE OR REPLACE PROCEDURE ${@schema}.modify_param_tables_pk(schemaName text)
 LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
 	rec record;
-	curs cursor for select table_name, column_name from  information_schema.columns 
+	curs cursor for select distinct table_name from  information_schema.columns 
 			where table_schema = '${@schema}' 
 			and table_name like '%_params' and column_name like '%.%'
 			order by table_name;
-	currTableName text = '';
 	tableFullName text;
 	pkName text;
 BEGIN
@@ -150,21 +209,50 @@ BEGIN
 		tableFullName := schemaName || '.' || rec.table_name;
 		pkName := rec.table_name || '_pkey';
 		
-		if currTableName != rec.table_name THEN
-			EXECUTE format('ALTER TABLE ' || tableFullName || ' DROP CONSTRAINT '||pkName);
-			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD CONSTRAINT ' || pkName || ' PRIMARY KEY (root_lu_name, root_iid, entity_id, source_environment)');
-			currTableName := rec.table_name;
-		END IF;
-								
-		EXECUTE format('ALTER TABLE ' || tableFullName || ' ALTER COLUMN "'|| rec.column_name || '" TYPE TEXT[] USING "' || rec.column_name||'"::TEXT[]');
+		EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD CONSTRAINT ' || pkName || ' PRIMARY KEY (root_lu_name, root_iid, entity_id, source_environment)');
 	END LOOP;
 	CLOSE curs;
 END;
 $BODY$;
 
-ALTER PROCEDURE ${@schema}.update_params_tables(IN TEXT)
+ALTER PROCEDURE ${@schema}.modify_param_tables_pk(IN TEXT)
     OWNER TO tdm;
 
-call ${@schema}.update_params_tables('${@schema}');
+call ${@schema}.modify_param_tables_pk('${@schema}');
 
-drop procedure ${@schema}.update_params_tables(IN TEXT);
+drop procedure ${@schema}.modify_param_tables_pk(IN TEXT);
+
+CREATE OR REPLACE PROCEDURE ${@schema}.update_distinct_params_table(schemaName text)
+LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	rec record;
+	curs cursor for select table_name, column_name from  information_schema.columns 
+			where table_schema = '${@schema}' 
+			and table_name like '%_params' and column_name like '%.%'
+			order by table_name;
+	fieldValues text default '';
+	tableFullName text;
+	valuesTable text;
+	luName text;
+BEGIN
+	
+	valuesTable := schemaName || '.tdm_params_distinct_values';
+	open curs;
+	LOOP
+		fetch from curs into rec;
+		exit when not found;
+		
+		tableFullName := schemaName || '.' || rec.table_name;
+		luName :=upper(SPLIT_PART(lower(rec.table_name), '_params', 1));
+									
+		EXECUTE format('SELECT anyarray_uniq(anyarray_agg("'|| rec.column_name || '")) FROM ' || tableFullName) INTO fieldValues;
+		EXECUTE format('INSERT INTO ' || valuesTable || ' (lu_name, field_name, field_values) VALUES ($1,$2,$3) ') using luName,rec.column_name,fieldValues::text[];
+		
+	END LOOP;
+	CLOSE curs;
+END;
+$BODY$;
+
+call ${@schema}.update_distinct_params_table('${@schema}');
+drop procedure ${@schema}.update_distinct_params_table(IN TEXT);

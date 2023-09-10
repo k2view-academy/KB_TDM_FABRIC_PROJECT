@@ -10,6 +10,7 @@
     {
       "name": "result",
       "sessionProvider": "fabric",
+      "collapsed": true,
       "children": [
         {
           "name": "General Info",
@@ -173,7 +174,6 @@
                 },
                 {
                   "name": "Post Execution Processes",
-                  "collapsed": true,
                   "children": [
                     {
                       "name": "Post Execution Processes Summary",
@@ -224,7 +224,7 @@
             {
               "name": "List of Copied Reference Tables",
               "type": "sql",
-              "code": "select ref_table_name , number_of_records_to_process as number_of_records , number_of_processed_records\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
+              "code": "select ref_table_name , number_of_records_to_process as number_of_records , number_of_processed_records, start_time as start_execution_time ,end_time as end_execution_time\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
             },
             {
               "name": "Number of Failed Reference Tables",
@@ -234,7 +234,7 @@
             {
               "name": "List of Failed Reference Tables",
               "type": "sql",
-              "code": "select ref_table_name , number_of_records_to_process as number_of_records , number_of_processed_records , error_msg\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'"
+              "code": "select ref_table_name , number_of_records_to_process as number_of_records ,number_of_processed_records, start_time as start_execution_time ,end_time as end_execution_time, error_msg\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'"
             }
           ]
         },

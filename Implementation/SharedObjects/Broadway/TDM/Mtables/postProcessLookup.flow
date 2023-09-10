@@ -31,7 +31,9 @@
                                                     "process_name": {
                                                         "type": "string"
                                                     },
-                                                    "lu_name": {}
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    }
                                                 }
                                             }
                                         }
@@ -69,9 +71,7 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "lu_name": {
-                                                    "type": "string"
-                                                }
+                                                "lu_name": {}
                                             }
                                         }
                                     }
@@ -87,7 +87,7 @@
                 {
                     "name": "Build Map ProcessName + Value",
                     "dependsOnList": [],
-                    "isLast": 0,
+                    "isLast": 1,
                     "actors": [
                         {
                             "name": "MapBuild PrrocessName",
@@ -145,6 +145,39 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapMerge",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Meow": {
+                                                    "type": "string"
+                                                },
+                                                "postTaskExePrintToLog": {},
+                                                "jojo": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "connections": [
@@ -183,11 +216,25 @@
             "rightPort": {
                 "actor": "MapBuild PrrocessName",
                 "name": "value"
-            }
+            },
+            "path": [
+                "lu_name"
+            ]
         },
         {
             "leftPort": {
                 "actor": "MapBuild PrrocessName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "MapMerge",
                 "name": "map"
             },
             "rightPort": {

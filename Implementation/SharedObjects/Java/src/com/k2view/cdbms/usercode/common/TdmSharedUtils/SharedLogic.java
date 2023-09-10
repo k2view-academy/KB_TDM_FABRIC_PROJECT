@@ -141,17 +141,18 @@ public class SharedLogic {
 
 	@out(name = "result", type = String.class, desc = "")
 	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws Exception {
-		
+				
 		//UserCode.log.info("generateListOfMatchingEntitiesQuery - whereStmt: " + whereStmt);
-        String rootLUsSql = "SELECT ARRAY_AGG(lu_name) FROM product_logical_units WHERE " +
-            "be_id = ? AND lu_parent_id is null";
-        
-        String rootLUs = "" + db(TDM).fetch(rootLUsSql, beID).firstValue();
-        
-        String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt : "";
-		paramsSql = paramsSql.replaceAll("where ", "where ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = ? AND ");
-		paramsSql = "SELECT distinct root_iid as entity_id FROM (" + paramsSql + ") p";
+		String rootLUsSql = "SELECT ARRAY_AGG(lu_name) FROM product_logical_units WHERE " +
+		    "be_id = ? AND lu_parent_id is null";
 		
+		String rootLUs = "" + db(TDM).fetch(rootLUsSql, beID).firstValue();
+		
+		String paramsSql = !Util.isEmpty(whereStmt) ? whereStmt : "";
+		paramsSql = paramsSql.replaceAll("FROM " , "FROM " + TDMDB_SCHEMA + ".");
+		paramsSql = paramsSql.replaceAll("WHERE ", "WHERE ROOT_LU_NAME = ANY('" + rootLUs + "') AND SOURCE_ENVIRONMENT = '" + sourceEnv + "' AND ");
+		paramsSql = "SELECT distinct root_iid as entity_id FROM (" + paramsSql + ") p";
+				
 		//UserCode.log.info("generateListOfMatchingEntitiesQuery - paramsSql: " + paramsSql);
 		return paramsSql;
 	}
@@ -543,65 +544,56 @@ public class SharedLogic {
 	public static Map<String,Object> fnGetRetentionPeriod() throws Exception {
 		Map<String, Object> map;
 		try {
-		    String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
-		
-		    Object params = db(TDM).fetch(sql).firstRow().get("param_value");
-		    Map result = Json.get().fromJson((String) params, Map.class);
-		
-		    map = new HashMap<>();
-		
-		    Object maxRetentionPeriod = result.get("maxRetentionPeriod");
-		    if (maxRetentionPeriod != null) {
-		        Map<String, Object> retain = new HashMap<>();
-		        retain.put("units", "Days");
-		        retain.put("value", maxRetentionPeriod);
-		
-		        map.put("maxRetentionPeriod", retain);
-		    }
-		
-		    Object RetaindefaultPeriod = result.get("retentionDefaultPeriod");
-		    if (RetaindefaultPeriod != null) {
-		
-		        map.put("retentionDefaultPeriod", RetaindefaultPeriod);
-		    }
-		
-		    Object retentionPeriodTypes = result.get("availableOptions");
-		    if (retentionPeriodTypes != null) {
-		        map.put("periodTypes", retentionPeriodTypes);
-		    }
-		
-		    Object maxReservationPeriod = result.get("maxReservationPeriod");
-		    if (maxReservationPeriod != null) {
-		        Map<String, Object> reserve = new HashMap<>();
-		        reserve.put("units", "Days");
-		        reserve.put("value", maxReservationPeriod);
-		        map.put("maxReservationPeriod", reserve);
-		    }
-		    Object reserveDefaultPeriod = result.get("reservationDefaultPeriod");
-		    if (reserveDefaultPeriod != null) {
-		        map.put("reservationDefaultPeriod", reserveDefaultPeriod);
-		    }
-		    Object versioningRetentionPeriod = result.get("versioningRetentionPeriod");
-		    if (versioningRetentionPeriod != null) {
-		        map.put("versioningRetentionPeriod", versioningRetentionPeriod);
-		    }
-		    Object retentionPeriodForTesters = result.get("retentionPeriodForTesters");
-		    if (retentionPeriodForTesters != null) {
-		        map.put("retentionPeriodForTesters", retentionPeriodForTesters);
-		    }
-		
-		    sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
-		    Object maxReserveDays = db(TDM).fetch(sql).firstValue();
-		    if (maxReserveDays != null) {
-		        Map<String, Object> testers = new HashMap<>();
-		
-		        testers.put("units", "Days");
-		        testers.put("value",  Long.valueOf((String) maxReserveDays));
-		        map.put("maxReservationPeriodForTesters", testers);
-		    }
-		    return map;
+			String sql = "select * from " + TDMDB_SCHEMA + ".tdm_general_parameters where tdm_general_parameters.param_name = 'tdm_gui_params'";
+
+			Object params = db(TDM).fetch(sql).firstRow().get("param_value");
+			Map result = Json.get().fromJson((String) params, Map.class);
+
+			map = new HashMap<>();
+
+			Object retentionDefaultPeriod = result.get("retentionDefaultPeriod");
+			if (retentionDefaultPeriod != null) {
+				map.put("retentionDefaultPeriod", retentionDefaultPeriod);
+			}
+			Object retentionPeriodTypes = result.get("retentionPeriodTypes");
+			if (retentionPeriodTypes != null) {
+				map.put("retentionPeriodTypes", retentionPeriodTypes);
+			}
+			Object reserveDefaultPeriod = result.get("reservationDefaultPeriod");
+			if (reserveDefaultPeriod != null) {
+				map.put("reservationDefaultPeriod", reserveDefaultPeriod);
+			}
+			Object reservationPeriodTypes = result.get("reservationPeriodTypes");
+			if (reservationPeriodTypes != null) {
+				map.put("reservationPeriodTypes", reservationPeriodTypes);
+			}
+			Object versioningRetentionPeriod = result.get("versioningRetentionPeriod");
+			if (versioningRetentionPeriod != null) {
+				map.put("versioningRetentionPeriod", versioningRetentionPeriod);
+			}
+			Object versioningRetentionPeriodForTesters = result.get("versioningRetentionPeriodForTesters");
+			if (versioningRetentionPeriodForTesters != null) {
+				map.put("versioningRetentionPeriodForTesters", versioningRetentionPeriodForTesters);
+			}
+			sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RETENTION_DAYS_FOR_TESTER'";
+			Object maxRetentionDays = db(TDM).fetch(sql).firstValue();
+			if (maxRetentionDays != null) {
+				Map<String, Object> testers = new HashMap<>();
+				testers.put("units", "Days");
+				testers.put("value",  Long.valueOf((String) maxRetentionDays));
+				map.put("maxRetentionPeriodForTesters", testers);
+			}
+			sql = "SELECT param_value from " + TDMDB_SCHEMA + ".tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER'";
+			Object maxReserveDays = db(TDM).fetch(sql).firstValue();
+			if (maxReserveDays != null) {
+				Map<String, Object> testers = new HashMap<>();
+				testers.put("units", "Days");
+				testers.put("value",  Long.valueOf((String) maxReserveDays));
+				map.put("maxReservationPeriodForTesters", testers);
+			}
+			return map;
 		} catch (Throwable t) {
-		    throw new RuntimeException("Failed to get retention Period Definitions from tdm_general_parameters TDMDB");
+			throw new RuntimeException("Failed to get retention Period Definitions from tdm_general_parameters TDMDB");
 		}
 	}
 	
@@ -1175,7 +1167,8 @@ public class SharedLogic {
     }
 
 
-    public static Object fnStartTask(Long taskId, Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,String> reserveRetention, String executionNote) throws Exception {
+	@out(name = "result", type = Object.class, desc = "")
+	public static Object fnStartTask(Long taskId, Boolean forced, String entitieslist, String sourceEnvironmentName, String targetEnvironmentName, Map<String,String> taskGlobals, Integer numberOfEntities, Long dataVersionExecId, Map<String,String> dataVersionRetentionPeriod, Boolean reserveInd, Map<String,String> reserveRetention, String executionNote) throws Exception {
 		HashMap<String, Object> response = new HashMap<>();
 		String message = null;
 		String errorCode;
@@ -1222,7 +1215,7 @@ public class SharedLogic {
 							downJobsList += ", " + functionName;
 						}
 					} else {
-                        UserCode.log.warn("Job " + functionName + " is down, and it is an automatic job, please check why it is down");
+		                      UserCode.log.warn("Job " + functionName + " is down, and it is an automatic job, please check why it is down");
 					}
 				}
 							
@@ -1246,7 +1239,7 @@ public class SharedLogic {
 			ResultSet taskData = taskRow.resultSet();
 			if(!fnIsTaskActive(taskId)) throw new Exception("Task is not active");
 			String taskType = "" + taskData.getString("task_type");
-            String createdBy = taskData.getString("task_created_by");
+		          String createdBy = taskData.getString("task_created_by");
 			Boolean deleteBeforeLoad = taskData.getBoolean("delete_before_load");
 			Boolean insertToTarget = taskData.getBoolean("load_entity");
 			Boolean entityListInd = false;
@@ -1264,7 +1257,7 @@ public class SharedLogic {
 			String selectionMethodOrig = "" + taskData.getString("selection_method");
 			String selectionMethod = selectionMethodOrig;
 			if (entitieslist!=null) {
-				if ("CLONE".equalsIgnoreCase(selectionMethodOrig)) {
+				if (selectionMethodOrig.toUpperCase().contains("CLONE")) {
 					if (entityListSize > 1) {
 						throw new Exception("This is a Data Cloning Task, only one entity can be in the entity list");
 					} 
@@ -1278,7 +1271,7 @@ public class SharedLogic {
 			if (entitieslist!=null) overrideParams.put("ENTITY_LIST",entitieslist);
 			if (!selectionMethod.equals(selectionMethodOrig)) overrideParams.put("SELECTION_METHOD",selectionMethod);
 			// If entity_list is given, then ignore the given no_of_entities unless in case of cloning
-			if (numberOfEntities!=null && (!entityListInd  || ("CLONE".equalsIgnoreCase(selectionMethod)))) {
+			if (numberOfEntities!=null && (!entityListInd  || (selectionMethod.toUpperCase().contains("CLONE")))) {
 				//log.info("setting the number of entities to: " + numberOfEntities);
 				overrideParams.put("NO_OF_ENTITIES",numberOfEntities);
 			}
@@ -1332,7 +1325,7 @@ public class SharedLogic {
 			}
 			Integer numberOfRequestedEntities = 0;
 			if (numberOfEntities != null) {
-				if (entityListInd && !"CLONE".equalsIgnoreCase(selectionMethod) && numberOfEntities != entityListSize) {
+				if (entityListInd && !selectionMethod.toUpperCase().contains("CLONE") && numberOfEntities != entityListSize) {
 					numberOfRequestedEntities = entityListSize;
 					message = "The number of entities for execution is set based on the entity list";
 					overrideParams.put("NO_OF_ENTITIES",numberOfRequestedEntities);
@@ -1341,7 +1334,7 @@ public class SharedLogic {
 					entityListSize = numberOfEntities;
 				}
 			} else {
-				if (entityListInd && !"CLONE".equalsIgnoreCase(selectionMethod)) {
+				if (entityListInd && !selectionMethod.toUpperCase().contains("CLONE")) {
 					numberOfRequestedEntities = entityListSize;
 				} else {
 					numberOfRequestedEntities =  (taskData.getInt("num_of_entities"));
@@ -1353,33 +1346,52 @@ public class SharedLogic {
 			
 			// 7-Nov-21- fix the validation of the target env. Get it from the task if the target enn is not overridden
 			String targetExeEnvName = (targetEnvironmentName != null &&  !targetEnvironmentName .trim().isEmpty())? targetEnvironmentName : taskData.getString("environment_name");
-			
+		
+			Map<String, String> validateMessages ;
 			if (dataVersionRetentionPeriod!=null) {
-				Map<String, String> validateDFMessages = fnValidateRetentionPeriodParams(dataVersionRetentionPeriod,
-						"versioning", targetExeEnvName);
-				if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-					return wrapWebServiceResults("FAILED", "versioningRetentionPeriod", validateDFMessages.get("retention"));
+				validateMessages = fnValidateRetentionPeriodParams(dataVersionRetentionPeriod,
+						"retention", targetExeEnvName,versionInd);
+				if (validateMessages != null && !validateMessages.isEmpty()) {
+					return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
 				}
 				overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
-			}
-			
-			if(reserveRetention!=null) {
-				Map<String, String> validateDFMessages = fnValidateRetentionPeriodParams(reserveRetention,
-					"reserve", targetExeEnvName);
-				if (validateDFMessages != null && !validateDFMessages.isEmpty()) {
-					return wrapWebServiceResults("FAILED", "reserveRetentionPeriod", validateDFMessages.get("retention"));
+			} else{
+				Map<String, String> dataRetentionPeriod = new HashMap<>();
+				dataRetentionPeriod.put("units", taskData.getString("retention_period_type"));
+				dataRetentionPeriod.put("value", String.valueOf(taskData.getLong("retention_period_value")));
+				validateMessages = fnValidateRetentionPeriodParams(dataRetentionPeriod,
+						"retention", targetExeEnvName,versionInd);
+				if (validateMessages != null && !validateMessages.isEmpty()) {
+					return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
 				}
-				overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
 			}
-			
+			if(reserveInd) {
+				if (reserveRetention != null) {
+					validateMessages = fnValidateRetentionPeriodParams(reserveRetention,
+							"reserve", targetExeEnvName, false);
+					if (validateMessages != null && !validateMessages.isEmpty()) {
+						return wrapWebServiceResults("FAILED", "ReservationPeriod", validateMessages.get("reservation"));
+					}
+					overrideParams.put("RESERVE_RETENTION_PARAMS", reserveRetention);
+				} else {
+					Map<String, String> dataReservePeriod = new HashMap<>();
+					dataReservePeriod.put("units", taskData.getString("reserve_retention_period_type"));
+					dataReservePeriod.put("value", String.valueOf(taskData.getLong("reserve_retention_period_value")));
+					validateMessages = fnValidateRetentionPeriodParams(dataReservePeriod,
+							"reserve", targetExeEnvName, false);
+					if (validateMessages != null && !validateMessages.isEmpty()) {
+						return wrapWebServiceResults("FAILED", "ReservationPeriod", validateMessages.get("reservation"));
+					}
+				}
+			}
 			List<Map<String,Object>> sourceRolesList = new ArrayList<>();
 			List<Map<String,Object>> targetRolesList = new ArrayList<>();
-            List<Map<String,Object>> rolesList;
-            if ("TDM.tdmTaskScheduler".equalsIgnoreCase(sessionUser().name())) {
-                rolesList = fnGetUserEnvs(createdBy);
-           }else{
-               rolesList = fnGetUserEnvs("");
-           }
+		          List<Map<String,Object>> rolesList;
+		          if ("TDM.tdmTaskScheduler".equalsIgnoreCase(sessionUser().name())) {
+		              rolesList = fnGetUserEnvs(createdBy);
+		         }else{
+		             rolesList = fnGetUserEnvs("");
+		         }
 			
 			//log.info("------- Size: " + rolesList.size());
 			for (Map<String, Object> envType : rolesList) {
@@ -1399,7 +1411,7 @@ public class SharedLogic {
 			Long validateWriteNumber=-1L;
 			Long validateNumber =-1L;
 			String permission = "";
-
+		
 			if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
 				if (sourceRolesList == null || sourceRolesList.isEmpty()) {
 					throw new Exception("Environment does not exist or user has no read permission on this environment");
@@ -1417,7 +1429,7 @@ public class SharedLogic {
 								selectionMethod,
 								taskData.getString("sync_mode"), taskData.getBoolean("version_ind"), taskType, role);
 						//log.info("validateNumber: " + validateNumber);
-
+		
 						if (validateReadNumber!=-1 && (allowedEntitySize > validateReadNumber)) {
 							sourceValidationsErrorMessages.put("Number of entity", "The number of entities exceeds the number of entities in the " + permission + " permission");
 						} else if (sourceValidationsErrorMessages.isEmpty()) {
@@ -1427,27 +1439,27 @@ public class SharedLogic {
 							sourceEnvValidation = true;
 							break;
 						}
-
+		
 						validationsErrorMessagesByRole.add(sourceValidationsErrorMessages);
 					}
 				}
 			} else {// No Source validation
 				sourceEnvValidation = true;
 			}
-
+		
 			if("load".equalsIgnoreCase(taskType) || "reserve".equalsIgnoreCase(taskType)) {
-
+		
 				if(targetRolesList == null || targetRolesList.isEmpty()) {
 					throw new Exception("Environment does not exist or user has no write permission on this environment");
 				}
-
+		
 				for (Map<String, Object> role : targetRolesList) {
 					if (targetExeEnvName.equals(role.get("environment_name"))) {
 						trgEnvFound = true;
 						Map<String, String> targetValidationsErrorMessages=new HashMap<>();
-
+		
 						int allowedEntitySize = getAllowedEntitySize(entityListSize, numberOfRequestedEntities);
-
+		
 						if ("tester".equalsIgnoreCase(fnGetUserPermissionGroup(""))) {
 							validateReserveNumber = (long) fnValidateNumberOfReserveEntities(role.get("role_id").toString(), targetExeEnvName);
 							validateWriteNumber = (long) fnValidateNumberOfCopyEntities(role.get("role_id").toString(), targetExeEnvName);
@@ -1456,7 +1468,7 @@ public class SharedLogic {
 									Long reserved = fnGetReservedEntitiesNumber("" + role.get("environment_id"), "" + be_lus.get("be_id"),sessionUser().name());
 									validateNumber =  min(validateReadNumber,min((validateReserveNumber-reserved),validateWriteNumber));
 									permission = "read write reserve";
-
+		
 								} else if(!insertToTarget && deleteBeforeLoad) {
 									validateNumber=validateWriteNumber;// delete only
 									permission="write";
@@ -1505,12 +1517,12 @@ public class SharedLogic {
 				targetValidationsErrorMessages.put("TargetEnvironment", "No Target Environment was found For User");
 				validationsErrorMessagesByRole.add(targetValidationsErrorMessages);
 			}
-
+		
 			if (!targetEnvValidation || !sourceEnvValidation) {
 				Object error= validationsErrorMessagesByRole.get(validationsErrorMessagesByRole.size()-1);
 				return wrapWebServiceResults("FAILED", "validation failure", error);
 			}
-
+		
 			try {
 				String envIdByName_sql= "select environment_id from " + TDMDB_SCHEMA + ".environments where environment_name=(?) and environment_status = 'Active'";
 				Long overridenSrcEnvId=(Long)db(TDM).fetch(envIdByName_sql,sourceEnvironmentName).firstValue();
@@ -1550,7 +1562,7 @@ public class SharedLogic {
 					String activityDesc = "Execution list of task " + taskData.getString("task_title");
 					fnInsertActivity("update", "Tasks", activityDesc);
 				} catch(Exception e){
-                    UserCode.log.error(e.getMessage());
+		                  UserCode.log.error(e.getMessage());
 				}
 			
 			
@@ -1560,7 +1572,7 @@ public class SharedLogic {
 				errorCode="SUCCESS";
 			} catch(Exception e){
 				message=e.getMessage();
-                UserCode.log.error(message);
+		              UserCode.log.error(message);
 				errorCode="FAILED";
 			}
 				

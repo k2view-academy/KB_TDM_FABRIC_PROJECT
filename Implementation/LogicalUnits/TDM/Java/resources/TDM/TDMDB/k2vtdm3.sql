@@ -486,7 +486,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-     select 'tdm_gui_params','{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":"True"},"retentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":"False"},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
+     select 'tdm_gui_params','{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
     
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -498,6 +498,11 @@ insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
 	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
+
+insert into ${@schema}.tdm_general_parameters(
+		param_name, param_value) 
+	select 'MAX_RETENTION_DAYS_FOR_TESTER', 90 
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RETENTION_DAYS_FOR_TESTER');
 
 insert into ${@schema}.tdm_general_parameters (
         param_name, param_value) 
@@ -746,6 +751,15 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
     CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
 );
 
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values -- New Table TDM 8.1
+(
+    lu_name text NOT NULL,
+    field_name text NOT NULL,
+    field_values text[],
+    CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
+);
+
+
 -- utils functions (working with parameters)
 -- json_cast function adds changes the format of the json data
 CREATE OR REPLACE FUNCTION ${@schema}.json_cast(data json) RETURNS json IMMUTABLE AS 
@@ -785,107 +799,6 @@ $body$
     ) t;
 $body$ 
 LANGUAGE sql;
-
-			     
--- param_values function returns json with param names as keys and param values as values
-CREATE OR REPLACE FUNCTION ${@schema}.param_values(
-parentlu text,
-entity_id text,
-table_name text,
-env text,
-cols text,
-child_arr text,
-select_col text)
-RETURNS SETOF json AS
-$BODY$
-BEGIN
-RETURN QUERY EXECUTE
-CASE WHEN EXISTS(SELECT 1 FROM tdm_lu_type_relation_eid WHERE source_env = env AND lu_type_1 = parentlu) THEN
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
-SELECT rel_base.'|| select_col || ' FROM ' || lower(parentlu) || '_params
-LEFT JOIN ( SELECT * FROM tdm_lu_type_relation_eid
-WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-
-ELSE
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
-SELECT entity_id FROM ' || lower(parentlu) || '_params
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-END;
-
-END;
-$BODY$
-LANGUAGE plpgsql VOLATILE
-COST 100
-ROWS 1000;
---ALTER FUNCTION ${@schema}.param_values(text, text, text, text, text, text, text)
---OWNER TO tdm;
-			     
-CREATE OR REPLACE FUNCTION ${@schema}.param_values(
-	parentlu text,
-	entity_id text,
-	table_name text,
-	env text,
-	cols text,
-	child_arr text,
-	select_col text,
-	lu_type2 text,
-	schema text)
-    RETURNS SETOF json 
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
-    ROWS 1000
-
-AS $BODY$
-
-DECLARE
- cnt integer := 0;
-BEGIN
- EXECUTE format('SELECT 1 FROM %s.tdm_lu_type_relation_eid WHERE source_env =''%s'' AND lu_type_1 = ''%s'' AND lu_type1_eid = ''%s''', schema, env, parentlu, entity_id) into cnt;
-RETURN QUERY EXECUTE
-CASE 
-WHEN lu_type2 IS NULL THEN 'SELECT ''{}''::json'
-WHEN cnt = 1 THEN 
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ' || schema|| '.' || lower(table_name) || ' WHERE entity_id in (
-SELECT rel_base.'|| select_col || ' FROM ' || schema|| '.' || lower(parentlu) || '_params
-LEFT JOIN ( SELECT * FROM ' || schema|| '.' || 'tdm_lu_type_relation_eid
-WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-
- 
-
-ELSE
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ' || schema|| '.' || lower(table_name) || ' WHERE entity_id in (
-SELECT entity_id FROM ' || schema|| '.' || lower(parentlu) || '_params
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-END;
-
-END;
-$BODY$;
-
---ALTER FUNCTION param_values(text, text, text, text, text, text, text, text, text)
---    OWNER TO tdm;
 
 -- eval function executes received string expression as query
 CREATE OR REPLACE FUNCTION ${@schema}.eval(expression text) RETURNS void

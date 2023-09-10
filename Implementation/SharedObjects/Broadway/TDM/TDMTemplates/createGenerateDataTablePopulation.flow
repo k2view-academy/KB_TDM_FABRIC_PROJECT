@@ -234,7 +234,7 @@
                             }
                         },
                         {
-                            "name": "Check if Field is Sequential",
+                            "name": "InnerFlow1",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -307,7 +307,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Not Sequential",
+                            "name": "Equals1",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -1031,7 +1031,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Check if Field is Sequential",
+                "actor": "InnerFlow1",
                 "name": "MAIN_FIELD_NAME"
             },
             "iterate": "Iterate",
@@ -1065,8 +1065,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Filter Out Argument Fields from Sequences List",
-                "name": "parentRec"
+                "actor": "Population Arguments List",
+                "name": "value"
             }
         },
         {
@@ -1075,8 +1075,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Population Arguments List",
-                "name": "value"
+                "actor": "Filter Out Argument Fields from Sequences List",
+                "name": "parentRec"
             }
         },
         {
@@ -1091,11 +1091,11 @@
         },
         {
             "leftPort": {
-                "actor": "Check if Field is Sequential",
+                "actor": "InnerFlow1",
                 "name": "SEQ_FIELD_NAME"
             },
             "rightPort": {
-                "actor": "Not Sequential",
+                "actor": "Equals1",
                 "name": "a"
             }
         },
@@ -1273,7 +1273,7 @@
                 "name": "luType"
             },
             "rightPort": {
-                "actor": "Check if Field is Sequential",
+                "actor": "InnerFlow1",
                 "name": "LU_NAME"
             }
         },
@@ -1283,7 +1283,7 @@
                 "name": "table"
             },
             "rightPort": {
-                "actor": "Check if Field is Sequential",
+                "actor": "InnerFlow1",
                 "name": "MAIN_TABLE_NAME"
             }
         },

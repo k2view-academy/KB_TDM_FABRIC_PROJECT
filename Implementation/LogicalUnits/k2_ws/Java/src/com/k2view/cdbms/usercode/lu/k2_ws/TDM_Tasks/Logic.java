@@ -3855,12 +3855,12 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 			"\t\"numberOfEntities\": 14,\r\n" +
 			"\t\"dataVersionExecId\": 2,\r\n" +
 			"\t\"dataVersionRetentionPeriod\": {\r\n" +
-			"\t\t\"unit\": \"Days\",\r\n" +
+			"\t\t\"units\": \"Days\",\r\n" +
 			"\t\t\"value\": \"10\"\r\n" +
 			"\t},\r\n" +
 			"\t\"reserveInd\": true,\r\n" +
 			"\t\"reserveRetention\": {\r\n" +
-			"\t\t\"unit\": \"Days\",\r\n" +
+			"\t\t\"units\": \"Days\",\r\n" +
 			"\t\t\"value\": \"5\"\r\n" +
 			"\t},\r\n" +
 			"\t\"executionNote\": \"Example Task\"\r\n" +
@@ -3897,13 +3897,13 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 	}
 
 	@desc("Holds (pause) the execution of the input task")
-	@webService(path = "task/{taskId}/holdTask", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}/holdTask", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	public static Object wsHoldTask(@param(required=true) Long taskId) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
 		try {
-			String sql="UPDATE " + TDMDB_SCHEMA + ".tasks SET task_execution_status = \'onHold\' WHERE tasks.task_id = " + taskId + "RETURNING tasks.task_title";
+			String sql="UPDATE " + TDMDB_SCHEMA + ".tasks SET task_execution_status = \'onHold\' WHERE tasks.task_id = " + taskId + " RETURNING tasks.task_title";
 			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Object task_name = row.cell(0);
 			try {
@@ -3952,14 +3952,14 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 
 
 	@desc("Activates a paused task (the task is set on-hold)")
-	@webService(path = "task/{taskId}/activateTask", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "task/{taskId}/activateTask", verb = {MethodType.PUT}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\"result\":{},\"errorCode\":\"SUCCESS\",\"message\":null}")
 	public static Object wsActivateTask(@param(required=true) Long taskId) throws Exception {
 		HashMap<String,Object> response=new HashMap<>();
 		String message=null;
 		String errorCode="";
 		try {
-			String sql = "UPDATE " + TDMDB_SCHEMA + ".tasks SET task_execution_status = \'Active\' WHERE tasks.task_id = " + taskId + "RETURNING tasks.task_title";
+			String sql = "UPDATE " + TDMDB_SCHEMA + ".tasks SET task_execution_status = \'Active\' WHERE tasks.task_id = " + taskId + " RETURNING tasks.task_title";
 			Db.Row row = db(TDM).fetch(sql).firstRow();
 			Object taskTitle= row.get("task_title");
 		
@@ -3979,7 +3979,6 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		response.put("errorCode",errorCode);
 		response.put("message", message);
 		return response;
-		
 		
 	}
 
@@ -5344,7 +5343,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 
 
 	@desc("Get the list of parameters of the given custom Flow")
-	@webService(path = "getCustomLogicParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = false)
+	@webService(path = "getCustomLogicParams", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": [\r\n" +
 			"    {\r\n" +
@@ -5427,7 +5426,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 						Db.Rows interfaceNames = fabric().fetch(broadwayCommand);
 						for(Db.Row name:interfaceNames){
 							interfaces = ParamConvertor.toArray(name.get("array"));
-
+		
 						}
 						editor.put("interfaces",interfaces);
 					}
@@ -5592,7 +5591,7 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 								Db.Rows interfaceNames = fabric().fetch(broadwayCommand);
 								for(Db.Row Name:interfaceNames){
 									interfaces = ParamConvertor.toArray(Name.get("array"));
-
+		
 								}
 								editor.put("interfaces",interfaces);
 							}

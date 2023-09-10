@@ -373,33 +373,37 @@
                         {
                             "name": "Masking SSN",
                             "actorType": {
-                                "parentType": "MaskingSSN",
+                                "parentType": "Masking",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
                                         "const": "maskSSN"
                                     },
                                     {
+                                        "name": "flowName",
+                                        "const": "RandomSSN.actor"
+                                    },
+                                    {
+                                        "name": "category",
+                                        "const": "enable_masking_uniqueness"
+                                    },
+                                    {
                                         "name": "useEnvironment",
                                         "const": true
                                     },
                                     {
-                                        "name": "useInstanceId",
-                                        "const": false
-                                    },
-                                    {
                                         "name": "interface",
                                         "const": "DB_CASSANDRA"
-                                    }
-                                ],
-                                "outputs": [
+                                    },
                                     {
-                                        "name": "value",
+                                        "name": "delimiter",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     }
-                                ]
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
