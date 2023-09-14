@@ -144,6 +144,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environments
     allow_write boolean NOT NULL DEFAULT true,
     allow_read boolean NOT NULL DEFAULT false,
     sync_mode character varying(20) DEFAULT 'ON',
+    mask_sensitive_data boolean NOT NULL DEFAULT true, -- TDM 8.1
     CONSTRAINT environments_pkey PRIMARY KEY (environment_id)
 );
 
@@ -178,8 +179,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
     product_name character varying(200),
     lu_parent_name character varying(200),
     product_id bigint,
-    CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id),
-    CONSTRAINT product_logical_units_unique_pair UNIQUE (lu_name, lu_parent_name)
+    CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id)
 );
 
 -- Table: ${@schema}.products
@@ -303,6 +303,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     reserve_retention_period_value numeric,
     reserve_note text, -- TDM 7.5.2
     filterout_reserved boolean DEFAULT true, --TDM 7.6
+    mask_sensitive_data boolean default true, -- TDM 8.1
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
@@ -373,7 +374,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   fabric_get_time bigint,
   total_processing_time bigint,
   clone_no text DEFAULT '0',
-  root_entity_id text,
+  root_entity_id text, -- TDM 8.0
+  root_lu_name text, -- TDM 8.1
   CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id)
 );
 
@@ -484,7 +486,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-     select 'tdm_gui_params','{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":"True"},"retentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":"False"},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
+     select 'tdm_gui_params','{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
     
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -496,6 +498,11 @@ insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
 	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
+
+insert into ${@schema}.tdm_general_parameters(
+		param_name, param_value) 
+	select 'MAX_RETENTION_DAYS_FOR_TESTER', 90 
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RETENTION_DAYS_FOR_TESTER');
 
 insert into ${@schema}.tdm_general_parameters (
         param_name, param_value) 
@@ -744,6 +751,18 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
     CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
 );
 
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values -- New Table TDM 8.1
+(
+    lu_name text NOT NULL,
+    field_name text NOT NULL,
+    number_of_values bigint,
+    field_values text[],
+    is_numeric boolean,
+    min_value text,
+    max_value text,
+    CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
+);
+
 -- utils functions (working with parameters)
 -- json_cast function adds changes the format of the json data
 CREATE OR REPLACE FUNCTION ${@schema}.json_cast(data json) RETURNS json IMMUTABLE AS 
@@ -784,107 +803,6 @@ $body$
 $body$ 
 LANGUAGE sql;
 
-			     
--- param_values function returns json with param names as keys and param values as values
-CREATE OR REPLACE FUNCTION ${@schema}.param_values(
-parentlu text,
-entity_id text,
-table_name text,
-env text,
-cols text,
-child_arr text,
-select_col text)
-RETURNS SETOF json AS
-$BODY$
-BEGIN
-RETURN QUERY EXECUTE
-CASE WHEN EXISTS(SELECT 1 FROM tdm_lu_type_relation_eid WHERE source_env = env AND lu_type_1 = parentlu) THEN
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
-SELECT rel_base.'|| select_col || ' FROM ' || lower(parentlu) || '_params
-LEFT JOIN ( SELECT * FROM tdm_lu_type_relation_eid
-WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-
-ELSE
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
-SELECT entity_id FROM ' || lower(parentlu) || '_params
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-END;
-
-END;
-$BODY$
-LANGUAGE plpgsql VOLATILE
-COST 100
-ROWS 1000;
---ALTER FUNCTION ${@schema}.param_values(text, text, text, text, text, text, text)
---OWNER TO tdm;
-			     
-CREATE OR REPLACE FUNCTION ${@schema}.param_values(
-	parentlu text,
-	entity_id text,
-	table_name text,
-	env text,
-	cols text,
-	child_arr text,
-	select_col text,
-	lu_type2 text,
-	schema text)
-    RETURNS SETOF json 
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
-    ROWS 1000
-
-AS $BODY$
-
-DECLARE
- cnt integer := 0;
-BEGIN
- EXECUTE format('SELECT 1 FROM %s.tdm_lu_type_relation_eid WHERE source_env =''%s'' AND lu_type_1 = ''%s'' AND lu_type1_eid = ''%s''', schema, env, parentlu, entity_id) into cnt;
-RETURN QUERY EXECUTE
-CASE 
-WHEN lu_type2 IS NULL THEN 'SELECT ''{}''::json'
-WHEN cnt = 1 THEN 
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ' || schema|| '.' || lower(table_name) || ' WHERE entity_id in (
-SELECT rel_base.'|| select_col || ' FROM ' || schema|| '.' || lower(parentlu) || '_params
-LEFT JOIN ( SELECT * FROM ' || schema|| '.' || 'tdm_lu_type_relation_eid
-WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-
- 
-
-ELSE
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ' || schema|| '.' || lower(table_name) || ' WHERE entity_id in (
-SELECT entity_id FROM ' || schema|| '.' || lower(parentlu) || '_params
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-END;
-
-END;
-$BODY$;
-
---ALTER FUNCTION param_values(text, text, text, text, text, text, text, text, text)
---    OWNER TO tdm;
-
 -- eval function executes received string expression as query
 CREATE OR REPLACE FUNCTION ${@schema}.eval(expression text) RETURNS void
 as
@@ -901,8 +819,9 @@ LANGUAGE plpgsql;
 INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
 	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
 	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
-	allow_read, sync_mode) 
-	VALUES ('Synthetic','This is the synthetic environment.',NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE') ON CONFLICT DO NOTHING;
+	allow_read, sync_mode,mask_sensitive_data) 
+	VALUES ('Synthetic','This is the synthetic environment.',
+        NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE', false) ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, 
 	allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, allowed_number_of_entities_to_copy, role_id, role_created_by, 

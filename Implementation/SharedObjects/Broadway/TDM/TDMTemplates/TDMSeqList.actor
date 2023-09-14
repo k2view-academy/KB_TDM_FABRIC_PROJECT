@@ -7,16 +7,12 @@
     "inputs": [
         {
             "name": "table",
-            "const": [],
             "schema": {
                 "type": "array",
                 "items": {
                     "type": "object",
                     "properties": {
                         "SEQUENCE_NAME": {
-                            "type": "string"
-                        },
-                        "CACHE_DB_NAME": {
                             "type": "string"
                         },
                         "SEQUENCE_REDIS_OR_DB": {

@@ -137,7 +137,8 @@
                             class="badge pull-right">{{form.entitiesList.$viewValue.split(',').length || 0}}
                         </span>
                     </span>
-                    <div class="m-t-xs" ng-show="form.submitted && form.entitiesList.$invalid &&
+                    <div class="m-t-xs" ng-show="(form.submitted || requestedEntitiesCtrl.taskData.task_type == 'LOAD' && 
+                    requestedEntitiesCtrl.taskData.version_ind) && form.entitiesList.$invalid &&
                         form.entitiesList.$error.pattern">
                         <small ng-show="maxToCopy" class="text-danger">
                             <span ng-show="form.entitiesList.$viewValue.split(',').length > maxToCopy">
@@ -146,8 +147,7 @@
                                     {{maxToCopy}}
                                 </span>
                                 <span ng-show="requestedEntitiesCtrl.taskData.task_type !== 'RESERVE'">
-                                    Maximum Entities For the Task is:
-                                    {{maxToCopy}}
+                                    The number of entities cannot exceed {{maxToCopy}} entities.
                                 </span>
                             </span>
                             <span ng-show="maxToCopy >= form.entitiesList.$viewValue.split(',').length ">
@@ -305,7 +305,7 @@
                             ng-disabled="disabled"  ng-model="requestedEntitiesCtrl.taskData.num_of_entities">
                         <div class="m-t-xs" ng-show="form.numberOfEntities.$invalid && form.submitted">
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.required">Populate Number of Entities</small>
-                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max">Maximum Entites to Copy is {{maxToCopy}}</small>
+                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max"> The number of entities cannot exceed {{maxToCopy}} entities</small>
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.min">Minimum Entites to Copy is 1</small>
                         </div>
                     </div>
@@ -426,7 +426,7 @@
                             ng-disabled="disabled"  ng-model="requestedEntitiesCtrl.taskData.num_of_entities">
                         <div class="m-t-xs" ng-show="form.numberOfEntities.$invalid && form.submitted">
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.required">Populate Number of Entities</small>
-                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max">Maximum Entites to Copy is {{maxToCopy}}</small>
+                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max">The number of entities cannot exceed {{maxToCopy}} entities</small>
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.min">Minimum Entites to Copy is 1</small>
                         </div>
                     </div>

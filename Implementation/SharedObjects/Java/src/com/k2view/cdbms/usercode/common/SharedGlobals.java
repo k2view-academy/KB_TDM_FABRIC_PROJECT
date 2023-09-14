@@ -8,9 +8,6 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 
 public class SharedGlobals {
 
-
-
-
 	@desc("Maximum values of combo box input object")
 	@category("TDM")
 	public static String COMBO_MAX_COUNT = "49";
@@ -109,8 +106,6 @@ public class SharedGlobals {
 	public static String clone_id = "0";
 
 	@category("TDM")
-	public static String EXTRACT_MASKING_FLAG = "true";
-	@category("TDM")
 	public static String LOAD_MASKING_FLAG = "false";
 
 	@category("TDM")
@@ -119,5 +114,30 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String TDM_DELETE_TABLES_PREFIX = "TAR_";
 
+	@category("TDM")
+	public static final String TDM_BATCH_LIMIT = "-1";
+
+	@category("TDM")
+	public static final String TDM_SEQ_REPORT = "true";
+
+
+	@category("TDM")
+	public static String EXTRACT_MASKING_FLAG = "true";
+
+
+
+
+	@desc("Indicates whether to run add TDM statitics")
+	@category("TDM")
+	public static String TDM_POPULATE_JMX_STATS = "false";
+
+
+	@category("TDM")
+	public static String SEQ_DO_TRUNCATE = "false";
+	@category("TDM")
+	public static String SEQ_DROP_KEYSPACE = "false";
+
+	@category("TDM")
+	public static String SEQ_CACHE_INTERFACE = "DB_CASSANDRA";
 
 }

@@ -224,48 +224,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript2",
-                            "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "flowArgs.root_entity_id = instanceID;\r\nif (params != null) {\r\n    if (params.get('root_entity_id') != null) {\r\n        flowArgs.root_entity_id = params.get('root_entity_id');\r\n    }\r\n}\r\nflowArgs.root_entity_id;",
-                                            "script": "flowArgs.root_entity_id = instanceID;\n\nif (params != null) {\n  if (params.get('root_entity_id') != null) {\n    flowArgs.root_entity_id = params.get('root_entity_id');\n  }\n}\n\nflowArgs.root_entity_id;"
-                                        }
-                                    },
-                                    {
-                                        "name": "params",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "clone_id": {
-                                                    "type": "integer"
-                                                }
-                                            }
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "instanceID",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "JavaScript1",
                             "actorType": {
                                 "parentType": "JavaScript",
@@ -311,29 +269,6 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "root_entity_id",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
                         {
                             "name": "clone_no",
                             "actorType": {
@@ -415,42 +350,12 @@
         },
         {
             "leftPort": {
-                "actor": "Split UID",
-                "name": "instanceID"
-            },
-            "rightPort": {
-                "actor": "JavaScript2",
-                "name": "instanceID"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "JsonParser1",
                 "name": "object"
             },
             "rightPort": {
                 "actor": "JavaScript1",
                 "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "JsonParser1",
-                "name": "object"
-            },
-            "rightPort": {
-                "actor": "JavaScript2",
-                "name": "params"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "JavaScript2",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "root_entity_id",
-                "name": "value"
             }
         },
         {
@@ -521,16 +426,6 @@
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "UID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "root_entity_id",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "rootEntityId"
             }
         },
         {

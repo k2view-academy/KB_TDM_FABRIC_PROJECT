@@ -9,19 +9,19 @@
                 <div class="col-lg-12">
                     <div class="form-group col-lg-12">
                         <label>{{"PRODUCT_NAME" | translate}}</label>
-                        <select ng-if="environmentCtrl.newEnvProducts" class="form-control1" width="'100%'" chosen ng-model="environmentCtrl.productData.product_id" ng-change="environmentCtrl.productChanged()" ng-options="option.product_id as option.product_name for option in environmentCtrl.newEnvProducts | orderBy:'product_name'" required>
+                        <select id="environment_new_product_name" ng-if="environmentCtrl.newEnvProducts" class="form-control1" width="'100%'" chosen ng-model="environmentCtrl.productData.product_id" ng-change="environmentCtrl.productChanged()" ng-options="option.product_id as option.product_name for option in environmentCtrl.newEnvProducts | orderBy:'product_name'" required>
                             <option></option>
                         </select>
                     </div>
                     <div class="form-group col-lg-12">
                         <label>{{"DATA_CENTER_NAME" | translate}}</label>
-                        <select class="form-control1" width="'100%'" ng-change="environmentCtrl.dataCenterChanged(option)" ng-model="environmentCtrl.productData.data_center_name" ng-options="option.dc as option.dc for option in environmentCtrl.dataCenters | orderBy:'dc'">
+                        <select id="environment_new_product_data_center_name" class="form-control1" width="'100%'" ng-change="environmentCtrl.dataCenterChanged(option)" ng-model="environmentCtrl.productData.data_center_name" ng-options="option.dc as option.dc for option in environmentCtrl.dataCenters | orderBy:'dc'">
                             <option value=""></option>
                         </select>
                     </div>
                     <div class="form-group col-lg-12" ng-if="environmentCtrl.productData.product_versions">
                         <label>{{"PRODUCT_VERSION" | translate}}</label>
-                        <select  class="form-control1" width="'100%'" chosen ng-model="environmentCtrl.productData.product_version" ng-options="option as option for option in environmentCtrl.productData.product_versions.split(',')" required>
+                        <select id="environment_new_product_version" class="form-control1" width="'100%'" chosen ng-model="environmentCtrl.productData.product_version" ng-options="option as option for option in environmentCtrl.productData.product_versions.split(',')" required>
                             <option></option>
                         </select>
                     </div>
@@ -33,7 +33,7 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="form-group">
-                                    <input style="width: 100%"  type="checkbox" ng-init="environmentCtrl.showAllInterfaces = false;" ng-model="environmentCtrl.showAllInterfaces"/>
+                                    <input id="environment_new_product_display_all_interfaces" style="width: 100%"  type="checkbox" ng-init="environmentCtrl.showAllInterfaces = false;" ng-model="environmentCtrl.showAllInterfaces"/>
                                     <label class="control-label">Display Full Interface List</label>
                                 </div>
                             </div>
@@ -45,13 +45,14 @@
                             ng-if="interface.interface_status == 'Active'">
                                 {{interface.interface_name}}&nbsp;&nbsp;&nbsp;&nbsp;Type: {{interface.interface_type}}
                                 <a tooltip-class="deleteIcon" 
+                                    id="environment_new_product_interface_delete_{{$index}}"
                                     ng-click="interface.deleted = true" 
                                     uib-tooltip="{{'DELETE_INTERFACE' | translate}}" 
                                     style="margin-top: -2px;margin-left: 10px;" 
                                     ng-if="(environmentCtrl.productData.interfaces | atLeastOneInterface ) && !interface.deleted || environmentCtrl.adi_only" class="pull-right">
                                     <img src="icons/delete-icon-2.svg">
                                 </a>
-                                <a tooltip-class="editIcon" uib-tooltip="{{interface.status == false ? 'ADD_INTERFACE' : 'EDIT_INTERFACE' | translate}}" ng-click="environmentCtrl.openEnvProductInterfaceEdit($index)" 
+                                <a id="environment_new_product_interface_edit_{{$index}}" tooltip-class="editIcon" uib-tooltip="{{interface.status == false ? 'ADD_INTERFACE' : 'EDIT_INTERFACE' | translate}}" ng-click="environmentCtrl.openEnvProductInterfaceEdit($index)" 
                                     class="pull-right btn btn-xs k2-primary-btn btn-circle" style="width: 22px;height: 22px;padding: 1px 0;">
                                     <img src="icons/edit.svg" alt="edit">
                                 </a>
@@ -66,6 +67,7 @@
                     <div class="form-group">
                         <div class="col-lg-12 form-buttons" >
                             <a ng-if="environmentCtrl.addProductWarning"
+                                id="environment_new_product_save"
                                 ng-show="environmentCtrl.productData.lus > 0"
                                 uib-tooltip="Add System Editor"
                                 tooltip-placement="left"
@@ -84,9 +86,10 @@
                                 cancel-button-type="default">
                                 <button class="btn k2-primary-btn pull-left" type="submit">{{"ADD" | translate}}</button>
                             </a>
-                            <button ng-if="!environmentCtrl.addProductWarning" ng-show="environmentCtrl.productData.lus > 0" 
+                            <button id="environment_new_product_save" ng-if="!environmentCtrl.addProductWarning" ng-show="environmentCtrl.productData.lus > 0" 
                                     class="btn k2-primary-btn pull-left" type="submit">{{"ADD" | translate}}</button>
                             <a uib-tooltip="Close System Editor"
+                                id="environment_new_product_close"
                                   tooltip-placement="left"
                                   type="button"
                                   role-handler

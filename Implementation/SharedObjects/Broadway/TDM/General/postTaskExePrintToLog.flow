@@ -1,0 +1,236 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Task Settings",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Task Exe ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Env",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Target Env",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TAR_ENV_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Root LU Record from the TDM DB",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DbFetchFirstRow1",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "Select @TDMDB_SCHEMA@.task_execution_list.task_id,\r\n  @TDMDB_SCHEMA@.task_execution_list.execution_status,\r\n  @TDMDB_SCHEMA@.task_execution_list.num_of_processed_entities,\r\n  @TDMDB_SCHEMA@.task_execution_list.num_of_copied_entities,\r\n  @TDMDB_SCHEMA@.task_execution_list.num_of_failed_entities\r\nFrom @TDMDB_SCHEMA@.task_execution_list\r\nWhere @TDMDB_SCHEMA@.task_execution_list.task_execution_id = ? and parent_lu_id is null"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "task_id": {
+                                                    "type": "integer"
+                                                },
+                                                "execution_status": {
+                                                    "type": "string"
+                                                },
+                                                "num_of_processed_entities": {
+                                                    "type": "integer"
+                                                },
+                                                "num_of_copied_entities": {
+                                                    "type": "integer"
+                                                },
+                                                "num_of_failed_entities": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Print to Log",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Logger1",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "The task execution ended. Task ID: ${1}, task execution id: ${0}, task execution status: ${2}, \r\nnumber of processed entities: ${3}, \r\nnumber of successful entities: ${4},\r\nnumber of failed entities: ${5}"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Task Exe ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Exe ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "path": [
+                "task_id"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "path": [
+                "execution_status"
+            ],
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "path": [
+                "num_of_processed_entities"
+            ],
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "path": [
+                "num_of_copied_entities"
+            ],
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "DbFetchFirstRow1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Logger1",
+                "name": "params"
+            },
+            "path": [
+                "num_of_failed_entities"
+            ],
+            "arrayPosition": 5
+        }
+    ]
+}

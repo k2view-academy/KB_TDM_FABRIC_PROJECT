@@ -88,6 +88,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			response.put("result", result);
 			errorCode= "SUCCESS";
+			if (rows != null) {
+				rows.close();
+			}
 		
 		}
 		catch(Exception e){
@@ -335,6 +338,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode= "SUCCESS";
 			response.put("result", productLogicalUnits);
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		catch(Exception e){
 			errorCode= "FAILED";
@@ -410,6 +416,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode= "SUCCESS";
 			response.put("result", productLogicalUnits);
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		catch(Exception e){
 			errorCode= "FAILED";
@@ -567,6 +576,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			errorCode= "SUCCESS";
 			response.put("result", result);
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		catch(Exception e){
 			errorCode= "FAILED";
@@ -629,6 +641,9 @@ public class Logic extends WebServiceUserCode {
 			}
 			response.put("result", result);
 			errorCode= "SUCCESS";
+			if (rows != null) {
+				rows.close();
+			}
 		
 		}
 		catch(Exception e){

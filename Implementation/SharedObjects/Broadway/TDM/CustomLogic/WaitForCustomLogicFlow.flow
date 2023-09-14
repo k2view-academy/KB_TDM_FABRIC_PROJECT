@@ -8,6 +8,20 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Wait for the batch",
                             "actorType": {
                                 "parentType": "BatchWait",
@@ -33,55 +47,23 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Lower Case LU Name",
-                            "actorType": {
-                                "parentType": "Lowercase",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get TDM LU Key Space",
-                            "actorType": {
-                                "parentType": "LuKeyspace",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Output",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
                             "name": "Return the Entity List able Name",
                             "actorType": {
                                 "parentType": "StringFormat",
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${schema}.${luName}_entity_list"
+                                        "const": "${schema}.entity_list_${task_execution_id}"
                                     },
                                     {
-                                        "name": "luName",
+                                        "name": "schema",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "schema",
+                                        "name": "task_execution_id",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -99,18 +81,8 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Lower Case LU Name",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Return the Entity List able Name",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDM LU Key Space",
-                "name": "keyspace"
+                "actor": "Get TDMDB Schema",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Return the Entity List able Name",
@@ -129,22 +101,22 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Lower Case LU Name",
-                "name": "string"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Return the Entity List able Name",
                 "name": "string"
             },
             "rightPort": {
                 "actor": "flowArgs",
                 "name": "ENTITY_LIST_TABLE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionId"
+            },
+            "rightPort": {
+                "actor": "Return the Entity List able Name",
+                "name": "task_execution_id"
             }
         }
     ]

@@ -126,19 +126,6 @@
                                     }
                                 ]
                             }
-                        },
-                        {
-                            "name": "Get TDM LU Key Space",
-                            "actorType": {
-                                "parentType": "LuKeyspace",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }

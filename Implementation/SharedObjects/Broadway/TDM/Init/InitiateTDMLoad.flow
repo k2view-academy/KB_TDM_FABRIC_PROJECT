@@ -340,12 +340,6 @@
                                         "schema": {
                                             "type": "string"
                                         }
-                                    },
-                                    {
-                                        "name": "rootEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
                                     }
                                 ]
                             }
@@ -543,20 +537,6 @@
                                     {
                                         "name": "value",
                                         "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set root_iid to be used by Masking/Sequences actors",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "root_iid",
                                         "isDefault": false
                                     }
                                 ],
@@ -880,6 +860,92 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get Sequences Flag",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_sequences",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "set Enable_Masking_uniqueness ",
+                    "dependsOnList": [
+                        "Set Environment To Target"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Sequence or Load masking are enabled",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Or",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Enable_Masking_uniqueness to true",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking_uniqueness",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Set to false",
+                    "dependsOnList": [
+                        "Set Environment To Target"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Set Enable_Masking_uniqueness to false",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking_uniqueness",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -1016,16 +1082,6 @@
         {
             "leftPort": {
                 "actor": "Split IID And Clone Number",
-                "name": "rootEntityId"
-            },
-            "rightPort": {
-                "actor": "Set root_iid to be used by Masking/Sequences actors",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split IID And Clone Number",
                 "name": "cloneNo"
             },
             "rightPort": {
@@ -1145,12 +1201,32 @@
         },
         {
             "leftPort": {
+                "actor": "Get Load Masking Flag",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Sequence or Load masking are enabled",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Format Current Time",
                 "name": "string"
             },
             "rightPort": {
                 "actor": "Set End Time of Get Command",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Sequences Flag",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Sequence or Load masking are enabled",
+                "name": "b"
             }
         },
         {

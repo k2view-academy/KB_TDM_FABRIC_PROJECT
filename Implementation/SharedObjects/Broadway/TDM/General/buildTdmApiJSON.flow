@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -17219,7 +17222,7 @@
                                 "inputs": [
                                     {
                                         "name": "pattern",
-                                        "const": "Graphit"
+                                        "const": "Graphit|catalog|common|fabric|Lu"
                                     }
                                 ],
                                 "outputs": []

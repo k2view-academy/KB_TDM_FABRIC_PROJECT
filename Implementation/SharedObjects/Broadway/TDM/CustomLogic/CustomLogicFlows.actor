@@ -7,7 +7,14 @@
     "inputs": [
         {
             "name": "table",
-            "const": [],
+            "const": [
+                {
+                    "LU_NAME": "",
+                    "FLOW_NAME": "CustomLogicSql",
+                    "DESCRIPTION": "Generic Custom Logic Flow for Sqls",
+                    "DIRECT_FLOW": true
+                }
+            ],
             "schema": {
                 "type": "array",
                 "items": {
@@ -21,6 +28,9 @@
                         },
                         "DESCRIPTION": {
                             "type": "string"
+                        },
+                        "DIRECT_FLOW": {
+                            "type": "boolean"
                         }
                     }
                 }

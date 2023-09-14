@@ -76,7 +76,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,\r\nexe.number_of_records_to_process, exe.number_of_processed_records, exe.error_msg, ref.lu_name\r\nfrom @TDMDB_SCHEMA@.task_ref_exe_stats exe inner join @TDMDB_SCHEMA@.task_ref_tables ref on ref.task_id=exe.task_id\r\nand ref.ref_table_name = exe.ref_table_name "
+                                        "const": "select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,\r\nexe.number_of_records_to_process, exe.number_of_processed_records, exe.error_msg, ref.lu_name, exe.start_time , exe.end_time\r\nfrom @TDMDB_SCHEMA@.task_ref_exe_stats exe inner join @TDMDB_SCHEMA@.task_ref_tables ref on ref.task_id=exe.task_id\r\nand ref.ref_table_name = exe.ref_table_name "
                                     }
                                 ],
                                 "outputs": [
@@ -110,6 +110,12 @@
                                                     },
                                                     "lu_name": {
                                                         "type": "string"
+                                                    },
+                                                    "start_time": {
+                                                        "type": "date"
+                                                    },
+                                                    "end_time": {
+                                                        "type": "date"
                                                     }
                                                 }
                                             }
@@ -166,7 +172,9 @@
                                             "number_of_records_to_process",
                                             "number_of_processed_records",
                                             "error_msg",
-                                            "lu_name"
+                                            "lu_name",
+                                            "start_time",
+                                            "end_time"
                                         ]
                                     },
                                     {
@@ -239,6 +247,16 @@
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "start_time",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "end_time",
+                                        "schema": {},
                                         "mandatory": false
                                     }
                                 ],
@@ -381,6 +399,32 @@
             "iterate": "Iterate",
             "path": [
                 "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "task_ref_exe_stats",
+                "name": "start_time"
+            },
+            "path": [
+                "start_time"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "task_ref_exe_stats",
+                "name": "end_time"
+            },
+            "path": [
+                "end_time"
             ]
         },
         {

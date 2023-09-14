@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Create"
+    ],
     "levels": [
         {
             "stages": [
@@ -43,7 +46,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals",
+                            "name": "Equals1",
                             "condition": "result",
                             "actorType": {
                                 "parentType": "Equals",
@@ -113,18 +116,7 @@
                                     }
                                 ]
                             }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create TDMDB & Role",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
+                        },
                         {
                             "name": "ErrorHandler1",
                             "onError": "result",
@@ -152,7 +144,7 @@
                             }
                         },
                         {
-                            "name": "Create TDM role & DB",
+                            "name": "Create tdm role and TDMDB DB",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -161,14 +153,7 @@
                                         "const": "TDMDBCreateRoleAndDB"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -489,7 +474,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Equals",
+                "actor": "Equals1",
                 "name": "a"
             }
         },

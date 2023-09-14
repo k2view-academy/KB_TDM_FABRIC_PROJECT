@@ -32,7 +32,9 @@ import com.k2view.cdbms.lut.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
-import com.k2view.cdbms.func.oracle.OracleRownum;
+import com.cronutils.utils.StringUtils;
+
+
 import org.json.JSONObject;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
@@ -58,7 +60,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String LU_SQL = "SELECT product_id as productID, product_name as productName, lu_id as logicalUnitID, lu_name as logicalUnitName FROM " + schema + ".product_logical_units WHERE be_id = ? ORDER BY lu_id";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	public enum PARAM_TYPES{
-		COMBO, NUMBER, TEXT;
+		NUMBER, TEXT;
 		public String getName(){
 			return this.toString().toLowerCase();
 		}
@@ -114,6 +116,9 @@ public class Logic extends WebServiceUserCode {
 				businessEntity.put("be_status", row.get("be_status"));
 				result.add(businessEntity);
 			}
+			if (rows != null) {
+				rows.close();
+			}
 			return wrapWebServiceResults(errorCode,message,result);
 		}
 		catch(Exception e){
@@ -126,7 +131,7 @@ public class Logic extends WebServiceUserCode {
 	}
 
 	@desc("Creates a New Business Entity.")
-	@webService(path = "businessentity", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
+	@webService(path = "businessentity", verb = {MethodType.POST}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
 	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
 			"  \"result\": {\r\n" +
 			"    \"be_id\": 17,\r\n" +
@@ -141,8 +146,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {
-		
+	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {		
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if ("admin".equals(permissionGroup)) {
 			try {
@@ -150,7 +154,7 @@ public class Logic extends WebServiceUserCode {
 						.withZone(ZoneOffset.UTC)
 						.format(Instant.now());
 				String sql = "INSERT INTO " + schema + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) " +
-						"VALUES (?, ?, ?, ?, ?, ?, ?)" +
+						"VALUES (?, ?, ?, ?, ?, ?, ?) " +
 						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status";
 
 				String username = sessionUser().name();
@@ -207,7 +211,7 @@ public class Logic extends WebServiceUserCode {
 						"SET be_description=(?)," +
 						"be_last_updated_date=(?)," +
 						"be_last_updated_by=(?) " +
-						"WHERE be_id = " + beId + "RETURNING be_name";
+						"WHERE be_id = " + beId + " RETURNING be_name";
 
 				Db.Row row = db(TDM).fetch(sql, be_description,now,username).firstRow();
 				errorCode= "SUCCESS";
@@ -288,7 +292,10 @@ public class Logic extends WebServiceUserCode {
 				catch(Exception e){
 					log.error(e.getMessage());
 				}
-
+				
+				if (rows != null) {
+					rows.close();
+				}
 			} catch(Exception e){
 				message=e.getMessage();
 				errorCode= "FAILED";
@@ -306,15 +313,36 @@ public class Logic extends WebServiceUserCode {
 
 
 
-	@desc("Gets a list of deployed Logical Units.")
+	@desc("Gets a list of deployed Logical Units with potential parents .")
 	@webService(path = "logicalunits", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": [\r\n" +
-			"    \"luName1\",\r\n" +
-			"    \"luName2\"\r\n" +
-			"  ],\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
+	@resultMetaData(mediaType = Produce.JSON, example = "{\n" +
+			"    \"result\": [\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Orders\",\n" +
+			"            \"lu_parents\": [\n" +
+			"                \"Customer\",\n" +
+			"                \"Billing\"\n" +
+			"            ]\n" +
+			"        },\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Customer\",\n" +
+			"            \"lu_parents\": []\n" +
+			"        },\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Billing\",\n" +
+			"            \"lu_parents\": [\n" +
+			"                \"Customer\"\n" +
+			"            ]\n" +
+			"        },\n" +
+			"        {\n" +
+			"            \"lu_name\": \"Collection\",\n" +
+			"            \"lu_parents\": [\n" +
+			"                \"Customer\"\n" +
+			"            ]\n" +
+			"        }\n" +
+			"    ],\n" +
+			"    \"errorCode\": \"SUCCESS\",\n" +
+			"    \"message\": null\n" +
 			"}")
 	public static Object wsGetLogicalUnits() throws Exception {
 		ArrayList result=new ArrayList();
@@ -334,15 +362,25 @@ public class Logic extends WebServiceUserCode {
 			}
 
 		}
+		
+		if (rows != null) {
+			rows.close();
+		}
 		return wrapWebServiceResults("SUCCESS", null, result);
 	}
 
 	@desc("Gets the list of all available Post Execution Processes that can be added to the Business Entity.")
 	@webService(path = "postexecutionprocesses", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON})
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"translations\": {},\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": null\r\n" +
+	@resultMetaData(mediaType = Produce.JSON, example ="{\n" +
+    "    \"result\": {\n" +
+    "        \"postTaskExeUpdateEndTime\": {\n" +
+    "            \"lu_name\": null\n" +
+    "        },\n" +
+    "        \"postTaskExePrintToLog\": {\n" +
+    "            \"lu_name\":\"Customer\"\n" +
+    "        }\n" +
+    "    },\n" +
+    "    \"message\": null\n" +
 			"}")
 	public static Object wsGetPostExecutionProcesses() throws Exception {
 		Map<String,Object> response=new HashMap<>();
@@ -354,6 +392,10 @@ public class Logic extends WebServiceUserCode {
 				ResultSet res = row.resultSet();
 				response.put("message", null);
 				response.put("result",res.getObject("map"));
+			}
+			
+			if (rows != null) {
+				rows.close();
 			}
 			return response;
 		} catch(Exception e){
@@ -414,6 +456,10 @@ public class Logic extends WebServiceUserCode {
 				logicalUnit.put("lu_parent_name",row.get("lu_parent_name"));
 				logicalUnit.put("product_id", row.get("product_id")!=null?Long.parseLong(row.get("product_id").toString()):null);
 				logicalUnits.add(logicalUnit);
+			}
+			
+			if (rows != null) {
+				rows.close();
 			}
 			errorCode= "SUCCESS";
 			response.put("result",logicalUnits);
@@ -694,6 +740,9 @@ public class Logic extends WebServiceUserCode {
 					"WHERE be_id = " + beId + " AND product_id <> -1";
 			Db.Rows rows= db(TDM).fetch(sql);
 			int result =Integer.parseInt(rows.firstRow().get("cnt").toString());
+			if (rows != null) {
+				rows.close();
+			}
 			errorCode="SUCCESS";
 			response.put("result", result);
 		} catch(Exception e){
@@ -886,6 +935,10 @@ public class Logic extends WebServiceUserCode {
 				process.put("execution_order",row.get("execution_order")!=null?Long.parseLong(row.get("execution_order").toString()):null);
 				result.add(process);
 			}
+			
+			if (rows != null) {
+				rows.close();
+			}
 			errorCode="SUCCESS";
 			response.put("result",result);
 		} catch(Exception e){
@@ -1018,6 +1071,9 @@ public class Logic extends WebServiceUserCode {
 					(luParent !=null)? luParent.get("logical_unit"):null,
 					-1);
 			logicalUnit.put("lu_id",rows.firstRow().get("lu_id"));
+			if (rows != null) {
+				rows.close();
+			}
 		}
 		fn_updateParentLogicalUnits(logicalUnits);
 	}
@@ -1193,6 +1249,10 @@ public class Logic extends WebServiceUserCode {
 				businessEntity.put("be_name", row.get("be_name"));
 				result.add(businessEntity);
 			}
+			
+			if (rows != null) {
+				rows.close();
+			}
 			return wrapWebServiceResults(errorCode,message,result);
 		}
 		catch(Exception e){
@@ -1204,91 +1264,57 @@ public class Logic extends WebServiceUserCode {
 				
 	}
 
-	//from logic.TDM
-	private static Object fnGetListOfParamsForBE(String beID, String sourceEnvName) throws Exception {
+    private static Object fnGetListOfParamsForBE(String beID, String sourceEnvName) throws Exception {
 		final String env = Util.isEmpty(sourceEnvName) ? "_dev" : sourceEnvName;
 
+        Map<String, Map<String, Object>> beParametersColumnTypes = new HashMap<>();
 		Db tdmDB = db(TDM);
 		Db.Rows luRes = tdmDB.fetch(LU_SQL, beID);
+        int maxNumOfValues = Integer.parseInt(COMBO_MAX_COUNT) + 1;
+		for(Db.Row luRow : luRes) {
+			String luName = luRow.get("logicalunitname").toString();
+			
+            String getDistinctValuesSQL = "SELECT * FROM " + schema +".tdm_params_distinct_values " +
+                    "WHERE lu_name = ?";
 
-		Map<String, Iterable<Db.Row>> metaDataMap = new HashMap<>();
-		for(Db.Row luRow : luRes){
-			ResultSet resultSet = luRow.resultSet();
-			String logicalUnitName = resultSet.getString("logicalunitname");
-			Db.Rows luParamsRes = tdmDB.fetch("SELECT distinct column_name  FROM information_schema.columns WHERE table_schema = '" + schema + "' AND table_name = ?", logicalUnitName.toLowerCase() + "_params");
-			metaDataMap.put(logicalUnitName, luParamsRes.getResults());
+            Db.Rows luFieldsValues = tdmDB.fetch(getDistinctValuesSQL, luName.toUpperCase());
+            for (Db.Row fieldValuesRec : luFieldsValues) {
+                String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
+                Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
+
+                Boolean isCombo = false;
+                Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
+                String min = fieldValuesRec.get("min_value").toString();
+                String max = fieldValuesRec.get("max_value").toString();
+                
+                String fieldValues = "\\N";
+                if (numOfValues < maxNumOfValues) {
+                    isCombo = true;
+                    fieldValues = fieldValuesRec.get("field_values").toString();
+                    fieldValues = fieldValues.replace("{", "");
+                    fieldValues = fieldValues.replace("}", "");
+                    fieldValues = fieldValues.replace("\"", "");
+                }
+
+                List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
+                String paramType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
+                                                    
+				beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
+                                                                    PARAM_TYPE, paramType, COMBO_INDICATOR, isCombo, 
+                                                                    VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, 
+                                                                    LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
+                    
+            }
+            if (luFieldsValues != null) {
+                luFieldsValues.close();
+            }
 		}
-		Map<String, Map<String, Object>> beParametersColumnTypes = new HashMap<>();
-
-		metaDataMap.forEach((luName, colNames) -> {
-			StreamSupport.stream(colNames.spliterator(), false).map(col -> Util.rte(() -> col.resultSet().getString("column_name"))).filter(col -> !col.equals("be_id")).filter(col -> !col.equals("entity_id")).filter(col -> !col.equals("source_environment")).forEach(colName -> {
-				String[] columnNameArr = colName.split("\\.");
-				String logicalUnitName = columnNameArr[0].toUpperCase();
-				String beTableName = schema + "." + logicalUnitName + "_PARAMS";
-				String colNameUpper = colName.toUpperCase();
-
-				String columnDistinctValueSQL = "SELECT COUNT(DISTINCT \"" + colName + "\") AS \"" + colName + "\" FROM (" +
-						"SELECT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable";
-
-				long columnDistinctValue = Util.rte(() -> (Long) tdmDB.fetch(columnDistinctValueSQL).firstValue());
-
-				// Initiate the parameter that will hold the distinct list of values for the column
-				List<String> columnDistinctValues = new ArrayList<>();
-				if (columnDistinctValue > 0 && columnDistinctValue <= Integer.parseInt(COMBO_MAX_COUNT)) {
-					// Prepare the SQL Statement to retrieve the distinct list of values for that column
-					String columnDistinctListSQL = "SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "'";
-
-					Iterator<Db.Row> iter = Util.rte(() -> tdmDB.fetch(columnDistinctListSQL).getResults().iterator());
-					while (iter.hasNext()) {
-						Util.rte(() -> columnDistinctValues.add(iter.next().resultSet().getString(colName)));
-					}
-					//int val = Interger.valueOf(columnDistinctValues.get(0));
-					columnDistinctValues.sort(String::compareTo);
-					String s =columnDistinctValues.get(0);
-					if(isNumeric(s)) {
-						String min = columnDistinctValues.get(0);
-						String max = columnDistinctValues.get(columnDistinctValues.size()-1);
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.NUMBER.getName(),COMBO_INDICATOR,"true", VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
-					}
-					else {
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"true", VALID_VALUES, columnDistinctValues, MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
-					}
-				} else {
-					int colNum = getColNumber(env, tdmDB, colName, beTableName);
-
-					if (colNum == 1) {
-						// In case it is, prepare the query to bring the column's min and max values
-						String columnMinMaxSQL = getColumnMinMaxSQL(env, colName, beTableName);
-
-						Db.Row columnMinMaxRow = Util.rte(() -> tdmDB.fetch(columnMinMaxSQL).firstRow());
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE,
-							Util.rte(() -> columnMinMaxRow.cell(0)), MAX_VALUE, Util.rte(() -> columnMinMaxRow.cell(1)), LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-						));
-					} else {
-						// Mark it as text
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-						));
-					}
-				}
-			});
-		});
+		if (luRes != null) {
+			luRes.close();
+		}
+		        
 		return wrapWebServiceResults("SUCCESS", null, beParametersColumnTypes);
 	}
-
-
-	private static String getColumnMinMaxSQL(String env, String colName, String beTableName) {
-		return "SELECT MIN(CAST(\"" + colName + "\" AS DOUBLE PRECISION)) AS \"MIN_" + colName + "\", MAX(CAST(\"" + colName + "\" AS DOUBLE PRECISION)) AS \"MAX_" + colName + "\" FROM (SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable";
-	}
-
-	private static Integer getColNumber(String env, Db tdmDB, String colName, String beTableName) {
-		return Util.rte(() -> {
-			Object value = tdmDB.fetch("SELECT DISTINCT CASE WHEN CAST(\"" + colName + "\" AS TEXT) ~ '^[0-9.]*$' THEN 1 ELSE 0 END isNumber FROM (SELECT DISTINCT UNNEST(\"" + colName + "\"::text[]) AS \"" + colName + "\" FROM " + beTableName + " WHERE source_environment='" + env + "') tempTable ORDER BY  1 ASC LIMIT 1").firstValue();
-			return value != null ? (int) value: 0;
-		});
-	}
-	//end from logic.TDM
-
 
 	static void fnUpdateProductDate(long prodId,String username) throws Exception{
 		String now = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
@@ -1313,19 +1339,5 @@ public class Logic extends WebServiceUserCode {
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);
 	}
-	private static boolean isNumeric(String string) {
-		int intValue;
-		System.out.printf("Parsing string: \"%s\"%n", string);
-		if(string == null || string.equals("")) {
-			System.out.println("String cannot be parsed, it is null or empty.");
-			return false;
-		}
-		try {
-			intValue = Integer.parseInt(string);
-			return true;
-		} catch (NumberFormatException e) {
-			System.out.println("Input String cannot be parsed to Integer.");
-		}
-		return false;
-	}
+	
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.1.0.31">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.1.0.32">
   <Name>vdb</Name>
   <RootView>TASK_EXECUTION</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00">
@@ -34,6 +34,7 @@
     </TableProperties>
     <TableProperties name="TASK_EXECUTION">
       <Populations>
+        <Population name="populationJMX.flow" order="999" disabled="false" populationType="Flow" />
         <Population name="populationTaskExecution.flow" order="1" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
@@ -199,11 +200,11 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="7.1.0.31" name="vdb.k2vdb.xml">
+    <Graph version="7.1.0.32" name="vdb.k2vdb.xml">
       <Node name="task_exe_error_detailed" pos="635 222" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_exe_stats_detailed" pos="313 539" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_exe_stats_summary" pos="313 739" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Node name="TASK_EXECUTION" pos="11 789" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="TASK_EXECUTION" pos="11 773" size="257 152" listGroupSize="250 100" viewType="Table" />
       <Node name="task_execution_entities" pos="313 939" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TASK_EXECUTION_LINK_ENTITIES" pos="917 1039" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_execution_list" pos="313 1139" size="257 136" listGroupSize="250 100" viewType="Table" />

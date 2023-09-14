@@ -312,8 +312,14 @@ public class Logic extends WebServiceUserCode {
 					rows.add(copy);
 				});
 			}
+			if (reservedList != null) {
+				reservedList.close();
+			}
 			return wrapWebServiceResults("SUCCESS", null,rows);
 		} else {
+			if (reservedList != null) {
+				reservedList.close();
+			}
 			return wrapWebServiceResults("FAILED", "No Target Environment found for User", null);
 		}
 	}

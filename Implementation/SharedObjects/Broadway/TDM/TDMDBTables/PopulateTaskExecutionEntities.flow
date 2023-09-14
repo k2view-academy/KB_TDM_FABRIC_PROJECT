@@ -67,41 +67,29 @@
                             }
                         },
                         {
-                            "name": "Get Target Entity ID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Clone No",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "clone_id",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get LU_ID",
+                            "minHeight": 132,
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
                                         "const": "LU_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Target Entity ID",
+                            "minHeight": 99,
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
                                         "isDefault": false
                                     }
                                 ],
@@ -134,13 +122,39 @@
                         },
                         {
                             "name": "Get Timing of Processing Start",
-                            "minHeight": 151,
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
                                         "const": "IID_START_DATETIME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Environment",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDM  Version DateTime",
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "variableName",
+                                        "const": "TDM_VERSION_DATETIME"
                                     }
                                 ],
                                 "outputs": []
@@ -156,7 +170,7 @@
                         },
                         {
                             "name": "Check if Target Entity ID is Not Set",
-                            "minHeight": 87,
+                            "minHeight": 389,
                             "actorType": {
                                 "parentType": "Equals",
                                 "inputs": [
@@ -176,32 +190,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Get TDM  Version Name",
-                            "actorType": {
-                                "parentType": "getLUVariable_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "variableName",
-                                        "const": "TDM_VERSION_NAME"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get TDM  Version DateTime",
-                            "actorType": {
-                                "parentType": "getLUVariable_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "variableName",
-                                        "const": "TDM_VERSION_DATETIME"
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -215,11 +203,66 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Get TDM  Version Name",
+                            "minHeight": 276,
+                            "actorType": {
+                                "parentType": "getLUVariable_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "variableName",
+                                        "const": "TDM_VERSION_NAME"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Clone No",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "clone_id",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Calculate Total Processing Duration",
-                            "minHeight": 287,
                             "actorType": {
                                 "parentType": "DateDuration",
                                 "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Root IID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "root_iid",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Root LU Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "root_lu_name",
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -277,54 +320,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Get Root Entity Id",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "fnGetRootEntityId"
-                                    },
-                                    {
-                                        "name": "luId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "iid",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "taskExecId",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
                         }
                     ]
                 }
@@ -348,7 +343,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_NAME, VERSION_DATETIME, FABRIC_GET_TIME,\r\nTOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime}, ${entityEndTime}, COALESCE(${tdmVersionName}, '') AS VERSION_NAME, \r\nTO_TIMESTAMP(${tdmVersionDateTime}, 'YYYYMMDDHH24MISS') as VERSION_DATETIME, ${fabticTime}, ${totalTime}, ${cloneNo}, ${rootEntityId}\r\nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
+                                        "const": "INSERT INTO ${@schema}.TASK_EXECUTION_ENTITIES(TASK_EXECUTION_ID, LU_NAME, ENTITY_ID, TARGET_ENTITY_ID, ENV_ID, EXECUTION_STATUS, ID_TYPE, \r\nFABRIC_EXECUTION_ID, IID, SOURCE_ENV, CREATION_DATE, ENTITY_START_TIME, ENTITY_END_TIME, VERSION_NAME, VERSION_DATETIME, FABRIC_GET_TIME,\r\nTOTAL_PROCESSING_TIME, CLONE_NO, ROOT_ENTITY_ID, ROOT_LU_NAME) \r\n(SELECT  ${taskexecutionId}, ${luName}, ${sourceEntityId}, ${targetEntityId}, L.ENVIRONMENT_ID, ${executionStatus}, ${idType}, \r\nCOALESCE(FABRIC_EXECUTION_ID, '') AS FABRIC_EXECUTION_ID ,${iid}, \r\nCASE WHEN T.LOAD_ENTITY = FALSE AND T.DELETE_BEFORE_LOAD = TRUE THEN E.ENVIRONMENT_NAME ELSE L.SOURCE_ENV_NAME END,\r\nNow(), ${entityStartTime}, ${entityEndTime}, COALESCE(${tdmVersionName}, '') AS VERSION_NAME, \r\nTO_TIMESTAMP(${tdmVersionDateTime}, 'YYYYMMDDHH24MISS') as VERSION_DATETIME, ${fabticTime}, \r\n${totalTime}, ${cloneNo}, ${rootEntityId}, ${rootLUName}\r\nFROM ${@schema}.TASK_EXECUTION_LIST L, ${@schema}.TASKS T, ${@schema}.ENViRONMENTS E\r\nWHERE TASK_EXECUTION_ID = ${taskexecutionId} AND L.TASK_ID = T.TASK_ID AND T.ENViRONMENT_ID = E.ENViRONMENT_ID LIMIT 1) \r\nON CONFLICT ON CONSTRAINT task_execution_entities_pkey Do update set execution_status = ${executionStatus}"
                                     },
                                     {
                                         "name": "luName",
@@ -447,6 +442,13 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "rootLUName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -520,16 +522,6 @@
         },
         {
             "leftPort": {
-                "actor": "Get LU Type",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get IID",
                 "name": "result"
             },
@@ -546,16 +538,6 @@
             "rightPort": {
                 "actor": "If Target Entity ID is not set, use source ID",
                 "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "iid"
             }
         },
         {
@@ -580,42 +562,12 @@
         },
         {
             "leftPort": {
-                "actor": "Get Clone No",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "cloneNo"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get LU_ID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "luId"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Task Execution ID",
                 "name": "variableValue"
             },
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
                 "name": "taskexecutionId"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Task Execution ID",
-                "name": "variableValue"
-            },
-            "rightPort": {
-                "actor": "Get Root Entity Id",
-                "name": "taskExecId"
             }
         },
         {
@@ -636,6 +588,16 @@
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
                 "name": "entityStartTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDM  Version DateTime",
+                "name": "variableValue"
+            },
+            "rightPort": {
+                "actor": "Add Entity to Entities Table",
+                "name": "tdmVersionDateTime"
             }
         },
         {
@@ -680,12 +642,12 @@
         },
         {
             "leftPort": {
-                "actor": "Get TDM  Version DateTime",
-                "name": "variableValue"
+                "actor": "Get Clone No",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
-                "name": "tdmVersionDateTime"
+                "name": "cloneNo"
             }
         },
         {
@@ -696,6 +658,26 @@
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
                 "name": "totalTime"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Root IID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Add Entity to Entities Table",
+                "name": "rootEntityId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Root LU Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Add Entity to Entities Table",
+                "name": "rootLUName"
             }
         },
         {
@@ -726,16 +708,6 @@
             "rightPort": {
                 "actor": "Add Entity to Entities Table",
                 "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Root Entity Id",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Add Entity to Entities Table",
-                "name": "rootEntityId"
             }
         },
         {

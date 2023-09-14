@@ -166,21 +166,40 @@
                             }
                         },
                         {
-                            "name": "Check If Flow Exists",
+                            "name": "Check if Flow Already Exists",
                             "actorType": {
-                                "parentType": "CheckIfFlowExists",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
+                                        "name": "flowName",
+                                        "const": "CheckIfFlowExists"
+                                    },
+                                    {
                                         "name": "LU_NAME",
-                                        "editor": {
-                                            "id": "com.k2view.logicalUnit",
-                                            "addEmptyEntry": true
-                                        }
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "GeneratorFlows",
+                                        "name": "FOLDER_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "FLOW_FILE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "SKIP_TABLE",
+                                        "name": "FLOW_EXISTS",
                                         "schema": {
                                             "type": "boolean"
                                         }
@@ -409,17 +428,6 @@
                 "name": "generatorFlowNames"
             },
             "rightPort": {
-                "actor": "Check If Flow Exists",
-                "name": "FLOW_FILE_NAME"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "create Generator Flow Name",
-                "name": "generatorFlowNames"
-            },
-            "rightPort": {
                 "actor": "create Flow",
                 "name": "generatorFlowName"
             },
@@ -438,8 +446,19 @@
         },
         {
             "leftPort": {
-                "actor": "Check If Flow Exists",
-                "name": "SKIP_TABLE"
+                "actor": "create Generator Flow Name",
+                "name": "generatorFlowNames"
+            },
+            "rightPort": {
+                "actor": "Check if Flow Already Exists",
+                "name": "FLOW_FILE_NAME"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Check if Flow Already Exists",
+                "name": "FLOW_EXISTS"
             },
             "rightPort": {
                 "actor": "If flow Does Not Exists",
@@ -492,7 +511,7 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "Check If Flow Exists",
+                "actor": "Check if Flow Already Exists",
                 "name": "LU_NAME"
             }
         },
