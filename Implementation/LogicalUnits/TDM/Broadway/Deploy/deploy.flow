@@ -342,6 +342,56 @@
         {
             "stages": [
                 {
+                    "name": "Get Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "SEQ_DROP_KEYSPACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_DROP_KEYSPACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SEQ_DO_TRUNCATE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_DO_TRUNCATE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Create k2masking Keyspace if it does not exists",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -353,17 +403,15 @@
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "maskingCreateCacheTable"
+                                        "const": "masking-create-cache-table"
                                     },
                                     {
-                                        "const": false,
                                         "name": "dropKeySpace",
                                         "schema": {
                                             "type": "boolean"
                                         }
                                     },
                                     {
-                                        "const": "DB_CASSANDRA",
                                         "name": "interface",
                                         "schema": {
                                             "type": "string"
@@ -380,7 +428,6 @@
                                         }
                                     },
                                     {
-                                        "const": false,
                                         "name": "doTruncate",
                                         "schema": {
                                             "type": "boolean"
@@ -499,6 +546,36 @@
             "rightPort": {
                 "actor": "Deploy Environments",
                 "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SEQ_DROP_KEYSPACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create Masking Keyspace",
+                "name": "dropKeySpace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create Masking Keyspace",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SEQ_DO_TRUNCATE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create Masking Keyspace",
+                "name": "doTruncate"
             }
         },
         {
