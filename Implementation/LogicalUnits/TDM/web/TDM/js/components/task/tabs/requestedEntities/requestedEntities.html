@@ -93,9 +93,19 @@
                         </div>
                     </div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'entity_id'">
                             <input type="radio"
                                 ng-value="'CLONE'" name="requestedEntitiesRadio"
+                                ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
+                                ng-model="requestedEntitiesCtrl.taskData.selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
+                                Entity Clone
+                            </label>
+                            <small ng-show="!userRole.allowed_creation_of_synthetic_data">(Not Allowed)</small>
+                        </div>
+                        <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'parameters'">
+                            <input type="radio"
+                                ng-value="'CLONE_PARAM'" name="requestedEntitiesRadio"
                                 ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
                                 ng-model="requestedEntitiesCtrl.taskData.selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
@@ -169,6 +179,38 @@
                 </div>
             </div>
         </div>
+        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM'">
+            <div class="fields-row" style="position: relative">
+                <div style="margin-bottom: 15px;">
+                    <div class="m-t-xs">
+                        <label>Entity Clone selection selection_method
+                        </label>
+                    </div>
+                    <div >
+                        <div style="display: flex; align-items: center;">
+                            <input type="radio"
+                                ng-value="'entity_id'" name="requestedEntitiesRadioEntityClone"
+                                ng-change="requestedEntitiesCtrl.entityCloneChange()"
+                                ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                Provide an entity id
+                            </label>
+                        </div>
+                    </div>
+                    <div >
+                        <div style="display: flex; align-items: center;">
+                            <input type="radio"
+                                ng-value="'parameters'" name="requestedEntitiesRadioEntityClone"
+                                ng-change="requestedEntitiesCtrl.entityCloneChange()"
+                                ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                Parameters based selection
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'CLONE'">
             <div class="fields-row" style="position: relative"  >
                 <div style="margin-bottom: 15px;">
@@ -220,11 +262,11 @@
                 </div>
             </div>    
         </div>
-        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'P' || requestedEntitiesCtrl.taskData.selection_method === 'PR'">
+        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'P' || requestedEntitiesCtrl.taskData.selection_method === 'PR' ||  requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM'">
             <div class="fields-row" style="position: relative" >
-                <div>
-                    <div style="display: flex;gap: 30px;">
-                        <div ng-init="requestedEntitiesCtrl.prepareParametersData()">
+                <div ng-init="requestedEntitiesCtrl.prepareParametersData()">
+                    <div style="display: flex;gap: 30px;" ng-if="requestedEntitiesCtrl.taskData.selection_method !== 'CLONE_PARAM'">
+                        <div>
                             <div style="padding: 0px;">
                             <label class="option-button">
                                 <input id="checkbox2" type="checkbox" ng-change="requestedEntitiesCtrl.parametersRandomChange()" 
@@ -280,6 +322,7 @@
             requestedEntitiesCtrl.taskData.selection_method === 'PR' || 
             requestedEntitiesCtrl.taskData.selection_method === 'R' ||
             requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || 
+            requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM' || 
             requestedEntitiesCtrl.taskData.selection_method === 'C' ">
             <div class="fields-row" style="position: relative">
                 <div>
