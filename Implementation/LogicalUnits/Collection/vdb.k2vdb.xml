@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
@@ -12,17 +12,13 @@
     <NumberOfJobs>50</NumberOfJobs>
   </IidFinderProp>
   <Tables>
-	 <Table>collection</Table>
 	 <Table>FABRIC_TDM_ROOT</Table>
 	 <Table>LU_PARAMS</Table>
-	 <Table>TAR_COLLECTION</Table>
+	 <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
+	 <Table>TDM_LU_TYPE_RELATION_EID</Table>
+	 <Table>collection</Table>
   </Tables>
   <TablesProperties>
-	 <TableProperties name="collection">
-      <Populations>
-        <Population name="pop.flow" order="2" disabled="false" populationType="Flow" />
-      </Populations>
-    </TableProperties>
 	 <TableProperties name="FABRIC_TDM_ROOT">
       <Populations>
         <Population name="populationFabricTdmRoot.flow" order="1" disabled="false" populationType="Flow" />
@@ -33,9 +29,15 @@
         <Population name="populationLuParams.flow" order="999" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
-	 <TableProperties name="TAR_COLLECTION">
+	 <TableProperties name="TDM_LU_TYPE_RELATION_EID">
       <Populations>
-        <Population name="populationTar_Collection.flow" order="3" disabled="false" populationType="Flow" />
+        <Population name="populationTdmLuTypeRealtionEid.flow" order="999" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="collection">
+      <Populations>
+        <Population name="population.flow" order="2" disabled="true" populationType="FLOW" />
+        <Population name="pop.flow" order="2" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
   </TablesProperties>
@@ -47,22 +49,23 @@
   <DatabaseRelations>
 	  <Relation>
         <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-        <To tableType="TableObject" table="TAR_COLLECTION" populationObjectName="populationTar_Collection.flow" column="collection_id" columnId="tblCol_1bf3fbe4ad3249c5a959146a38dba173" />
+        <To tableType="TableObject" table="collection" populationObjectName="population.flow" column="collection_id" columnId="collection_id" />
       </Relation>
 	  <Relation>
         <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-        <To tableType="TableObject" table="collection" populationObjectName="pop.flow" column="collection_id" columnId="tblCol_0ff51257e50c44a7887401017c383a7e" />
+        <To tableType="TableObject" table="collection" populationObjectName="pop.flow" column="collection_id" columnId="collection_id" />
       </Relation>
   </DatabaseRelations>
   <DiagramGraph>
     <Graph name="vdb.k2vdb.xml">
-      <Node name="collection" pos="316 239" viewType="Table" />
-      <Node name="FABRIC_TDM_ROOT" pos="11 114" viewType="Table" />
-      <Group name="TDM Tables" pos="190 358" expanded="true">
-        <Node name="LU_PARAMS" pos="316 464" viewType="Table" />
+      <Node name="FABRIC_TDM_ROOT" pos="120 81" viewType="Table" />
+      <Group name="TDM Tables" pos="393 363" expanded="true">
+        <Node name="LU_PARAMS" pos="519 468" viewType="Table" />
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="519 668" viewType="Table" />
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="519 868" viewType="Table" />
       </Group>
-      <Group name="Target Tables for Delete" pos="190 -66" expanded="true">
-        <Node name="TAR_COLLECTION" pos="316 39" viewType="Table" />
+      <Group name="Source_Tables" pos="393 49" expanded="true">
+        <Node name="collection" pos="519 168" viewType="Table" />
       </Group>
     </Graph>
   </DiagramGraph>

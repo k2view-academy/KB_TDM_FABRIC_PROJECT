@@ -156,12 +156,28 @@
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
-        <Global name="BE_ID" luName="">
-          <Value>0</Value>
+        <Global name="ROOT_COLUMN_NAME" luName="Orders">
+          <Value>order_id</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="">
+        <Global name="ROOT_TABLE_NAME" luName="Orders">
+          <Value>orders</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Collection">
+          <Value>collection_id</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Collection">
+          <Value>collection</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BUILD_TDMDB" luName="TDM">
           <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BE_ID" luName="">
+          <Value>0</Value>
           <Comment></Comment>
         </Global>
         <Global name="clone_id" luName="">
@@ -171,10 +187,6 @@
         <Global name="COMBO_MAX_COUNT" luName="">
           <Value>49</Value>
           <Comment>Maximum values of combo box input object</Comment>
-        </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-          <Comment></Comment>
         </Global>
         <Global name="enable_masking" luName="">
           <Value>true</Value>
@@ -200,10 +212,6 @@
           <Value>100</Value>
           <Comment>The maximum number of entities to be returned to be displayed in list of entities</Comment>
         </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="RESERVE_RETENTION_PERIOD_TYPE" luName="">
           <Value>Days</Value>
           <Comment></Comment>
@@ -212,8 +220,24 @@
           <Value>10</Value>
           <Comment></Comment>
         </Global>
+        <Global name="SEQ_CACHE_INTERFACE" luName="">
+          <Value>DB_CASSANDRA</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SEQ_DO_TRUNCATE" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SEQ_DROP_KEYSPACE" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
         <Global name="TASK_TYPE" luName="">
           <Value>EXTRACT</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_BATCH_LIMIT" luName="">
+          <Value>-1</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_CLONING_DATA" luName="">
@@ -248,6 +272,10 @@
           <Value>10</Value>
           <Comment>The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE. Populate this global with zero or empty value to avoid setting a TTL on the TDM LUIs.</Comment>
         </Global>
+        <Global name="TDM_POPULATE_JMX_STATS" luName="">
+          <Value>false</Value>
+          <Comment>Indicates whether to run add TDM statitics</Comment>
+        </Global>
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
           <Comment></Comment>
@@ -258,6 +286,10 @@
         </Global>
         <Global name="TDM_RESERVE_IND" luName="">
           <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SEQ_REPORT" luName="">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
@@ -274,10 +306,6 @@
         </Global>
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_SYNTHETIC_DATA" luName="">
-          <Value>false</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
@@ -500,12 +528,28 @@
           <Value></Value>
           <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
-        <Global name="BE_ID" luName="">
-          <Value>0</Value>
+        <Global name="ROOT_COLUMN_NAME" luName="Orders">
+          <Value>order_id</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="">
+        <Global name="ROOT_TABLE_NAME" luName="Orders">
+          <Value>orders</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Collection">
+          <Value>collection_id</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Collection">
+          <Value>collection</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BUILD_TDMDB" luName="TDM">
           <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BE_ID" luName="">
+          <Value>0</Value>
           <Comment></Comment>
         </Global>
         <Global name="clone_id" luName="">
@@ -515,10 +559,6 @@
         <Global name="COMBO_MAX_COUNT" luName="">
           <Value>49</Value>
           <Comment>Maximum values of combo box input object</Comment>
-        </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-          <Comment></Comment>
         </Global>
         <Global name="enable_masking" luName="">
           <Value>true</Value>
@@ -544,10 +584,6 @@
           <Value>100</Value>
           <Comment>The maximum number of entities to be returned to be displayed in list of entities</Comment>
         </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="RESERVE_RETENTION_PERIOD_TYPE" luName="">
           <Value>Days</Value>
           <Comment></Comment>
@@ -556,8 +592,24 @@
           <Value>10</Value>
           <Comment></Comment>
         </Global>
+        <Global name="SEQ_CACHE_INTERFACE" luName="">
+          <Value>DB_CASSANDRA</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SEQ_DO_TRUNCATE" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SEQ_DROP_KEYSPACE" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
         <Global name="TASK_TYPE" luName="">
           <Value>EXTRACT</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_BATCH_LIMIT" luName="">
+          <Value>-1</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_CLONING_DATA" luName="">
@@ -592,6 +644,10 @@
           <Value>10</Value>
           <Comment>The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE. Populate this global with zero or empty value to avoid setting a TTL on the TDM LUIs.</Comment>
         </Global>
+        <Global name="TDM_POPULATE_JMX_STATS" luName="">
+          <Value>false</Value>
+          <Comment>Indicates whether to run add TDM statitics</Comment>
+        </Global>
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
           <Comment></Comment>
@@ -602,6 +658,10 @@
         </Global>
         <Global name="TDM_RESERVE_IND" luName="">
           <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SEQ_REPORT" luName="">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
@@ -618,10 +678,6 @@
         </Global>
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_SYNTHETIC_DATA" luName="">
-          <Value>false</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
@@ -834,12 +890,56 @@
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="BE_ID" luName="">
-          <Value>0</Value>
+        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
+          <Value>10</Value>
           <Comment></Comment>
         </Global>
-        <Global name="BUILD_TDMDB" luName="">
+        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
+          <Value>1</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
+          <Value>Synthetic</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
+          <Value></Value>
+          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Orders">
+          <Value>order_id</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Orders">
+          <Value>orders</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_COLUMN_NAME" luName="Collection">
+          <Value>collection_id</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="ROOT_TABLE_NAME" luName="Collection">
+          <Value>collection</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BUILD_TDMDB" luName="TDM">
+          <Value>true</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="BE_ID" luName="">
+          <Value>0</Value>
           <Comment></Comment>
         </Global>
         <Global name="clone_id" luName="">
@@ -849,10 +949,6 @@
         <Global name="COMBO_MAX_COUNT" luName="">
           <Value>49</Value>
           <Comment>Maximum values of combo box input object</Comment>
-        </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-          <Comment></Comment>
         </Global>
         <Global name="enable_masking" luName="">
           <Value>true</Value>
@@ -878,10 +974,6 @@
           <Value>100</Value>
           <Comment>The maximum number of entities to be returned to be displayed in list of entities</Comment>
         </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
-          <Comment></Comment>
-        </Global>
         <Global name="RESERVE_RETENTION_PERIOD_TYPE" luName="">
           <Value>Days</Value>
           <Comment></Comment>
@@ -890,8 +982,24 @@
           <Value>10</Value>
           <Comment></Comment>
         </Global>
+        <Global name="SEQ_CACHE_INTERFACE" luName="">
+          <Value>DB_CASSANDRA</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SEQ_DO_TRUNCATE" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="SEQ_DROP_KEYSPACE" luName="">
+          <Value>false</Value>
+          <Comment></Comment>
+        </Global>
         <Global name="TASK_TYPE" luName="">
           <Value>EXTRACT</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_BATCH_LIMIT" luName="">
+          <Value>-1</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_CLONING_DATA" luName="">
@@ -926,6 +1034,10 @@
           <Value>10</Value>
           <Comment>The value of the TTL based on the type defined in TDM_LU_RETENTION_PERIOD_TYPE. Populate this global with zero or empty value to avoid setting a TTL on the TDM LUIs.</Comment>
         </Global>
+        <Global name="TDM_POPULATE_JMX_STATS" luName="">
+          <Value>false</Value>
+          <Comment>Indicates whether to run add TDM statitics</Comment>
+        </Global>
         <Global name="TDM_REF_UPD_SIZE" luName="">
           <Value>10000</Value>
           <Comment></Comment>
@@ -936,6 +1048,10 @@
         </Global>
         <Global name="TDM_RESERVE_IND" luName="">
           <Value>false</Value>
+          <Comment></Comment>
+        </Global>
+        <Global name="TDM_SEQ_REPORT" luName="">
+          <Value>true</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_SOURCE_ENVIRONMENT_NAME" luName="">
@@ -952,10 +1068,6 @@
         </Global>
         <Global name="TDM_SYNC_SOURCE_DATA" luName="">
           <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_SYNTHETIC_DATA" luName="">
-          <Value>false</Value>
           <Comment></Comment>
         </Global>
         <Global name="TDM_TAR_ENV_NAME" luName="">
@@ -997,34 +1109,6 @@
         <Global name="USER_PERMISSION_GROUP" luName="">
           <Value>admin</Value>
           <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
-          <Value>10</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM">
-          <Value>1</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM">
-          <Value>Synthetic</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM">
-          <Value>false</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
-          <Value>true</Value>
-          <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value></Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
       </GlobalsList>
       <GenericInterfacesList>

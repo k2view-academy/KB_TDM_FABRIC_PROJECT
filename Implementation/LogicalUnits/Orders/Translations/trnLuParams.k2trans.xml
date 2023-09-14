@@ -80,22 +80,7 @@
         </xs:unique>
       </xs:element>
     </xs:schema>
-    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1">
-      <DocumentElement>
-        <trnLuParams diffgr:id="trnLuParams1" msdata:rowOrder="0">
-          <INDEX>1</INDEX>
-          <COLUMN_NAME>ORDER_TYPE</COLUMN_NAME>
-          <SQL>Select distinct ORDERS.ORDER_TYPE
-From Orders.ORDERS</SQL>
-        </trnLuParams>
-        <trnLuParams diffgr:id="trnLuParams2" msdata:rowOrder="1">
-          <INDEX>2</INDEX>
-          <COLUMN_NAME>ORDER_STATUS</COLUMN_NAME>
-          <SQL>Select distinct ORDERS.ORDER_STATUS
-From Orders.ORDERS</SQL>
-        </trnLuParams>
-      </DocumentElement>
-    </diffgr:diffgram>
+    <diffgr:diffgram xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:diffgr="urn:schemas-microsoft-com:xml-diffgram-v1" />
   </TranslationData>
   <DataRowsHeight>39</DataRowsHeight>
 </Translation>

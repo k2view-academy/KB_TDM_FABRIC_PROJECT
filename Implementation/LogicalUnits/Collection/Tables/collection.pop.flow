@@ -3,12 +3,12 @@
         {
             "stages": [
                 {
-                    "name": "Get TDM_SYNC_SOURCE_DATA",
+                    "name": "Input",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
-                        {
+						{
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
@@ -19,22 +19,7 @@
                                         "schema": {}
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "parent_rows",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "collection_id": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -102,7 +87,7 @@
                 {
                     "name": "Check Variable And Delete Root Table",
                     "dependsOnList": [
-                        "Get TDM_SYNC_SOURCE_DATA"
+                        "Input"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -157,7 +142,7 @@
                 {
                     "name": "Instance should not be synced",
                     "dependsOnList": [
-                        "Get TDM_SYNC_SOURCE_DATA"
+                        "Input"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -169,13 +154,12 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "functionName",
-                                        "const": "fnIsFirstSync"
+                                        "name": "luType",
+                                        "const": "Collection"
                                     },
                                     {
-                                        "const": "Collection",
-                                        "name": "luType",
-                                        "schema": {}
+                                        "name": "functionName",
+                                        "const": "fnIsFirstSync"
                                     }
                                 ],
                                 "outputs": [
@@ -210,7 +194,7 @@
         {
             "stages": [
                 {
-                    "name": "Input",
+                    "name": "Init Indicator",
                     "dependsOnList": [
                         "Check Variable And Delete Root Table"
                     ],
@@ -277,7 +261,7 @@
                 {
                     "name": "Source",
                     "dependsOnList": [
-                        "Input"
+                        "Init Indicator"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -302,31 +286,7 @@
                                         "const": "1"
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "CUSTOMER_ID": {
-                                                        "type": "integer"
-                                                    },
-                                                    "COLLECTION_ID": {
-                                                        "type": "string"
-                                                    },
-                                                    "LAST_UPDATE": {
-                                                        "type": "date"
-                                                    },
-                                                    "COLLECTION_STATUS": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         },
                         {
@@ -335,15 +295,12 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "functionName",
-                                        "const": "getLuTableColumns"
+                                        "name": "luType",
+                                        "const": "Collection"
                                     },
                                     {
-                                        "const": "Collection",
-                                        "name": "luType",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "name": "functionName",
+                                        "const": "getLuTableColumns"
                                     },
                                     {
                                         "const": "collection",
@@ -560,26 +517,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Check if Instance Was Not Found In Source",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Variable TDM_SYNC_SOURCE_DATA",
                 "name": "result"
             },
@@ -640,6 +577,26 @@
         },
         {
             "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Query",
                 "name": "result"
             },
@@ -682,21 +639,21 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "collection_id"
-            },
-            "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "collection_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
                 "name": "table"
             },
             "rightPort": {
                 "actor": "Delete Root Table",
                 "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "collection_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "collection_id"
             }
         },
         {
