@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -16,6 +19,19 @@
                                     {
                                         "name": "message",
                                         "const": "TESTING the get5GCustomersFlow"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TEST PARAMS",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -432,6 +448,16 @@
             "rightPort": {
                 "actor": "Check And Stop Loop If enough records were added",
                 "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "testParam"
+            },
+            "rightPort": {
+                "actor": "TEST PARAMS",
+                "name": "value"
             }
         },
         {

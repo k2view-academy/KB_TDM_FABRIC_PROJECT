@@ -7,39 +7,14 @@
     "inputs": [
         {
             "name": "table",
-<<<<<<< HEAD
-=======
             "const": [
                 {
                     "LU_NAME": "",
                     "FLOW_NAME": "CustomLogicSql",
                     "DESCRIPTION": "Generic Custom Logic Flow for Sqls",
                     "DIRECT_FLOW": true
-                }
-            ],
->>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
-            "schema": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "LU_NAME": {
-                            "type": "string"
-                        },
-                        "FLOW_NAME": {
-                            "type": "string"
-                        },
-                        "DESCRIPTION": {
-                            "type": "string"
-                        },
-                        "DIRECT_FLOW": {
-                            "type": "boolean"
-                        }
-                    }
-                }
-            },
-            "const": [
-                {
+                },
+				{
                     "LU_NAME": "Customer",
                     "FLOW_NAME": "get5GCustomers",
                     "DESCRIPTION": "Get 5G customers by the contract status",
@@ -68,14 +43,28 @@
                     "FLOW_NAME": "getAll5GCustomers",
                     "DESCRIPTION": "Get all 5G customers",
                     "DIRECT_FLOW": false
-                },
-                {
-                    "LU_NAME": "",
-                    "FLOW_NAME": "CustomLogicSql",
-                    "DESCRIPTION": "Generic Custom Logic Flow for Sqls",
-                    "DIRECT_FLOW": true
                 }
-            ]
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "LU_NAME": {
+                            "type": "string"
+                        },
+                        "FLOW_NAME": {
+                            "type": "string"
+                        },
+                        "DESCRIPTION": {
+                            "type": "string"
+                        },
+                        "DIRECT_FLOW": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
         }
     ],
     "outputs": [],
