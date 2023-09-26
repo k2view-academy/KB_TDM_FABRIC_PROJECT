@@ -199,7 +199,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "SKIP_TABLE",
+                                        "name": "FLOW_EXISTS",
                                         "schema": {
                                             "type": "boolean"
                                         }
@@ -458,7 +458,11 @@
         {
             "leftPort": {
                 "actor": "Check if Flow Already Exists",
+<<<<<<< HEAD
                 "name": "SKIP_TABLE"
+=======
+                "name": "FLOW_EXISTS"
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
             },
             "rightPort": {
                 "actor": "If flow Does Not Exists",

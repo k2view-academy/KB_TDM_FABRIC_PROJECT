@@ -140,18 +140,4 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String SEQ_CACHE_INTERFACE = "DB_CASSANDRA";
 
-	@category("TDM")
-	public static String SEQ_CACHE_INTREFACE = "DB_CASSANDRA";
-	@category("TDM")
-	public static String TDM_SYNTHETIC_DATA = "false";
-	@desc("The interface of the DB that will hold the caching of Sequences.")
-	@category("TDM")
-	public static final String SEQUENCES_INTERFACE = "DB_CASSANDRA";
-	@category("TDM")
-	public static String BUILD_TDMDB = "true";
-	@category("TDM_DEMO")
-	public static String DEVELOPMENT_PRODUCT_VERSION = "DEV";
-	@category("TDM_DEMO")
-	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
-
 }

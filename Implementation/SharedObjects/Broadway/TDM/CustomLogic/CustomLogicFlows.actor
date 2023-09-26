@@ -7,6 +7,17 @@
     "inputs": [
         {
             "name": "table",
+<<<<<<< HEAD
+=======
+            "const": [
+                {
+                    "LU_NAME": "",
+                    "FLOW_NAME": "CustomLogicSql",
+                    "DESCRIPTION": "Generic Custom Logic Flow for Sqls",
+                    "DIRECT_FLOW": true
+                }
+            ],
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
             "schema": {
                 "type": "array",
                 "items": {

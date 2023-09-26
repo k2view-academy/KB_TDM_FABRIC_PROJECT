@@ -7,11 +7,31 @@
         {
             "stages": [
                 {
+<<<<<<< HEAD
                     "name": "Set Globals",
+=======
+                    "name": "Init Counter And Set Session Globals",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
+<<<<<<< HEAD
+=======
+                            "name": "Init Record Count",
+                            "actorType": {
+                                "parentType": "InitRecordCount",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "flowArgs.loadedRecCnt = -1;"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                             "name": "Set Session Globals",
                             "actorType": {
                                 "parentType": "InnerFlow",
@@ -40,7 +60,11 @@
                 {
                     "name": "Check if SQL Got Parameters",
                     "dependsOnList": [
+<<<<<<< HEAD
                         "Set Globals"
+=======
+                        "Init Counter And Set Session Globals"
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                     ],
                     "isLast": 0,
                     "actors": [
@@ -94,7 +118,11 @@
                 {
                     "name": "Keep As is",
                     "dependsOnList": [
+<<<<<<< HEAD
                         "Set Globals"
+=======
+                        "Init Counter And Set Session Globals"
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -249,6 +277,35 @@
                                     {
                                         "name": "result",
                                         "schema": {
+<<<<<<< HEAD
+=======
+                                            "type": "array"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Data Array",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                                             "type": "array",
                                             "items": {
                                                 "type": "object",
@@ -270,24 +327,269 @@
         {
             "stages": [
                 {
+<<<<<<< HEAD
+=======
+                    "name": "Transform to source_iid",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JavaScript",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "const output = [];\r\nfor (var obj in input) {\r\n  for (var key in input[obj]) {\r\n    const value = input[obj][key];\r\n    const newObj = {\r\n      \"source_iid\": value\r\n    };\r\n    output.push(newObj);\r\n    break; // Assuming each object only has one key to replace\r\n  }\r\n}\r\noutput;",
+                                            "script": "var output = [];\n\nfor (var obj in input) {\n  for (var key in input[obj]) {\n    var value = input[obj][key];\n    var newObj = {\n      \"source_iid\": value\n    };\n    output.push(newObj);\n    break; // Assuming each object only has one key to replace\n  }\n}\n\noutput;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "customer_id": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Split The Result To Record By Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Split Records",
+                            "actorType": {
+                                "parentType": "ArrayGrouper",
+                                "inputs": [
+                                    {
+                                        "name": "size",
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "source_iid": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                     "name": "Filter Reserved And Create TDM EIDs",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
+<<<<<<< HEAD
                             "name": "Filter Reserved And Format IIDs",
                             "actorType": {
                                 "parentType": "customLogicDirectFlowUtil",
                                 "inputs": [
                                     {
                                         "name": "NUM_OF_ENTITIES",
+=======
+                            "name": "Filter Reserved Entities",
+                            "actorType": {
+                                "parentType": "Filter",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "CheckIfReserved"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "values",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "source_iid": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check The result",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "If Instance Can be Processed?",
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 1
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                                         "schema": {
                                             "type": "integer"
                                         }
                                     }
+<<<<<<< HEAD
                                 ],
                                 "outputs": []
                             }
+=======
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check If The requested Number Of Instances Was Reached",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check Number Of Instances And Stop Loop",
+                            "actorType": {
+                                "parentType": "CheckAndStopLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format IID",
+                            "actorType": {
+                                "parentType": "Mapper",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "buildTDMEidForCustomLogic"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "values",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Group Instances",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                         }
                     ]
                 }
@@ -361,12 +663,91 @@
                 "name": "result"
             },
             "rightPort": {
+<<<<<<< HEAD
                 "actor": "Filter Reserved And Format IIDs",
+=======
+                "actor": "ArrayBuilder",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "JavaScript",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Split Records",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split Records",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Filter Reserved Entities",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "name": "values"
             }
         },
         {
             "leftPort": {
+<<<<<<< HEAD
+=======
+                "actor": "Filter Reserved Entities",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "Format IID",
+                "name": "values"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Filter Reserved Entities",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "If Instance Can be Processed?",
+                "name": "test"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "If Instance Can be Processed?",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check Number Of Instances And Stop Loop",
+                "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format IID",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "Group Instances",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "actor": "flowArgs",
                 "name": "SESSION_GLOBALS"
             },
@@ -421,14 +802,23 @@
                 "name": "NUM_OF_ENTITIES"
             },
             "rightPort": {
+<<<<<<< HEAD
                 "actor": "Filter Reserved And Format IIDs",
+=======
+                "actor": "Check Number Of Instances And Stop Loop",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "name": "NUM_OF_ENTITIES"
             }
         },
         {
             "leftPort": {
+<<<<<<< HEAD
                 "actor": "Filter Reserved And Format IIDs",
                 "name": "values"
+=======
+                "actor": "Group Instances",
+                "name": "array"
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
             },
             "rightPort": {
                 "actor": "flowArgs",

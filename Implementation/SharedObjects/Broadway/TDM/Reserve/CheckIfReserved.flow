@@ -64,7 +64,11 @@
                     "isLast": 0,
                     "actors": [
                         {
+<<<<<<< HEAD
                             "name": "Check Reservation?",
+=======
+                            "name": "JavaScript1",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -108,6 +112,7 @@
                             }
                         },
                         {
+<<<<<<< HEAD
                             "name": "Parse Input ID",
                             "actorType": {
                                 "parentType": "JsonParser",
@@ -117,6 +122,27 @@
                                         "name": "object",
                                         "schema": {
                                             "type": "integer"
+=======
+                            "name": "Input Value",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "source_iid": {
+                                                    "type": "string"
+                                                }
+                                            }
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                                         }
                                     }
                                 ]
@@ -544,7 +570,11 @@
                 "name": "result"
             },
             "rightPort": {
+<<<<<<< HEAD
                 "actor": "Check Reservation?",
+=======
+                "actor": "JavaScript1",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "name": "taskType"
             }
         },
@@ -564,7 +594,11 @@
                 "name": "result"
             },
             "rightPort": {
+<<<<<<< HEAD
                 "actor": "Check Reservation?",
+=======
+                "actor": "JavaScript1",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "name": "sequenceInd"
             }
         },
@@ -574,13 +608,21 @@
                 "name": "result"
             },
             "rightPort": {
+<<<<<<< HEAD
                 "actor": "Check Reservation?",
+=======
+                "actor": "JavaScript1",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "name": "filteroutReserved"
             }
         },
         {
             "leftPort": {
+<<<<<<< HEAD
                 "actor": "Check Reservation?",
+=======
+                "actor": "JavaScript1",
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
                 "name": "result"
             },
             "rightPort": {
@@ -590,13 +632,25 @@
         },
         {
             "leftPort": {
+<<<<<<< HEAD
                 "actor": "Parse Input ID",
                 "name": "object"
+=======
+                "actor": "Input Value",
+                "name": "value"
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
             },
             "rightPort": {
                 "actor": "Entity ID To String",
                 "name": "value"
+<<<<<<< HEAD
             }
+=======
+            },
+            "path": [
+                "source_iid"
+            ]
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
         },
         {
             "leftPort": {
@@ -714,8 +768,13 @@
                 "name": "value"
             },
             "rightPort": {
+<<<<<<< HEAD
                 "actor": "Parse Input ID",
                 "name": "stream"
+=======
+                "actor": "Input Value",
+                "name": "value"
+>>>>>>> 8a2bf028424983f4977b5c14f23ff43a33bf9eef
             }
         },
         {
