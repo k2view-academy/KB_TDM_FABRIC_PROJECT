@@ -60,6 +60,11 @@ public class Logic extends UserCode {
             //UserCode.statsCount(luName + "@" + tableName, flowName, RecCount);
             UserCode.statsCount("TotalLoadedRecordsPerLoadFlow", luName + "@" + tableName + "@" + flowName, RecCount);
         }
+		
+		if (rows != null) {
+			rows.close();
+		}
+		
     }
 
     private static void fnBEStats() throws Exception {
@@ -77,6 +82,10 @@ public class Logic extends UserCode {
 
             UserCode.statsCount("TaskExecutionPerBE", beName, RecCount);
         }
+	
+		if (rows != null) {
+			rows.close();
+		}
     }
 	
 	    private static void fnBEAndStatusStats() throws Exception {
@@ -96,6 +105,10 @@ public class Logic extends UserCode {
 
             UserCode.statsCount("TaskExecutionPerBEAndStatus", beName + "#" + status, RecCount);
         }
+		
+		if (rows != null) {
+			rows.close();
+		}
     }
 
 
@@ -121,5 +134,9 @@ public class Logic extends UserCode {
 
            UserCode.statsCount("TotalTaskExecutionsPerStatus", status, RecCount);
        }
+		
+		if (rows != null) {
+			rows.close();
+		}
     }
 }

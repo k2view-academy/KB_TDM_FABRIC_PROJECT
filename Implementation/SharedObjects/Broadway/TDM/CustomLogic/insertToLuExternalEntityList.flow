@@ -11,33 +11,15 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get TDM LU Key Space",
+                            "name": "Get TDMDB Schema",
+                            "minHeight": 103,
                             "actorType": {
-                                "parentType": "LuKeyspace",
+                                "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Name of Entity List Table",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${LU_NAME}_entity_list"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "remark": "The Name of Logical Unit."
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -91,6 +73,37 @@
         {
             "stages": [
                 {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Name of Entity List Table",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "entity_list_${TASK_EXECUTION_ID}"
+                                    },
+                                    {
+                                        "name": "TASK_EXECUTION_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Load Data to Table",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -102,7 +115,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "CASSANDRA_LD"
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "schema",
@@ -123,14 +136,8 @@
                                         ]
                                     },
                                     {
-                                        "name": "keys",
-                                        "const": [
-                                            "task_execution_id"
-                                        ]
-                                    },
-                                    {
                                         "name": "dialect",
-                                        "const": "cassandra"
+                                        "const": "postgres"
                                     },
                                     {
                                         "name": "lu_name",
@@ -169,27 +176,27 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
         {
             "leftPort": {
-                "actor": "Get TDM LU Key Space",
-                "name": "keyspace"
+                "actor": "Get TDMDB Schema",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Insert Data to Entity List Table",
                 "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Set Name of Entity List Table",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Insert Data to Entity List Table",
-                "name": "table"
             }
         },
         {
@@ -214,6 +221,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Task Execution ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set Name of Entity List Table",
+                "name": "TASK_EXECUTION_ID"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get TDM Eid",
                 "name": "TDM_EID"
             },
@@ -224,12 +241,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
+                "actor": "Set Name of Entity List Table",
+                "name": "string"
             },
             "rightPort": {
-                "actor": "Set Name of Entity List Table",
-                "name": "LU_NAME"
+                "actor": "Insert Data to Entity List Table",
+                "name": "table"
             }
         },
         {

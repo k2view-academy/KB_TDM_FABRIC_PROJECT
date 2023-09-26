@@ -28,92 +28,71 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Details of Reference Table",
+                            "name": "refListLookup",
                             "actorType": {
-                                "parentType": "LuFunction",
+                                "parentType": "InnerFlow",
                                 "inputs": [
                                     {
-                                        "name": "functionName",
-                                        "const": "fnGetRefTableData"
+                                        "name": "flowName",
+                                        "const": "refListLookup"
                                     },
                                     {
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     },
                                     {
                                         "name": "refTableName",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "interfaceName",
+                                        "name": "result",
                                         "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "schemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetSchemaName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetInterfaceName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "countIndicator",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "trnLuName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "trnTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetRefTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "targetTablePK",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "truncateIndicator",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "countFlow",
-                                        "schema": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
                                         }
                                     }
                                 ]
@@ -146,19 +125,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "Get TDM LU Key Space",
-                            "actorType": {
-                                "parentType": "LuKeyspace",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "TDM"
-                                    }
-                                ],
-                                "outputs": []
                             }
                         }
                     ]
@@ -883,7 +849,155 @@
                                     {
                                         "name": "object",
                                         "schema": {
-                                            "type": "array"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "tac": {
+                                                        "type": "number"
+                                                    },
+                                                    "brandmodel": {
+                                                        "type": "string"
+                                                    },
+                                                    "manufacturer": {},
+                                                    "frequencies_band": {},
+                                                    "radiointerface": {},
+                                                    "brandname": {},
+                                                    "modelname": {},
+                                                    "os": {},
+                                                    "chipnfc": {},
+                                                    "chipbluetooth": {},
+                                                    "chipwlan": {},
+                                                    "devicetype": {},
+                                                    "removableuicc": {},
+                                                    "removableeuicc": {},
+                                                    "nonremovableuicc": {},
+                                                    "nonremovableeuicc": {},
+                                                    "deviceatlasid": {},
+                                                    "standardisedfull": {},
+                                                    "standardised_device_model": {},
+                                                    "standardisedmarketing": {},
+                                                    "interlmodel": {},
+                                                    "allocationdate": {},
+                                                    "countrycode": {},
+                                                    "fixedcode": {},
+                                                    "manufacturercode": {},
+                                                    "year_released": {},
+                                                    "mobile_device": {},
+                                                    "hardwaretype": {},
+                                                    "touchscreen": {},
+                                                    "screenwidth": {},
+                                                    "screenheight": {},
+                                                    "diagolscreensize": {},
+                                                    "displayppi": {},
+                                                    "devicepixelratio": {},
+                                                    "screencolordepth": {},
+                                                    "nfc": {},
+                                                    "camera": {},
+                                                    "ismobilephone": {},
+                                                    "istablet": {},
+                                                    "isereader": {},
+                                                    "isgamesconsole": {},
+                                                    "istv": {},
+                                                    "issettupbox": {},
+                                                    "ismediaplayer": {},
+                                                    "chipsetvendor": {},
+                                                    "chipset": {},
+                                                    "chipsetmodel": {},
+                                                    "cpu": {},
+                                                    "cpu_cores": {},
+                                                    "cpu_maximum_frequency": {},
+                                                    "gpu": {},
+                                                    "sim_slots": {},
+                                                    "sim_size": {},
+                                                    "interl_storage_capacity": {},
+                                                    "expandable_storage": {},
+                                                    "total_ram": {},
+                                                    "os_me": {},
+                                                    "os_version": {},
+                                                    "os_android": {},
+                                                    "os_bada": {},
+                                                    "os_ios": {},
+                                                    "os_rim": {},
+                                                    "os_symbian": {},
+                                                    "os_windows_mobile": {},
+                                                    "os_windows_phone": {},
+                                                    "os_windows_rt": {},
+                                                    "os_web_os": {},
+                                                    "browser_me": {},
+                                                    "browser_version": {},
+                                                    "browser_rendering_engine": {},
+                                                    "markup_xhtml_basic_1v0": {},
+                                                    "markup_xhtml_mp_1v0": {},
+                                                    "markup_xhtml_mp_1v1": {},
+                                                    "markup_xhtml_mp_1v2": {},
+                                                    "markup_wml1": {},
+                                                    "vcard_download": {},
+                                                    "image__gif87": {},
+                                                    "image__gif89a": {},
+                                                    "image__jpg": {},
+                                                    "image__png": {},
+                                                    "uri_scheme_tel": {},
+                                                    "uri_scheme_sms": {},
+                                                    "uri_scheme_sms_to": {},
+                                                    "cookie": {},
+                                                    "https": {},
+                                                    "memory_limit_markup": {},
+                                                    "memory_limit_embedded_media": {},
+                                                    "memory_limit_download": {},
+                                                    "flash_capable": {},
+                                                    "js_support_basic_java_script": {},
+                                                    "js_modify_dom": {},
+                                                    "js_modify_css": {},
+                                                    "js_support_events": {},
+                                                    "js_support_event_listener": {},
+                                                    "js_xhr": {},
+                                                    "js_support_console_log": {},
+                                                    "js_json": {},
+                                                    "supports_client_side": {},
+                                                    "csd": {},
+                                                    "hscsd": {},
+                                                    "gprs": {},
+                                                    "edge": {},
+                                                    "hsdpa": {},
+                                                    "umts": {},
+                                                    "hspa": {},
+                                                    "lte": {},
+                                                    "lte_category": {},
+                                                    "lte_advanced": {},
+                                                    "volte": {},
+                                                    "wifi": {},
+                                                    "vowifi": {},
+                                                    "html_audio": {},
+                                                    "html_canvas": {},
+                                                    "html_inline_svg": {},
+                                                    "html_svg": {},
+                                                    "html_video": {},
+                                                    "css_animations": {},
+                                                    "css_columns": {},
+                                                    "css_transforms": {},
+                                                    "css_transitions": {},
+                                                    "js_application_cache": {},
+                                                    "js_geo_location": {},
+                                                    "js_indexeddb": {},
+                                                    "js_local_storage": {},
+                                                    "js_session_storage": {},
+                                                    "js_web_gl": {},
+                                                    "js_web_sockets": {},
+                                                    "js_web_sql_database": {},
+                                                    "js_web_workers": {},
+                                                    "js_device_orientation": {},
+                                                    "js_device_motion": {},
+                                                    "js_touch_events": {},
+                                                    "js_query_selector": {},
+                                                    "wmv": {},
+                                                    "midi_monophonic": {},
+                                                    "midi_polyphonic": {},
+                                                    "amr": {},
+                                                    "mp3": {},
+                                                    "aac": {}
+                                                }
+                                            }
                                         }
                                     }
                                 ]
@@ -924,7 +1038,426 @@
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "object"
+                                            "type": "object",
+                                            "properties": {
+                                                "tac": {
+                                                    "type": "string"
+                                                },
+                                                "brandmodel": {
+                                                    "type": "string"
+                                                },
+                                                "manufacturer": {
+                                                    "type": "string"
+                                                },
+                                                "frequencies_band": {
+                                                    "type": "string"
+                                                },
+                                                "radiointerface": {
+                                                    "type": "string"
+                                                },
+                                                "brandname": {
+                                                    "type": "string"
+                                                },
+                                                "modelname": {
+                                                    "type": "string"
+                                                },
+                                                "os": {
+                                                    "type": "string"
+                                                },
+                                                "chipnfc": {
+                                                    "type": "string"
+                                                },
+                                                "chipbluetooth": {
+                                                    "type": "string"
+                                                },
+                                                "chipwlan": {
+                                                    "type": "string"
+                                                },
+                                                "devicetype": {
+                                                    "type": "string"
+                                                },
+                                                "removableuicc": {
+                                                    "type": "string"
+                                                },
+                                                "removableeuicc": {
+                                                    "type": "string"
+                                                },
+                                                "nonremovableuicc": {
+                                                    "type": "string"
+                                                },
+                                                "nonremovableeuicc": {
+                                                    "type": "string"
+                                                },
+                                                "deviceatlasid": {
+                                                    "type": "string"
+                                                },
+                                                "standardisedfull": {
+                                                    "type": "string"
+                                                },
+                                                "standardised_device_model": {
+                                                    "type": "string"
+                                                },
+                                                "standardisedmarketing": {
+                                                    "type": "string"
+                                                },
+                                                "interlmodel": {
+                                                    "type": "string"
+                                                },
+                                                "allocationdate": {
+                                                    "type": "string"
+                                                },
+                                                "countrycode": {
+                                                    "type": "string"
+                                                },
+                                                "fixedcode": {
+                                                    "type": "string"
+                                                },
+                                                "manufacturercode": {
+                                                    "type": "string"
+                                                },
+                                                "year_released": {
+                                                    "type": "string"
+                                                },
+                                                "mobile_device": {
+                                                    "type": "string"
+                                                },
+                                                "hardwaretype": {
+                                                    "type": "string"
+                                                },
+                                                "touchscreen": {
+                                                    "type": "string"
+                                                },
+                                                "screenwidth": {
+                                                    "type": "string"
+                                                },
+                                                "screenheight": {
+                                                    "type": "string"
+                                                },
+                                                "diagolscreensize": {
+                                                    "type": "string"
+                                                },
+                                                "displayppi": {
+                                                    "type": "string"
+                                                },
+                                                "devicepixelratio": {
+                                                    "type": "string"
+                                                },
+                                                "screencolordepth": {
+                                                    "type": "string"
+                                                },
+                                                "nfc": {
+                                                    "type": "string"
+                                                },
+                                                "camera": {
+                                                    "type": "string"
+                                                },
+                                                "ismobilephone": {
+                                                    "type": "string"
+                                                },
+                                                "istablet": {
+                                                    "type": "string"
+                                                },
+                                                "isereader": {
+                                                    "type": "string"
+                                                },
+                                                "isgamesconsole": {
+                                                    "type": "string"
+                                                },
+                                                "istv": {
+                                                    "type": "string"
+                                                },
+                                                "issettupbox": {
+                                                    "type": "string"
+                                                },
+                                                "ismediaplayer": {
+                                                    "type": "string"
+                                                },
+                                                "chipsetvendor": {
+                                                    "type": "string"
+                                                },
+                                                "chipset": {
+                                                    "type": "string"
+                                                },
+                                                "chipsetmodel": {
+                                                    "type": "string"
+                                                },
+                                                "cpu": {
+                                                    "type": "string"
+                                                },
+                                                "cpu_cores": {
+                                                    "type": "string"
+                                                },
+                                                "cpu_maximum_frequency": {
+                                                    "type": "string"
+                                                },
+                                                "gpu": {
+                                                    "type": "string"
+                                                },
+                                                "sim_slots": {
+                                                    "type": "string"
+                                                },
+                                                "sim_size": {
+                                                    "type": "string"
+                                                },
+                                                "interl_storage_capacity": {
+                                                    "type": "string"
+                                                },
+                                                "expandable_storage": {
+                                                    "type": "string"
+                                                },
+                                                "total_ram": {
+                                                    "type": "string"
+                                                },
+                                                "os_me": {
+                                                    "type": "string"
+                                                },
+                                                "os_version": {
+                                                    "type": "string"
+                                                },
+                                                "os_android": {
+                                                    "type": "string"
+                                                },
+                                                "os_bada": {
+                                                    "type": "string"
+                                                },
+                                                "os_ios": {
+                                                    "type": "string"
+                                                },
+                                                "os_rim": {
+                                                    "type": "string"
+                                                },
+                                                "os_symbian": {
+                                                    "type": "string"
+                                                },
+                                                "os_windows_mobile": {
+                                                    "type": "string"
+                                                },
+                                                "os_windows_phone": {
+                                                    "type": "string"
+                                                },
+                                                "os_windows_rt": {
+                                                    "type": "string"
+                                                },
+                                                "os_web_os": {
+                                                    "type": "string"
+                                                },
+                                                "browser_me": {
+                                                    "type": "string"
+                                                },
+                                                "browser_version": {
+                                                    "type": "string"
+                                                },
+                                                "browser_rendering_engine": {
+                                                    "type": "string"
+                                                },
+                                                "markup_xhtml_basic_1v0": {
+                                                    "type": "string"
+                                                },
+                                                "markup_xhtml_mp_1v0": {
+                                                    "type": "string"
+                                                },
+                                                "markup_xhtml_mp_1v1": {
+                                                    "type": "string"
+                                                },
+                                                "markup_xhtml_mp_1v2": {
+                                                    "type": "string"
+                                                },
+                                                "markup_wml1": {
+                                                    "type": "string"
+                                                },
+                                                "vcard_download": {
+                                                    "type": "string"
+                                                },
+                                                "image__gif87": {
+                                                    "type": "string"
+                                                },
+                                                "image__gif89a": {
+                                                    "type": "string"
+                                                },
+                                                "image__jpg": {
+                                                    "type": "string"
+                                                },
+                                                "image__png": {
+                                                    "type": "string"
+                                                },
+                                                "uri_scheme_tel": {
+                                                    "type": "string"
+                                                },
+                                                "uri_scheme_sms": {
+                                                    "type": "string"
+                                                },
+                                                "uri_scheme_sms_to": {
+                                                    "type": "string"
+                                                },
+                                                "cookie": {
+                                                    "type": "string"
+                                                },
+                                                "https": {
+                                                    "type": "string"
+                                                },
+                                                "memory_limit_markup": {
+                                                    "type": "string"
+                                                },
+                                                "memory_limit_embedded_media": {
+                                                    "type": "string"
+                                                },
+                                                "memory_limit_download": {
+                                                    "type": "string"
+                                                },
+                                                "flash_capable": {
+                                                    "type": "string"
+                                                },
+                                                "js_support_basic_java_script": {
+                                                    "type": "string"
+                                                },
+                                                "js_modify_dom": {
+                                                    "type": "string"
+                                                },
+                                                "js_modify_css": {
+                                                    "type": "string"
+                                                },
+                                                "js_support_events": {
+                                                    "type": "string"
+                                                },
+                                                "js_support_event_listener": {
+                                                    "type": "string"
+                                                },
+                                                "js_xhr": {
+                                                    "type": "string"
+                                                },
+                                                "js_support_console_log": {
+                                                    "type": "string"
+                                                },
+                                                "js_json": {
+                                                    "type": "string"
+                                                },
+                                                "supports_client_side": {
+                                                    "type": "string"
+                                                },
+                                                "csd": {
+                                                    "type": "string"
+                                                },
+                                                "hscsd": {
+                                                    "type": "string"
+                                                },
+                                                "gprs": {
+                                                    "type": "string"
+                                                },
+                                                "edge": {
+                                                    "type": "string"
+                                                },
+                                                "hsdpa": {
+                                                    "type": "string"
+                                                },
+                                                "umts": {
+                                                    "type": "string"
+                                                },
+                                                "hspa": {
+                                                    "type": "string"
+                                                },
+                                                "lte": {
+                                                    "type": "string"
+                                                },
+                                                "lte_category": {
+                                                    "type": "string"
+                                                },
+                                                "lte_advanced": {
+                                                    "type": "string"
+                                                },
+                                                "volte": {
+                                                    "type": "string"
+                                                },
+                                                "wifi": {
+                                                    "type": "string"
+                                                },
+                                                "vowifi": {
+                                                    "type": "string"
+                                                },
+                                                "html_audio": {
+                                                    "type": "string"
+                                                },
+                                                "html_canvas": {
+                                                    "type": "string"
+                                                },
+                                                "html_inline_svg": {
+                                                    "type": "string"
+                                                },
+                                                "html_svg": {
+                                                    "type": "string"
+                                                },
+                                                "html_video": {
+                                                    "type": "string"
+                                                },
+                                                "css_animations": {
+                                                    "type": "string"
+                                                },
+                                                "css_columns": {
+                                                    "type": "string"
+                                                },
+                                                "css_transforms": {
+                                                    "type": "string"
+                                                },
+                                                "css_transitions": {
+                                                    "type": "string"
+                                                },
+                                                "js_application_cache": {
+                                                    "type": "string"
+                                                },
+                                                "js_geo_location": {
+                                                    "type": "string"
+                                                },
+                                                "js_indexeddb": {
+                                                    "type": "string"
+                                                },
+                                                "js_local_storage": {
+                                                    "type": "string"
+                                                },
+                                                "js_session_storage": {
+                                                    "type": "string"
+                                                },
+                                                "js_web_gl": {
+                                                    "type": "string"
+                                                },
+                                                "js_web_sockets": {
+                                                    "type": "string"
+                                                },
+                                                "js_web_sql_database": {
+                                                    "type": "string"
+                                                },
+                                                "js_web_workers": {
+                                                    "type": "string"
+                                                },
+                                                "js_device_orientation": {
+                                                    "type": "string"
+                                                },
+                                                "js_device_motion": {
+                                                    "type": "string"
+                                                },
+                                                "js_touch_events": {
+                                                    "type": "string"
+                                                },
+                                                "js_query_selector": {
+                                                    "type": "string"
+                                                },
+                                                "wmv": {
+                                                    "type": "string"
+                                                },
+                                                "midi_monophonic": {
+                                                    "type": "string"
+                                                },
+                                                "midi_polyphonic": {
+                                                    "type": "string"
+                                                },
+                                                "amr": {
+                                                    "type": "string"
+                                                },
+                                                "mp3": {
+                                                    "type": "string"
+                                                },
+                                                "aac": {
+                                                    "type": "string"
+                                                }
+                                            }
                                         }
                                     }
                                 ]
@@ -1084,7 +1617,155 @@
                                     {
                                         "name": "strings",
                                         "schema": {
-                                            "type": "array"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "tac": {
+                                                        "type": "number"
+                                                    },
+                                                    "brandmodel": {
+                                                        "type": "string"
+                                                    },
+                                                    "manufacturer": {},
+                                                    "frequencies_band": {},
+                                                    "radiointerface": {},
+                                                    "brandname": {},
+                                                    "modelname": {},
+                                                    "os": {},
+                                                    "chipnfc": {},
+                                                    "chipbluetooth": {},
+                                                    "chipwlan": {},
+                                                    "devicetype": {},
+                                                    "removableuicc": {},
+                                                    "removableeuicc": {},
+                                                    "nonremovableuicc": {},
+                                                    "nonremovableeuicc": {},
+                                                    "deviceatlasid": {},
+                                                    "standardisedfull": {},
+                                                    "standardised_device_model": {},
+                                                    "standardisedmarketing": {},
+                                                    "interlmodel": {},
+                                                    "allocationdate": {},
+                                                    "countrycode": {},
+                                                    "fixedcode": {},
+                                                    "manufacturercode": {},
+                                                    "year_released": {},
+                                                    "mobile_device": {},
+                                                    "hardwaretype": {},
+                                                    "touchscreen": {},
+                                                    "screenwidth": {},
+                                                    "screenheight": {},
+                                                    "diagolscreensize": {},
+                                                    "displayppi": {},
+                                                    "devicepixelratio": {},
+                                                    "screencolordepth": {},
+                                                    "nfc": {},
+                                                    "camera": {},
+                                                    "ismobilephone": {},
+                                                    "istablet": {},
+                                                    "isereader": {},
+                                                    "isgamesconsole": {},
+                                                    "istv": {},
+                                                    "issettupbox": {},
+                                                    "ismediaplayer": {},
+                                                    "chipsetvendor": {},
+                                                    "chipset": {},
+                                                    "chipsetmodel": {},
+                                                    "cpu": {},
+                                                    "cpu_cores": {},
+                                                    "cpu_maximum_frequency": {},
+                                                    "gpu": {},
+                                                    "sim_slots": {},
+                                                    "sim_size": {},
+                                                    "interl_storage_capacity": {},
+                                                    "expandable_storage": {},
+                                                    "total_ram": {},
+                                                    "os_me": {},
+                                                    "os_version": {},
+                                                    "os_android": {},
+                                                    "os_bada": {},
+                                                    "os_ios": {},
+                                                    "os_rim": {},
+                                                    "os_symbian": {},
+                                                    "os_windows_mobile": {},
+                                                    "os_windows_phone": {},
+                                                    "os_windows_rt": {},
+                                                    "os_web_os": {},
+                                                    "browser_me": {},
+                                                    "browser_version": {},
+                                                    "browser_rendering_engine": {},
+                                                    "markup_xhtml_basic_1v0": {},
+                                                    "markup_xhtml_mp_1v0": {},
+                                                    "markup_xhtml_mp_1v1": {},
+                                                    "markup_xhtml_mp_1v2": {},
+                                                    "markup_wml1": {},
+                                                    "vcard_download": {},
+                                                    "image__gif87": {},
+                                                    "image__gif89a": {},
+                                                    "image__jpg": {},
+                                                    "image__png": {},
+                                                    "uri_scheme_tel": {},
+                                                    "uri_scheme_sms": {},
+                                                    "uri_scheme_sms_to": {},
+                                                    "cookie": {},
+                                                    "https": {},
+                                                    "memory_limit_markup": {},
+                                                    "memory_limit_embedded_media": {},
+                                                    "memory_limit_download": {},
+                                                    "flash_capable": {},
+                                                    "js_support_basic_java_script": {},
+                                                    "js_modify_dom": {},
+                                                    "js_modify_css": {},
+                                                    "js_support_events": {},
+                                                    "js_support_event_listener": {},
+                                                    "js_xhr": {},
+                                                    "js_support_console_log": {},
+                                                    "js_json": {},
+                                                    "supports_client_side": {},
+                                                    "csd": {},
+                                                    "hscsd": {},
+                                                    "gprs": {},
+                                                    "edge": {},
+                                                    "hsdpa": {},
+                                                    "umts": {},
+                                                    "hspa": {},
+                                                    "lte": {},
+                                                    "lte_category": {},
+                                                    "lte_advanced": {},
+                                                    "volte": {},
+                                                    "wifi": {},
+                                                    "vowifi": {},
+                                                    "html_audio": {},
+                                                    "html_canvas": {},
+                                                    "html_inline_svg": {},
+                                                    "html_svg": {},
+                                                    "html_video": {},
+                                                    "css_animations": {},
+                                                    "css_columns": {},
+                                                    "css_transforms": {},
+                                                    "css_transitions": {},
+                                                    "js_application_cache": {},
+                                                    "js_geo_location": {},
+                                                    "js_indexeddb": {},
+                                                    "js_local_storage": {},
+                                                    "js_session_storage": {},
+                                                    "js_web_gl": {},
+                                                    "js_web_sockets": {},
+                                                    "js_web_sql_database": {},
+                                                    "js_web_workers": {},
+                                                    "js_device_orientation": {},
+                                                    "js_device_motion": {},
+                                                    "js_touch_events": {},
+                                                    "js_query_selector": {},
+                                                    "wmv": {},
+                                                    "midi_monophonic": {},
+                                                    "midi_polyphonic": {},
+                                                    "amr": {},
+                                                    "mp3": {},
+                                                    "aac": {}
+                                                }
+                                            }
                                         }
                                     }
                                 ]
@@ -1212,7 +1893,151 @@
                                         "name": "map",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {}
+                                            "properties": {
+                                                "tac": {
+                                                    "type": "integer"
+                                                },
+                                                "brandmodel": {
+                                                    "type": "string"
+                                                },
+                                                "manufacturer": {},
+                                                "frequencies_band": {},
+                                                "radiointerface": {},
+                                                "brandname": {},
+                                                "modelname": {},
+                                                "os": {},
+                                                "chipnfc": {},
+                                                "chipbluetooth": {},
+                                                "chipwlan": {},
+                                                "devicetype": {},
+                                                "removableuicc": {},
+                                                "removableeuicc": {},
+                                                "nonremovableuicc": {},
+                                                "nonremovableeuicc": {},
+                                                "deviceatlasid": {},
+                                                "standardisedfull": {},
+                                                "standardised_device_model": {},
+                                                "standardisedmarketing": {},
+                                                "interlmodel": {},
+                                                "allocationdate": {},
+                                                "countrycode": {},
+                                                "fixedcode": {},
+                                                "manufacturercode": {},
+                                                "year_released": {},
+                                                "mobile_device": {},
+                                                "hardwaretype": {},
+                                                "touchscreen": {},
+                                                "screenwidth": {},
+                                                "screenheight": {},
+                                                "diagolscreensize": {},
+                                                "displayppi": {},
+                                                "devicepixelratio": {},
+                                                "screencolordepth": {},
+                                                "nfc": {},
+                                                "camera": {},
+                                                "ismobilephone": {},
+                                                "istablet": {},
+                                                "isereader": {},
+                                                "isgamesconsole": {},
+                                                "istv": {},
+                                                "issettupbox": {},
+                                                "ismediaplayer": {},
+                                                "chipsetvendor": {},
+                                                "chipset": {},
+                                                "chipsetmodel": {},
+                                                "cpu": {},
+                                                "cpu_cores": {},
+                                                "cpu_maximum_frequency": {},
+                                                "gpu": {},
+                                                "sim_slots": {},
+                                                "sim_size": {},
+                                                "interl_storage_capacity": {},
+                                                "expandable_storage": {},
+                                                "total_ram": {},
+                                                "os_me": {},
+                                                "os_version": {},
+                                                "os_android": {},
+                                                "os_bada": {},
+                                                "os_ios": {},
+                                                "os_rim": {},
+                                                "os_symbian": {},
+                                                "os_windows_mobile": {},
+                                                "os_windows_phone": {},
+                                                "os_windows_rt": {},
+                                                "os_web_os": {},
+                                                "browser_me": {},
+                                                "browser_version": {},
+                                                "browser_rendering_engine": {},
+                                                "markup_xhtml_basic_1v0": {},
+                                                "markup_xhtml_mp_1v0": {},
+                                                "markup_xhtml_mp_1v1": {},
+                                                "markup_xhtml_mp_1v2": {},
+                                                "markup_wml1": {},
+                                                "vcard_download": {},
+                                                "image__gif87": {},
+                                                "image__gif89a": {},
+                                                "image__jpg": {},
+                                                "image__png": {},
+                                                "uri_scheme_tel": {},
+                                                "uri_scheme_sms": {},
+                                                "uri_scheme_sms_to": {},
+                                                "cookie": {},
+                                                "https": {},
+                                                "memory_limit_markup": {},
+                                                "memory_limit_embedded_media": {},
+                                                "memory_limit_download": {},
+                                                "flash_capable": {},
+                                                "js_support_basic_java_script": {},
+                                                "js_modify_dom": {},
+                                                "js_modify_css": {},
+                                                "js_support_events": {},
+                                                "js_support_event_listener": {},
+                                                "js_xhr": {},
+                                                "js_support_console_log": {},
+                                                "js_json": {},
+                                                "supports_client_side": {},
+                                                "csd": {},
+                                                "hscsd": {},
+                                                "gprs": {},
+                                                "edge": {},
+                                                "hsdpa": {},
+                                                "umts": {},
+                                                "hspa": {},
+                                                "lte": {},
+                                                "lte_category": {},
+                                                "lte_advanced": {},
+                                                "volte": {},
+                                                "wifi": {},
+                                                "vowifi": {},
+                                                "html_audio": {},
+                                                "html_canvas": {},
+                                                "html_inline_svg": {},
+                                                "html_svg": {},
+                                                "html_video": {},
+                                                "css_animations": {},
+                                                "css_columns": {},
+                                                "css_transforms": {},
+                                                "css_transitions": {},
+                                                "js_application_cache": {},
+                                                "js_geo_location": {},
+                                                "js_indexeddb": {},
+                                                "js_local_storage": {},
+                                                "js_session_storage": {},
+                                                "js_web_gl": {},
+                                                "js_web_sockets": {},
+                                                "js_web_sql_database": {},
+                                                "js_web_workers": {},
+                                                "js_device_orientation": {},
+                                                "js_device_motion": {},
+                                                "js_touch_events": {},
+                                                "js_query_selector": {},
+                                                "wmv": {},
+                                                "midi_monophonic": {},
+                                                "midi_polyphonic": {},
+                                                "amr": {},
+                                                "mp3": {},
+                                                "aac": {}
+                                            }
                                         }
                                     }
                                 ]
@@ -1660,42 +2485,6 @@
                             }
                         },
                         {
-                            "name": "PopulateTaskExecutionEntities_Actor1",
-                            "actorType": {
-                                "parentType": "PopulateTaskExecutionEntities_Actor",
-                                "inputs": [
-                                    {
-                                        "name": "idType",
-                                        "const": "REFERENCE"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Finished Loading Table",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Finished Loading Table: ${refTableName}"
-                                    },
-                                    {
-                                        "name": "level",
-                                        "const": "info"
-                                    },
-                                    {
-                                        "name": "refTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Build Exception Error",
                             "actorType": {
                                 "parentType": "JavaScript",
@@ -1730,6 +2519,42 @@
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "PopulateTaskExecutionEntities_Actor1",
+                            "actorType": {
+                                "parentType": "PopulateTaskExecutionEntities_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "idType",
+                                        "const": "REFERENCE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Finished Loading Table",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Finished Loading Table: ${refTableName}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -1885,193 +2710,237 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetSchemaName"
-            },
-            "rightPort": {
-                "actor": "Insert Data To Target Table",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "interfaceName"
-            },
-            "rightPort": {
-                "actor": "FabricSet REF_INTERFACE",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "schemaName"
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "FabricSet REF_SCHEMA",
                 "name": "value"
-            }
+            },
+            "path": [
+                "schema_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "countIndicator"
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FabricSet REF_INTERFACE",
+                "name": "value"
+            },
+            "path": [
+                "interface_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "getDbTableColumns",
+                "name": "table"
+            },
+            "path": [
+                "target_ref_table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "refTableName"
+            },
+            "path": [
+                "target_ref_table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Count Method",
-                "name": "indicator"
-            }
+                "name": "refTableName"
+            },
+            "path": [
+                "target_ref_table_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetRefTableName"
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Insert Data To Target Table",
                 "name": "table"
-            }
+            },
+            "path": [
+                "target_ref_table_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetRefTableName"
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "Truncate or Delete Table",
-                "name": "refTableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetInterfaceName"
-            },
-            "rightPort": {
-                "actor": "Truncate or Delete Table",
+                "actor": "Insert Data To Target Table",
                 "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetSchemaName"
             },
-            "rightPort": {
-                "actor": "Truncate or Delete Table",
-                "name": "Schema"
-            }
+            "path": [
+                "target_interface_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetInterfaceName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "interface"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetSchemaName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "refSchema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetRefTableName"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "refTableName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "truncateIndicator"
-            },
-            "rightPort": {
-                "actor": "Truncate or Delete Table",
-                "name": "Indicator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "countFlow"
-            },
-            "rightPort": {
-                "actor": "Count Method",
-                "name": "bf_name"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "trnTableName"
-            },
-            "rightPort": {
-                "actor": "Get Ref Table Count",
-                "name": "table_name"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetInterfaceName"
-            },
-            "rightPort": {
-                "actor": "DBconnector",
-                "name": "interfaceName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetInterfaceName"
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "getDbTableColumns",
                 "name": "dbInterfaceName"
-            }
+            },
+            "path": [
+                "target_interface_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetSchemaName"
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DBconnector",
+                "name": "interfaceName"
+            },
+            "path": [
+                "target_interface_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "interface"
+            },
+            "path": [
+                "target_interface_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "interface"
+            },
+            "path": [
+                "target_interface_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "getDbTableColumns",
                 "name": "catalogSchema"
-            }
+            },
+            "path": [
+                "target_schema_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetRefTableName"
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "getDbTableColumns",
-                "name": "table"
-            }
+                "actor": "Count Method",
+                "name": "refSchema"
+            },
+            "path": [
+                "target_schema_name"
+            ]
         },
         {
             "leftPort": {
-                "actor": "Get Details of Reference Table",
-                "name": "targetInterfaceName"
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "Schema"
+            },
+            "path": [
+                "target_schema_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
             },
             "rightPort": {
                 "actor": "Insert Data To Target Table",
-                "name": "interface"
-            }
+                "name": "schema"
+            },
+            "path": [
+                "target_schema_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Truncate or Delete Table",
+                "name": "Indicator"
+            },
+            "path": [
+                "truncate_indicator"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "indicator"
+            },
+            "path": [
+                "count_indicator"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "refListLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Count Method",
+                "name": "bf_name"
+            },
+            "path": [
+                "count_flow"
+            ]
         },
         {
             "leftPort": {
@@ -2463,7 +3332,7 @@
                 "name": "luName"
             },
             "rightPort": {
-                "actor": "Get Details of Reference Table",
+                "actor": "refListLookup",
                 "name": "luName"
             }
         },
@@ -2473,7 +3342,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "Get Details of Reference Table",
+                "actor": "refListLookup",
                 "name": "refTableName"
             }
         },
@@ -2613,7 +3482,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "Finished Loading Table",
+                "actor": "Build Exception Error",
                 "name": "refTableName"
             }
         },
@@ -2623,7 +3492,7 @@
                 "name": "refTableName"
             },
             "rightPort": {
-                "actor": "Build Exception Error",
+                "actor": "Finished Loading Table",
                 "name": "refTableName"
             }
         }

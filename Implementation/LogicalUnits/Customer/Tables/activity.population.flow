@@ -1,6 +1,6 @@
 {
     "levels": [
-		{
+        {
             "stages": [
                 {
                     "name": "Input",
@@ -11,41 +11,52 @@
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
-								"readOnly": true,
+                                "readOnly": true,
                                 "inputs": [
-                                    
-                {
-                    "name": "customer_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "activity_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "activity_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "activity_note",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_note",
+                                        "schema": {}
+                                    }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
-						{
+                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
                                 "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "table",
                                         "const": null
@@ -77,31 +88,50 @@
                                     {
                                         "name": "sql",
                                         "const": "SELECT * FROM public.activity"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "object",
+                                                "maximum": "object"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "object",
+                                            "minimum": "1",
+                                            "maximum": "7"
+                                        },
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
-									{
+                                    {
                                         "name": "result",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                
-                "customer_id": {
-                    "type": {}
-                },
-                "activity_id": {
-                    "type": {}
-                },
-                "activity_date": {
-                    "type": {}
-                },
-                "activity_note": {
-                    "type": {}
-                }
+                                                "customer_id": {
+                                                    "type": {}
+                                                },
+                                                "activity_id": {
+                                                    "type": {}
+                                                },
+                                                "activity_date": {
+                                                    "type": {}
+                                                },
+                                                "activity_note": {
+                                                    "type": {}
+                                                }
                                             }
                                         }
                                     }
-								]
+                                ]
                             }
                         }
                     ]
@@ -134,7 +164,7 @@
                                         "name": "interface",
                                         "const": "fabric"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": null
                                     },
@@ -146,12 +176,12 @@
                                         "name": "fields",
                                         "const": [
                                             "customer_id",
-"activity_id",
-"activity_date",
-"activity_note"
+                                            "activity_id",
+                                            "activity_date",
+                                            "activity_note"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "activity_id"
@@ -161,30 +191,22 @@
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
-									
-                {
-                    "name": "customer_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "activity_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "activity_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "activity_note",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "activity_note",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
@@ -193,7 +215,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Post Load",
@@ -226,24 +248,44 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "customer_id"
             },
             "rightPort": {
-                "actor": "activity",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "customer_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
+                "name": "activity_id"
             },
             "rightPort": {
-                "actor": "activity",
-                "name": "table"
+                "actor": "PopulationArgs",
+                "name": "activity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "activity_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "activity_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "activity_note"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "activity_note"
             }
         },
         {
@@ -255,54 +297,36 @@
                 "actor": "SyncDeleteMode",
                 "name": "table"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_activity_number_of_records"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "rowsGeneratorDistribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "activity",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "activity",
+                "name": "table"
+            }
         }
-        ,
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "customer_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "customer_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "activity_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "activity_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "activity_date"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "activity_date"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "activity_note"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "activity_note"
-                    }
-                }
-                
     ]
 }

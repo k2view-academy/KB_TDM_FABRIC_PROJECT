@@ -403,6 +403,10 @@
                                         ]
                                     },
                                     {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
                                         "name": "TARGET_ENV",
                                         "schema": {},
                                         "mandatory": false
@@ -485,6 +489,10 @@
                                         ]
                                     },
                                     {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
                                         "name": "TARGET_ENV",
                                         "schema": {},
                                         "mandatory": false
@@ -536,6 +544,26 @@
         {
             "leftPort": {
                 "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Fetch data",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Fetch Data if not null",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
                 "name": "parent_rows"
             },
             "rightPort": {
@@ -560,26 +588,6 @@
             "path": [
                 "delete_before_load"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Fetch data",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Fetch Data if not null",
-                "name": "task_execution_id"
-            }
         },
         {
             "leftPort": {

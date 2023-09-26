@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -18,7 +21,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select Max(order_id) + 1000 As init_order_id\r\nFrom orders"
+                                        "const": "Select COALESCE(Max(order_id),0) + 100000 As init_order_id\r\nFrom orders"
                                     }
                                 ],
                                 "outputs": []

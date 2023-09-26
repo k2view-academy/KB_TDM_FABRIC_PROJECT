@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="BILLING_DB" type="genericdb" version="6.5.9.9">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="BILLING_DB" type="genericdb" version="7.2.0.11">
   <Active>true</Active>
-  <DataSource>localhost</DataSource>
+  <DataSource>host.docker.internal</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>BILLING_DB</DataBase>
   <UserId>BILLING_USER</UserId>
-  <Password>utt3UTFL5WwO8y+Q2F3Yg27pd953qHdXRq+SPNCRGrE=:vGefyJ/ig0h0K8aGKq9ZAEKYxECsD8TQBA9qRnQj2jg=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</ConnectionStringServerSide>
+  <Password>~encs2~aRmoKA7Icsei7S2wstIhzpHhQghsB5j2HoIh3oOqj4g55f+0cpZ0zexRYvA=</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://host.docker.internal:5432/BILLING_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

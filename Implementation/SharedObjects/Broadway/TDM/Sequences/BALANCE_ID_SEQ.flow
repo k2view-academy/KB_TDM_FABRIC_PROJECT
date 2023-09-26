@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -75,16 +78,20 @@
                                         "const": "DB_CASSANDRA"
                                     },
                                     {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "sequenceId",
+                                        "const": "BALANCE_ID_SEQ"
+                                    },
+                                    {
                                         "name": "sequenceInterface",
-                                        "const": "FabricRedis"
+                                        "const": "BILLING_DB"
                                     },
                                     {
                                         "name": "initialValue",
                                         "const": "BalanceIdInit"
-                                    },
-									{
-                                        "name": "TTL",
-                                        "const": 0
                                     }
                                 ],
                                 "outputs": [
@@ -92,12 +99,12 @@
                                         "name": "value",
                                         "schema": {
                                             "type": "string"
-										}
-									}
-								]
-							}
-                        }						 
-					]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },

@@ -1,0 +1,354 @@
+{
+    "tags": [
+        "Generate Data",
+        "GeneratorFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Sequence Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "COLLECTION_ID",
+                            "actorType": {
+                                "parentType": "Masking",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "customer_id"
+                                    },
+                                    {
+                                        "name": "flowName",
+                                        "const": "Sequence.actor"
+                                    },
+                                    {
+                                        "name": "category",
+                                        "const": "enable_sequences"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    },
+                                    {
+                                        "const": "Gen_COLEECTION_ID_SEQ",
+                                        "name": "sequenceId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "TDM",
+                                        "name": "sequenceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "REDIS",
+                                                "database"
+                                            ],
+                                            "interfaces": [
+                                                "IN-MEMORY"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "1",
+                                        "name": "initialValue",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": 1,
+                                        "name": "increment",
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CUSTOMER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "LAST_UPDATE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "COLLECTION_STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "1"
+                                                ],
+                                                [
+                                                    40,
+                                                    "2"
+                                                ],
+                                                [
+                                                    50,
+                                                    "3"
+                                                ],
+                                                [
+                                                    30,
+                                                    "4"
+                                                ],
+                                                [
+                                                    40,
+                                                    "5"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "path": [
+                "customer_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "COLLECTION_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "COLLECTION_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "customer_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "last_update"
+            },
+            "rightPort": {
+                "actor": "LAST_UPDATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LAST_UPDATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "LAST_UPDATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "collection_status"
+            },
+            "rightPort": {
+                "actor": "COLLECTION_STATUS",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "COLLECTION_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "COLLECTION_STATUS"
+            }
+        }
+    ]
+}

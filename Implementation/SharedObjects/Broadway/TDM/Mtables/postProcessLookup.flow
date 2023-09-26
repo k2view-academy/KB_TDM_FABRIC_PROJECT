@@ -1,0 +1,246 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Start",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PostProcessList",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "PostProcessList"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "process_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Map LuName+Value",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapBuild LuName",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "lu_name"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "lu_name": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Map ProcessName + Value",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "MapBuild PrrocessName",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "postTaskExePrintToLog": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lu_name": {}
+                                                    }
+                                                },
+                                                "yay": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lu_name": {}
+                                                    }
+                                                },
+                                                "meow": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lu_name": {}
+                                                    }
+                                                },
+                                                "help": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lu_name": {}
+                                                    }
+                                                },
+                                                "wooho": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lu_name": {}
+                                                    }
+                                                },
+                                                "ahsgfq": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lu_name": {}
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "MapMerge",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Meow": {
+                                                    "type": "string"
+                                                },
+                                                "postTaskExePrintToLog": {},
+                                                "jojo": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PostProcessList",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapBuild PrrocessName",
+                "name": "key"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "process_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PostProcessList",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MapBuild LuName",
+                "name": "value"
+            },
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild LuName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapBuild PrrocessName",
+                "name": "value"
+            },
+            "path": [
+                "lu_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild PrrocessName",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "MapMerge",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "map"
+            }
+        }
+    ]
+}

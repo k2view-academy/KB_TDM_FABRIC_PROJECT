@@ -1,0 +1,93 @@
+{
+    "type": "TDMSeqList",
+    "badge": "TD",
+    "tags": [
+        "basic"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "SEQUENCE_NAME": {
+                            "type": "string"
+                        },
+                        "SEQUENCE_REDIS_OR_DB": {
+                            "type": "string"
+                        },
+                        "INITIATE_VALUE_OR_FLOW": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "const": [
+                {
+                    "SEQUENCE_NAME": "CUSTOMER_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
+                    "INITIATE_VALUE_OR_FLOW": "CustomerIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "CONTRACT_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
+                    "INITIATE_VALUE_OR_FLOW": "ContractIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "NOTE_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
+                    "INITIATE_VALUE_OR_FLOW": "NoteIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "ADDRESS_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
+                    "INITIATE_VALUE_OR_FLOW": "AddressIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "CASE_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
+                    "INITIATE_VALUE_OR_FLOW": "CaseIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "ACTIVITY_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "CRM_DB",
+                    "INITIATE_VALUE_OR_FLOW": "ActivityIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "BALANCE_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
+                    "INITIATE_VALUE_OR_FLOW": "BalanceIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "INVOICE_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
+                    "INITIATE_VALUE_OR_FLOW": "InvoiceIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "PAYMENT_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
+                    "INITIATE_VALUE_OR_FLOW": "PaymentIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "OFFER_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "BILLING_DB",
+                    "INITIATE_VALUE_OR_FLOW": "OfferIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "ORDER_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "ORDERING_DB",
+                    "INITIATE_VALUE_OR_FLOW": "OrderIdInit"
+                },
+                {
+                    "SEQUENCE_NAME": "COLLECTION_ID_SEQ",
+                    "SEQUENCE_REDIS_OR_DB": "COLLECTION_DB",
+                    "INITIATE_VALUE_OR_FLOW": "CollectionIdInit"
+                }
+            ]
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

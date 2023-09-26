@@ -187,7 +187,10 @@
                                 "inputs": [
                                     {
                                         "name": "script",
-                                        "const": "self.result=input.Generator_actor;"
+                                        "const": {
+                                            "userCode": "self.result = '';\r\nif(input != null) {\r\n    self.result=input.Generator_actor;\r\n}\r\nself.result;",
+                                            "script": "self.result = '';\n\nif (input != null) {\n  self.result = input.Generator_actor;\n}\n\nself.result;"
+                                        }
                                     },
                                     {
                                         "name": "input",

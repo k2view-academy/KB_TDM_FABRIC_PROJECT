@@ -7,33 +7,6 @@
     "inputs": [
         {
             "name": "table",
-            "const": [
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "get5GCustomers",
-                    "DESCRIPTION": "Get 5G customers by the contract status"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersByAddress",
-                    "DESCRIPTION": "Get customers by their state"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersBySQL",
-                    "DESCRIPTION": "Get customers by input SQL and input parameters on the CRM DB"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getCustomersBySQL2",
-                    "DESCRIPTION": "Get customers by input SQL on the CRM DB"
-                },
-                {
-                    "LU_NAME": "Customer",
-                    "FLOW_NAME": "getAll5GCustomers",
-                    "DESCRIPTION": "Get all 5G customers"
-                }
-            ],
             "schema": {
                 "type": "array",
                 "items": {
@@ -47,10 +20,51 @@
                         },
                         "DESCRIPTION": {
                             "type": "string"
+                        },
+                        "DIRECT_FLOW": {
+                            "type": "boolean"
                         }
                     }
                 }
-            }
+            },
+            "const": [
+                {
+                    "LU_NAME": "Customer",
+                    "FLOW_NAME": "get5GCustomers",
+                    "DESCRIPTION": "Get 5G customers by the contract status",
+                    "DIRECT_FLOW": false
+                },
+                {
+                    "LU_NAME": "Customer",
+                    "FLOW_NAME": "getCustomersByAddress",
+                    "DESCRIPTION": "Get customers by their state",
+                    "DIRECT_FLOW": false
+                },
+                {
+                    "LU_NAME": "Customer",
+                    "FLOW_NAME": "getCustomersBySQL",
+                    "DESCRIPTION": "Get customers by input SQL and input parameters on the CRM DB",
+                    "DIRECT_FLOW": false
+                },
+                {
+                    "LU_NAME": "Customer",
+                    "FLOW_NAME": "getCustomersBySQL2",
+                    "DESCRIPTION": "Get customers by input SQL on the CRM DB",
+                    "DIRECT_FLOW": false
+                },
+                {
+                    "LU_NAME": "Customer",
+                    "FLOW_NAME": "getAll5GCustomers",
+                    "DESCRIPTION": "Get all 5G customers",
+                    "DIRECT_FLOW": false
+                },
+                {
+                    "LU_NAME": "",
+                    "FLOW_NAME": "CustomLogicSql",
+                    "DESCRIPTION": "Generic Custom Logic Flow for Sqls",
+                    "DIRECT_FLOW": true
+                }
+            ]
         }
     ],
     "outputs": [],

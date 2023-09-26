@@ -1,0 +1,600 @@
+{
+    "tags": [
+        "Generate Data",
+        "GeneratorFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "any"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MTable Associtaed Line",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "Associated_line"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Sequence Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CONTRACT_ID",
+                            "actorType": {
+                                "parentType": "Masking",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "contract_id"
+                                    },
+                                    {
+                                        "name": "flowName",
+                                        "const": "Sequence.actor"
+                                    },
+                                    {
+                                        "name": "category",
+                                        "const": "enable_sequences"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_NO_CACHE"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    },
+                                    {
+                                        "const": "Gen_CONTRACT_ID_SEQ",
+                                        "name": "sequenceId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "TDM",
+                                        "name": "sequenceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "REDIS",
+                                                "database"
+                                            ],
+                                            "interfaces": [
+                                                "IN-MEMORY"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "1",
+                                        "name": "initialValue",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": 1,
+                                        "name": "increment",
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CUSTOMER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "FROM_DATE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TO_DATE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "date",
+                                                "maximum": "date"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "date",
+                                            "minimum": "2015-01-01T05:00:00.000",
+                                            "maximum": "2017-12-30T22:00:00.000"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "ASSOCIATED_LINE",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "ASSOCIATED_LINE_FMT",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MTable Description",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "OfferContractMapping"
+                                    },
+                                    {
+                                        "name": "contract_ref_id",
+                                        "const": "105",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_contract_description": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DESCRIPTION",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "CONTRACT_REF_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "path": [
+                "customer_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Associtaed Line",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ASSOCIATED_LINE_FMT",
+                "name": "value"
+            },
+            "path": [
+                "associated_line_fmt"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Associtaed Line",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ASSOCIATED_LINE",
+                "name": "value"
+            },
+            "path": [
+                "associated_line"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Description",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DESCRIPTION",
+                "name": "value"
+            },
+            "path": [
+                "offer_contract_description"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Description",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "value"
+            },
+            "path": [
+                "contract_ref_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CUSTOMER_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "from_date"
+            },
+            "rightPort": {
+                "actor": "FROM_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FROM_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "FROM_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "to_date"
+            },
+            "rightPort": {
+                "actor": "TO_DATE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TO_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "TO_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ASSOCIATED_LINE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ASSOCIATED_LINE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ASSOCIATED_LINE_FMT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ASSOCIATED_LINE_FMT"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "contract_ref_id"
+            },
+            "rightPort": {
+                "actor": "MTable Description",
+                "name": "contract_ref_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DESCRIPTION",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_DESCRIPTION"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "CONTRACT_REF_ID"
+            }
+        }
+    ]
+}

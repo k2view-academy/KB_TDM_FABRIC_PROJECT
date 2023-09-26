@@ -26,15 +26,10 @@ public class TDMPopulationArgs extends PopulationArgsActor {
 
     private void populateTdmArgs(Data input, Data output, Context ctx) throws Exception {
         try {
-            //log.info("running TDM population args!!");
             String params = "" + ctx.ioProvider().createSession("fabric").prepareStatement("set GENERATE_DATA_PARAMS").execute().iterator().next().get("value");
             
             Map<String,Object> paramsData = Json.get().fromJson(params, Map.class);
             if (paramsData != null && !(paramsData.isEmpty())) {
-             /* paramsData.forEach((key, value) -> {
-                    log.info("key: " + key + ", value: " + value);
-                });*/
-                
                 ctx.globals().putAll(paramsData);
             }
         } catch (Exception e) {

@@ -1,6 +1,6 @@
 {
     "levels": [
-		{
+        {
             "stages": [
                 {
                     "name": "Input",
@@ -11,41 +11,52 @@
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
-								"readOnly": true,
+                                "readOnly": true,
                                 "inputs": [
-                                    
-                {
-                    "name": "case_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "note_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "note_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "note_text",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "case_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "note_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "note_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "note_text",
+                                        "schema": {}
+                                    }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "case_id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
-						{
+                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
                                 "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "table",
                                         "const": null
@@ -77,31 +88,50 @@
                                     {
                                         "name": "sql",
                                         "const": "SELECT * FROM public.case_note"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "minimum": "object",
+                                                "maximum": "object"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "uniform",
+                                            "round": false,
+                                            "type": "object",
+                                            "minimum": "1",
+                                            "maximum": "5"
+                                        },
+                                        "isDefault": true
                                     }
                                 ],
                                 "outputs": [
-									{
+                                    {
                                         "name": "result",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                
-                "case_id": {
-                    "type": {}
-                },
-                "note_id": {
-                    "type": {}
-                },
-                "note_date": {
-                    "type": {}
-                },
-                "note_text": {
-                    "type": {}
-                }
+                                                "case_id": {
+                                                    "type": {}
+                                                },
+                                                "note_id": {
+                                                    "type": {}
+                                                },
+                                                "note_date": {
+                                                    "type": {}
+                                                },
+                                                "note_text": {
+                                                    "type": {}
+                                                }
                                             }
                                         }
                                     }
-								]
+                                ]
                             }
                         }
                     ]
@@ -134,7 +164,7 @@
                                         "name": "interface",
                                         "const": "fabric"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": null
                                     },
@@ -146,12 +176,12 @@
                                         "name": "fields",
                                         "const": [
                                             "case_id",
-"note_id",
-"note_date",
-"note_text"
+                                            "note_id",
+                                            "note_date",
+                                            "note_text"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "note_id"
@@ -161,30 +191,22 @@
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
-									
-                {
-                    "name": "case_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "note_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "note_date",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "note_text",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "case_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "note_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "note_date",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "note_text",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
@@ -193,7 +215,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Post Load",
@@ -226,24 +248,44 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "case_id"
             },
             "rightPort": {
-                "actor": "case_note",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "case_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
+                "name": "note_id"
             },
             "rightPort": {
-                "actor": "case_note",
-                "name": "table"
+                "actor": "PopulationArgs",
+                "name": "note_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "note_date"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "note_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "note_text"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "note_text"
             }
         },
         {
@@ -255,54 +297,36 @@
                 "actor": "SyncDeleteMode",
                 "name": "table"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_case_note_number_of_records"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "rowsGeneratorDistribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "case_note",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "case_note",
+                "name": "table"
+            }
         }
-        ,
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "case_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "case_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "note_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "note_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "note_date"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "note_date"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "note_text"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "note_text"
-                    }
-                }
-                
     ]
 }

@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.business_entities
     CONSTRAINT business_entities_pkey PRIMARY KEY (be_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON Business_Entities (be_name) where be_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS BE_NAME_FOR_ACTIVE_IX ON ${@schema}.Business_Entities (be_name) where be_status = 'Active';
 
 -- Table: ${@schema}.environment_owners
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_products
     CONSTRAINT environment_products_pkey PRIMARY KEY (environment_product_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS ENV_PROD_FOR_ACTIVE_IX ON environment_products (environment_id, product_id) where status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS ENV_PROD_FOR_ACTIVE_IX ON ${@schema}.environment_products (environment_id, product_id) where status = 'Active';
 
 -- Table: ${@schema}.environment_role_users
 
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_role_users
 );
 
    
-Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON environment_role_users (environment_id, user_id);
+Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_USER_IX ON ${@schema}.environment_role_users (environment_id, user_id);
 
 -- Table: ${@schema}.environment_roles
 
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environment_roles
     CONSTRAINT environment_roles_pkey PRIMARY KEY (role_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_FOR_ACTIVE_IX ON environment_roles  (environment_id, role_name) where role_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS ENV_ROLE_FOR_ACTIVE_IX ON ${@schema}.environment_roles  (environment_id, role_name) where role_status = 'Active';
 
 -- Table: ${@schema}.environments
 
@@ -144,10 +144,11 @@ CREATE TABLE IF NOT EXISTS ${@schema}.environments
     allow_write boolean NOT NULL DEFAULT true,
     allow_read boolean NOT NULL DEFAULT false,
     sync_mode character varying(20) DEFAULT 'ON',
+    mask_sensitive_data boolean NOT NULL DEFAULT true, -- TDM 8.1
     CONSTRAINT environments_pkey PRIMARY KEY (environment_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS ENV_NAME_FOR_ACTIVE_IX ON environments (environment_name) where environment_status = 'Active'; 
+Create UNIQUE INDEX IF NOT EXISTS ENV_NAME_FOR_ACTIVE_IX ON ${@schema}.environments (environment_name) where environment_status = 'Active'; 
 
 -- Table: ${@schema}.parameters
 
@@ -178,9 +179,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
     product_name character varying(200),
     lu_parent_name character varying(200),
     product_id bigint,
-    lu_dc_name character varying(200), 
     CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id)
-        --, CONSTRAINT product_logical_units_lu_name_key UNIQUE (lu_name)
 );
 
 -- Table: ${@schema}.products
@@ -203,7 +202,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.products
    --, CONSTRAINT products_product_name_key UNIQUE (product_name)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON products (product_name) where product_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON ${@schema}.products (product_name) where product_status = 'Active';
 
 -- Table: ${@schema}.task_execution_list
 
@@ -251,8 +250,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
 );
 
 -- TDM 7.2 - Remove the unique index as it prevents rerunning the same task with different overriden attributes.
---Create UNIQUE INDEX IF NOT EXISTS TASK_EXEC_IX on task_execution_list(task_id, lu_id, process_id) where upper(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED', 'STARTEXECUTIONREQUESTED');
-Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON task_execution_list (task_execution_id, process_id); 
+--Create UNIQUE INDEX IF NOT EXISTS TASK_EXEC_IX on ${@schema}.task_execution_list(task_id, lu_id, process_id) where upper(execution_status) IN ('RUNNING','EXECUTING','STARTED','PENDING','PAUSED', 'STARTEXECUTIONREQUESTED');
+Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON ${@schema}.task_execution_list (task_execution_id, process_id); 
 
 -- Table: ${@schema}.tasks
 -- Tali E.- 10-May-17- remove limitation of 1000 chars from selection_param_value and exclusion_list fields
@@ -304,10 +303,11 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     reserve_retention_period_value numeric,
     reserve_note text, -- TDM 7.5.2
     filterout_reserved boolean DEFAULT true, --TDM 7.6
+    mask_sensitive_data boolean default true, -- TDM 8.1
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS TASK_NAME_FOR_ACTIVE_IX on tasks (task_title) where task_status = 'Active';
+Create UNIQUE INDEX IF NOT EXISTS TASK_NAME_FOR_ACTIVE_IX on ${@schema}.tasks (task_title) where task_status = 'Active';
 
 -- Table: ${@schema}.tdm_be_env_exclusion_list
 
@@ -327,25 +327,28 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_env_exclusion_list
   CONSTRAINT tdm_be_env_exclusion_list_be_env_exclusion_list_id_pk PRIMARY KEY (be_env_exclusion_list_id)
 );
 
-Create UNIQUE INDEX IF NOT EXISTS BE_ENV_EXCLUSION_LIST_IX on tdm_be_env_exclusion_list (BE_ID,ENVIRONMENT_ID,REQUESTED_BY);
+Create UNIQUE INDEX IF NOT EXISTS BE_ENV_EXCLUSION_LIST_IX on ${@schema}.tdm_be_env_exclusion_list (BE_ID,ENVIRONMENT_ID,REQUESTED_BY);
 
 -- Table: ${@schema}.tdm_seq_mapping
 
 --DROP TABLE IF EXISTS ${@schema}.tdm_seq_mapping;
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_seq_mapping
-(task_execution_id      bigint NOT NULL,
-lu_type character varying(30) NOT NULL,
-source_env      character varying(100) NOT NULL,
-entity_target_id        character varying(100),
-seq_name        character varying(100),
-table_name      character varying(100),
-column_name     character varying(100),
-source_id       character varying(100),
-target_id       character varying(100),
-is_instance_id  character varying(1),
-entity_sequence bigint)
-;
+(
+  task_execution_id      bigint NOT NULL,
+  lu_type character varying(30) NOT NULL,
+  source_env      character varying(100) NOT NULL,
+  entity_target_id        character varying(100),
+  seq_name        character varying(100),
+  table_name      character varying(100),
+  column_name     character varying(100),
+  source_id       character varying(100),
+  target_id       character varying(100),
+  is_instance_id  character varying(1),
+  entity_sequence bigint
+);
+
+Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (task_execution_id,lu_type,source_env);
 
 -- Table: ${@schema}.task_execution_entities
 
@@ -371,7 +374,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   fabric_get_time bigint,
   total_processing_time bigint,
   clone_no text DEFAULT '0',
-  root_entity_id text,
+  root_entity_id text, -- TDM 8.0
+  root_lu_name text, -- TDM 8.1
   CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id)
 );
 
@@ -477,12 +481,12 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_general_parameters
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-    select 'cleanup_retention_period', '2'  
+    select 'cleanup_retention_period', '0.25'  
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'cleanup_retention_period');
 
 INSERT INTO ${@schema}.tdm_general_parameters(
             param_name, param_value)
-     select 'tdm_gui_params','{"maxRetentionPeriod":90,"retentionDefaultPeriod":{"unit":"Do Not Delete","value":-1},"maxReservationPeriod":90,"reservationDefaultPeriod":{"unit":"Days","value":5},"versioningRetentionPeriod":{"unit":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"unit":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"availableOptions":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365},{"name":"Do Not Delete","units":-1},{"name":"Do Not Retain","units":0}],"enable_reserve_by_params":False}'
+     select 'tdm_gui_params','{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'tdm_gui_params');
     
 INSERT INTO ${@schema}.tdm_general_parameters(
@@ -494,6 +498,21 @@ insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
 	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
+
+insert into ${@schema}.tdm_general_parameters(
+		param_name, param_value) 
+	select 'MAX_RETENTION_DAYS_FOR_TESTER', 90 
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RETENTION_DAYS_FOR_TESTER');
+
+insert into ${@schema}.tdm_general_parameters (
+        param_name, param_value) 
+    select 'TABLE_DEFAULT_DISTRIBUTION_MIN', 1 
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TABLE_DEFAULT_DISTRIBUTION_MIN');
+
+insert into ${@schema}.tdm_general_parameters (
+        param_name, param_value)
+    select 'TABLE_DEFAULT_DISTRIBUTION_MAX', 3
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TABLE_DEFAULT_DISTRIBUTION_MAX');
 
 -- Table: ${@schema}.task_globals
 
@@ -521,7 +540,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_env_globals
    UPDATED_BY character varying (200)
 );
 
-create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
+create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on ${@schema}.tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
 
 -- New Table task_execution_summary, TDM 6.1
 --DROP TABLE IF EXISTS ${@schema}.task_execution_summary;
@@ -657,6 +676,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_stats_detailed
     results character varying(20)
 );
 
+-- DROP INDEX IF EXISTS ${@schema}.task_exe_stats_detailed_1ix;
+CREATE INDEX IF NOT EXISTS task_exe_stats_detailed_1ix ON ${@schema}.task_exe_stats_detailed (task_execution_id, lu_name, target_entity_id);
+
 -- Table ${@schema}.permission_groups_mapping; - TDM 7.1
 -- DROP TABLE IF EXISTS ${@schema}.permission_groups_mapping;
 
@@ -725,7 +747,20 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
     param_name text COLLATE pg_catalog."default",
     param_type text COLLATE pg_catalog."default" NOT NULL,
     param_value text COLLATE pg_catalog."default",
+	param_order bigint,
     CONSTRAINT tdm_generate_task_field_mappings_pkey PRIMARY KEY (task_id, param_name)
+);
+
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values -- New Table TDM 8.1
+(
+    lu_name text NOT NULL,
+    field_name text NOT NULL,
+    number_of_values bigint,
+    field_values text[],
+    is_numeric boolean,
+    min_value text,
+    max_value text,
+    CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
 );
 
 -- utils functions (working with parameters)
@@ -768,107 +803,6 @@ $body$
 $body$ 
 LANGUAGE sql;
 
-			     
--- param_values function returns json with param names as keys and param values as values
-CREATE OR REPLACE FUNCTION ${@schema}.param_values(
-parentlu text,
-entity_id text,
-table_name text,
-env text,
-cols text,
-child_arr text,
-select_col text)
-RETURNS SETOF json AS
-$BODY$
-BEGIN
-RETURN QUERY EXECUTE
-CASE WHEN EXISTS(SELECT 1 FROM tdm_lu_type_relation_eid WHERE source_env = env AND lu_type_1 = parentlu) THEN
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
-SELECT rel_base.'|| select_col || ' FROM ' || lower(parentlu) || '_params
-LEFT JOIN ( SELECT * FROM tdm_lu_type_relation_eid
-WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-
-ELSE
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ${@schema}.' || lower(table_name) || ' WHERE entity_id in (
-SELECT entity_id FROM ' || lower(parentlu) || '_params
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-END;
-
-END;
-$BODY$
-LANGUAGE plpgsql VOLATILE
-COST 100
-ROWS 1000;
---ALTER FUNCTION ${@schema}.param_values(text, text, text, text, text, text, text)
---OWNER TO tdm;
-			     
-CREATE OR REPLACE FUNCTION ${@schema}.param_values(
-	parentlu text,
-	entity_id text,
-	table_name text,
-	env text,
-	cols text,
-	child_arr text,
-	select_col text,
-	lu_type2 text,
-	schema text)
-    RETURNS SETOF json 
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE PARALLEL UNSAFE
-    ROWS 1000
-
-AS $BODY$
-
-DECLARE
- cnt integer := 0;
-BEGIN
- EXECUTE format('SELECT 1 FROM %s.tdm_lu_type_relation_eid WHERE source_env =''%s'' AND lu_type_1 = ''%s'' AND lu_type1_eid = ''%s''', schema, env, parentlu, entity_id) into cnt;
-RETURN QUERY EXECUTE
-CASE 
-WHEN lu_type2 IS NULL THEN 'SELECT ''{}''::json'
-WHEN cnt = 1 THEN 
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ' || schema|| '.' || lower(table_name) || ' WHERE entity_id in (
-SELECT rel_base.'|| select_col || ' FROM ' || schema|| '.' || lower(parentlu) || '_params
-LEFT JOIN ( SELECT * FROM ' || schema|| '.' || 'tdm_lu_type_relation_eid
-WHERE tdm_lu_type_relation_eid.lu_type_1 = ''' || parentlu || '''
-AND tdm_lu_type_relation_eid.source_env = ''' || env || '''
-AND (tdm_lu_type_relation_eid.lu_type_2 ' || child_arr || ')
-AND tdm_lu_type_relation_eid.version_name = '''') rel_base
-ON ' || lower(parentlu) || '_params.entity_id = rel_base.lu_type1_eid
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND lu_type1_eid='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-
- 
-
-ELSE
-'
-SELECT row_to_json(allparams) as p from(
-SELECT ' || cols ||' FROM ' || schema|| '.' || lower(table_name) || ' WHERE entity_id in (
-SELECT entity_id FROM ' || schema|| '.' || lower(parentlu) || '_params
-WHERE ' || lower(parentlu) || '_params.source_environment = ''' || env || '''
-AND entity_id='''|| entity_id || ''') AND source_environment = ''' || env || ''') allparams'
-END;
-
-END;
-$BODY$;
-
---ALTER FUNCTION param_values(text, text, text, text, text, text, text, text, text)
---    OWNER TO tdm;
-
 -- eval function executes received string expression as query
 CREATE OR REPLACE FUNCTION ${@schema}.eval(expression text) RETURNS void
 as
@@ -885,9 +819,10 @@ LANGUAGE plpgsql;
 INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
 	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
 	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
-	allow_read, sync_mode) 
-	VALUES ('Synthetic','This is the synthetic environment.',NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE') ON CONFLICT DO NOTHING;;
-INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;;
+	allow_read, sync_mode,mask_sensitive_data) 
+	VALUES ('Synthetic','This is the synthetic environment.',
+        NULL,NULL,NULL,NULL,NULL,NULL,-1,'admin',NOW(),NOW(),'admin','Active',false,true,'FORCE', false) ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-1, -1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, allowed_creation_of_synthetic_data, 
 	allowed_random_entity_selection, allowed_request_of_fresh_data, allowed_task_scheduling, allowed_number_of_entities_to_copy, role_id, role_created_by, 
 	role_creation_date, role_last_updated_date, role_expiration_date, role_last_updated_by, role_status, allowed_refresh_reference_data, allowed_replace_sequences, 

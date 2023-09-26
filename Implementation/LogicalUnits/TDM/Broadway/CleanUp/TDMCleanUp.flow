@@ -1,0 +1,1120 @@
+{
+    "tags": [
+        "TDM",
+        "CleanUp"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Start",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDMDB_SCHEMA",
+                            "minHeight": 472,
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "param_value",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "tdm_general_parameters",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT param_value FROM ${@TDMDB_SCHEMA}.tdm_general_parameters where UPPER(param_name) = 'CLEANUP_RETENTION_PERIOD'"
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "param_value": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if Null or Empty",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty String",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Null",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Not Empty",
+                    "dependsOnList": [
+                        "Check if Null or Empty"
+                    ],
+                    "isLast": 0,
+                    "hasElse": true,
+                    "actors": []
+                },
+                {
+                    "name": "Empty",
+                    "dependsOnList": [
+                        "Check if Null or Empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": false,
+                    "actors": [
+                        {
+                            "name": "Or",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Or",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "TDMCleanUp Lookup",
+                    "dependsOnList": [
+                        "Not Empty"
+                    ],
+                    "isLast": 0,
+                    "remark": "This flow will run automatically during deploy.\nIt will not run in case of soft deploy.\nIf the deploy command contains custom parameters, they can be accessed as additional external parameters with the same name. You can use the constants below, or use the external names in other actors. \n",
+                    "actors": [
+                        {
+                            "name": "MTableLookup",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "TDMCleanUp"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "TABLE_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_ORDER": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_IND": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_STATEMENT": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_LOGIC": {
+                                                        "type": "string"
+                                                    },
+                                                    "SEQ": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "throw exception",
+                    "dependsOnList": [
+                        "Empty"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "missing parameter",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "tdm_general_parameters is missing parameter for CleanUp process"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Mtable Data",
+                    "dependsOnList": [
+                        "TDMCleanUp Lookup"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Mtable Data",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "TABLE_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_ORDER": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_IND": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_STATEMENT": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_LOGIC": {
+                                                        "type": "string"
+                                                    },
+                                                    "SEQ": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing              ",
+                    "dependsOnList": [
+                        "throw exception"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Sort By CLEANUP_ORDER  ",
+                    "dependsOnList": [
+                        "Get Mtable Data"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Sort",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function customSort(arr) {\r\n  const sortedArray = [...arr];// Create a copy of the original array\r\n  \r\n  sortedArray.sort((a, b) => {\r\n    const orderA = parseInt(a.CLEANUP_ORDER);\r\n    const orderB = parseInt(b.CLEANUP_ORDER);\r\n\r\n    if (orderA === orderB) {\r\n      const seqA = parseInt(a.SEQ);\r\n      const seqB = parseInt(b.SEQ);\r\n      return seqA - seqB; // Maintain the original order if CLEANUP_ORDER is the same\r\n    }\r\n\r\n    return orderA - orderB;\r\n  });\r\n  \r\n  return sortedArray;\r\n}\r\n// Sort the array using the custom sorting algorithm\r\nconst sortedArray = customSort(input);\r\nsortedArray;",
+                                            "script": "function customSort(arr) {\n  var sortedArray = [].concat(arr); // Create a copy of the original array\n\n  sortedArray.sort(function (a, b) {\n    var orderA = parseInt(a.CLEANUP_ORDER);\n    var orderB = parseInt(b.CLEANUP_ORDER);\n\n    if (orderA === orderB) {\n      var seqA = parseInt(a.SEQ);\n      var seqB = parseInt(b.SEQ);\n      return seqA - seqB; // Maintain the original order if CLEANUP_ORDER is the same\n    }\n\n    return orderA - orderB;\n  });\n  return sortedArray;\n} // Sort the array using the custom sorting algorithm\n\n\nvar sortedArray = customSort(input);\nsortedArray;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "TABLE_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_ORDER": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_IND": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_STATEMENT": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_LOGIC": {
+                                                        "type": "string"
+                                                    },
+                                                    "SEQ": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "number"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "date_trunc",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT date_trunc('day', NOW() - interval ' ${@retentionPeriod} MONTH')"
+                                    },
+                                    {
+                                        "name": "retentionPeriod",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "date_trunc": {
+                                                        "type": "date"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "Do Nothing              "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get The Sorted Data",
+                    "dependsOnList": [
+                        "Sort By CLEANUP_ORDER  "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Sorted Data",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "TABLE_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_ORDER": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_IND": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_STATEMENT": {
+                                                        "type": "string"
+                                                    },
+                                                    "CLEANUP_LOGIC": {
+                                                        "type": "string"
+                                                    },
+                                                    "SEQ": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing                 ",
+                    "dependsOnList": [
+                        "Do Nothing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "True",
+                    "dependsOnList": [
+                        "Get The Sorted Data"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CLEANUP_IND",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "False",
+                    "dependsOnList": [
+                        "Get The Sorted Data"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Disabled table",
+                            "actorType": {
+                                "parentType": "Logger",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "TDMDB_CleanUp - Disabled table: ${table} , will not be cleaned up"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "warning"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing ",
+                    "dependsOnList": [
+                        "Do Nothing                 "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Special Case",
+                    "dependsOnList": [
+                        "True"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Param",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "date"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing                    ",
+                    "dependsOnList": [
+                        "False"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Do Nothing  ",
+                    "dependsOnList": [
+                        "Do Nothing "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Execute Statement",
+                    "dependsOnList": [
+                        "Special Case"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler   ",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "CleanUp Statement",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TRUNC_DATE",
+                                        "schema": {
+                                            "type": "date"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing                     ",
+                    "dependsOnList": [
+                        "Do Nothing                    "
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Do Nothing   ",
+                    "dependsOnList": [
+                        "Do Nothing  "
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Find Old Entity List Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Entity List Tables",
+                            "minHeight": 447,
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select  table_name from INFORMATION_SCHEMA.tables where table_schema = ${schema} and table_name like 'entity_list_%'"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "table_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Task Execution ID",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Substring1",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 12
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Drop Table is Task Execution Already Deleted",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check If Task Execution Still Exists",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT count(1) as cnt from ${@schema}.task_execution_list \r\nwhere task_execution_id = ${taskExecutionId}"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecutionId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Drop Entity List Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "If Task Execution Cleaned Up",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Drop Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "DROP TABLE IF EXISTS ${@schema}.${@tableName}"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "tdm_general_parameters",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CleanUp Statement",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Entity List Tables",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Task Execution Still Exists",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Drop Table",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "tdm_general_parameters",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "date_trunc",
+                "name": "retentionPeriod"
+            },
+            "path": [
+                "param_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "tdm_general_parameters",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Null",
+                "name": "value"
+            },
+            "path": [
+                "param_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "tdm_general_parameters",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Empty String",
+                "name": "a"
+            },
+            "path": [
+                "param_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Empty String",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Or",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Null",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Or",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MTableLookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Mtable Data",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Mtable Data",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Sort",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Sort",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Sorted Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "date_trunc",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Param",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "date_trunc"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Sorted Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Disabled table",
+                "name": "table"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "TABLE_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Sorted Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CLEANUP_IND",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CLEANUP_IND"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Sorted Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CleanUp Statement",
+                "name": "sql"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "CLEANUP_STATEMENT"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Param",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CleanUp Statement",
+                "name": "TRUNC_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Entity List Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Substring1",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Entity List Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Drop Table",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Substring1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Check If Task Execution Still Exists",
+                "name": "taskExecutionId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check If Task Execution Still Exists",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Task Execution Cleaned Up",
+                "name": "a"
+            }
+        }
+    ]
+}

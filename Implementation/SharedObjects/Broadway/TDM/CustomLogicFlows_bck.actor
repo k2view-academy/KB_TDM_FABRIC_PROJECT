@@ -1,0 +1,42 @@
+{
+    "type": "CustomLogicFlows",
+    "badge": "Cu",
+    "tags": [
+        "basic"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "const": [
+                {
+                    "LU_NAME": "",
+                    "FLOW_NAME": "CustomLogicSql",
+                    "DESCRIPTION": "Generic Custom Logic Flow for Sqls",
+                    "DIRECT_FLOW": true
+                }
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "LU_NAME": {
+                            "type": "string"
+                        },
+                        "FLOW_NAME": {
+                            "type": "string"
+                        },
+                        "DESCRIPTION": {
+                            "type": "string"
+                        },
+                        "DIRECT_FLOW": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

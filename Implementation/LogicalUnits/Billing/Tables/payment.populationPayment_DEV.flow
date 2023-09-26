@@ -235,11 +235,6 @@
                                     {
                                         "name": "amount",
                                         "schema": {}
-                                    },
-                                    {
-                                        "name": "payment_method",
-                                        "schema": {},
-                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []

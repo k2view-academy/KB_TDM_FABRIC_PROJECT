@@ -1,0 +1,728 @@
+{
+    "tags": [
+        "TDM",
+        "TDMGeneral"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "List All Lus",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LIST LUT",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "LIST LUT"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "MtableLookup",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ChildLink",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "ChildLink"
+                                    },
+                                    {
+                                        "name": "mtableCaseSensitive",
+                                        "const": false
+                                    },
+                                    {
+                                        "name": "child_lu",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "parent_lu": {
+                                                        "type": "string"
+                                                    },
+                                                    "child_lu": {
+                                                        "type": "string"
+                                                    },
+                                                    "custom_sql": {
+                                                        "type": "string"
+                                                    },
+                                                    "custom_target_sql": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Num Of Records",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Num Of Records Per Child",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let count=0;\r\nfor(var i in input){\r\n    count++\r\n}\r\ncount;",
+                                            "script": "var count = 0;\n\nfor (var i in input) {\n  count++;\n}\n\ncount;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "parent_lu": {
+                                                        "type": "string"
+                                                    },
+                                                    "child_lu": {
+                                                        "type": "string"
+                                                    },
+                                                    "custom_sql": {
+                                                        "type": "string"
+                                                    },
+                                                    "custom_target_sql": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parent Is Found",
+                    "dependsOnList": [
+                        "Num Of Records"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Greater Than Zero",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "GreaterThan",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Orphan",
+                    "dependsOnList": [
+                        "Num Of Records"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Not A Library LU",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n    case \"TDM\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_LIBRARY\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_Reference\" :\r\n        output = \"true\"\r\n        break;\r\n    default :\r\n        output=\"false\";\r\n        break;\r\n}\r\noutput;",
+                                            "script": "var name = input;\nvar output;\n\nswitch (name) {\n  case \"TDM\":\n    output = \"true\";\n    break;\n\n  case \"TDM_LIBRARY\":\n    output = \"true\";\n    break;\n\n  case \"TDM_Reference\":\n    output = \"true\";\n    break;\n\n  default:\n    output = \"false\";\n    break;\n}\n\noutput;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "More Than One Parent",
+                    "dependsOnList": [
+                        "Parent Is Found"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Greater Than One",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "GreaterThan",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get All Parents",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "const parentLUNames = [];\r\nfor (let i = 0; i < input.length; i++) {\r\n  parentLUNames.push(input[i].parent_lu);\r\n}\r\nparentLUNames;",
+                                            "script": "var parentLUNames = [];\n\nfor (var i = 0; i < input.length; i++) {\n  parentLUNames.push(input[i].parent_lu);\n}\n\nparentLUNames;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "parent_lu": {
+                                                        "type": "string"
+                                                    },
+                                                    "child_lu": {
+                                                        "type": "string"
+                                                    },
+                                                    "custom_sql": {
+                                                        "type": "string"
+                                                    },
+                                                    "custom_target_sql": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Exactly One Parent",
+                    "dependsOnList": [
+                        "Parent Is Found"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Child And Parent",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Billing": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "Collection": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "No Parents",
+                    "dependsOnList": [
+                        "Orphan"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "True",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Empty",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "TDM\\TDM_LIBRARY\\TDM_Reference",
+                    "dependsOnList": [
+                        "Orphan"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Map For Child And Parents",
+                    "dependsOnList": [
+                        "More Than One Parent"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Chilld And Parents",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Orders": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing ",
+                    "dependsOnList": [
+                        "Exactly One Parent"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                },
+                {
+                    "name": "Build Map For Orphan",
+                    "dependsOnList": [
+                        "No Parents"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Child With No Parents: MapBuild",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Customer": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "TDM\\TDM_LIBRARY\\TDM_Reference"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge All Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Merge ",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [
+                                    {
+                                        "name": "mapType",
+                                        "const": "HashMap"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "LuName": {
+                                                    "type": "string"
+                                                },
+                                                "Parents": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "LIST LUT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ChildLink",
+                "name": "child_lu"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "LU_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LIST LUT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Not A Library LU",
+                "name": "input"
+            },
+            "path": [
+                "LU_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LIST LUT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Child With No Parents: MapBuild",
+                "name": "key"
+            },
+            "path": [
+                "LU_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ChildLink",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Num Of Records Per Child",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ChildLink",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get All Parents",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ChildLink",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Child And Parent",
+                "name": "key"
+            },
+            "iterate": "First",
+            "path": [
+                "child_lu"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ChildLink",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Chilld And Parents",
+                "name": "key"
+            },
+            "iterate": "First",
+            "path": [
+                "child_lu"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ChildLink",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Child And Parent",
+                "name": "value"
+            },
+            "path": [
+                "parent_lu"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Num Of Records Per Child",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Greater Than Zero",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Num Of Records Per Child",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Greater Than One",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Not A Library LU",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "True",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get All Parents",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Chilld And Parents",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Child And Parent",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge ",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Empty",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Child With No Parents: MapBuild",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Chilld And Parents",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge ",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Child With No Parents: MapBuild",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge ",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Merge ",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "map"
+            }
+        }
+    ]
+}

@@ -26,6 +26,7 @@ SELECT task_title,
        reserve_retention_period_value,
        parameters,
        reserve_note,
-       filterout_reserved
+       filterout_reserved,
+       CAST(mask_sensitive_data as varchar(10)) as mask_sensitive_data
 FROM   @TDMDB_SCHEMA@.TASKS
 WHERE  task_id = ?

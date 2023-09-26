@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -68,7 +71,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select public.task_execution_list.task_id,\r\n  public.task_execution_list.execution_status,\r\n  public.task_execution_list.num_of_processed_entities,\r\n  public.task_execution_list.num_of_copied_entities,\r\n  public.task_execution_list.num_of_failed_entities\r\nFrom public.task_execution_list\r\nWhere public.task_execution_list.task_execution_id = ? and parent_lu_id is null"
+                                        "const": "Select @TDMDB_SCHEMA@.task_execution_list.task_id,\r\n  @TDMDB_SCHEMA@.task_execution_list.execution_status,\r\n  @TDMDB_SCHEMA@.task_execution_list.num_of_processed_entities,\r\n  @TDMDB_SCHEMA@.task_execution_list.num_of_copied_entities,\r\n  @TDMDB_SCHEMA@.task_execution_list.num_of_failed_entities\r\nFrom @TDMDB_SCHEMA@.task_execution_list\r\nWhere @TDMDB_SCHEMA@.task_execution_list.task_execution_id = ? and parent_lu_id is null"
                                     }
                                 ],
                                 "outputs": [

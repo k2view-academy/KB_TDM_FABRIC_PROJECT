@@ -1,0 +1,797 @@
+{
+    "tags": [
+        "Upgrade"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get List of Upgrade Scripts",
+                            "minHeight": 303,
+                            "actorType": {
+                                "parentType": "TDMDBUpgradeScripts",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "version_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "script_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "script_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "flow_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lookup1",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "version_name"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "version_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version_name": {
+                                                    "type": "string"
+                                                },
+                                                "script_id": {
+                                                    "type": "integer"
+                                                },
+                                                "script_name": {
+                                                    "type": "string"
+                                                },
+                                                "flow_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Lookup2",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "version_name"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "version_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version_name": {
+                                                    "type": "string"
+                                                },
+                                                "script_id": {
+                                                    "type": "integer"
+                                                },
+                                                "script_name": {
+                                                    "type": "string"
+                                                },
+                                                "flow_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "assertNotNull1",
+                            "actorType": {
+                                "parentType": "assertNotNull",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "The given Current TDM Version is not valid"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "assertNotNull2",
+                            "actorType": {
+                                "parentType": "assertNotNull",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "The given Target TDM Version is not valid"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MathAdd1",
+                            "actorType": {
+                                "parentType": "MathAdd",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MathAdd2",
+                            "actorType": {
+                                "parentType": "MathAdd",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "For Loop",
+                            "actorType": {
+                                "parentType": "ForLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lookup For Upgrade Script",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "script_id"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "script_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version_name": {
+                                                    "type": "string"
+                                                },
+                                                "script_id": {
+                                                    "type": "integer"
+                                                },
+                                                "script_name": {
+                                                    "type": "string"
+                                                },
+                                                "flow_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Split1",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 10",
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 13",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Format Upgrade Script name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "TDM/TDMDB_Upgrade/${fileName}"
+                                    },
+                                    {
+                                        "name": "fileName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 14",
+                    "dependsOnList": [
+                        "Stage 10"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [
+                        "Stage 13"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get  SQL Resource File To Upgrade TDMDB Schema",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDMDB_SCHEMA",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 11",
+                    "dependsOnList": [
+                        "Stage 14"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [
+                        "Stage 6"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Apply Upgrade script",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 12",
+                    "dependsOnList": [
+                        "Stage 11"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "If Flow is Given",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Run Upgrade flow",
+                            "minHeight": 302,
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get List of Upgrade Scripts",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get List of Upgrade Scripts",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Lookup1",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get List of Upgrade Scripts",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Lookup2",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "assertNotNull1",
+                "name": "object"
+            },
+            "path": [
+                "script_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MathAdd1",
+                "name": "a"
+            },
+            "path": [
+                "script_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "assertNotNull2",
+                "name": "object"
+            },
+            "path": [
+                "script_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MathAdd2",
+                "name": "a"
+            },
+            "path": [
+                "script_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MathAdd1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "For Loop",
+                "name": "from"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MathAdd2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "For Loop",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "For Loop",
+                "name": "i"
+            },
+            "rightPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "script_id"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Run Upgrade flow",
+                "name": "flowName"
+            },
+            "path": [
+                "flow_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Flow is Given",
+                "name": "a"
+            },
+            "path": [
+                "flow_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
+            },
+            "path": [
+                "script_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Split1",
+                "name": "string"
+            },
+            "path": [
+                "script_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Split1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Format Upgrade Script name",
+                "name": "fileName"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Format Upgrade Script name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Get  SQL Resource File To Upgrade TDMDB Schema",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To Upgrade TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Apply Upgrade script",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Apply Upgrade script",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "CURRENT_TDM_VERSION"
+            },
+            "rightPort": {
+                "actor": "Lookup1",
+                "name": "version_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TARGET_TDM_VERSION"
+            },
+            "rightPort": {
+                "actor": "Lookup2",
+                "name": "version_name"
+            }
+        }
+    ]
+}

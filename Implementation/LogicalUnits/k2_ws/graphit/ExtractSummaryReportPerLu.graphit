@@ -1,67 +1,56 @@
 {
   "name": "rootNode",
-  "nodeId": "c84bd2d7-4cf6-4248-be4b-e4471788ce6a",
   "children": [
     {
       "name": "result",
-      "nodeId": "85d25b68-ae04-46c8-a89d-7e0336e4d6b5",
+      "collapsed": true,
       "children": [
         {
           "name": "General Info",
           "type": "sql",
-          "nodeId": "f5b36d70-4de4-4561-857b-909036fe9baa",
-          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  T.BE_NAME AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_EXPIRATION_DATE AS version_expiration_date,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value,\n  L.FABRIC_EXECUTION_ID AS fabric_execution_id\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
+          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  T.BE_NAME AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_EXPIRATION_DATE AS version_expiration_date,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value,\n  L.FABRIC_EXECUTION_ID AS fabric_execution_id\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
         },
         {
           "name": "Source Environment",
-          "nodeId": "809c19cd-90dd-4bb2-9c96-52f2547438a7",
           "collapsed": true,
           "children": [
             {
               "name": "Environment Name",
               "type": "sql",
-              "nodeId": "9a06e4b2-9855-4d97-8406-c20de5c09fed",
               "code": "select distinct source_env as Name from tasks"
             },
             {
               "name": "Source Environment Products",
               "type": "sql",
-              "nodeId": "fafcc1df-68d5-42a0-a5d3-375977bf8229",
-              "code": "select distinct product_name, source_product_version\nfrom task_execution_list"
+              "code": "select distinct product_name, source_product_version\nfrom task_execution_list\nWHERE product_name IS NOT NULL AND source_product_version IS NOT NULL;"
             }
           ]
         },
         {
           "name": "Task Execution Summary",
           "type": "sql",
-          "nodeId": "a74f8fb5-1cd0-41ea-bffe-8c977dcc6357",
-          "code": "select ifnull(fabric_execution_id, -1) as fabric_execution_id, lu_id, lu_name, process_id, process_name from task_execution_list Where LU_NAME = ${i_luName}",
+          "code": "SELECT IFNULL(NULLIF(fabric_execution_id, ''), -1) as fabric_execution_id, lu_id, lu_name, process_id, process_name from task_execution_list Where LU_NAME = ${i_luName}",
           "collapsed": true,
           "children": [
             {
               "type": "condition",
-              "nodeId": "1b2e19dc-3c51-4d45-bb96-628cebfc00dd",
               "code": "lu_id > 0",
               "children": [
                 {
                   "name": "LUs",
-                  "nodeId": "ff788cd2-ad45-41a3-ab1c-24b2fe6c42e1",
                   "children": [
                     {
-                      "name": "LU Reference Summary",
+                      "name": "LU Extract Summary",
                       "type": "sql",
-                      "nodeId": "c4a65634-8a52-49c4-b1e8-5e0daa4f0eaf",
-                      "code": "Select count(*) as count, min(entity_start_time) as start_time, max(entity_end_time) as end_time, execution_status, lu_name \nfrom task_execution_entities where id_type = 'REFERENCE' and lu_name = ${i_luName}"
+                      "code": "Select LU_NAME,\n  FABRIC_EXECUTION_ID,\n  PARENT_LU_NAME,\n  DATA_CENTER_NAME,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME,\n  NUM_OF_PROCESSED_ENTITIES,\n  NUM_OF_COPIED_ENTITIES,\n  NUM_OF_FAILED_ENTITIES,\n  NUM_OF_PROCESSED_REF_TABLES,\n  NUM_OF_COPIED_REF_TABLES,\n  NUM_OF_FAILED_REF_TABLES\nFrom TDM.TASK_EXECUTION_LIST\nWhere LU_NAME = ${i_luName}"
                     },
                     {
                       "type": "condition",
-                      "nodeId": "a7d4ec13-272f-43e4-a0b0-357b5115d12b",
-                      "code": "fabric_execution_id != \"null\"",
+                      "code": "fabric_execution_id != -1",
                       "children": [
                         {
-                          "name": "LU Migration Summary",
+                          "name": "Extract Summary",
                           "type": "sql",
-                          "nodeId": "21f6eff8-373d-4189-a957-fe93539bbc4f",
                           "code": "batch_summary ${fabric_execution_id}"
                         }
                       ]
@@ -74,69 +63,59 @@
         },
         {
           "name": "List of Root Entities",
-          "nodeId": "33b78b1b-6837-472f-9880-024d4c735733",
+          "collapsed": true,
           "children": [
             {
               "name": "Number of Copied Entities",
               "type": "sql",
-              "nodeId": "0a4a1ee6-aaf6-4529-b1bc-cb2ab23925de",
               "code": "Select count(Distinct ENTITY_ID) as number_of_copied_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES \nWhere EXECUTION_STATUS = 'completed' \n And LU_NAME = ${i_luName}"
             },
             {
               "name": "List of Copied Entities",
               "type": "sql",
-              "nodeId": "9a01ea0f-3e0c-439f-9df7-32d418923b4b",
               "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere EXECUTION_STATUS = 'completed'\n  And LU_NAME = ${i_luName}\nlimit ${i_numOfRecsLimit}"
             },
             {
               "name": "Number of Failed Entities",
               "type": "sql",
-              "nodeId": "4b19ed4a-4cca-40b0-a363-510dcb21b199",
               "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere EXECUTION_STATUS <> 'completed'\n  And LU_NAME = ${i_luName}"
             },
             {
               "name": "List of Failed Entities",
               "type": "sql",
-              "nodeId": "e1368bc4-eaa5-4697-a40d-73a63111de93",
               "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere EXECUTION_STATUS <> 'completed'\n  And LU_NAME = ${i_luName}\nlimit ${i_numOfRecsLimit}"
             }
           ]
         },
         {
           "name": "List of Reference Tables",
-          "nodeId": "92238921-4622-45b2-b4ac-14e27d697307",
           "collapsed": true,
           "children": [
             {
               "name": "Number of Copied Reference Tables",
               "type": "sql",
-              "nodeId": "2f615c92-d93e-4559-b89f-1b1f0081d4ca",
-              "code": "Select Count(1) as count\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' and execution_status = 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'\nAnd lu_name = ${i_luName}"
             },
             {
               "name": "List of Copied Reference Tables",
               "type": "sql",
-              "nodeId": "d26a5757-5243-4864-88c2-1c45fcf69a80",
-              "code": "select target_entity_id as table_name, lu_name\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' And execution_status = 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records,start_time as start_execution_time ,end_time as end_execution_time\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'\nAnd lu_name = ${i_luName}"
             },
             {
               "name": "Number of Failed Reference Tables",
               "type": "sql",
-              "nodeId": "a4e01cbc-e454-42d5-84fa-dee6559f28c2",
-              "code": "Select Count(1) as count\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' and execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats \nWhere execution_status <> 'completed' \nAnd lu_name = ${i_luName}"
             },
             {
               "name": "List of Failed Reference Tables",
               "type": "sql",
-              "nodeId": "4ecf412d-aa16-4abd-881b-36c07a1623fd",
-              "code": "select target_entity_id as table_name, lu_name\nFrom task_execution_entities\nWhere id_type = 'REFERENCE' And execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, \nstart_time as start_execution_time ,end_time as end_execution_time, error_msg\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'\nAnd lu_name = ${i_luName}"
             }
           ]
         },
         {
           "name": "Error Summary",
           "type": "sql",
-          "nodeId": "718c42d4-5dd4-4826-9cb7-f4f72e854d5a",
           "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
         }
       ]
@@ -144,13 +123,11 @@
     {
       "name": "errorCode",
       "type": "string",
-      "nodeId": "574cc1b9-98c1-4274-825b-47933a576c0e",
       "code": "SUCCESS"
     },
     {
       "name": "message",
       "type": "string",
-      "nodeId": "2314a22d-679e-4e3a-8bbb-efaff459074d",
       "code": ""
     }
   ],

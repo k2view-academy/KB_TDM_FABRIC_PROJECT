@@ -14,8 +14,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM.TDM_TAR_ENV_NAME",
-                                        "isDefault": false
+                                        "const": "TDM_TAR_ENV_NAME"
                                     }
                                 ],
                                 "outputs": []
@@ -48,6 +47,16 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
         }
     ],
     "connections": [
@@ -59,16 +68,6 @@
             "rightPort": {
                 "actor": "Set Target Env",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Set Target Env",
-                "name": "affected"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "affected"
             }
         }
     ]

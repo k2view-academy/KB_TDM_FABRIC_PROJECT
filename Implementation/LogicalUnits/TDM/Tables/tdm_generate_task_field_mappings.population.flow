@@ -1,6 +1,6 @@
 {
     "levels": [
-		{
+        {
             "stages": [
                 {
                     "name": "Input",
@@ -11,41 +11,37 @@
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
-								"readOnly": true,
+                                "readOnly": true,
                                 "inputs": [
-                                    
-                {
-                    "name": "task_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "param_name",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "param_type",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "param_value",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "task_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "param_name",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "param_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "param_value",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
                         },
-						{
+                        {
                             "name": "SyncDeleteMode",
                             "actorType": {
                                 "parentType": "SyncDeleteMode",
                                 "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "table",
                                         "const": null
@@ -76,32 +72,31 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * FROM public.tdm_generate_task_field_mappings"
+                                        "const": "SELECT * FROM @TDMDB_SCHEMA@.tdm_generate_task_field_mappings"
                                     }
                                 ],
                                 "outputs": [
-									{
+                                    {
                                         "name": "result",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                
-                "task_id": {
-                    "type": {}
-                },
-                "param_name": {
-                    "type": {}
-                },
-                "param_type": {
-                    "type": {}
-                },
-                "param_value": {
-                    "type": {}
-                }
+                                                "task_id": {
+                                                    "type": {}
+                                                },
+                                                "param_name": {
+                                                    "type": {}
+                                                },
+                                                "param_type": {
+                                                    "type": {}
+                                                },
+                                                "param_value": {
+                                                    "type": {}
+                                                }
                                             }
                                         }
                                     }
-								]
+                                ]
                             }
                         }
                     ]
@@ -134,7 +129,7 @@
                                         "name": "interface",
                                         "const": "fabric"
                                     },
-									{
+                                    {
                                         "name": "schema",
                                         "const": null
                                     },
@@ -146,46 +141,38 @@
                                         "name": "fields",
                                         "const": [
                                             "task_id",
-"param_name",
-"param_type",
-"param_value"
+                                            "param_name",
+                                            "param_type",
+                                            "param_value"
                                         ]
                                     },
-									{
+                                    {
                                         "name": "keys",
                                         "const": [
                                             "task_id",
-"param_name"
+                                            "param_name"
                                         ]
                                     },
                                     {
                                         "name": "dialect",
                                         "const": "sqlite"
                                     },
-									
-                {
-                    "name": "task_id",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "param_name",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "param_type",
-                    "schema": {}
-                }
-                ,
-
-                {
-                    "name": "param_value",
-                    "schema": {}
-                }
-                
+                                    {
+                                        "name": "task_id",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "param_name",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "param_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "param_value",
+                                        "schema": {}
+                                    }
                                 ],
                                 "outputs": []
                             }
@@ -194,7 +181,7 @@
                 }
             ]
         },
-		{
+        {
             "stages": [
                 {
                     "name": "Post Load",
@@ -227,24 +214,44 @@
             },
             "iterate": "Iterate"
         },
-		{
+        {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "task_id"
             },
             "rightPort": {
-                "actor": "tdm_generate_task_field_mappings",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "task_id"
             }
         },
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "table"
+                "name": "param_name"
             },
             "rightPort": {
-                "actor": "tdm_generate_task_field_mappings",
-                "name": "table"
+                "actor": "PopulationArgs",
+                "name": "param_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "param_type"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "param_type"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "param_value"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "param_value"
             }
         },
         {
@@ -256,54 +263,26 @@
                 "actor": "SyncDeleteMode",
                 "name": "table"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "tdm_generate_task_field_mappings",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "tdm_generate_task_field_mappings",
+                "name": "table"
+            }
         }
-        ,
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "task_id"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "task_id"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "param_name"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "param_name"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "param_type"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "param_type"
-                    }
-                }
-                ,
-
-                {
-                    "leftPort": {
-                        "actor": "flowArgs",
-                        "name": "param_value"
-                    },
-                    "rightPort": {
-                        "actor": "PopulationArgs",
-                        "name": "param_value"
-                    }
-                }
-                
     ]
 }

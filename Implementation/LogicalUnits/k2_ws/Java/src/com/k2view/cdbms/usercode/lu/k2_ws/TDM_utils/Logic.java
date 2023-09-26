@@ -110,7 +110,7 @@ public class Logic extends WebServiceUserCode {
 			"      \"value\": 5,\r\n" +
 			"      \"allow_doNotDelete\": true\r\n" +
 			"    },\r\n" +
-			"    \"versioningRetentionPeriodForTesters\": {\r\n" +
+			"    \"retentionPeriodForTesters\": {\r\n" +
 			"      \"unit\": \"Days\",\r\n" +
 			"      \"value\": 5,\r\n" +
 			"      \"allow_doNotDelete\": false\r\n" +
@@ -189,72 +189,82 @@ public class Logic extends WebServiceUserCode {
 
 	@desc("This API provides Retention Period Info for TDM GUI")
 	@webService(path = "retentionperiodinfo", verb = {MethodType.GET}, version = "1", isRaw = false, isCustomPayload = false, produce = {Produce.XML, Produce.JSON}, elevatedPermission = true)
-	@resultMetaData(mediaType = Produce.JSON, example = "{\r\n" +
-			"  \"result\": {\r\n" +
-			"    \"reservationDefaultPeriod\": {\r\n" +
-			"      \"unit\": \"Days\",\r\n" +
-			"      \"value\": 5\r\n" +
-			"    },\r\n" +
-			"    \"retentionDefaultPeriod\": {\r\n" +
-			"      \"unit\": \"Do Not Delete\",\r\n" +
-			"      \"value\": 0\r\n" +
-			"    },\r\n" +
-			"    \"maxRetentionPeriodForTesters\": {\r\n" +
-			"      \"units\": \"Days\",\r\n" +
-			"      \"value\": \"10\"\r\n" +
-			"    },\r\n" +
-			"    \"maxRetentionPeriod\": {\r\n" +
-			"      \"units\": \"Days\",\r\n" +
-			"      \"value\": 90\r\n" +
-			"    },\r\n" +
-			"    \"periodTypes\": [\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Minutes\",\r\n" +
-			"        \"units\": 0.00069444444\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Hours\",\r\n" +
-			"        \"units\": 0.04166666666\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Days\",\r\n" +
-			"        \"units\": 1\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Weeks\",\r\n" +
-			"        \"units\": 7\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Years\",\r\n" +
-			"        \"units\": 365\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Do Not Delete\",\r\n" +
-			"        \"units\": 0\r\n" +
-			"      },\r\n" +
-			"      {\r\n" +
-			"        \"name\": \"Do Not Retain\",\r\n" +
-			"        \"units\": -1\r\n" +
-			"      }\r\n" +
-			"    ],\r\n" +
-			"    \"versioningRetentionPeriodForTesters\": {\r\n" +
-			"      \"unit\": \"Days\",\r\n" +
-			"      \"value\": 5,\r\n" +
-			"      \"allow_doNotDelete\": \"False\"\r\n" +
-			"    },\r\n" +
-			"    \"versioningRetentionPeriod\": {\r\n" +
-			"      \"unit\": \"Days\",\r\n" +
-			"      \"value\": 5,\r\n" +
-			"      \"allow_doNotDelete\": \"True\"\r\n" +
-			"    },\r\n" +
-			"    \"maxReservationPeriod\": {\r\n" +
-			"      \"units\": \"Days\",\r\n" +
-			"      \"value\": 90\r\n" +
-			"    }\r\n" +
-			"  },\r\n" +
-			"  \"errorCode\": \"SUCCESS\",\r\n" +
-			"  \"message\": \"\"\r\n" +
-			"}")
+	@resultMetaData(mediaType = Produce.JSON, example ="{\n" +
+			"    \"result\": {\n" +
+			"        \"reservationDefaultPeriod\": {\n" +
+			"            \"unit\": \"Days\",\n" +
+			"            \"value\": 5\n" +
+			"        },\n" +
+			"        \"retentionDefaultPeriod\": {\n" +
+			"            \"unit\": \"Do Not Delete\",\n" +
+			"            \"value\": -1\n" +
+			"        },\n" +
+			"        \"retentionPeriodTypes\": [\n" +
+			"            {\n" +
+			"                \"name\": \"Minutes\",\n" +
+			"                \"units\": 6.9444444E-4\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Hours\",\n" +
+			"                \"units\": 0.04166666666\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Days\",\n" +
+			"                \"units\": 1\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Weeks\",\n" +
+			"                \"units\": 7\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Years\",\n" +
+			"                \"units\": 365\n" +
+			"            }\n" +
+			"        ],\n" +
+			"       \"reservationPeriodTypes\": [\n" +
+			"            {\n" +
+			"                \"name\": \"Minutes\",\n" +
+			"                \"units\": 6.9444444E-4\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Hours\",\n" +
+			"                \"units\": 0.04166666666\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Days\",\n" +
+			"                \"units\": 1\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Weeks\",\n" +
+			"                \"units\": 7\n" +
+			"            },\n" +
+			"            {\n" +
+			"                \"name\": \"Years\",\n" +
+			"                \"units\": 365\n" +
+			"            }\n" +
+			"        ],\n" +
+			"        \"versioningRetentionPeriod\": {\n" +
+			"            \"unit\": \"Days\",\n" +
+			"            \"value\": 5,\n" +
+			"            \"allow_doNotDelete\": true\n" +
+			"        },\n" +
+			"        \"versioningRetentionPeriodForTesters\": {\n" +
+			"            \"unit\": \"Days\",\n" +
+			"            \"value\": 5,\n" +
+			"            \"allow_doNotDelete\": false\n" +
+			"        },\n" +
+			"        \"maxRetentionPeriodForTesters\": {\n" +
+			"            \"units\": \"Days\",\n" +
+			"            \"value\": 90\n" +
+			"        },\n" +
+			"        \"maxReservationPeriodForTesters\": {\n" +
+			"            \"units\": \"Days\",\n" +
+			"            \"value\": 10\n" +
+			"        }\n" +
+			"    },\n" +
+			"    \"errorCode\": \"SUCCESS\",\n" +
+			"    \"message\": \"\"\n" +
+			"}\n")
 	public static Object wsGetRetentionPeriodInfo() throws Exception {
 		Map<String, Object> map;
 				try{

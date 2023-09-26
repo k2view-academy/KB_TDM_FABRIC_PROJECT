@@ -78,6 +78,20 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "TDM_LU_RETENTION_PERIOD_TYPE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_LU_RETENTION_PERIOD_TYPE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -124,50 +138,7 @@
                                 ],
                                 "outputs": []
                             }
-                        }
-                    ]
-                },
-                {
-                    "name": "Set Zero",
-                    "dependsOnList": [
-                        "Cast"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": [
-                        {
-                            "name": "Set INSTANCE_TTL = 0",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": "0",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Call Function",
-                    "dependsOnList": [
-                        "Not Null Or Zero"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
+                        },
                         {
                             "name": "getRetention",
                             "actorType": {
@@ -205,12 +176,13 @@
                     ]
                 },
                 {
-                    "name": "Stage 2",
+                    "name": "Do nothing",
                     "dependsOnList": [
-                        "Set Zero"
+                        "Cast"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
+                    "hasElse": true,
                     "actors": []
                 }
             ]
@@ -220,7 +192,7 @@
                 {
                     "name": "Set not Zero",
                     "dependsOnList": [
-                        "Call Function"
+                        "Not Null Or Zero"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -246,9 +218,9 @@
                     ]
                 },
                 {
-                    "name": "Stage 3",
+                    "name": "Do nothing 2",
                     "dependsOnList": [
-                        "Stage 2"
+                        "Do nothing"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -265,9 +237,9 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "task_execution_list",
+                            "name": "Get Count Of unfinished LUs",
                             "actorType": {
-                                "parentType": "DbCommand",
+                                "parentType": "DbFetchField",
                                 "inputs": [
                                     {
                                         "name": "interface",
@@ -289,37 +261,29 @@
                                     {
                                         "name": "result",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "count": {
-                                                        "type": "integer"
-                                                    }
-                                                }
-                                            }
+                                            "type": "number"
                                         }
                                     }
                                 ]
                             }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "isTransactional": false,
-                    "actors": [
+                        },
                         {
-                            "name": "ToNumber1",
+                            "name": "Reject Message",
                             "actorType": {
-                                "parentType": "ToNumber",
-                                "inputs": [],
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "Task Execution ID ${TASK_EXECUTION_ID} is not completed yet"
+                                    },
+                                    {
+                                        "name": "TASK_EXECUTION_ID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }
@@ -332,7 +296,7 @@
                 {
                     "name": "Count Check",
                     "dependsOnList": [
-                        "Stage 1"
+                        "SELECT count(*)"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -361,7 +325,7 @@
                                         "const": "fnRejectInstance"
                                     },
                                     {
-                                        "name": "TASK_EXECUTION_ID",
+                                        "name": "msg",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -376,7 +340,7 @@
                 {
                     "name": "Count is zero",
                     "dependsOnList": [
-                        "Stage 1"
+                        "SELECT count(*)"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -412,8 +376,14 @@
                                         ]
                                     },
                                     {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
                                         "name": "task_execution_id",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
@@ -443,49 +413,9 @@
                     ]
                 }
             ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 1,
-                    "actors": []
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
-                }
-            ]
         }
     ],
     "connections": [
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "task_execution_list",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Reject Instance",
-                "name": "TASK_EXECUTION_ID"
-            }
-        },
         {
             "leftPort": {
                 "actor": "PopulationArgs",
@@ -508,12 +438,22 @@
         },
         {
             "leftPort": {
-                "actor": "TDM_LU_RETENTION_PERIOD_VALUE",
-                "name": "result"
+                "actor": "PopulationArgs",
+                "name": "iid"
             },
             "rightPort": {
-                "actor": "getRetention",
-                "name": "retentionPeriodType"
+                "actor": "Reject Message",
+                "name": "TASK_EXECUTION_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Get Count Of unfinished LUs",
+                "name": "task_execution_id"
             }
         },
         {
@@ -524,6 +464,16 @@
             "rightPort": {
                 "actor": "ToNumber ",
                 "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDM_LU_RETENTION_PERIOD_TYPE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "getRetention",
+                "name": "retentionPeriodType"
             }
         },
         {
@@ -558,26 +508,22 @@
         },
         {
             "leftPort": {
-                "actor": "task_execution_list",
+                "actor": "Get Count Of unfinished LUs",
                 "name": "result"
-            },
-            "rightPort": {
-                "actor": "ToNumber1",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "count"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "ToNumber1",
-                "name": "number"
             },
             "rightPort": {
                 "actor": "Count Greater Than 0",
                 "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Reject Message",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Reject Instance",
+                "name": "msg"
             }
         },
         {

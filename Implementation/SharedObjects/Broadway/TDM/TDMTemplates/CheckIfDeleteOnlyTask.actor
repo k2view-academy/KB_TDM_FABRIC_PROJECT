@@ -1,0 +1,28 @@
+{
+  "type": "CheckIfDeleteOnlyTask",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "CheckIfDeleteOnlyTask",
+      "mandatory": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "deleteOnlyInd",
+      "schema": {
+        "type": "bool"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ],
+  "doc": ""
+}

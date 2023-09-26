@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -18,10 +21,17 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "Select max(ADDRESS.ADDRESS_ID) + 1000 As init_address_id\r\nFrom ADDRESS"
+                                        "const": "Select COALESCE(max(address_id),0) + 100000 As init_address_id\r\nFrom address"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]

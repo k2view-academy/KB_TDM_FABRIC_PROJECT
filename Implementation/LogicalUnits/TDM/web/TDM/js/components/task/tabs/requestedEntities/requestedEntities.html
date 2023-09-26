@@ -10,6 +10,22 @@
         <div class="fields-container" ng-if="!requestedEntitiesCtrl.taskData.generateTask">
             <div class="fields-row" style="position: relative">
                 <div>
+                    <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && 
+                        (!requestedEntitiesCtrl.taskData.version_ind || 
+                        (requestedEntitiesCtrl.taskData.sync_mode === 'FORCE' || !requestedEntitiesCtrl.taskData.sync_mode))">
+                        <div style="display: flex; align-items: center;">
+                            <input type="radio" ng-disabled="requestedEntitiesCtrl.userRoleType !== 'admin' && !sourceEnvOwner && !targetEnvOwner"
+                                ng-value="'ALL'" name="requestedEntitiesRadio"
+                                ng-change="requestedEntitiesCtrl.selectionMethodChange()"
+                                ng-model="requestedEntitiesCtrl.taskData.selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;" >
+                                <span>
+                                    Select a Predefined Entity List
+                                </span>
+                                <small ng-show="requestedEntitiesCtrl.userRoleType !== 'admin' && !sourceEnvOwner && !targetEnvOwner">(Not Allowed)</small>&nbsp;&nbsp;
+                            </label>
+                        </div>
+                    </div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'EXTRACT' || 
                         requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.version_ind">
                         <div style="display: flex; align-items: center;">
@@ -60,7 +76,8 @@
                         </div>
                     </div>
                     <div ng-if="
-                        requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind">
+                        requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind || 
+                        (requestedEntitiesCtrl.taskData.task_type === 'RESERVE' && requestedEntitiesCtrl.enableReserveByParams)">
                         <div style="display: flex; align-items: center;">
                             <input type="radio"
                                 ng-click="requestedEntitiesCtrl.parametersRandom = true" 
@@ -76,9 +93,19 @@
                         </div>
                     </div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind">
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'entity_id'">
                             <input type="radio"
                                 ng-value="'CLONE'" name="requestedEntitiesRadio"
+                                ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
+                                ng-model="requestedEntitiesCtrl.taskData.selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
+                                Entity Clone
+                            </label>
+                            <small ng-show="!userRole.allowed_creation_of_synthetic_data">(Not Allowed)</small>
+                        </div>
+                        <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'parameters'">
+                            <input type="radio"
+                                ng-value="'CLONE_PARAM'" name="requestedEntitiesRadio"
                                 ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
                                 ng-model="requestedEntitiesCtrl.taskData.selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
@@ -120,7 +147,8 @@
                             class="badge pull-right">{{form.entitiesList.$viewValue.split(',').length || 0}}
                         </span>
                     </span>
-                    <div class="m-t-xs" ng-show="form.submitted && form.entitiesList.$invalid &&
+                    <div class="m-t-xs" ng-show="(form.submitted || requestedEntitiesCtrl.taskData.task_type == 'LOAD' && 
+                    requestedEntitiesCtrl.taskData.version_ind) && form.entitiesList.$invalid &&
                         form.entitiesList.$error.pattern">
                         <small ng-show="maxToCopy" class="text-danger">
                             <span ng-show="form.entitiesList.$viewValue.split(',').length > maxToCopy">
@@ -129,8 +157,7 @@
                                     {{maxToCopy}}
                                 </span>
                                 <span ng-show="requestedEntitiesCtrl.taskData.task_type !== 'RESERVE'">
-                                    Maximum Entities For the Task is:
-                                    {{maxToCopy}}
+                                    The number of entities cannot exceed {{maxToCopy}} entities.
                                 </span>
                             </span>
                             <span ng-show="maxToCopy >= form.entitiesList.$viewValue.split(',').length ">
@@ -148,6 +175,38 @@
                                 Please Type Entities
                             </span>
                         </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM'">
+            <div class="fields-row" style="position: relative">
+                <div style="margin-bottom: 15px;">
+                    <div class="m-t-xs">
+                        <label>Entity Clone selection selection_method
+                        </label>
+                    </div>
+                    <div >
+                        <div style="display: flex; align-items: center;">
+                            <input type="radio"
+                                ng-value="'entity_id'" name="requestedEntitiesRadioEntityClone"
+                                ng-change="requestedEntitiesCtrl.entityCloneChange()"
+                                ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                Provide an entity id
+                            </label>
+                        </div>
+                    </div>
+                    <div >
+                        <div style="display: flex; align-items: center;">
+                            <input type="radio"
+                                ng-value="'parameters'" name="requestedEntitiesRadioEntityClone"
+                                ng-change="requestedEntitiesCtrl.entityCloneChange()"
+                                ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                Parameters based selection
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,11 +262,11 @@
                 </div>
             </div>    
         </div>
-        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'P' || requestedEntitiesCtrl.taskData.selection_method === 'PR'">
+        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'P' || requestedEntitiesCtrl.taskData.selection_method === 'PR' ||  requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM'">
             <div class="fields-row" style="position: relative" >
-                <div>
-                    <div style="display: flex;gap: 30px;">
-                        <div ng-init="requestedEntitiesCtrl.prepareParametersData()">
+                <div ng-init="requestedEntitiesCtrl.prepareParametersData()">
+                    <div style="display: flex;gap: 30px;" ng-if="requestedEntitiesCtrl.taskData.selection_method !== 'CLONE_PARAM'">
+                        <div>
                             <div style="padding: 0px;">
                             <label class="option-button">
                                 <input id="checkbox2" type="checkbox" ng-change="requestedEntitiesCtrl.parametersRandomChange()" 
@@ -221,7 +280,7 @@
                         <div ng-if="!requestedEntitiesCtrl.taskData.replace_sequences && requestedEntitiesCtrl.taskData.task_type !== 'EXTRACT'">
                             <div style="padding: 0px;">
                             <label class="option-button">
-                                <input id="checkbox2" type="checkbox"
+                                <input id="checkbox2" type="checkbox" ng-change="getEntitesCount()"
                                     ng-model="requestedEntitiesCtrl.taskData.filterout_reserved" />
                                 <label for="checkbox2" class="option-button-label">
                                 Filter out Reserved Entities
@@ -252,7 +311,7 @@
                             <small class="text-danger">Please Choose Parameters <span style="color: red">*</span>
                             </small>
                             </div>
-                            <p style="margin: 10px 0px;">{{requestedEntitiesCtrl.taskData.selection_param_value}}</p>
+                            <p style="margin: 10px 0px;white-space: pre-line;">{{requestedEntitiesCtrl.taskData.selection_param_value}}</p>
                         </div>
                     </div>
                 </div>
@@ -263,6 +322,7 @@
             requestedEntitiesCtrl.taskData.selection_method === 'PR' || 
             requestedEntitiesCtrl.taskData.selection_method === 'R' ||
             requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || 
+            requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM' || 
             requestedEntitiesCtrl.taskData.selection_method === 'C' ">
             <div class="fields-row" style="position: relative">
                 <div>
@@ -288,7 +348,7 @@
                             ng-disabled="disabled"  ng-model="requestedEntitiesCtrl.taskData.num_of_entities">
                         <div class="m-t-xs" ng-show="form.numberOfEntities.$invalid && form.submitted">
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.required">Populate Number of Entities</small>
-                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max">Maximum Entites to Copy is {{maxToCopy}}</small>
+                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max"> The number of entities cannot exceed {{maxToCopy}} entities</small>
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.min">Minimum Entites to Copy is 1</small>
                         </div>
                     </div>
@@ -360,7 +420,7 @@
                             name="custom_logic_{{customLogicParam.name}}" 
                             ng-required="customLogicParam.mandatory"
                             ng-model="customLogicParam.value" />
-                    <div style="width: 535px;z-index: 7;position: relative;"
+                    <div style="width: 535px;z-index: 0;position: relative;"
                          ng-if="customLogicParam.editor"
                          data="customLogicParam"
                          editor="customLogicParam.editor" 
@@ -398,8 +458,8 @@
             <div class="fields-row" 
                 style="
                 position: relative; 
-                display:flex; justify-content: flex-start;gap: 19%"  >
-                <div style="width: 350px">
+                display:flex; justify-content: flex-start;gap: 75px"  >
+                <div style="min-width: 350px;max-width: 350px">
                     <div style="margin-bottom: 15px;">
                         <label>
                             <span>Number of Entities<span style="color: red">*</span></span>
@@ -409,7 +469,7 @@
                             ng-disabled="disabled"  ng-model="requestedEntitiesCtrl.taskData.num_of_entities">
                         <div class="m-t-xs" ng-show="form.numberOfEntities.$invalid && form.submitted">
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.required">Populate Number of Entities</small>
-                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max">Maximum Entites to Copy is {{maxToCopy}}</small>
+                            <small class="text-danger" ng-show="form.numberOfEntities.$error.max">The number of entities cannot exceed {{maxToCopy}} entities</small>
                             <small class="text-danger" ng-show="form.numberOfEntities.$error.min">Minimum Entites to Copy is 1</small>
                         </div>
                     </div>
@@ -435,23 +495,23 @@
                                 ng-class="{
                                     checked: 
                                     ( 
-                                        requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].default !== requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].editor.value || 
-                                        requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].default !== requestedEntitiesCtrl.taskData.DataManParamsTemp.refData.state.values[generationType].value && 
-                                        requestedEntitiesCtrl.taskData.DataManParamsTemp.refData && requestedEntitiesCtrl.taskData.DataManParamsTemp.refData.state.values[generationType] && 
+                                        widgetRefContent.DataManParamsTemp[generationType].default !== widgetRefContent.DataManParamsTemp[generationType].editor.value || 
+                                        widgetRefContent.DataManParamsTemp[generationType].default !== widgetRefContent.DataManParamsTemp.refData.state.values[generationType].value && 
+                                        widgetRefContent.DataManParamsTemp.refData && widgetRefContent.DataManParamsTemp.refData.state.values[generationType] && 
                                         requestedEntitiesCtrl.generationTypeChosen.indexOf(generationType) >= 0
                                     )
                                 }"
                                 ng-repeat="generationType in requestedEntitiesCtrl.generationTypes | filter:dataGenerationSearch">
                                 <span style="position: relative">
-                                    <span ng-if="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].description" 
+                                    <span ng-if="widgetRefContent.DataManParamsTemp[generationType].description" 
                                         popover-append-to-body="true"
                                         popover-class="data-generation"
                                         popover-title=""
                                         popover-placement="left"
-                                        popover-is-open="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].showDesc"
+                                        popover-is-open="widgetRefContent.DataManParamsTemp[generationType].showDesc"
                                         uib-popover-template="'dataGenerationDescriprion.html'"
-                                        ng-mouseover="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].showDesc = true"
-                                        ng-mouseleave="requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].showDesc = false">
+                                        ng-mouseover="widgetRefContent.DataManParamsTemp[generationType].showDesc = true"
+                                        ng-mouseleave="widgetRefContent.DataManParamsTemp[generationType].showDesc = false">
                                         <i style="font-size: 15px;" class="fa fa-info-circle"></i>
                                     </span>
                                     <script type="text/ng-template" id="dataGenerationDescriprion.html">
@@ -459,20 +519,26 @@
                                             style="z-index: 10000; width: 290px">
                                             <ul class="newScroll slim" style="overflow: auto;height: 100%;white-space:pre-line">
                                                 <li>
-                                                    {{requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].description}}
+                                                    {{widgetRefContent.DataManParamsTemp[generationType].description}}
                                                 </li>
                                             </ul>
                                         </div>
                                     </script>
                                     <span ng-style="{
-                                        marginLeft: requestedEntitiesCtrl.taskData.DataManParamsTemp[generationType].description ? '0' : '17px'
+                                        marginLeft: widgetRefContent.DataManParamsTemp[generationType].description ? '0' : '17px'
                                     }">
                                         {{generationType}} 
                                     </span>
                                 </span>
-                                <span ng-show="requestedEntitiesCtrl.generationTypeChosen.indexOf(generationType) >= 0"
+                                <span ng-show="
+                                    ( !widgetRefContent.DataManParamsTemp[generationType].mandatory ||
+                                    widgetRefContent.DataManParamsTemp.refData.state.values[generationType].value ) &&
+                                    requestedEntitiesCtrl.generationTypeChosen.indexOf(generationType) >= 0"
                                     ng-click="requestedEntitiesCtrl.dataGenerationRevert(generationType)" style="cursor: pointer;">
                                     <img style="width: 15px;" src="img/revert_icon.svg">
+                                </span>
+                                <span ng-show="widgetRefContent.DataManParamsTemp[generationType].mandatory && !widgetRefContent.DataManParamsTemp.refData.state.values[generationType].value">
+                                    <img style="width: 15px;" src="img/revert_icon_disabled.svg">
                                 </span>
                             </li>
                         </ul>
@@ -481,13 +547,14 @@
                 <div class="data-generation-window"
                     generate-data ng-if="requestedEntitiesCtrl.generationTypeChosen.length > 0"
                     chosen-items="requestedEntitiesCtrl.generationTypeChosen"
-                    data="requestedEntitiesCtrl.taskData.DataManParamsTemp"
-                    close="requestedEntitiesCtrl.closeDataGenerationPopup">
+                    mandatory-fields="requestedEntitiesCtrl.generateMandatoryFields"
+                    form="form"
+                    data="widgetRefContent.DataManParamsTemp">
                 </div>
             </div> 
         </div>
     </div>
-    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 20px" ></div>
+    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 56px" ></div>
     <!-- <hr>    
     <span style="display: flex;justify-content: space-between;">
         <button type="button"  ng-click="back()" style="width:80px" class="btn k2-primary-btn">Back</button>

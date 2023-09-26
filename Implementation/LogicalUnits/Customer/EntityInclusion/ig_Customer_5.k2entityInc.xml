@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<DbQueryItemOfDataTable xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <Name>ig_Customer_5</Name>
-  <DbConn>CRM_DB</DbConn>
-  <Sql>select 'SRC_'||customer_id from customer limit 5000</Sql>
-  <IsSqlValid>true</IsSqlValid>
-</DbQueryItemOfDataTable>

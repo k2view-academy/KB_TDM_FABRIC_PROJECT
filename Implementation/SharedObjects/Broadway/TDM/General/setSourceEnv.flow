@@ -14,7 +14,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM.TDM_SOURCE_ENVIRONMENT_NAME"
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME"
                                     }
                                 ],
                                 "outputs": []
@@ -58,16 +58,6 @@
             "rightPort": {
                 "actor": "Set Source Env",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Set Source Env",
-                "name": "affected"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "affected"
             }
         }
     ]

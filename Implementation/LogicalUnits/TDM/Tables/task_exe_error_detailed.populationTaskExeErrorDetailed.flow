@@ -253,6 +253,10 @@
                                         ]
                                     },
                                     {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
                                         "name": "TASK_EXECUTION_ID",
                                         "schema": {},
                                         "mandatory": false
@@ -461,17 +465,23 @@
                                     },
                                     {
                                         "name": "TASK_EXECUTION_ID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "integer"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "LU_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "ENTITY_ID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
@@ -486,42 +496,58 @@
                                     },
                                     {
                                         "name": "ERROR_CATEGORY",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "ERROR_CODE",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "ERROR_MESSAGE",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "CREATION_DATE",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "date"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "FLOW_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "STAGE_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "ACTOR_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "ACTOR_PARAMETERS",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     }
                                 ],
@@ -693,15 +719,12 @@
         {
             "leftPort": {
                 "actor": "PopulationArgs",
-                "name": "parent_rows"
+                "name": "iid"
             },
             "rightPort": {
                 "actor": "Fetch Task Type",
                 "name": "task_execution_id"
-            },
-            "path": [
-                "task_execution_id"
-            ]
+            }
         },
         {
             "leftPort": {

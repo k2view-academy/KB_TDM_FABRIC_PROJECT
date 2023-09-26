@@ -51,7 +51,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from {{getLUName this}}.{{LU_TABLE}}"
+                                        "const": "select * from {{LU_NAME}}.{{LU_TABLE}}"
                                     }
                                 ],
                                 "outputs": [

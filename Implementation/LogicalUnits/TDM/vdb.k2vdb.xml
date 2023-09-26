@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.1.0.17">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.1.0.32">
   <Name>vdb</Name>
   <RootView>TASK_EXECUTION</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00">
@@ -19,6 +19,7 @@
     <Table>TASK_EXECUTION_LINK_ENTITIES</Table>
     <Table>task_execution_list</Table>
     <Table>task_execution_override_attrs</Table>
+    <Table>task_ref_exe_stats</Table>
     <Table>tasks</Table>
     <Table>tdm_generate_task_field_mappings</Table>
     <Table>tdm_lu_type_rel_tar_eid</Table>
@@ -33,6 +34,7 @@
     </TableProperties>
     <TableProperties name="TASK_EXECUTION">
       <Populations>
+        <Population name="populationJMX.flow" order="999" disabled="false" populationType="Flow" />
         <Population name="populationTaskExecution.flow" order="1" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
@@ -71,6 +73,11 @@
         <Population name="populationTaskExeStatsSummary.flow" order="2" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
+    <TableProperties name="task_ref_exe_stats">
+      <Populations>
+        <Population name="populationTaskRefExeStats.flow" order="3" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
     <TableProperties name="tdm_generate_task_field_mappings">
       <Populations>
         <Population name="population.flow" order="3" disabled="false" populationType="Flow" />
@@ -99,7 +106,6 @@
     <Item order="4" active="true" name="TASK_EXECUTION" columnName="fnUpdateTaskSyncStatus" type="Table" />
     <Item order="5" active="true" name="TASK_EXECUTION_LINK_ENTITIES" columnName="fnEnrSetRootEntSts" type="Table" />
     <Item order="6" active="true" name="TASK_EXECUTION" columnName="fnUpdateTaskSummaryTable" type="Table" />
-    <Item order="7" active="true" name="TASK_EXECUTION" columnName="fnTDMJMXStats" type="Table" />
   </EnrichmentsOrderList>
   <ReferencesList />
   <Relations />
@@ -184,26 +190,31 @@
       <From tableType="TableObject" table="tasks" column="task_id" columnId="tblCol_0c3317c310dc40ad9b7e7ee39ecb04a1" />
       <To tableType="TableObject" table="tdm_generate_task_field_mappings" populationObjectName="population.flow" column="task_id" columnId="task_id" />
     </Relation>
+    <Relation>
+      <From tableType="TableObject" table="tasks" column="task_execution_id" columnId="tblCol_fe1c717cdb8443928dfd0b701c836250" />
+      <To tableType="TableObject" table="task_ref_exe_stats" populationObjectName="populationTaskRefExeStats.flow" column="task_execution_id" columnId="task_execution_id" />
+    </Relation>
   </DatabaseRelations>
   <PreVCsSqlScript />
   <PostVCsSqlScript />
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="7.1.0.17" name="vdb.k2vdb.xml">
-      <Node name="task_exe_error_detailed" pos="615 214" size="257 136" listGroupSize="250 100" viewType="Table" />
+    <Graph version="7.1.0.32" name="vdb.k2vdb.xml">
+      <Node name="task_exe_error_detailed" pos="635 222" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_exe_stats_detailed" pos="313 539" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_exe_stats_summary" pos="313 739" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Node name="TASK_EXECUTION" pos="11 789" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="TASK_EXECUTION" pos="11 773" size="257 152" listGroupSize="250 100" viewType="Table" />
       <Node name="task_execution_entities" pos="313 939" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TASK_EXECUTION_LINK_ENTITIES" pos="917 1039" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_execution_list" pos="313 1139" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="task_execution_override_attrs" pos="615 14" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="tasks" pos="313 339" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="tdm_generate_task_field_mappings" pos="648 395" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="tdm_lu_type_rel_tar_eid" pos="917 589" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="tdm_lu_type_relation_eid" pos="917 839" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Node name="TDM_SEQ_MAPPING" pos="313 1339" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Node name="tdm_generate_task_field_mappings" pos="615 439" size="257 136" listGroupSize="250 100" viewType="Table" />
+      <Node name="task_ref_exe_stats" pos="635 561" size="257 136" listGroupSize="250 100" viewType="Table" />
     </Graph>
   </DiagramGraph>
 </VirtualDB>

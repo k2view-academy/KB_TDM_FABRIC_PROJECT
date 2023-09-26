@@ -3,11 +3,25 @@
         {
             "stages": [
                 {
-                    "name": "Get TDM_SYNC_SOURCE_DATA",
+                    "name": "Input",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+						{
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "{{KEY}}",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Get Variable TDM_SYNC_SOURCE_DATA",
                             "actorType": {
@@ -73,7 +87,7 @@
                 {
                     "name": "Check Variable And Delete Root Table",
                     "dependsOnList": [
-                        "Get TDM_SYNC_SOURCE_DATA"
+                        "Input"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -128,7 +142,7 @@
                 {
                     "name": "Instance should not be synced",
                     "dependsOnList": [
-                        "Get TDM_SYNC_SOURCE_DATA"
+                        "Input"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -180,26 +194,12 @@
         {
             "stages": [
                 {
-                    "name": "Input",
+                    "name": "Init Indicator",
                     "dependsOnList": [
                         "Check Variable And Delete Root Table"
                     ],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "{{KEY}}",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Init Instance As Not Found",
                             "actorType": {
@@ -261,7 +261,7 @@
                 {
                     "name": "Source",
                     "dependsOnList": [
-                        "Input"
+                        "Init Indicator"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -277,6 +277,13 @@
                                     {
                                         "name": "sql",
                                         "const": "select * from {{TABLE_NAME}}"
+                                    },
+                                    {
+                                        "name": "rowsGeneratorDistribution",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": "1"
                                     }
                                 ],
                                 "outputs": []

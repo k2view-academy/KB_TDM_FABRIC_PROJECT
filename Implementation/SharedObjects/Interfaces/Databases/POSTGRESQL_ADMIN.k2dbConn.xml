@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="POSTGRESQL_ADMIN" type="genericdb" version="7.0.0.24">
-  <Active>false</Active>
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="POSTGRESQL_ADMIN" type="genericdb" version="7.2.0.11">
+  <Active>true</Active>
   <DataSource>localhost</DataSource>
-  <PortNum>5432</PortNum>
+  <PortNum>5433</PortNum>
   <DataBase>postgres</DataBase>
   <UserId>postgres</UserId>
-  <Password>Bqn08GfsygFQ/AN620awNjHrEXB9eL772TRdS4yfxnw=:sSjozBPAan0s3C/kLEaY2mpQyOBrMZYsKKk2zOK6fCk=</Password>
-  <ConnectionStringServerSide>jdbc:postgresql://localhost:5432/postgres?stringtype=unspecified</ConnectionStringServerSide>
+  <Password>~encs2~kmMR6Wv8UyFKwuC/MzNMVYeNxSlDepwU10gF098YJegtPnoMGKN9Gg==</Password>
+  <ConnectionStringServerSide>jdbc:postgresql://localhost:5433/postgres?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>
   <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>

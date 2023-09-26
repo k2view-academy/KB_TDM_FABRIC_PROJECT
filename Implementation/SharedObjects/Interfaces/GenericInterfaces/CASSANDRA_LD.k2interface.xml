@@ -3,7 +3,7 @@
   <Name>CASSANDRA_LD</Name>
   <Properties>
     <Property name="section">
-      <Value>Reference_Upgrade</Value>
+      <Value>default</Value>
     </Property>
   </Properties>
 </GenericInterface>

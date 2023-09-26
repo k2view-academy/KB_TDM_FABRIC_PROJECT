@@ -7,6 +7,7 @@
             </div>
             <div class="col-lg-4 pull-right">
                 <a 	uib-tooltip="Delete Global" 
+                    id="environment_variable_delete"
 					tooltip-placement="left" 
 					type="button" 
 					role-handler 
@@ -36,17 +37,17 @@
                     <div class="form-group col-lg-12">
                         <!--<label>{{"Global_NAME" | translate}}</label>-->
                         <!--<input type="text" class="form-control1" ng-model="environmentCtrl.GlobalData.Global_name" disabled>-->
-                        <a ng-click="environmentCtrl.openGlobalFullView()">{{environmentCtrl.GlobalData.Global_name}}</a>
-                        </input>
+                        <a  ng-click="environmentCtrl.openGlobalFullView()">{{environmentCtrl.GlobalData.Global_name}}</a>
                     </div>
                     <div class="form-group col-lg-12">
                         <label>Variable Name</label>
-                        <select class="form-control1" width="'100%'" chosen ng-model="environmentCtrl.globalData.global_name" ng-options="o.globalName as o.globalName for o in environmentCtrl.newEnvGlobals" required ng-disabled="true">
+                        <select id="environment_variable_name" class="form-control1" width="'100%'" chosen ng-model="environmentCtrl.globalData.global_name" ng-options="o.globalName as o.globalName for o in environmentCtrl.newEnvGlobals" required ng-disabled="true">
                         </select>
                     </div>
                     <div class="form-group col-lg-12">
                         <label>Logical Unit</label>
                         <select class="form-control1" width="'100%'" chosen 
+                            id="environment_variable_lus"
                             ng-model="environmentCtrl.globalData.luName"
                             ng-change="environmentCtrl.globalLogicalUnitChanged()"
                             ng-options="o.luName as o.luName for o in environmentCtrl.globalLogicalUnits" required>
@@ -55,12 +56,13 @@
                     </div>
                     <div class="form-group col-lg-12">
                         <label>Variable Value</label>
-                        <input type="text" class="form-control1" ng-model="environmentCtrl.globalData.global_value">
+                        <input id="environment_variable_value" type="text" class="form-control1" ng-model="environmentCtrl.globalData.global_value">
                     </div>
                     <div class="form-group ">
                         <div class="col-lg-12 form-buttons">
-                            <button class="btn k2-primary-btn pull-left" ng-if="!environmentCtrl.disableChangeGlobal" type="submit" role-handler role="1">{{"SAVE_CHANGES" | translate}}</button>
-							<a 	uib-tooltip="Close Environment Global Editor"
+                            <button id="environment_variable_save" class="btn k2-primary-btn pull-left" ng-if="!environmentCtrl.disableChangeGlobal" type="submit" role-handler role="1">{{"SAVE_CHANGES" | translate}}</button>
+                            <a 	uib-tooltip="Close Environment Global Editor"
+                                id="environment_variable_close"
 								tooltip-placement="left" 
 								type="button" 
 								role-handler 

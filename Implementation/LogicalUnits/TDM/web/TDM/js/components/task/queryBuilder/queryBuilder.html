@@ -56,117 +56,141 @@
           ></query-builder>
         </div>
         <div ng-switch-default="ng-switch-default">
-          <div class="form-inline">
-            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 250px;">
+          <div class="form-inline" style="position: relative;display: flex">
+            <div style="display: flex; align-items: center;">
+              <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 200px; max-width: 300px;">
+                <select
+                  required
+                  name="paramsKey_{{$index}}_{{rule.index}}"
+                  ng-disabled="disablechange"
+                  chosen
+                  ng-init="field = rule.field"
+                  ng-model="field"
+                  class="form-control1"
+                  ng-change="changeParam(rule,field)"
+                >
+                <option></option>
+                <option ng-repeat="param in params | orderBy:'param_name' " ng-value="param.param_name">{{param.param_name}}</option>
+              </select>
+              </div>
+              
               <select
+                name="paramsOper_{{$index}}_{{index}}"
                 required
-                name="paramsKey_{{$index}}_{{index}}"
                 ng-disabled="disablechange"
-                chosen
-                ng-init="field = rule.field"
-                ng-options="t.param_name as t.param_name for t in params | orderBy:'param_name'"
-                ng-model="field"
+                ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
+                ng-if="!rule.validValues || rule.validValues.length <=0 || rule.validValues == '\\N'"
+                ng-init="condition = rule.condition"
+                style="margin-left: 5px;width: auto;"
+                ng-options="c.id as c.name for c in conditions"
+                ng-model="condition"
                 class="form-control1"
-                ng-change="changeParam(rule,field)"
               ></select>
-            </div>
-
-            <select
-              name="paramsOper_{{$index}}_{{index}}"
-              required
-              ng-disabled="disablechange"
-              ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
-              ng-if="rule.type !== 'combo'"
-              ng-init="condition = rule.condition"
-              style="margin-left: 5px;width: auto;"
-              ng-options="c.id as c.name for c in conditions"
-              ng-model="condition"
-              class="form-control1"
-            ></select>
-
-            <select
-              name="paramsOper_{{$index}}_{{index}}"
-              required
-              ng-disabled="disablechange"
-              ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
-              ng-if="rule.type === 'combo'"
-              ng-init="condition = rule.condition"
-              style="margin-left: 5px;width: auto;"
-              ng-options="c.name as c.name for c in comboConditions"
-              ng-model="condition"
-              class="form-control1"
-            ></select>
-
-            <input
-              name="parametersField_{{$index}}_{{index}}"
-              autocomplete="off"
-              required
-              ng-disabled="disablechange"
-              ng-if="(rule.type == 'number') && rule.disableThird === false && rule.comboIndicator !== 'true'"
-              min="{{rule.min}}"
-              max="{{rule.max}}"
-              ng-init="data = rule.data"
-              step="any"
-              style="margin-left: 5px;width: auto;"
-              type="number"
-              ng-model="data"
-              class="form-control1"
-              ng-change="changeData(rule,data)"
-            />
-            <input
-              placeholder="{{rule.type == 'real' ? 'Real Number' : 'Integer Number'}}"
-              autocomplete="off"
-              required
-              ng-disabled="disablechange"
-              ng-if="rule.type == 'real' || rule.type == 'integer'  && rule.comboIndicator !== 'true'"
-              min="{{rule.min}}"
-              max="{{rule.max}}"
-              ng-init="data = rule.data"
-              step="any"
-              style="margin-left: 5px;width: auto;"
-              type="number"
-              ng-model="data"
-              class="form-control1"
-              ng-change="changeData(rule,data)"
-            />
-            <input
-              name="parametersField_{{$index}}_{{index}}"
-              autocomplete="off"
-              required
-              ng-disabled="disablechange"
-              ng-if="(rule.type == 'text' || !rule.type) && rule.disableThird === false  && rule.comboIndicator !== 'true'"
-              ng-init="data = rule.data"
-              style="margin-left: 5px;width: auto;"
-              type="text"
-              ng-model="data"
-              class="form-control1"
-              ng-change="changeData(rule,data)"
-            />
-            <div style="margin-left: 5px;width: auto;display: inline-flex;min-width: 250px;">
+  
               <select
-                name="parametersField_{{$index}}_{{index}}"
+                name="paramsOper_{{$index}}_{{index}}"
                 required
-                chosen
                 ng-disabled="disablechange"
-                ng-if="rule.comboIndicator === 'true' && rule.disableThird === false "
+                ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
+                ng-if="rule.validValues != '\\N' && rule.validValues.length > 0"
+                ng-init="condition = rule.condition"
+                style="margin-left: 5px;width: auto;"
+                ng-options="c.name as c.name for c in comboConditions"
+                ng-model="condition"
+                class="form-control1"
+              ></select>
+  
+              <input
+                name="parametersField_{{$index}}_{{index}}"
+                autocomplete="off"
+                required
+                ng-disabled="disablechange"
+                ng-if="(rule.type == 'number') && rule.disableThird === false && rule.comboIndicator !== 'true'"
+                min="{{rule.min}}"
+                max="{{rule.max}}"
                 ng-init="data = rule.data"
+                step="any"
                 style="margin-left: 5px;width: auto;"
-                ng-options="t as t for t in rule.validValues"
+                type="number"
                 ng-model="data"
-                style="margin-left: 5px;width: auto;"
                 class="form-control1"
                 ng-change="changeData(rule,data)"
-              ></select>
+              />
+              <input
+                placeholder="{{rule.type == 'real' ? 'Real Number' : 'Integer Number'}}"
+                autocomplete="off"
+                required
+                ng-disabled="disablechange"
+                ng-if="rule.type == 'real' || rule.type == 'integer'  && rule.comboIndicator !== 'true'"
+                min="{{rule.min}}"
+                max="{{rule.max}}"
+                ng-init="data = rule.data"
+                step="any"
+                style="margin-left: 5px;width: auto;"
+                type="number"
+                ng-model="data"
+                class="form-control1"
+                ng-change="changeData(rule,data)"
+              />
+              <input
+                name="parametersField_{{$index}}_{{index}}"
+                autocomplete="off"
+                required
+                ng-disabled="disablechange"
+                ng-if="(rule.type == 'text' || !rule.type) && rule.disableThird === false  && rule.comboIndicator !== 'true'"
+                ng-init="data = rule.data"
+                style="margin-left: 5px;width: auto;"
+                type="text"
+                ng-model="data"
+                class="form-control1"
+                ng-change="changeData(rule,data)"
+              />
+              <div ng-if="rule.comboIndicator === 'true'" style="margin-left: 5px;width: auto;display: inline-flex;min-width: 250px;max-width: 300px;">
+                <select
+                style="width: 300px;"
+                  name="parametersField_{{$index}}_{{index}}"
+                  required
+                  chosen
+                  multiple
+                  ng-disabled="disablechange"
+                  ng-if="rule.disableThird === false && (rule.condition === 'IN' || rule.condition === 'NOT IN')"
+                  ng-init="data = rule.data"
+                  style="margin-left: 5px;"
+                  ng-options="t as t for t in rule.validValues"
+                  ng-model="data"
+                  class="form-control1"
+                  ng-change="changeData(rule,data)"
+                >
+                  <option></option>
+                </select>
+                <select
+                  name="parametersField_{{$index}}_{{index}}"
+                  required
+                  chosen
+                  ng-disabled="disablechange"
+                  ng-if="rule.disableThird === false && rule.condition !== 'IN' && rule.condition !== 'NOT IN'"
+                  ng-init="data = rule.data"
+                  style="margin-left: 5px;"
+                  ng-options="t as t for t in rule.validValues"
+                  ng-model="data"
+                  class="form-control1"
+                  ng-change="changeData(rule,data)"
+                >
+                  <option></option>
+                </select>
+              </div>
+
             </div>
 
             <span
               ng-if="!disablechange"
               ng-click="removeCondition($index)"
-              style="margin-left: 5px; margin-bottom: 0px; color: #ec4758"
+              style="margin-left: 5px; margin-bottom: 0px; color: #ec4758;position: absolute;right: 20px;top : 5px;"
             >
               <span class="glyphicon glyphicon-minus-sign"></span>
             </span>
-            <div>
+          </div>
+          <div>
               <div>
                 <p
                   class="form-control1"
@@ -221,7 +245,6 @@
                 </div>
               </div>
             </div>
-          </div>
           <select
             style="width: 80px; margin-top: 4px; min-width: 90px"
             ng-if="$index != group.rules.length - 1"

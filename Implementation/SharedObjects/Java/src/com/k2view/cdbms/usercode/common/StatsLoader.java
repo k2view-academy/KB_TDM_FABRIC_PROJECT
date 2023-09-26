@@ -62,11 +62,12 @@ public class StatsLoader implements Actor {
                 tableStats.errors = (Long) value;
             }
         });
-
+        
         // Update table with the stats per table
         IoSession session = context.ioProvider().createSession(input.string("interface"));
         IoCommand.Statement statement = session.prepareStatement(QUERY_INSERT);
-        stats.forEach((tableName, tableStats) -> {
+        try {
+            stats.forEach((tableName, tableStats) -> {
             try {
                 statement.execute(
                         executionId,
@@ -85,8 +86,14 @@ public class StatsLoader implements Actor {
                 );
             } catch (Exception e) {
                 throw new RuntimeException("Can't update stats for the table " + tableName + ".", e);
-            }
-        });
+            }   
+            });
+        } catch (Exception e) {
+            throw new RuntimeException("Can't update stats for the table", e);
+        } finally {
+            session.close();
+            statement.close();
+        }
 
     }
 

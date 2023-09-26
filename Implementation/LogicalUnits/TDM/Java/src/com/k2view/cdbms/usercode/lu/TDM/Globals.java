@@ -21,8 +21,13 @@ public class Globals extends SharedGlobals {
 	public static String SYNTHETIC_INDICATOR = "false";
 	@category("GENERATE_DATA")
 	public static String SYNTHETIC_ENVIRONMENT = "Synthetic";
+
 	@category("TDM")
 	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
+
+
+	@category("TDM")
+	public static String TDM_DEPLOY_ENVIRONMENTS = "false";
 
 
 }

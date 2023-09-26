@@ -271,6 +271,18 @@
                             </label>
                         </div>
                     </div>
+                    <div ng-if="!(additionalExecutionParametersCtrl.taskData.task_type === 'RESERVE' || 
+                        (additionalExecutionParametersCtrl.taskData.delete_before_load && !additionalExecutionParametersCtrl.taskData.load_entity) || 
+                        (additionalExecutionParametersCtrl.taskData.task_type === 'LOAD' && additionalExecutionParametersCtrl.taskData.sync_mode === 'OFF'))">
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox"
+                                ng-disabled="additionalExecutionParametersCtrl.taskData.env_mask_data"
+                                ng-model="additionalExecutionParametersCtrl.taskData.mask_sensitive_data" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Mask Sensitive Data
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -292,7 +304,7 @@
             </div>
         </div>
     </div>
-    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 20px" ></div>
+    <div ng-include="'js/components/task/tabs/taskWizardActionsFooter.html'" style="position: sticky;bottom: 56px" ></div>
     <!-- <hr>    
     <span style="display: flex;justify-content: space-between;">
         <button type="button"  ng-click="back()" style="width:80px" class="btn k2-primary-btn">Back</button>

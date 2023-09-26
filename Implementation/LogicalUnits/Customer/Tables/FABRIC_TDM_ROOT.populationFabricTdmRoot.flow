@@ -96,13 +96,13 @@
                             }
                         },
                         {
-                            "name": "get root_iid",
+                            "name": "get LU_ID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "root_iid",
+                                        "const": "LU_ID",
                                         "isDefault": false
                                     }
                                 ],
@@ -110,13 +110,13 @@
                             }
                         },
                         {
-                            "name": "get clone_id",
+                            "name": "get TDM_TASK_EXE_ID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "clone_id",
+                                        "const": "TDM_TASK_EXE_ID",
                                         "isDefault": false
                                     }
                                 ],
@@ -163,28 +163,115 @@
                                     },
                                     {
                                         "name": "K2_TDM_EID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "SOURCE_ENV",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "IID",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "TASK_NAME",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "TIMESTAMP",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Root Entity Id",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetRootEntityId"
+                                    },
+                                    {
+                                        "name": "luId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "rootLuName": {
+                                                    "type": "string"
+                                                },
+                                                "rootEntityId": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "get clone_id",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "clone_id",
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -197,23 +284,31 @@
         {
             "stages": [
                 {
-                    "name": "Set root_iid if not set",
-                    "dependsOnList": [
-                        "LU Table"
-                    ],
+                    "name": "Set Root Lu Name and IID",
+                    "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "IsNull1",
-                            "condition": "result",
+                            "name": "Set root_lu_name",
                             "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "root_lu_name",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "Set root_iid to be used by Masking/Sequences actors",
+                            "name": "Set root_iid",
                             "actorType": {
                                 "parentType": "FabricSet",
                                 "inputs": [
@@ -221,22 +316,41 @@
                                         "name": "key",
                                         "const": "root_iid",
                                         "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
                             }
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "stages": [
                 {
-                    "name": "Stage 2",
-                    "dependsOnList": [
-                        "LU Table"
-                    ],
+                    "name": "Get Generate Data Params From TDMDB and Set them as Session Variables",
+                    "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": false,
-                    "hasElse": true,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "Load GD Params From Table Into Session",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "LoadGDParamsFromTableIntoSession"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -265,30 +379,6 @@
                                         "name": "key",
                                         "const": "clone_id",
                                         "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get Generate Data Params From TDMDB and Set them as Session Variables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Load GD Params From Table Into Session",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "LoadGDParamsFromTableIntoSession"
                                     }
                                 ],
                                 "outputs": []
@@ -363,16 +453,6 @@
         {
             "leftPort": {
                 "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "rootEntityId"
-            },
-            "rightPort": {
-                "actor": "Set root_iid to be used by Masking/Sequences actors",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
                 "name": "cloneNo"
             },
             "rightPort": {
@@ -382,13 +462,69 @@
         },
         {
             "leftPort": {
-                "actor": "get root_iid",
+                "actor": "SplitIIDAndCloneNumber_Actor1",
+                "name": "instanceID"
+            },
+            "rightPort": {
+                "actor": "Get Root Entity Id",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SplitIIDAndCloneNumber_Actor1",
+                "name": "envName"
+            },
+            "rightPort": {
+                "actor": "Get Root Entity Id",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get LU_ID",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "IsNull1",
-                "name": "value"
+                "actor": "Get Root Entity Id",
+                "name": "luId"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM_TASK_EXE_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Root Entity Id",
+                "name": "taskExecId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Root Entity Id",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set root_iid",
+                "name": "value"
+            },
+            "path": [
+                "rootEntityId"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Root Entity Id",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set root_lu_name",
+                "name": "value"
+            },
+            "path": [
+                "rootLuName"
+            ]
         },
         {
             "leftPort": {
@@ -438,6 +574,16 @@
             "rightPort": {
                 "actor": "FABRIC_TDM_ROOT",
                 "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Get Root Entity Id",
+                "name": "luName"
             }
         }
     ]

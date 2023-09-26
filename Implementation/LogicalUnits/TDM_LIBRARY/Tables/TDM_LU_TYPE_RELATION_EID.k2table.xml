@@ -18,7 +18,6 @@
     <Index id="1" pk="true" unique="true" columnsIdsList="tblCol_5bfd92f6a4c74ac88d47a03ff357d382,tblCol_c1c2793e0bac4fb29c688a50aca21a9b,tblCol_26aa2d05149f4897a40f33d7294986f1,tblCol_52e6ceec4355454c8f60b2b8525b279f,tblCol_5effbcf906974718b923cb149c99c488" />
   </IndexesList>
   <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <TruncateBeforeSync>true</TruncateBeforeSync>
-  </LazyDataUpdate>
+  <LazyDataUpdate syncMethod="TimeInterval" performEvery="00:00:00" />
+  <TriggersList />
 </TableObject>

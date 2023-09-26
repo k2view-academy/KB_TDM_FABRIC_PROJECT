@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.1.0.27">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.2.0.11">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -61,8 +61,7 @@
     </TableProperties>
     <TableProperties name="CUSTOMER">
       <Populations>
-        <Population name="popCustomer.flow" order="3" disabled="false" populationType="Flow" />
-        <Population name="populationCustomerMaskSSN.flow" order="4" disabled="false" populationType="Flow" />
+        <Population name="pop.flow" order="2" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
     <TableProperties name="FABRIC_TDM_ROOT">
@@ -126,11 +125,7 @@
     </Relation>
     <Relation>
       <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="populationCustomerMaskSSN.flow" column="CUSTOMER_ID" />
-    </Relation>
-    <Relation>
-      <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
-      <To tableType="TableObject" table="CUSTOMER" populationObjectName="popCustomer.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+      <To tableType="TableObject" table="CUSTOMER" populationObjectName="pop.flow" column="customer_id" columnId="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
     </Relation>
     <Relation>
       <From tableType="TableObject" table="TAR_ACTIVITY" column="activity_id" columnId="tblCol_346517b0e24a4392bb9231b01b8a9a4e" />
@@ -186,27 +181,27 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="7.1.0.27" name="vdb.k2vdb.xml">
+    <Graph version="7.2.0.11" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 539" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Group name="TDM Tables" pos="1679 1028.45447" size="265 543.0911" wasexpanded="false" expanded="true">
+      <Group name="TDM Tables" pos="1679 1028.45447" size="265 543.0912" wasexpanded="false" expanded="true">
         <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="1683 1047.54565" size="257 120" listGroupSize="250 100" viewType="Table" />
         <Node name="TDM_LU_TYPE_RELATION_EID" pos="1683 1231.54565" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="LU_PARAMS" pos="1683 1431.54565" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Target Tables for Delete " pos="312 20.4544373" size="869 559.0911" wasexpanded="false" expanded="true">
+      <Group name="Target Tables for Delete " pos="312 20.4544373" size="869 534.0912" wasexpanded="false" expanded="true">
         <Node name="tar_collection" pos="618 39.54558" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CONTRACT" pos="618 414.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TAR_ORDERS" pos="920 439.5456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="TAR_ORDERS" pos="920 439.5456" size="257 58" listGroupSize="250 16" viewType="Table" />
         <Node name="TAR_CUSTOMER" pos="316 239.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_ACTIVITY" pos="618 239.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="TAR_CASES" pos="920 264.545563" size="257 136" listGroupSize="250 100" viewType="Table" />
       </Group>
-      <Group name="Source Tables" pos="1226 257.954437" size="1171 734.0911" wasexpanded="false" expanded="true">
-        <Node name="collection" pos="1532 277.0456" size="257 135.999969" listGroupSize="250 100" viewType="Table" />
-        <Node name="CUSTOMER" pos="1230 486.0456" size="257 152" listGroupSize="250 100" viewType="Table" />
+      <Group name="Source Tables" pos="1226 257.954437" size="1171 734.0912" wasexpanded="false" expanded="true">
+        <Node name="collection" pos="1532 277.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="CUSTOMER" pos="1230 486.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="contract" pos="1532 452.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="activity" pos="1532 652.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="address" pos="1532 852.0456" size="257 135.999969" listGroupSize="250 100" viewType="Table" />
+        <Node name="address" pos="1532 852.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="case_note" pos="2136 677.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="cases" pos="1834 652.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="orders" pos="1834 452.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
