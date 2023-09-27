@@ -47,17 +47,6 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORACLE_TEST" dbType="genericdb" active="true">
-          <dbHost>10.21.2.64</dbHost>
-          <dbPort>1521</dbPort>
-          <dbScheme>XE</dbScheme>
-          <dbUser>TDM_SOURCE</dbUser>
-          <dbPasswordEncrypted>~encs2~X2Tq3h+pT1vf1N6yMok55rXYWyVg40g9nFyOhdO2FRUnFJiRnjs5PHvW</dbPasswordEncrypted>
-          <connString>jdbc:oracle:thin:@10.21.2.64:1521/XE</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>Oracle</JdbcDriverName>
-        </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
@@ -221,20 +210,8 @@
         <Global name="SEQ_DROP_KEYSPACE" luName="">
           <Value>false</Value>
         </Global>
-        <Global name="SEQ_CACHE_INTREFACE" luName="">
+        <Global name="SEQ_CACHE_INTERFACE" luName="">
           <Value>DB_CASSANDRA</Value>
-        </Global>
-        <Global name="TDM_SYNTHETIC_DATA" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="">
-          <Value>true</Value>
-        </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -278,24 +255,6 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_BCK">
-          <Value>true</Value>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
-          <Value>1</Value>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
-          <Value>10</Value>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
-          <Value>false</Value>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
-          <Value>Synthetic</Value>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
-          <Value>false</Value>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
@@ -305,6 +264,9 @@
               <Value>localhost</Value>
             </Property>
             <Property name="Password">
+              <Value />
+            </Property>
+            <Property name="ClientName">
               <Value />
             </Property>
             <Property name="ConnectionTimeout">
@@ -344,6 +306,9 @@
               <Value>3</Value>
             </Property>
             <Property name="BlockWhenExhausted">
+              <Value>False</Value>
+            </Property>
+            <Property name="SslEnabled">
               <Value>False</Value>
             </Property>
           </Properties>
@@ -416,14 +381,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORACLE_TEST" dbType="genericdb" active="false">
-          <dbPort>1521</dbPort>
-          <dbScheme>XE</dbScheme>
-          <connString>jdbc:oracle:thin:@:1521/XE</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -588,20 +545,8 @@
         <Global name="SEQ_DROP_KEYSPACE" luName="">
           <Value>false</Value>
         </Global>
-        <Global name="SEQ_CACHE_INTREFACE" luName="">
+        <Global name="SEQ_CACHE_INTERFACE" luName="">
           <Value>DB_CASSANDRA</Value>
-        </Global>
-        <Global name="TDM_SYNTHETIC_DATA" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="">
-          <Value>true</Value>
-        </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -645,24 +590,6 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_BCK">
-          <Value>true</Value>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
-          <Value>1</Value>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
-          <Value>10</Value>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
-          <Value>false</Value>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
-          <Value>Synthetic</Value>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
-          <Value>false</Value>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
@@ -672,6 +599,9 @@
               <Value>localhost</Value>
             </Property>
             <Property name="Password">
+              <Value />
+            </Property>
+            <Property name="ClientName">
               <Value />
             </Property>
             <Property name="ConnectionTimeout">
@@ -711,6 +641,9 @@
               <Value>3</Value>
             </Property>
             <Property name="BlockWhenExhausted">
+              <Value>False</Value>
+            </Property>
+            <Property name="SslEnabled">
               <Value>False</Value>
             </Property>
           </Properties>
@@ -783,14 +716,6 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
-        </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORACLE_TEST" dbType="genericdb" active="false">
-          <dbPort>1521</dbPort>
-          <dbScheme>XE</dbScheme>
-          <connString>jdbc:oracle:thin:@:1521/XE</connString>
-          <minConnectionsNumber>0</minConnectionsNumber>
-          <maxConnectionsNumber>60</maxConnectionsNumber>
-          <JdbcDriverName>Oracle</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
           <dbHost>localhost</dbHost>
@@ -956,20 +881,8 @@
         <Global name="SEQ_DROP_KEYSPACE" luName="">
           <Value>false</Value>
         </Global>
-        <Global name="SEQ_CACHE_INTREFACE" luName="">
+        <Global name="SEQ_CACHE_INTERFACE" luName="">
           <Value>DB_CASSANDRA</Value>
-        </Global>
-        <Global name="TDM_SYNTHETIC_DATA" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="BUILD_TDMDB" luName="">
-          <Value>true</Value>
-        </Global>
-        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
-          <Value>DEV</Value>
-        </Global>
-        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
-          <Value>PROD</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -1013,24 +926,6 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
-        <Global name="BUILD_TDMDB" luName="TDM_BCK">
-          <Value>true</Value>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MIN" luName="TDM_BCK">
-          <Value>1</Value>
-        </Global>
-        <Global name="INSTANCES_RANDOM_MAX" luName="TDM_BCK">
-          <Value>10</Value>
-        </Global>
-        <Global name="SYNTHETIC_INDICATOR" luName="TDM_BCK">
-          <Value>false</Value>
-        </Global>
-        <Global name="SYNTHETIC_ENVIRONMENT" luName="TDM_BCK">
-          <Value>Synthetic</Value>
-        </Global>
-        <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM_BCK">
-          <Value>false</Value>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
@@ -1040,6 +935,9 @@
               <Value>localhost</Value>
             </Property>
             <Property name="Password">
+              <Value />
+            </Property>
+            <Property name="ClientName">
               <Value />
             </Property>
             <Property name="ConnectionTimeout">
@@ -1079,6 +977,9 @@
               <Value>3</Value>
             </Property>
             <Property name="BlockWhenExhausted">
+              <Value>False</Value>
+            </Property>
+            <Property name="SslEnabled">
               <Value>False</Value>
             </Property>
           </Properties>

@@ -7,7 +7,7 @@
         {
             "stages": [
                 {
-                    "name": "Set Globals",
+                    "name": "Init",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -30,6 +30,30 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Input SQL params",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "remark": "Optional parameters for the select query. You can set multiple input parameters separated by a comma.",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -40,7 +64,7 @@
                 {
                     "name": "Check if SQL Got Parameters",
                     "dependsOnList": [
-                        "Set Globals"
+                        "Init"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -94,7 +118,7 @@
                 {
                     "name": "Keep As is",
                     "dependsOnList": [
-                        "Set Globals"
+                        "Init"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -238,10 +262,12 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
+                                        "remark": "Set the DB interface for the select query.",
                                         "const": null
                                     },
                                     {
                                         "name": "sql",
+                                        "remark": "Select statement to get the task's entities.",
                                         "const": null
                                     }
                                 ],
@@ -297,6 +323,26 @@
     "connections": [
         {
             "leftPort": {
+                "actor": "Input SQL params",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Input SQL params",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Parameters Equals \"null\"?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Set to Empty String",
                 "name": "value"
             },
@@ -321,8 +367,8 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Params Is Not Empty?",
-                "name": "a"
+                "actor": "Trim Params",
+                "name": "string"
             }
         },
         {
@@ -331,8 +377,8 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Trim Params",
-                "name": "string"
+                "actor": "Params Is Not Empty?",
+                "name": "a"
             }
         },
         {
@@ -381,17 +427,7 @@
                 "name": "SQLParams"
             },
             "rightPort": {
-                "actor": "Parameters Equals \"null\"?",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SQLParams"
-            },
-            "rightPort": {
-                "actor": "SQLParams",
+                "actor": "Input SQL params",
                 "name": "value"
             }
         },
