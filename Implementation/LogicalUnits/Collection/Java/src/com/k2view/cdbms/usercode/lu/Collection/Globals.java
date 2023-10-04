@@ -15,7 +15,7 @@ public class Globals extends SharedGlobals {
 
 	@desc("The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name")
 	@category("TDM")
-	public static final String ROOT_COLUMN_NAME = "collection_id";
+	public static final String ROOT_COLUMN_NAME = "customer_id";
 
 	
 

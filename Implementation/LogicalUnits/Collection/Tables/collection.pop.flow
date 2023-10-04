@@ -15,7 +15,7 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "collection_id",
+                                        "name": "customer_id",
                                         "schema": {}
                                     }
                                 ],
@@ -427,7 +427,7 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "collection_id"
+                                            "customer_id"
                                         ]
                                     },
                                     {
@@ -435,7 +435,7 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "collection_id",
+                                        "name": "customer_id",
                                         "schema": {}
                                     }
                                 ],
@@ -649,11 +649,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "collection_id"
+                "name": "customer_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "collection_id"
+                "name": "customer_id"
             }
         },
         {

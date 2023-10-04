@@ -15,7 +15,7 @@
                                 "readOnly": true,
                                 "inputs": [
                                     {
-                                        "name": "order_id",
+                                        "name": "contract_id",
                                         "schema": {}
                                     }
                                 ],
@@ -427,7 +427,7 @@
                                     {
                                         "name": "keys",
                                         "const": [
-                                            "order_id"
+                                            "contract_id"
                                         ]
                                     },
                                     {
@@ -435,7 +435,7 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "order_id",
+                                        "name": "contract_id",
                                         "schema": {}
                                     }
                                 ],
@@ -649,11 +649,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "order_id"
+                "name": "contract_id"
             },
             "rightPort": {
                 "actor": "PopulationArgs",
-                "name": "order_id"
+                "name": "contract_id"
             }
         },
         {
