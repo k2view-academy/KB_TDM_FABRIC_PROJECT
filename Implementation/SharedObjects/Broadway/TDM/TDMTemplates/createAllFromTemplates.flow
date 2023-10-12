@@ -165,6 +165,13 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "CREATE_DELETE_TABLES",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -228,6 +235,27 @@
                                         "name": "OVERRIDE_EXISTING_FLOWS",
                                         "schema": {
                                             "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SOURCE_INTERFACE",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database",
+                                                "CassandraLoader"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SOURCE_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -344,6 +372,16 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "CREATE_DELETE_TABLES"
+            },
+            "rightPort": {
+                "actor": "create Flows From Templates",
+                "name": "CREATE_DELETE_TABLES"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "CREATE_GENERATE_FLOWS"
             },
             "rightPort": {
@@ -369,6 +407,26 @@
             "rightPort": {
                 "actor": "create Generate Data Table Flows",
                 "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "create Generate Data Table Flows",
+                "name": "SOURCE_INTERFACE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "create Generate Data Table Flows",
+                "name": "SOURCE_SCHEMA"
             }
         }
     ]

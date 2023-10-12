@@ -5443,7 +5443,8 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 					map.put("default", row.get("default"));
 					map.put("type", row.get("type"));
 					map.put("mandatory", row.get("mandatory"));
-					map.put("description", row.get("remark"));
+					String description = ("" + row.get("remark")).replaceAll("/n", "\n");
+					map.put("description", description);
 					result.add(map);
 				}
 			}
@@ -5640,9 +5641,15 @@ String sql= "SELECT * FROM " + TDMDB_SCHEMA + ".product_logical_units lu " +
 		                      HashMap<String, Object> map = new HashMap<>();
 		                      HashMap<Object, Object> editorMap = new HashMap<>();
 		                String distParamName = luName.toLowerCase() + "_" + tableName.toLowerCase() + "_number_of_records";
+						String minDist = "" + db(TDM).fetch("SELECT PARAM_VALUE FROM " + TDMDB_SCHEMA + ".TDM_GENERAL_PARAMETERS " +
+							"WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MIN'").firstValue();
+						String maxDist = "" + db(TDM).fetch("SELECT PARAM_VALUE FROM " + TDMDB_SCHEMA + ".TDM_GENERAL_PARAMETERS " +
+							"WHERE PARAM_NAME = 'TABLE_DEFAULT_DISTRIBUTION_MAX'").firstValue();
 		                String contextString = "{" + distParamName + 
-		                    "={self=distribution},distribution={const={distribution=uniform,round=true,type=integer,minimum=1,maximum=3}}}";
-		                Map<?, ?> distDefault = Json.get().fromJson("{distribution=uniform,round=true,type=integer,minimum=1,maximum=3}");
+		                    "={self=distribution},distribution={const={distribution=uniform,round=true,type=integer,minimum=" + 
+							minDist + ",maximum=" + maxDist + "}}}";
+		                Map<?, ?> distDefault = Json.get().fromJson("{distribution=uniform,round=true,type=integer,minimum=" + 
+							minDist + ",maximum=" + maxDist + "}");
 		                Map<?, ?> context = Json.get().fromJson(contextString);
 		                editorMap.put("id","com.k2view.distribution");
 		                editorMap.put("name", distParamName);

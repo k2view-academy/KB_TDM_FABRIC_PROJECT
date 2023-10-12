@@ -47,25 +47,15 @@
                             }
                         },
                         {
-                            "name": "Input Value",
+                            "name": "Parse Input ID",
                             "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
+                                "parentType": "JsonParser",
+                                "inputs": [],
                                 "outputs": [
                                     {
-                                        "name": "value",
+                                        "name": "object",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "source_iid": {
-                                                    "type": "string"
-                                                }
-                                            }
+                                            "type": "integer"
                                         }
                                     }
                                 ]
@@ -404,29 +394,23 @@
         },
         {
             "leftPort": {
-                "actor": "Input Value",
-                "name": "value"
+                "actor": "Parse Input ID",
+                "name": "object"
             },
             "rightPort": {
                 "actor": "Format Simple EID",
                 "name": "sourceIID"
-            },
-            "path": [
-                "source_iid"
-            ]
+            }
         },
         {
             "leftPort": {
-                "actor": "Input Value",
-                "name": "value"
+                "actor": "Parse Input ID",
+                "name": "object"
             },
             "rightPort": {
                 "actor": "Format DataFlux EID",
                 "name": "sourceIID"
-            },
-            "path": [
-                "source_iid"
-            ]
+            }
         },
         {
             "leftPort": {
@@ -474,8 +458,8 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Input Value",
-                "name": "value"
+                "actor": "Parse Input ID",
+                "name": "stream"
             }
         },
         {

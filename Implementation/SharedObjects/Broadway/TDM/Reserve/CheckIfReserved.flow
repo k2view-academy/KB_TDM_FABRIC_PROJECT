@@ -64,7 +64,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript1",
+                            "name": "Check Reservation?",
                             "actorType": {
                                 "parentType": "JavaScript",
                                 "inputs": [
@@ -108,25 +108,15 @@
                             }
                         },
                         {
-                            "name": "Input Value",
+                            "name": "Parse Input ID",
                             "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
+                                "parentType": "JsonParser",
+                                "inputs": [],
                                 "outputs": [
                                     {
-                                        "name": "value",
+                                        "name": "object",
                                         "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "source_iid": {
-                                                    "type": "string"
-                                                }
-                                            }
+                                            "type": "integer"
                                         }
                                     }
                                 ]
@@ -554,7 +544,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Check Reservation?",
                 "name": "taskType"
             }
         },
@@ -574,7 +564,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Check Reservation?",
                 "name": "sequenceInd"
             }
         },
@@ -584,13 +574,13 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript1",
+                "actor": "Check Reservation?",
                 "name": "filteroutReserved"
             }
         },
         {
             "leftPort": {
-                "actor": "JavaScript1",
+                "actor": "Check Reservation?",
                 "name": "result"
             },
             "rightPort": {
@@ -600,16 +590,13 @@
         },
         {
             "leftPort": {
-                "actor": "Input Value",
-                "name": "value"
+                "actor": "Parse Input ID",
+                "name": "object"
             },
             "rightPort": {
                 "actor": "Entity ID To String",
                 "name": "value"
-            },
-            "path": [
-                "source_iid"
-            ]
+            }
         },
         {
             "leftPort": {
@@ -727,8 +714,8 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Input Value",
-                "name": "value"
+                "actor": "Parse Input ID",
+                "name": "stream"
             }
         },
         {

@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TAR_CRM_DB" type="genericdb" version="7.1.0.31">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TAR_CRM_DB" type="genericdb" version="7.2.0.13">
   <Active>true</Active>
   <DataSource>dev-pg-service</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>TAR_CRM_DB</DataBase>
   <UserId>TAR_CRM_USER</UserId>
-  <Password>9RVSlpQuYVkzGSfOmjyCxDDHXc+4fJgR+ApngSw7qng=:yf9/7q6QkRQjRJAJwdfi9n2l1IGxnsv2KLpEtxwAOWY=</Password>
+  <Password>~encs2~57la62FPDgUOOffVyKTKERdbmtXXD9tQh5I+Ouewn3iXavJZHxVsanCepx0=</Password>
   <ConnectionStringServerSide>jdbc:postgresql://dev-pg-service:5432/TAR_CRM_DB?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>

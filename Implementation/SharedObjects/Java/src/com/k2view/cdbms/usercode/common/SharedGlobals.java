@@ -137,7 +137,13 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String SEQ_DROP_KEYSPACE = "false";
 
+	@desc("The interface to be used for storing the cache of Masking")
 	@category("TDM")
 	public static String SEQ_CACHE_INTERFACE = "DB_CASSANDRA";
+
+	@desc("The separator to be used for parsing the values of Parameters")
+	@category("TDM")
+	public static final String TDM_PARAMETERS_SEPARATOR = "<#>";
+
 
 }

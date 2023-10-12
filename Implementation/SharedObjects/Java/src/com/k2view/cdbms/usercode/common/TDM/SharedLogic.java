@@ -17,9 +17,7 @@ import com.k2view.fabric.common.Util;
 import com.k2view.fabric.common.mtable.MTable;
 import com.k2view.fabric.common.mtable.MTables;
 import java.util.Date;
-import java.util.stream.Collectors;
 import java.sql.SQLException;
-import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -27,8 +25,8 @@ import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.DecisionFunction;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.RootFunction;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.TDM_DELETE_TABLES_PREFIX;
 import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;
@@ -43,7 +41,6 @@ import com.k2view.fabric.events.*;
 import com.k2view.fabric.fabricdb.datachange.TableDataChange;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {
@@ -74,7 +71,7 @@ public class SharedLogic {
 
 	@desc("New function for TDM 5.1- this function is called if the open and close separators are populated for the IID.\r\nThe function returns the IID without the separators + the end position of the IID (including the separators) in the UID")
 	@out(name = "res", type = Object[].class, desc = "")
-	public static Object[] fnRemoveSeparatorsFromIID(String i_UID, String openSeparator, String closeSeprator) throws Exception {
+	public static Object[] fnRemoveSeparatorsFromIID(String i_UID, String openSeparator, String closeSeprator) {
 		String instanceID = "";
 		int endOfIidIndex = 0;
 
@@ -128,14 +125,6 @@ public class SharedLogic {
 		UserCode.yield(fnValidateNdGetInstance());
 	}
 
-
-	@type(RootFunction)
-	@out(name = "ENTITY_ID", type = void.class, desc = "")
-	public static void fnRootLuParams(String ENTITY_ID) throws Exception {
-		if (1 == 2) UserCode.yield(new Object[]{null});
-	}
-
-
 	public static void fnEnrichmentLuParams() throws Exception {
 		//*****************************************************//
 		//    Function used to update the table LU_PARAMS      //
@@ -161,16 +150,11 @@ public class SharedLogic {
 		String prefix = "";
 		String stringInsertFabricLuParam = "INSERT OR REPLACE INTO " + tblNameFabric + " (ROOT_LU_NAME, ROOT_IID ,ENTITY_ID, SOURCE_ENVIRONMENT, PARAMS_JSON) " +
 				" VALUES(?, ?, ?, ?, ?)";
-		//log.info("fnEnrichmentLuParams is Starting");
-        // TDM 8.1 - Add TDMDB  tdm_params_distinct_values to hold the different values of each param field
-        String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
-            "(LU_NAME, FIELD_NAME, NUMBER_OF_VALUES, FIELD_VALUES, IS_NUMERIC, MIN_VALUE, MAX_VALUE) " +
-            "VALUES (?, ? ,?, ?, ?, ?, ?)";
-
-            String updateDistintValuesSql = "UPDATE " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES SET " +
-            "NUMBER_OF_VALUES = ?, FIELD_VALUES = ?, IS_NUMERIC = ?, MIN_VALUE = ?, MAX_VALUE = ? " +
-            "WHERE lu_name = ? AND field_name = ?";
-
+		
+		String deleteDistinctValuesSql = "DELETE FROM " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
+				"WHERE lu_name = ? AND field_name = ANY (string_to_array(?, ','))";
+		//log.info("fnEnrichmentLuParams is Starting - " +  getLuType().luName);
+		
 		Object[] insRs = fnValidateNdGetInstance();
 		Db.Rows rows= null;
 		
@@ -183,368 +167,340 @@ public class SharedLogic {
 		boolean tdmLuParamAltered = false;
 		ciTDM.beginTransaction();
 		
-		try{
-            // TDM 8.1 - Get the existing distinct values of the LU's Parameters
-            Map<String, Map<String, Object>> disitnctValuesMap = new HashMap<>();
-            String getDistinctValuesSql = "SELECT * from " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES WHERE lu_name = ?";
-            Db.Rows distinctValues = ciTDM.fetch(getDistinctValuesSql, luName);
-            for (Db.Row row: distinctValues) {
-                Map<String, Object> fieldData = new HashMap<>();
-                fieldData.put("numberOfValues", Long.parseLong(row.get("number_of_values").toString()));
-                fieldData.put("isNumric", Boolean.parseBoolean(row.get("is_numeric").toString()));
-                fieldData.put("minValue", row.get("min_value").toString()).toString();
-
-                fieldData.put("maxValue", row.get("max_value").toString()).toString();
-                String value = row.get("field_values").toString();
-                value = value.replace("{", "");
-                value = value.replace("}", "");
-
-                HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(",")).collect(Collectors.toSet()));
-                fieldData.put("fieldValues", values);
-                disitnctValuesMap.put(row.get("field_name").toString(), fieldData);
-            }
-
-			Db.Rows cols= ciTDM.fetch(tblInfoSql, tblName, TDMDB_SCHEMA);
-			for (Db.Row row:cols) {
-				if(row.get("column_name") != null)
-					pgColsList.add((row.get("column_name") + ""));
-			}
-			if(cols != null) {
-				cols.close();
-			}
-		
-			sbCreStmt.append( "ROOT_LU_NAME TEXT,ROOT_IID TEXT,ENTITY_ID TEXT,SOURCE_ENVIRONMENT TEXT");
-		
-			// TDM 6.0 - In case of versioning extact, the paramters are not supported, 
-			//therefore the LU_PARAM will be populated only if the VERSOIN_NAME from instanceID will be empty
-			if (insRs[2] != "") // If version_name is not null then populate the LU_PARAM tables
-			{
-				StringBuilder sqlUpdateTDM = new StringBuilder().append(" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey Do update set ");
-				StringBuilder sqlInsertTDM = new StringBuilder().append("insert into " + TDMDB_SCHEMA + "." + tblName + "(");
-				StringBuilder sqlInsertTDMBind = new StringBuilder().append(" values (");
-				ArrayList params = new ArrayList<>();
-				int i=0;
-
-				if(paramData.resultSet()!=null){
-		
-					prefix = "";
-                    
-					for(Db.Row indx:paramData){
-						String luParamColName = indx.get("COLUMN_NAME").toString().trim();
-						luColsList.add(LuName.toUpperCase() + "." + luParamColName.toUpperCase());
-						String columnName = "\"" + LuName + "." + luParamColName.toUpperCase() + "\"";
-						sbCreStmt.append("," + columnName + " TEXT[] ");
-						//Building the update statement +Execution of the query
-						//stringInsertFabricLuParam.append(prefix + luParamColName );
-						sqlUpdateTDM.append(prefix + columnName+" = ?");
-						sqlInsertTDM.append(prefix + columnName );
-						sqlInsertTDMBind.append(prefix + " ? ");
-		
-						StringBuilder values = new StringBuilder();
-                        HashSet<String> valuesSet = new HashSet<>();
-						String sql = indx.get("SQL").toString();
-		
-						//Check if SQL query contains distinct and add it if not
-						if (!sql.contains("distinct")){
-							sql = sql.replace("select","select distinct");
-						}
-		
-						Object[] valuesArr = null;
-						Db.Rows rs1 = null;
-		
-						rs1 = ludb().fetch(sql);
-						values.append("{");
-						for (Db.Row row : rs1) {
-							//Skip null values
-							if (row.cell(0) != null) {
-								String val = "" + row.cell(0);
-								val = val.replaceAll("[\\\\\"\'\n\r\t\0\f\b]", "\\\\$0");
-								values.append("\"" + val + "\",");
-                                if (!val.isEmpty()) {
-                                    valuesSet.add("\"" + val + "\"");
-                                }
-							}
-						}
-		
-						//Check if the last element is a comma and remove it
-						if (values.lastIndexOf(",") == values.length()-1){
-							values.deleteCharAt(values.lastIndexOf(","));
-						}
-						values.append("}");
-		
-		
-						//If no values, set NULL
-						if (values.toString().equals("{}")){
-							params.add(i,null);
-						}else{
-							params.add(i, values.toString());
-						}
-						i++;
-						prefix = ",";
-						rs1.close();
-
-                        disitnctValuesMap = fnUpdateDistinctFieldData(columnName, disitnctValuesMap, valuesSet);
-					}
-				}
-				sbCreStmt.append(", CONSTRAINT " + tblName + "_pkey PRIMARY KEY (root_lu_name, root_iid, entity_id, source_environment))");
-		
-				if (paramData != null) {
-					paramData.close();
-				}
-				//log.info("pgColsList size: " + pgColsList.size() + ", pgColsList: " + pgColsList);
-				if(pgColsList.size() == 0){//If its first time
-		
-					try {
-						//log.info("Running Create table: " + sbCreStmt.toString());
-						ciTDM.execute(sbCreStmt.toString());
-						tdmLuParamAltered = true;
-					}catch (Exception e) {
-						//log.error("fnEnrichmentLuParams - Error Message: " + e.getMessage());
-						if (e.getMessage().toString().contains("duplicate key value violates unique constraint") ||
-								e.getMessage().toString().contains("already exists")) {
-							//log.warn("fnEnrichmentLuParams - Paramaters table " + tblName + " already exists, no need to create it");
-							tdmLuParamAltered = false;
-							ciTDM.execute("rollback");
-						} else {
-							log.error("fnEnrichmentLuParams - failed to create Paramaters table " + tblName);
-							e.printStackTrace();
-							throw new RuntimeException(e.getMessage());
-						}
-		
-					}
-				}else{
-					//Check if PG params table has all the LUDB params table columns  - if not --> ADD columns to the PG params table
-					prefix = "";
-					boolean runCmnd = false;
-					for(String mapEnt : luColsList){
-						if(!pgColsList.contains(mapEnt)){
-							sbAltStmtAdd.append(prefix + "\"" + mapEnt + "\" TEXT[]");
-							prefix = ", ADD COLUMN IF NOT EXISTS ";
-							runCmnd = true;
-							//set the tdmLuParamAltered indicator to true
-							tdmLuParamAltered= true;
-						}
-					}
-		
-					if(runCmnd) {
-						//log.info("Running sbAltStmtAdd: " + sbAltStmtAdd);
-						ciTDM.execute(sbAltStmtAdd.toString());
-					}
-					//Check if LUDB params table is missing columns that PG params table has  - if yes --> drop those PG columns
-					prefix = "";
-					runCmnd = false;
-					for(String mapEnt : pgColsList){
-						if(!luColsList.contains(mapEnt) && !"root_lu_name".equals(mapEnt) && !"root_iid".equals(mapEnt)
-								&& !"entity_id".equals(mapEnt) && !"source_environment".equals(mapEnt)){
-							sbAltStmtRem.append(prefix + "\"" + mapEnt + "\"");
-							prefix = ", DROP COLUMN IF EXISTS ";
-							runCmnd = true;
-		
-							//set the tdmLuParamAltered indicator to true
-							tdmLuParamAltered= true;
-						}
-					}
-		
-					if(runCmnd) {
-						//log.info("Running sbAltStmtRem: " + sbAltStmtRem);
-						ciTDM.execute(sbAltStmtRem.toString());
-					}
-				}
-
-				//TDM 8.1 - Get the ROOT_IID
-				String rootIid = "" + fabric().fetch("set ROOT_IID").firstValue();
-				String rootLuName = "" + fabric().fetch("set ROOT_LU_NAME").firstValue();
-		
-				if (luColsList.size() > 0) {
-					Object[] finParams = new Object[params.size() * 2 + 4];
-					//Object[] finParamsLu = new Object[params.size() + 3];
-					for (int j = 0; j < params.size(); j++) {
-						finParams[j] = params.get(j);
-						//	finParamsLu[j] = params.get(j);
-					}
-		
-					finParams[params.size()] = rootLuName;
-					finParams[params.size() + 1] = rootIid;
-					finParams[params.size() + 2] = insRs[2];
-					finParams[params.size() + 3] = insRs[1];
-					//finParamsLu[params.size()] = insRs[2];
-					//finParamsLu[params.size() + 1] = insRs[1];
-		
-					for (i = 0; i < params.size(); i++) {
-						finParams[params.size() + 4 + i] = params.get(i);
-					}
-		
-					// add a stringInsertFabricLuParam to insert the columns without the concatenation of the lu name
-					//stringInsertFabricLuParam.append(", entity_id, source_environment) ");
-					sqlInsertTDM.append(", root_lu_name, root_iid, entity_id, source_environment) ");
-					sqlInsertTDMBind.append(", ?, ?, ?, ?) ");
-					//log.info("sqlInsertTDM: " + sqlInsertTDM);
-					ciTDM.execute(sqlInsertTDM.toString() + sqlInsertTDMBind.toString() + sqlUpdateTDM.toString(),finParams);
-                    for (String key: disitnctValuesMap.keySet()) {
-                        Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
-                        Boolean newField  = Boolean.parseBoolean(fieldinfo.get("newField").toString());
-                        Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());
-                        Boolean isNumeric  = Boolean.parseBoolean(fieldinfo.get("isNumeric").toString());
-                        String minValue = fieldinfo.get("minValue").toString();
-                        String maxValue = fieldinfo.get("maxValue").toString();
-
-                        HashSet<String> valuesSet = (HashSet<String>)fieldinfo.get("fieldValues");
-                        String newFieldvalues= String.join(",", valuesSet);
-                        newFieldvalues = "{" + newFieldvalues + "}";
-                        if (newField) {
-                            ciTDM.execute(insertDistintValuesSql, luName.toUpperCase(), key, numberOfValues, newFieldvalues, isNumeric, minValue, maxValue);
-                        } else {
-                            ciTDM.execute(updateDistintValuesSql, numberOfValues, newFieldvalues, isNumeric, minValue, maxValue, luName.toUpperCase(), key);
-                        }
-                    }
-		
-					//TDM 8.1 - The LU Param Table will hold all the fields in one Json field
-					String paramsJson = fabric().fetch("broadway TDM.CreateJson fieldsNames=?, fieldsValues=?", luColsList, params).firstValue().toString();
-					fabric().execute(stringInsertFabricLuParam, rootLuName, rootIid, insRs[2], insRs[1], paramsJson);
-				} else {//no parameters defined - inserting only entity_id and source_environment values
-					Object[] bind_for_no_params = new Object[4];
-					bind_for_no_params[0] = insRs[2];
-					bind_for_no_params[1] = insRs[1];
-					bind_for_no_params[2] = rootIid;
-					bind_for_no_params[3] = rootLuName;
-					// TALI- fix- 2-Dec-18- add on conflict on constraint do nothing to avoid a violation of a PK if the entity already exists in the params table
-		
-					ciTDM.execute("insert into " + TDMDB_SCHEMA + "." + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)" +
-							" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
-		
-					// Tali- TDM 5.5- fix- add concatenate the lu_name to the table name
-					fabric().execute("insert or replace into "+ tblNameFabric + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)", bind_for_no_params);
-				}
-		
-				ciTDM.commit();
-			}
-		
-		} catch (Exception e) {
-            log.error("Lu Params Had Failed: " + e.getMessage());
-        } finally
-		{
-			if(rows != null) rows.close();
-			//log.info("fnEnrichmentLuParams IS DONE");
+		Db.Rows cols= ciTDM.fetch(tblInfoSql, tblName, TDMDB_SCHEMA);
+		for (Db.Row row:cols) {
+			if(row.get("column_name") != null)
+				pgColsList.add((row.get("column_name") + ""));
 		}
+		if(cols != null) {
+			cols.close();
+		}
+		
+		sbCreStmt.append( "ROOT_LU_NAME TEXT,ROOT_IID TEXT,ENTITY_ID TEXT,SOURCE_ENVIRONMENT TEXT");
+		
+		// TDM 6.0 - In case of versioning extact, the paramters are not supported,
+		//therefore the LU_PARAM will be populated only if the VERSOIN_NAME from instanceID will be empty
+		if (insRs[2] != "") // If version_name is not null then populate the LU_PARAM tables
+		{
+			StringBuilder sqlUpdateTDM = new StringBuilder().append(" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey Do update set ");
+			StringBuilder sqlInsertTDM = new StringBuilder().append("insert into " + TDMDB_SCHEMA + "." + tblName + "(");
+			StringBuilder sqlInsertTDMBind = new StringBuilder().append(" values (");
+			ArrayList params = new ArrayList<>();
+			ArrayList<String> luColsArray = new ArrayList<>();
+			int i=0;
+		
+			if(paramData.resultSet()!=null){
+		
+				prefix = "";
+		
+				for(Db.Row indx:paramData){
+					String luParamColName = indx.get("COLUMN_NAME").toString().trim();
+					luColsList.add(LuName.toUpperCase() + "." + luParamColName.toUpperCase());
+					luColsArray.add(i,LuName.toUpperCase() + "." + luParamColName.toUpperCase());
+					String columnName = "\"" + LuName + "." + luParamColName.toUpperCase() + "\"";
+					sbCreStmt.append("," + columnName + " TEXT[] ");
+		
+					//Building the update statement +Execution of the query
+					sqlUpdateTDM.append(prefix + columnName+" = ?");
+					sqlInsertTDM.append(prefix + columnName );
+					sqlInsertTDMBind.append(prefix + " ? ");
+		
+					StringBuilder values = new StringBuilder();
+					String sql = indx.get("SQL").toString();
+		
+					//Check if SQL query contains distinct and add it if not
+					if (!sql.contains("distinct")){
+						sql = sql.replace("select","select distinct");
+					}
+		
+					Object[] valuesArr = null;
+					Db.Rows rs1 = null;
+		
+					rs1 = ludb().fetch(sql);
+					values.append("{");
+					for (Db.Row row : rs1) {
+						//Skip null values
+						if (row.cell(0) != null) {
+							String val = "" + row.cell(0);
+							val = val.replaceAll("[\\\\\"\'\n\r\t\0\f\b]", "\\\\$0");
+							values.append("\"" + val + "\",");
+						}
+					}
+		
+					//Check if the last element is a comma and remove it
+					if (values.lastIndexOf(",") == values.length()-1){
+						values.deleteCharAt(values.lastIndexOf(","));
+					}
+					values.append("}");
+		
+		
+					//If no values, set NULL
+					if (values.toString().equals("{}")){
+						params.add(i,null);
+					}else{
+						params.add(i, values.toString());
+					}
+					i++;
+					prefix = ",";
+					rs1.close();
+				}
+			}
+			sbCreStmt.append(", CONSTRAINT " + tblName + "_pkey PRIMARY KEY (root_lu_name, root_iid, entity_id, source_environment))");
+		
+			if (paramData != null) {
+				paramData.close();
+			}
+		
+			if(pgColsList.size() == 0){//If its first time
+		
+				try {
+					ciTDM.execute(sbCreStmt.toString());
+					tdmLuParamAltered = true;
+				}catch (Exception e) {
+					//log.error("fnEnrichmentLuParams - Error Message: " + e.getMessage());
+					if (e.getMessage().contains("duplicate key value violates unique constraint") ||
+							e.getMessage().contains("already exists")) {
+						//log.warn("fnEnrichmentLuParams - Parameters table " + tblName + " already exists, no need to create it");
+						tdmLuParamAltered = false;
+						ciTDM.execute("rollback");
+					} else {
+						log.error("fnEnrichmentLuParams - failed to create Parameters table " + tblName);
+						e.printStackTrace();
+						throw new RuntimeException(e.getMessage());
+					}
+		
+				}
+			}else{
+				//Check if PG params table has all the LUDB params table columns  - if not --> ADD columns to the PG params table
+				prefix = "";
+				boolean runCmnd = false;
+				for(String mapEnt : luColsList){
+					if(!pgColsList.contains(mapEnt)){
+						sbAltStmtAdd.append(prefix + "\"" + mapEnt + "\" TEXT[]");
+						prefix = ", ADD COLUMN IF NOT EXISTS ";
+						runCmnd = true;
+						//set the tdmLuParamAltered indicator to true
+						tdmLuParamAltered= true;
+					}
+				}
+		
+				if(runCmnd) {
+					ciTDM.execute(sbAltStmtAdd.toString());
+				}
+				//Check if LUDB params table is missing columns that PG params table has  - if yes --> drop those PG columns
+				prefix = "";
+				runCmnd = false;
+				String dropFields = "";
+				for(String mapEnt : pgColsList){
+					if(!luColsList.contains(mapEnt) && !"root_lu_name".equals(mapEnt) && !"root_iid".equals(mapEnt)
+							&& !"entity_id".equals(mapEnt) && !"source_environment".equals(mapEnt)){
+						sbAltStmtRem.append(prefix + "\"" + mapEnt + "\"");
+						dropFields = dropFields + (prefix == "" ? "" : "," ) + "\"" + mapEnt + "\"";
+						prefix = ", DROP COLUMN IF EXISTS ";
+						runCmnd = true;
+		
+						//set the tdmLuParamAltered indicator to true
+						tdmLuParamAltered= true;
+					}
+				}
+		
+				if(runCmnd) {
+					ciTDM.execute(sbAltStmtRem.toString());
+					//log.info("deleteDistinctValuesSql: " + deleteDistinctValuesSql + ", dropFields: " + dropFields);
+					ciTDM.execute(deleteDistinctValuesSql, luName, dropFields);
+				}
+			}
+		
+			//TDM 8.1 - Get the ROOT_IID
+			String rootIid = "" + fabric().fetch("set ROOT_IID").firstValue();
+			String rootLuName = "" + fabric().fetch("set ROOT_LU_NAME").firstValue();
+		
+			if (luColsList.size() > 0) {
+				Object[] finParams = new Object[params.size() * 2 + 4];
+				//Object[] finParamsLu = new Object[params.size() + 3];
+				for (int j = 0; j < params.size(); j++) {
+					finParams[j] = params.get(j);
+					//	finParamsLu[j] = params.get(j);
+				}
+		
+				finParams[params.size()] = rootLuName;
+				finParams[params.size() + 1] = rootIid;
+				finParams[params.size() + 2] = insRs[2];
+				finParams[params.size() + 3] = insRs[1];
+		
+				for (i = 0; i < params.size(); i++) {
+					finParams[params.size() + 4 + i] = params.get(i);
+				}
+		
+				// add a stringInsertFabricLuParam to insert the columns without the concatenation of the lu name
+				sqlInsertTDM.append(", root_lu_name, root_iid, entity_id, source_environment) ");
+				sqlInsertTDMBind.append(", ?, ?, ?, ?) ");
+				//log.info("sqlInsertTDM: " + sqlInsertTDM);
+				ciTDM.execute(sqlInsertTDM.toString() + sqlInsertTDMBind.toString() + sqlUpdateTDM.toString(),finParams);
+		
+				//TDM 8.1 - The LU Param Table will hold all the fields in one Json field
+				String paramsJson = fabric().fetch("broadway TDM.CreateJson fieldsNames=?, fieldsValues=?", luColsArray, params).firstValue().toString();
+				fabric().execute(stringInsertFabricLuParam, rootLuName, rootIid, insRs[2], insRs[1], paramsJson);
+			} else {//no parameters defined - inserting only entity_id and source_environment values
+				Object[] bind_for_no_params = new Object[4];
+				bind_for_no_params[0] = insRs[2];
+				bind_for_no_params[1] = insRs[1];
+				bind_for_no_params[2] = rootIid;
+				bind_for_no_params[3] = rootLuName;
+				// TALI- fix- 2-Dec-18- add on conflict on constraint do nothing to avoid a violation of a PK if the entity already exists in the params table
+		
+				ciTDM.execute("insert into " + TDMDB_SCHEMA + "." + tblName + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)" +
+						" ON CONFLICT ON CONSTRAINT " + tblName + "_pkey DO NOTHING", bind_for_no_params);
+		
+				// Tali- TDM 5.5- fix- add concatenate the lu_name to the table name
+				fabric().execute("insert or replace into "+ tblNameFabric + " (ENTITY_ID, SOURCE_ENVIRONMENT, ROOT_IID, ROOT_LU_NAME) values (?,?,?,?)", bind_for_no_params);
+			}
+		
+			ciTDM.commit();
+		}
+		
+		if(rows != null) rows.close();
+		//log.info("fnEnrichmentLuParams IS DONE");
 	}
 
-    public static Map<String,Map<String,Object>> fnUpdateDistinctFieldData(String columnName, Map<String,Map<String,Object>> distinctTable, 
-        HashSet<String> newValuesSet) {
-        Long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
-        //log.info("Starting fnUpdateDistinctFieldData with COMBO_MAX_COUNT: " + maxNumOfValues);
+	public static Map<String,Map<String,Object>> fnUpdateDistinctFieldData(String columnName, Map<String,Map<String,Object>> distinctTable,
+																		   HashSet<String> newValuesSet) {
+		Long maxNumOfValues = Long.parseLong(getGlobal("COMBO_MAX_COUNT", "TDM"));
 
-        if (distinctTable.containsKey(columnName)) {
-            //log.info("fnUpdateDistinctFieldData - Found: " + columnName);
-            Map <String, Object> currFieldData = distinctTable.get(columnName);
-            if (Long.parseLong(currFieldData.get("numberOfValues").toString()) <= maxNumOfValues) {
-                HashSet <String> curreValues = (HashSet <String>)currFieldData.get("fieldValues");
-                if (newValuesSet.size() +  curreValues.size() >= maxNumOfValues + 1) {
-                    currFieldData.put("numberOfValues", maxNumOfValues + 1);
-                    currFieldData.put("fieldValues", new HashSet<String>());
-                } else {
-                    if (newValuesSet != null) {
-                        curreValues.addAll(newValuesSet);
-                    }
-                    currFieldData.put("numberOfValues", curreValues.size());
-                    currFieldData.put("fieldValues", curreValues);
-                }
+		Map<String, Object> currFieldData;
+		if (distinctTable.containsKey("\"" + columnName + "\"")) {
+			//log.info("fnUpdateDistinctFieldData - Found: " + columnName);
+			currFieldData = distinctTable.get("\"" + columnName + "\"");
+			if (Long.parseLong(currFieldData.get("numberOfValues").toString()) <= maxNumOfValues) {
+				HashSet <String> curreValues = (HashSet <String>)currFieldData.get("fieldValues");
+				if (newValuesSet.size() +  curreValues.size() >= maxNumOfValues + 1) {
+					currFieldData.put("numberOfValues", maxNumOfValues + 1);
+					currFieldData.put("fieldValues", new HashSet<String>());
+				} else {
+					if (newValuesSet != null && newValuesSet.size() > 0) {
+						curreValues.addAll(newValuesSet);
+					}
 
-            }
+					currFieldData.put("numberOfValues", curreValues.size());
+					currFieldData.put("fieldValues", curreValues);
+				}
 
-            if(Boolean.parseBoolean(currFieldData.get("isNumeric").toString())) {
-                Map<String, String> currMinMax = new HashMap<>();
-                currMinMax.put("MIN",currFieldData.get("minValue").toString());
-                currMinMax.put("MAX",currFieldData.get("maxValue").toString());
-                
-                currMinMax = fnGetMinMaxValues(newValuesSet, currMinMax);
+			}
 
-                currFieldData.put("minValue", currMinMax.get("MIN"));
-                currFieldData.put("maxValue", currMinMax.get("MAX"));
-                if ("\\N".equals(currMinMax.get("MIN"))) {
-                    currFieldData.put("isNumeric", false);
-                }
-            }
-            currFieldData.put("newField", false);
-            distinctTable.put(columnName, currFieldData);
-            
-        } else
-        {
-            //log.info("fnUpdateDistinctFieldData - Not Found: " + columnName);
-            Map <String, Object> currFieldData = new HashMap<>();
-            currFieldData.put("numberOfValues", 0);
-            currFieldData.put("fieldValues", new HashSet<String>());
-            currFieldData.put("isNumeric", true);
-            currFieldData.put("minValue", "\\N");
-            currFieldData.put("maxValue", "\\N");
-            currFieldData.put("newField", true);
-            distinctTable.put(columnName, currFieldData);
-        }
-        //log.info("Finished fnUpdateDistinctFieldData");
-        return distinctTable;
-    }
+			if(Boolean.parseBoolean(currFieldData.get("isNumeric").toString())) {
+				Map<String, String> currMinMax = new HashMap<>();
+				currMinMax.put("MIN",currFieldData.get("minValue").toString());
+				currMinMax.put("MAX",currFieldData.get("maxValue").toString());
 
-    private static Map<String, String> fnGetMinMaxValues(HashSet<String> columnDistinctValues, Map<String, String> currMinMax) {
-       
-        String min = (currMinMax == null || "\\N".equals(currMinMax.get("MIN"))) ? null : currMinMax.get("MIN");
-        String max = (currMinMax == null || "\\N".equals(currMinMax.get("MAX"))) ? null : currMinMax.get("MAX");
+				currMinMax = fnGetMinMaxValues(newValuesSet, currMinMax);
 
-        for (String value : columnDistinctValues) {
-            Integer intValue = null;
-            Long longValue = null;
-            Double doubleValue = null;
-            value = value.replace("\"", "");
+				currFieldData.put("minValue", currMinMax.get("MIN"));
+				currFieldData.put("maxValue", currMinMax.get("MAX"));
+				if ("\\N".equals(currMinMax.get("MIN"))) {
+					currFieldData.put("isNumeric", "false");
+				}
+			}
+		} else {
+			//log.info("fnUpdateDistinctFieldData - Not Found: " + columnName);
+			currFieldData = new HashMap<>();
+			if (newValuesSet == null || newValuesSet.size() == 0) {
+				currFieldData.put("numberOfValues", 0);
+				currFieldData.put("fieldValues", new HashSet<String>());
+				currFieldData.put("isNumeric", true);
+				currFieldData.put("minValue", "\\N");
+				currFieldData.put("maxValue", "\\N");
+			} else {
+				if (newValuesSet.size() >= maxNumOfValues + 1) {
+					currFieldData.put("numberOfValues", maxNumOfValues + 1);
+					currFieldData.put("fieldValues", new HashSet<String>());
+				} else {
 
-            try {
-                intValue = Integer.parseInt(value);
-                if (min == null || intValue < Integer.parseInt(min)) {
-                    min = value;
-                }
-                if (max == null || intValue > Integer.parseInt(max)) {
-                    max = value;
-                }
-            } catch (NumberFormatException e) {
-                // Do nothing
-            }
-            if (intValue == null) {
-                try {
-                    longValue = Long.parseLong(value);
-                    if (min == null || longValue <Long.parseLong(min)) {
-                        min = value;
-                    }
-                    if (max == null || longValue > Long.parseLong(max)) {
-                        max = value;
-                    }
+					currFieldData.put("numberOfValues", newValuesSet.size());
+					currFieldData.put("fieldValues", newValuesSet);
+				}
+				currFieldData.put("isNumeric", true);
+				Map<String, String> currMinMax = new HashMap<>();
 
-                } catch (NumberFormatException e) {
-                    // Do nothing
-                }
-            }
+				currMinMax.put("MIN", "\\N");
+				currMinMax.put("MAX","\\N");
+				currMinMax = fnGetMinMaxValues(newValuesSet, currMinMax);
 
-            if (intValue == null && longValue == null) {
-                try {
-                    doubleValue = Double.parseDouble(value);
-                    if (min == null || doubleValue < Double.parseDouble(min)) {
-                        min = value;
-                    }
-                    if (max == null || doubleValue > Double.parseDouble(max)) {
-                        max = value;
-                    }
-                } catch (NumberFormatException e) {
-                    // Do nothing
-                }
-                if (min == null) {
-                    currMinMax.put("MIN", "\\N");
-                    currMinMax.put("MAX", "\\N");
-                    return currMinMax;
-                }
-            }
-        }
+				currFieldData.put("minValue", currMinMax.get("MIN"));
+				currFieldData.put("maxValue", currMinMax.get("MAX"));
+				if ("\\N".equals(currMinMax.get("MIN"))) {
+					currFieldData.put("isNumeric", "false");
+				}
+			}
+			currFieldData.put("newField", "true");
 
-        currMinMax.put("MIN", min);
-        currMinMax.put("MAX", max);
-        
-        return currMinMax;
-    }
+		}
+		distinctTable.put("\"" + columnName + "\"", currFieldData);
+		//log.info("Finished fnUpdateDistinctFieldData");
+		return distinctTable;
+	}
+
+	private static Map<String, String> fnGetMinMaxValues(HashSet<String> columnDistinctValues, Map<String, String> currMinMax) {
+
+		String min = (currMinMax == null || "\\N".equals(currMinMax.get("MIN"))) ? null : currMinMax.get("MIN");
+		String max = (currMinMax == null || "\\N".equals(currMinMax.get("MAX"))) ? null : currMinMax.get("MAX");
+
+		for (String value : columnDistinctValues) {
+			Integer intValue = null;
+			Long longValue = null;
+			Double doubleValue = null;
+			value = value.replace("\"", "");
+
+			try {
+				intValue = Integer.parseInt(value);
+				if (min == null || intValue < Integer.parseInt(min)) {
+					min = value;
+				}
+				if (max == null || intValue > Integer.parseInt(max)) {
+					max = value;
+				}
+			} catch (NumberFormatException e) {
+				// Do nothing
+			}
+			if (intValue == null) {
+				try {
+					longValue = Long.parseLong(value);
+					if (min == null || longValue <Long.parseLong(min)) {
+						min = value;
+					}
+					if (max == null || longValue > Long.parseLong(max)) {
+						max = value;
+					}
+
+				} catch (NumberFormatException e) {
+					// Do nothing
+				}
+			}
+
+			if (intValue == null && longValue == null) {
+				try {
+					doubleValue = Double.parseDouble(value);
+					if (min == null || doubleValue < Double.parseDouble(min)) {
+						min = value;
+					}
+					if (max == null || doubleValue > Double.parseDouble(max)) {
+						max = value;
+					}
+				} catch (NumberFormatException e) {
+					// Do nothing
+				}
+				if (min == null) {
+					currMinMax.put("MIN", "\\N");
+					currMinMax.put("MAX", "\\N");
+					return currMinMax;
+				}
+			}
+		}
+
+		currMinMax.put("MIN", min);
+		currMinMax.put("MAX", max);
+
+		return currMinMax;
+	}
 
 	public static void fnEnrichmentChildLink() throws Exception {
 		//TDM 8.1 trnChildLink is moved to TDMDB
@@ -654,7 +610,7 @@ public class SharedLogic {
 
 						// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
 						//log.info("Inserting into Fabric to tdm_lu_type_relation_eid table for lu type: " + key);
-						//ludb().execute("insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) values(?,?,?,?,?,?,?,?)", valuesLUDB);
+						ludb().execute("insert or replace into " + tableName + "(source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date,version_name,version_datetime) values(?,?,?,?,?,?,?,?)", valuesLUDB);
 
 						if (!inDebugMode()) {
 							// TDM 6.0 - VERSION_NAME and VERSION_DATETIME are added to the table
@@ -679,7 +635,7 @@ public class SharedLogic {
 							Object[] values = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), "now()"};
 							Object[] valuesLUDB = new Object[]{targetEnv, parentLU, key, instanceId, row.cell(0), currDatetime};
 
-							//ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", valuesLUDB);
+							ludb().execute("insert or replace into " + tableNameTar + "(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", valuesLUDB);
 
 							if (!inDebugMode()) {
 								ciTDM.execute("insert into " + TDMDB_SCHEMA + ".tdm_lu_type_rel_tar_eid(target_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,creation_date) values(?,?,?,?,?,?)", values);
@@ -704,7 +660,7 @@ public class SharedLogic {
 			}
 		} finally {
 			if (rows != null) rows.close();
-			log.info("fnEnrichmentChildLink IS DONE");
+			//log.info("fnEnrichmentChildLink IS DONE");
 		}
 	}
 

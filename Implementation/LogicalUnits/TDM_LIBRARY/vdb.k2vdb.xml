@@ -1,53 +1,53 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.1.0.17">
+<VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00">
-    <DecisionFunction />
+  	<DecisionFunction></DecisionFunction>
   </LuLazyDataUpdate>
-  <EventsList />
+  <EventsList>
+  </EventsList>
   <IidFinderProp>
     <NumberOfPartitions>100</NumberOfPartitions>
     <NumberOfJobs>50</NumberOfJobs>
   </IidFinderProp>
   <Tables>
-    <Table>FABRIC_TDM_ROOT</Table>
-    <Table>LU_PARAMS</Table>
-    <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
-    <Table>TDM_LU_TYPE_RELATION_EID</Table>
+	 <Table>FABRIC_TDM_ROOT</Table>
+	 <Table>LU_PARAMS</Table>
+	 <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
+	 <Table>TDM_LU_TYPE_RELATION_EID</Table>
   </Tables>
   <TablesProperties>
-    <TableProperties name="FABRIC_TDM_ROOT">
+	 <TableProperties name="FABRIC_TDM_ROOT">
       <Populations>
         <Population name="populationFabricTdmRoot.flow" order="1" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
-    <TableProperties name="LU_PARAMS">
+	 <TableProperties name="LU_PARAMS">
       <Populations>
-        <Population name="populationLuParams.flow" order="999" disabled="false" populationType="Flow" />
+        <Population name="populationLuParams.flow" order="998" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
-    <TableProperties name="TDM_LU_TYPE_RELATION_EID">
+	 <TableProperties name="TDM_LU_TYPE_RELATION_EID">
       <Populations>
         <Population name="populationTdmLuTypeRealtionEid.flow" order="999" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
   </TablesProperties>
-  <EnrichmentsOrderList />
-  <ReferencesList />
+  <EnrichmentsOrderList>
+  </EnrichmentsOrderList>
+  <ReferencesList>
+  </ReferencesList>
   <Relations />
-  <DatabaseRelations />
-  <PreVCsSqlScript />
-  <PostVCsSqlScript />
-  <Indexes />
-  <LudbProperties />
+  <DatabaseRelations>
+  </DatabaseRelations>
   <DiagramGraph>
-    <Graph version="7.1.0.17" name="vdb.k2vdb.xml">
-      <Node name="FABRIC_TDM_ROOT" pos="134 24" size="257 136" listGroupSize="250 100" viewType="Table" />
-      <Group name="TDM Tables" pos="506 -75.09114" size="270 517.0911" wasexpanded="false" expanded="true">
-        <Node name="LU_PARAMS" pos="510 -56" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="515 318" size="257 120" listGroupSize="250 100" viewType="Table" />
-        <Node name="TDM_LU_TYPE_RELATION_EID" pos="513 131" size="257 136" listGroupSize="250 100" viewType="Table" />
+    <Graph name="vdb.k2vdb.xml">
+      <Node name="FABRIC_TDM_ROOT" pos="134 24" viewType="Table" />
+      <Group name="TDM Tables" pos="384 -161" expanded="true">
+        <Node name="LU_PARAMS" pos="510 -56" viewType="Table" />
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="515 318" viewType="Table" />
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="513 131" viewType="Table" />
       </Group>
     </Graph>
   </DiagramGraph>

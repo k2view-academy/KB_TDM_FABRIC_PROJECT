@@ -1060,6 +1060,7 @@ public class Logic extends WebServiceUserCode {
 	static void fnAddLogicalUnits(List<Map<String,Object>> logicalUnits,long beId) throws Exception{
 		for(Map<String,Object> logicalUnit:logicalUnits){
 			Map<String,Object> luParent = (Map<String,Object>)logicalUnit.get("lu_parent");
+
 			String sql = "INSERT INTO " + schema + ".product_logical_units " +
 					"(lu_name, lu_description, be_id, lu_parent_id, lu_parent_name, product_id) " +
 					"VALUES (?, ?, ?, ?, ?, ?) RETURNING lu_id,lu_name";
@@ -1067,18 +1068,19 @@ public class Logic extends WebServiceUserCode {
 			Db.Rows rows = db(TDM).fetch(sql, logicalUnit.get("lu_name"),
 					logicalUnit.get("lu_description"),
 					beId,
-					(luParent !=null)? luParent.get("lu_id"):null,
-					(luParent !=null)? luParent.get("logical_unit"):null,
+					(luParent !=null) ? luParent.get("lu_id") : null,
+					(luParent !=null) ? luParent.get("logical_unit") : null,
 					-1);
 			logicalUnit.put("lu_id",rows.firstRow().get("lu_id"));
 			if (rows != null) {
 				rows.close();
 			}
 		}
-		fn_updateParentLogicalUnits(logicalUnits);
+		fn_updateParentLogicalUnits(logicalUnits, beId);
 	}
 
-	static void fn_updateParentLogicalUnits(List<Map<String,Object>> logicalUnits) throws Exception{
+	static void fn_updateParentLogicalUnits(List<Map<String,Object>> logicalUnits, long beId) throws Exception{
+		
 		List<Map<String,Object>> updatedList=new ArrayList<>();
 
 		for(Map<String,Object> logicalUnit:logicalUnits) {
@@ -1090,6 +1092,29 @@ public class Logic extends WebServiceUserCode {
 
 		if(updatedList.size()==0) return ;
 
+		String getBeLUsSql = "SELECT lu_name, lu_id FROM " + schema + ".product_logical_units " +
+				"WHERE be_id = ? ";
+		Db.Rows beLUsRows = db(TDM).fetch(getBeLUsSql,beId);
+
+		for(Db.Row row : beLUsRows) {
+			Map<String, Object> beLUs= new HashMap<>();
+			Object luName = row.get("lu_name");
+			boolean luExists = false;
+			for (Map<String, Object> map : logicalUnits) {
+				if (map.get("lu_name").equals(luName)) {
+					luExists = true;
+					break;
+				}
+			}
+			if (!luExists) {
+				beLUs.put("lu_name", row.get("lu_name"));
+				beLUs.put("lu_id", row.get("lu_id"));
+				logicalUnits.add(beLUs);
+			}
+		}
+		if (beLUsRows != null) {
+			beLUsRows.close();
+		}
 		for(Map<String,Object> logicalUnit:updatedList){
 			Map<String, Object> luParent = (Map<String, Object>) logicalUnit.get("lu_parent");
 			Map<String,Object> temp=null;
@@ -1282,14 +1307,14 @@ public class Logic extends WebServiceUserCode {
                 String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
                 Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
 
-                Boolean isCombo = false;
+                String isCombo = "false";
                 Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
                 String min = fieldValuesRec.get("min_value").toString();
                 String max = fieldValuesRec.get("max_value").toString();
                 
                 String fieldValues = "\\N";
                 if (numOfValues < maxNumOfValues) {
-                    isCombo = true;
+                    isCombo = "true";
                     fieldValues = fieldValuesRec.get("field_values").toString();
                     fieldValues = fieldValues.replace("{", "");
                     fieldValues = fieldValues.replace("}", "");

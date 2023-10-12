@@ -1,0 +1,513 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDM_LIBRARY folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${TDM_LIBRARY_PAHT}Java/src/com/k2view/cdbms/usercode/lu/TDM_LIBRARY/"
+                                    },
+                                    {
+                                        "name": "TDM_LIBRARY_PAHT",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LU Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${LU_PATH}Java/src/com/k2view/cdbms/usercode/lu/${LU_NAME}/"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LU_ROOT_TABLE",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "column_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "population": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileRead1",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "Globals.java"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format ROOT_TABLE_NAME",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "ROOT_TABLE_NAME = \"${LU_ROOT_TABLE}\""
+                                    },
+                                    {
+                                        "name": "LU_ROOT_TABLE",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format ROOT_COLUMN_NAME",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "ROOT_COLUMN_NAME = \"${LU_ROOT_TABLE}\""
+                                    },
+                                    {
+                                        "name": "LU_ROOT_TABLE",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace ROOT_TABLE_NAME",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "ROOT_TABLE_NAME = \"\""
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace ROOT_COLUMN_NAME",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "ROOT_COLUMN_NAME = \"\""
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace TDM_LIBRARY",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "TDM_LIBRARY"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileWrite1",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "Globals.java"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set ROOT_TABLE_NAME",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ROOT_TABLE_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set ROOT_COLUMN_NAME",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ROOT_COLUMN_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "TDM_LIBRARY folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU_ROOT_TABLE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Format ROOT_TABLE_NAME",
+                "name": "LU_ROOT_TABLE"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LU_ROOT_TABLE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Format ROOT_COLUMN_NAME",
+                "name": "LU_ROOT_TABLE"
+            },
+            "path": [
+                "column_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LU_ROOT_TABLE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Set ROOT_TABLE_NAME",
+                "name": "value"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "LU_ROOT_TABLE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Set ROOT_COLUMN_NAME",
+                "name": "value"
+            },
+            "path": [
+                "column_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "FileRead1",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Replace ROOT_TABLE_NAME",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format ROOT_TABLE_NAME",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace ROOT_TABLE_NAME",
+                "name": "replace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format ROOT_COLUMN_NAME",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace ROOT_COLUMN_NAME",
+                "name": "replace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace ROOT_TABLE_NAME",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace ROOT_COLUMN_NAME",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace ROOT_COLUMN_NAME",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace TDM_LIBRARY",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace TDM_LIBRARY",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TDM_LIBRARY_PAHT"
+            },
+            "rightPort": {
+                "actor": "TDM_LIBRARY folder",
+                "name": "TDM_LIBRARY_PAHT"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "LU Folder",
+                "name": "LU_PATH"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "LU Folder",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_ROOT_TABLE"
+            },
+            "rightPort": {
+                "actor": "LU_ROOT_TABLE",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Replace TDM_LIBRARY",
+                "name": "replace"
+            }
+        }
+    ]
+}

@@ -55,6 +55,27 @@
                                             "id": "com.k2view.logicalUnit"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -163,6 +184,24 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Read Template of Default Generators",
+                            "minHeight": 189,
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "SharedObjects/Templates/tdmTypeDefaultsGenerator.flow.template"
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -204,6 +243,58 @@
                         },
                         {
                             "name": "Apply Template",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "transform"
+                                    },
+                                    {
+                                        "name": "templateContent",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "data",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Format Default Generatror Name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${sourceTable}.typeDefaultsGenerator.flow"
+                                    },
+                                    {
+                                        "name": "sourceTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Apply Template For Default Generators",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -275,6 +366,19 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Write Default Genertor Flow to Folder",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -304,11 +408,31 @@
         },
         {
             "leftPort": {
+                "actor": "Get Project Directory",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "Read Template of Default Generators",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Create Template Inputs",
                 "name": "tableDefaultMapping"
             },
             "rightPort": {
                 "actor": "Apply Template",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create Template Inputs",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Apply Template For Default Generators",
                 "name": "data"
             }
         },
@@ -324,6 +448,16 @@
         },
         {
             "leftPort": {
+                "actor": "Read Template of Default Generators",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Apply Template For Default Generators",
+                "name": "templateContent"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "flow folder",
                 "name": "string"
             },
@@ -334,11 +468,41 @@
         },
         {
             "leftPort": {
+                "actor": "flow folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Default Genertor Flow to Folder",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Apply Template",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "Write Flow to Folder",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format Default Generatror Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Default Genertor Flow to Folder",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Apply Template For Default Generators",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Write Default Genertor Flow to Folder",
                 "name": "stream"
             }
         },
@@ -365,11 +529,61 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "sourceInterface"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "sourceInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceSchema"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "sourceSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceTable"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "sourceTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "luType"
             },
             "rightPort": {
                 "actor": "flow folder",
                 "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "params"
+            },
+            "rightPort": {
+                "actor": "Format Default Generatror Name",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceTable"
+            },
+            "rightPort": {
+                "actor": "Format Default Generatror Name",
+                "name": "sourceTable"
             }
         },
         {

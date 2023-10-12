@@ -11,22 +11,38 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "geLuTables",
+                            "name": "Get List Of Tables",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
                                         "name": "functionName",
-                                        "const": "getLuTablesForGenerate"
+                                        "const": "getTablesForGenerate"
                                     },
                                     {
                                         "name": "luName",
                                         "schema": {
                                             "type": "string"
                                         },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
                                         "editor": {
-                                            "id": "com.k2view.logicalUnit",
-                                            "addEmptyEntry": true
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceSchema",
+                                        "schema": {
+                                            "type": "string"
                                         },
                                         "mandatory": false
                                     }
@@ -37,7 +53,15 @@
                                         "schema": {
                                             "type": "array",
                                             "items": {
-                                                "type": "string"
+                                                "type": "object",
+                                                "properties": {
+                                                    "luTable": {
+                                                        "type": "string"
+                                                    },
+                                                    "sourceTable": {
+                                                        "type": "string"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -199,7 +223,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "FLOW_EXISTS",
+                                        "name": "SKIP_TABLE",
                                         "schema": {
                                             "type": "boolean"
                                         }
@@ -248,6 +272,46 @@
                                         "name": "generatorFlowName",
                                         "schema": {
                                             "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.strings"
                                         },
                                         "mandatory": false
                                     }
@@ -323,6 +387,46 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.strings"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -380,47 +484,87 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "geLuTables",
-                "name": "res"
-            },
-            "rightPort": {
-                "actor": "create Flow",
-                "name": "table"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "geLuTables",
-                "name": "res"
-            },
-            "rightPort": {
-                "actor": "create Generator Flow Name",
-                "name": "tableName"
-            },
-            "iterate": "Iterate"
-        },
-        {
-            "leftPort": {
-                "actor": "geLuTables",
+                "actor": "Get List Of Tables",
                 "name": "res"
             },
             "rightPort": {
                 "actor": "create Flow for New Table",
                 "name": "table"
             },
-            "iterate": "Iterate"
+            "iterate": "Iterate",
+            "path": [
+                "luTable"
+            ]
         },
         {
             "leftPort": {
-                "actor": "geLuTables",
+                "actor": "Get List Of Tables",
                 "name": "res"
             },
             "rightPort": {
                 "actor": "Report to Log",
                 "name": "TABLE_NAME"
             },
-            "iterate": "Iterate"
+            "iterate": "Iterate",
+            "path": [
+                "luTable"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get List Of Tables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "create Generator Flow Name",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "luTable"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get List Of Tables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "create Flow",
+                "name": "table"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "luTable"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get List Of Tables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "create Flow for New Table",
+                "name": "sourceTable"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "sourceTable"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get List Of Tables",
+                "name": "res"
+            },
+            "rightPort": {
+                "actor": "create Flow",
+                "name": "sourceTable"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "sourceTable"
+            ]
         },
         {
             "leftPort": {
@@ -458,7 +602,7 @@
         {
             "leftPort": {
                 "actor": "Check if Flow Already Exists",
-                "name": "FLOW_EXISTS"
+                "name": "SKIP_TABLE"
             },
             "rightPort": {
                 "actor": "If flow Does Not Exists",
@@ -471,8 +615,28 @@
                 "name": "LU_NAME"
             },
             "rightPort": {
-                "actor": "geLuTables",
+                "actor": "Get List Of Tables",
                 "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "Get List Of Tables",
+                "name": "sourceInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "Get List Of Tables",
+                "name": "sourceSchema"
             }
         },
         {
@@ -528,11 +692,51 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "SOURCE_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "create Flow",
+                "name": "sourceInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "create Flow",
+                "name": "sourceSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "LU_NAME"
             },
             "rightPort": {
                 "actor": "create Flow for New Table",
                 "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "create Flow for New Table",
+                "name": "sourceInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "create Flow for New Table",
+                "name": "sourceSchema"
             }
         }
     ]

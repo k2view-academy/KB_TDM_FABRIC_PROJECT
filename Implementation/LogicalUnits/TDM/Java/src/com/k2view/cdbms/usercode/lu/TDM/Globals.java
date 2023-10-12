@@ -27,7 +27,7 @@ public class Globals extends SharedGlobals {
 
 
 	@category("TDM")
-	public static String TDM_DEPLOY_ENVIRONMENTS = "true";
+	public static String TDM_DEPLOY_ENVIRONMENTS = "false";
 
 
 }

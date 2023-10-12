@@ -1207,7 +1207,7 @@ public class SharedLogic {
 					if ("tdmExecuteTask".equalsIgnoreCase(functionName) || "fnCheckMigrateAndUpdateTDMDB".equalsIgnoreCase(functionName)) {
 						String errMsg = "" + jobDetails.get("Notes");
 						UserCode.log.error("Job " + functionName + " is down, cannot run task. The Error Messge: " + errMsg);
-						String jobDownMsg = "Job " + functionName + " is down, cannot run task! The Error is: " + errMsg;
+						String jobDownMsg = "Job " + functionName + " is down, cannot run task!";
 						jobDownError.put(functionName, jobDownMsg);
 						if ("".equals(downJobsList)) {
 							downJobsList = functionName;

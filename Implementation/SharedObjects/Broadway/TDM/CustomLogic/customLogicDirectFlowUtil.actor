@@ -1,0 +1,42 @@
+{
+  "type": "customLogicDirectFlowUtil",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "NUM_OF_ENTITIES",
+      "schema": {}
+    },
+    {
+      "name": "values",
+      "schema": {
+        "type": "array",
+        "items": {}
+      }
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "customLogicDirectFlowUtil",
+      "mandatory": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "values",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "CustomLogic"
+  ],
+  "doc": ""
+}

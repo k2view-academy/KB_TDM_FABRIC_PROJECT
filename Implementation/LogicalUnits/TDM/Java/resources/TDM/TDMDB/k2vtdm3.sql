@@ -491,12 +491,12 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
     
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '8.0' 
+    select 'TDM_VERSION', '8.1' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
-	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
+	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 90 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
 
 insert into ${@schema}.tdm_general_parameters(
@@ -693,6 +693,19 @@ CREATE TABLE IF NOT EXISTS ${@schema}.permission_groups_mapping
     update_date timestamp without time zone,
     CONSTRAINT permission_groups_mapping_pkey PRIMARY KEY (fabric_role)
 );
+
+-- Add initial mapping for admin user
+insert into ${@schema}.permission_groups_mapping (
+	description,
+	fabric_role,
+	permission_group,
+	created_by,
+	updated_by,
+	creation_date,
+	update_date) 
+select'Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW()  
+where not exists (select 1 from ${@schema}.permission_groups_mapping where fabric_role = 'admin');
+
 
 -- Table: ${@schema}.task_execution_override_attrs - TDM 7.2
 
