@@ -32,4 +32,5 @@ Customer,CITY,"Select Distinct ADDRESS.CITY
  From Customer.ADDRESS"
 Customer,STATE,"Select Distinct ADDRESS.STATE
  From Customer.ADDRESS"
-Customer,ACTIVITY NOTE,select activity_note from activity
+Customer,Activity note,"Select distinct ACTIVITY.ACTIVITY_NOTE
+From Customer.ACTIVITY"
