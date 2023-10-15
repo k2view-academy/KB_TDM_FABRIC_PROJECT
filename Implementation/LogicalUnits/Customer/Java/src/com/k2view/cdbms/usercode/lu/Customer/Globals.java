@@ -10,10 +10,10 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 public class Globals extends SharedGlobals {
 
 	@category("TDM")
-	public static final String ROOT_TABLE_NAME = "CUSTOMER";
+	public static final String ROOT_TABLE_NAME = "customer";
 
 	@category("TDM")
-	public static String ROOT_COLUMN_NAME = "CUSTOMER_ID";
+	public static String ROOT_COLUMN_NAME = "customer_id";
 
 	
 

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.2.0.11">
+<VirtualDB xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7.2.0.16">
   <Name>vdb</Name>
   <RootView>FABRIC_TDM_ROOT</RootView>
   <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" />
@@ -181,7 +181,7 @@
   <Indexes />
   <LudbProperties />
   <DiagramGraph>
-    <Graph version="7.2.0.11" name="vdb.k2vdb.xml">
+    <Graph version="7.2.0.16" name="vdb.k2vdb.xml">
       <Node name="FABRIC_TDM_ROOT" pos="11 539" size="257 136" listGroupSize="250 100" viewType="Table" />
       <Group name="TDM Tables" pos="1679 1028.45447" size="265 543.0912" wasexpanded="false" expanded="true">
         <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="1683 1047.54565" size="257 120" listGroupSize="250 100" viewType="Table" />
@@ -199,7 +199,7 @@
       <Group name="Source Tables" pos="1226 257.954437" size="1171 734.0912" wasexpanded="false" expanded="true">
         <Node name="collection" pos="1532 277.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="CUSTOMER" pos="1230 486.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
-        <Node name="contract" pos="1532 452.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
+        <Node name="contract" pos="1532 468.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="activity" pos="1532 652.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="address" pos="1532 852.0456" size="257 136" listGroupSize="250 100" viewType="Table" />
         <Node name="case_note" pos="2136 677.0456" size="257 136" listGroupSize="250 100" viewType="Table" />

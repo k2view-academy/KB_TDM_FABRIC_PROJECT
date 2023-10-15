@@ -349,7 +349,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "from_date"
+                "name": "contract_from_date"
             },
             "rightPort": {
                 "actor": "PopulationArgs",

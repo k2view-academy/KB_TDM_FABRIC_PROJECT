@@ -8,7 +8,7 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
-						{
+                        {
                             "name": "PopulationArgs",
                             "actorType": {
                                 "parentType": "PopulationArgs",
@@ -117,21 +117,25 @@
                         {
                             "name": "Delete Root Table",
                             "actorType": {
-                                "parentType": "DbCommand",
+                                "parentType": "DbDelete",
                                 "inputs": [
                                     {
                                         "name": "interface",
                                         "const": "fabric"
                                     },
                                     {
-                                        "name": "sql",
-                                        "const": "delete from {{__LU_NAME}}.{{TABLE_NAME}}"
+                                        "name": "schema",
+                                        "const": null
                                     },
                                     {
                                         "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "{{KEY}}"
+                                        ]
                                     }
                                 ],
                                 "outputs": []
@@ -153,10 +157,6 @@
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "{{__LU_NAME}}"
-                                    },
                                     {
                                         "name": "functionName",
                                         "const": "fnIsFirstSync"
@@ -276,7 +276,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from {{TABLE_NAME}}"
+                                        "const": "select * from {{SOURCE_SCHEMA}}.{{SOURCE_TABLE}}"
                                     },
                                     {
                                         "name": "rowsGeneratorDistribution",
@@ -295,19 +295,17 @@
                                 "parentType": "LuFunction",
                                 "inputs": [
                                     {
-                                        "name": "luType",
-                                        "const": "{{__LU_NAME}}"
+                                        "name": "luName",
+                                        "const": null
                                     },
                                     {
                                         "name": "functionName",
                                         "const": "getLuTableColumns"
+													
                                     },
                                     {
-                                        "const": "{{TABLE_NAME}}",
                                         "name": "table",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "const": null
                                     }
                                 ],
                                 "outputs": [
@@ -338,6 +336,20 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -355,9 +367,56 @@
         {
             "stages": [
                 {
-                    "name": "Set instance As Found",
+                    "name": "Mask Data Based On Catalog",
                     "dependsOnList": [
                         "Source"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Catalog Masking Mapper",
+                            "actorType": {
+                                "parentType": "CatalogMaskingMapper",
+                                "inputs": [
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "{{SOURCE_INTERFACE}}"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "{{SOURCE_TABLE}}"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "{{SOURCE_SCHEMA}}"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing 1",
+                    "dependsOnList": [
+                        "Do Nothing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set instance As Found",
+                    "dependsOnList": [
+                        "Mask Data Based On Catalog"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -384,9 +443,9 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 1",
+                    "name": "Do Nothing 2",
                     "dependsOnList": [
-                        "Do Nothing"
+                        "Do Nothing 1"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -418,7 +477,7 @@
                                     },
                                     {
                                         "name": "table",
-                                        "const": "{{TABLE_NAME}}"
+                                        "const": null
                                     },
                                     {
                                         "name": "fields",
@@ -445,9 +504,9 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 2",
+                    "name": "Do Nothing 3",
                     "dependsOnList": [
-                        "Do Nothing 1"
+                        "Do Nothing 2"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
@@ -503,9 +562,9 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 3",
+                    "name": "Do Nothing 4",
                     "dependsOnList": [
-                        "Do Nothing 2"
+                        "Do Nothing 3"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -515,6 +574,37 @@
         }
     ],
     "connections": [
+        {
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "{{KEY}}"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "{{KEY}}"
+			 
+			}
+		},
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "parent_rows"
+            }
+        },
         {
             "leftPort": {
                 "actor": "Get Variable TDM_SYNC_SOURCE_DATA",
@@ -577,34 +667,33 @@
         },
         {
             "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Check if Instance Was Not Found In Source",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Query",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Root Table",
-                "name": "params"
+                "actor": "Catalog Masking Mapper",
+                "name": "values"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
             },
-            "iterate": "Iterate"
+            "rightPort": {
+                "actor": "Get Tables Fields",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Get Tables Fields",
+                "name": "table"
+            }
         },
         {
             "leftPort": {
@@ -638,6 +727,27 @@
         },
         {
             "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Masking Mapper",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Masking Mapper",
+                "name": "values"
+            },
+            "rightPort": {
+                "actor": "Root Table",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "table"
             },
@@ -649,11 +759,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "{{KEY}}"
+                "name": "schema"
             },
             "rightPort": {
-                "actor": "PopulationArgs",
-                "name": "{{KEY}}"
+                "actor": "Delete Root Table",
+                "name": "schema"
             }
         },
         {

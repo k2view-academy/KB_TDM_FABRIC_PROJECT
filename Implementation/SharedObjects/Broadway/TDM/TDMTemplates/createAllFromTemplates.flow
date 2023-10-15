@@ -230,6 +230,26 @@
                                             "type": "boolean"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "SOURCE_INTERFACE",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SOURCE_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -369,6 +389,26 @@
             "rightPort": {
                 "actor": "create Generate Data Table Flows",
                 "name": "OVERRIDE_EXISTING_FLOWS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_INTERFACE"
+            },
+            "rightPort": {
+                "actor": "create Generate Data Table Flows",
+                "name": "SOURCE_INTERFACE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SOURCE_SCHEMA"
+            },
+            "rightPort": {
+                "actor": "create Generate Data Table Flows",
+                "name": "SOURCE_SCHEMA"
             }
         }
     ]

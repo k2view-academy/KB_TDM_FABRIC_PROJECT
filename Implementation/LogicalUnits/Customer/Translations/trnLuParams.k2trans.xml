@@ -130,6 +130,12 @@ From Customer.CONTRACT</SQL>
           <SQL>Select Distinct ADDRESS.STATE
  From Customer.ADDRESS</SQL>
         </trnLuParams>
+        <trnLuParams diffgr:id="trnLuParams9" msdata:rowOrder="8">
+          <INDEX>10</INDEX>
+          <COLUMN_NAME>Activity note</COLUMN_NAME>
+          <SQL>Select distinct ACTIVITY.ACTIVITY_NOTE
+From Customer.ACTIVITY</SQL>
+        </trnLuParams>
       </DocumentElement>
     </diffgr:diffgram>
   </TranslationData>
