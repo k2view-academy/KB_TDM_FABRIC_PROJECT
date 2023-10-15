@@ -32,13 +32,13 @@
     "java.project.outputPath": ".studioWeb/java/bin",
     "java.project.sourcePaths": [
 		"Implementation/SharedObjects/Java/src",	
-		"Implementation/LogicalUnits/Collection/Java/src",	
-		"Implementation/LogicalUnits/k2_ws/Java/src",	
 		"Implementation/LogicalUnits/k2_ref/Java/src",	
-		"Implementation/LogicalUnits/TDM_LIBRARY/Java/src",	
-		"Implementation/LogicalUnits/TDM/Java/src",	
 		"Implementation/LogicalUnits/TDM_Reference/Java/src",	
-		"Implementation/LogicalUnits/Orders/Java/src"	
+		"Implementation/LogicalUnits/k2_ws/Java/src",	
+		"Implementation/LogicalUnits/TDM/Java/src",	
+		"Implementation/LogicalUnits/Orders/Java/src",	
+		"Implementation/LogicalUnits/TDM_LIBRARY/Java/src",	
+		"Implementation/LogicalUnits/Collection/Java/src"	
 	],
 	"java.project.resourceFilters": [
         "node_modules",
@@ -158,5 +158,6 @@
        }
     ],
     "logViewer.showStatusBarItemOnChange": false,
+    "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms500m",
     "debug.javascript.debugByLinkOptions": "on"
 }
