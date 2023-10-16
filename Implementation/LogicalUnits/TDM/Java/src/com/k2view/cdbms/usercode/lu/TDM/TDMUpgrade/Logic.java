@@ -34,7 +34,7 @@ public class Logic extends UserCode {
     private static final String TDM = "TDM";
 	public static void updateParamDistictValues() throws Exception {
 		try {
-		log.info("Starting updateParamDistictValues");
+		//log.info("Starting updateParamDistictValues");
 		
 		String insertDistintValuesSql = "INSERT INTO " + TDMDB_SCHEMA + ".TDM_PARAMS_DISTINCT_VALUES " +
 		    "(LU_NAME, FIELD_NAME, NUMBER_OF_VALUES, FIELD_VALUES, IS_NUMERIC, MIN_VALUE, MAX_VALUE) " +
@@ -56,7 +56,7 @@ public class Logic extends UserCode {
 				columnsArr[idx] = "array_to_string(" + columnsArr[idx] + ", '" + TDM_PARAMETERS_SEPARATOR + "') as " + columnsArr[idx];
 			}
 			String newSelClause = String.join(",", columnsArr);
-		    String query = "SELECT " + newSelClause + " FROM " + tableName;
+		    String query = "SELECT " + newSelClause + " FROM " +  TDMDB_SCHEMA + "." + tableName;
 		    Db.Rows tableRecords = db(TDM).fetch(query);
 		    List<String> columnNames = tableRecords.getColumnNames();
 		    Map<String, Map<String, Object>> fieldValues = new HashMap<>();
@@ -91,7 +91,7 @@ public class Logic extends UserCode {
 		
 		    }
 		}
-		log.info("Finished updateParamDistictValues");
+		//log.info("Finished updateParamDistictValues");
 		} catch (Exception e) {
 		    StringWriter sw = new StringWriter();
 		    PrintWriter pw = new PrintWriter(sw);

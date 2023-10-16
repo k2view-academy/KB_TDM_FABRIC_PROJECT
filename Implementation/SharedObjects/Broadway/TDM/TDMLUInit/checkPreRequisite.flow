@@ -529,26 +529,6 @@
                             }
                         },
                         {
-                            "name": "Deploy LU Command",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "DEPLOY ENVIRONMENTS FROM FILE '${PROJECT_DIR}/Implementation/LogicalUnits/CRM3'"
-                                    },
-                                    {
-                                        "name": "PROJECT_DIR",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "StringFormat1",
                             "actorType": {
                                 "parentType": "StringFormat",
@@ -758,16 +738,16 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "scBuild",
                                         "const": "tmp-buildArtifacts.bat",
+                                        "name": "scBuild",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "scCompress",
                                         "const": "tmp-compress-project.bat",
+                                        "name": "scCompress",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -937,16 +917,6 @@
             },
             "rightPort": {
                 "actor": "Deploy Env Command",
-                "name": "PROJECT_DIR"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SysEnv1",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Deploy LU Command",
                 "name": "PROJECT_DIR"
             }
         },

@@ -69,9 +69,6 @@
                                     },
                                     {
                                         "name": "value",
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
-                                        },
                                         "const": null,
                                         "isDefault": false
                                     }
@@ -177,14 +174,14 @@
                                         "const": "copyTDMTables"
                                     },
                                     {
-                                        "name": "TDM_LIBRARY_PAHT",
+                                        "name": "LU_PATH",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "LU_PATH",
+                                        "name": "TDM_LIBRARY_PATH",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -325,7 +322,10 @@
                                             "type": "string"
                                         },
                                         "editor": {
-                                            "id": "com.k2view.interface"
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ]
                                         },
                                         "mandatory": false
                                     },
@@ -334,18 +334,12 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
-                                        },
                                         "mandatory": false
                                     },
                                     {
                                         "name": "SOURCE_TABLE",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
                                         },
                                         "mandatory": false
                                     }
@@ -418,9 +412,6 @@
                                         "schema": {
                                             "type": "string"
                                         },
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
-                                        },
                                         "mandatory": false
                                     },
                                     {
@@ -429,7 +420,10 @@
                                             "type": "string"
                                         },
                                         "editor": {
-                                            "id": "com.k2view.interface"
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "database"
+                                            ]
                                         },
                                         "mandatory": false
                                     },
@@ -463,7 +457,8 @@
                                         "editor": {
                                             "id": "com.k2view.interface",
                                             "interfaceType": [
-                                                "database"
+                                                "database",
+                                                "CassandraLoader"
                                             ]
                                         },
                                         "mandatory": false
@@ -472,9 +467,6 @@
                                         "name": "SOURCE_SCHEMA",
                                         "schema": {
                                             "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.dbtable"
                                         },
                                         "mandatory": false
                                     }
@@ -593,7 +585,7 @@
                 "name": "string"
             },
             "rightPort": {
-                "actor": "Copy TDM Tables",
+                "actor": "Update LU Schema",
                 "name": "TDM_LIBRARY_PAHT"
             }
         },
@@ -603,8 +595,8 @@
                 "name": "string"
             },
             "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "TDM_LIBRARY_PAHT"
+                "actor": "Copy TDM Tables",
+                "name": "TDM_LIBRARY_PATH"
             }
         },
         {

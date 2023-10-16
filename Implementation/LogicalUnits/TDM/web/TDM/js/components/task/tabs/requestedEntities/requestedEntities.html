@@ -96,7 +96,7 @@
                         <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'entity_id'">
                             <input type="radio"
                                 ng-value="'CLONE'" name="requestedEntitiesRadio"
-                                ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
+                                ng-disabled="userRole.allowed_creation_of_synthetic_data !== true"
                                 ng-model="requestedEntitiesCtrl.taskData.selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
                                 Entity Clone
@@ -106,7 +106,7 @@
                         <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'parameters'">
                             <input type="radio"
                                 ng-value="'CLONE_PARAM'" name="requestedEntitiesRadio"
-                                ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
+                                ng-disabled="userRole.allowed_creation_of_synthetic_data !== true"
                                 ng-model="requestedEntitiesCtrl.taskData.selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
                                 Entity Clone

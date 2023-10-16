@@ -17,10 +17,10 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${TDM_LIBRARY_PAHT}Tables/"
+                                        "const": "${TDM_LIBRARY_PATH}Tables/"
                                     },
                                     {
-                                        "name": "TDM_LIBRARY_PAHT",
+                                        "name": "TDM_LIBRARY_PATH",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -316,10 +316,8 @@
         {
             "stages": [
                 {
-                    "name": "Stage 5",
-                    "dependsOnList": [
-                        "Stage 4"
-                    ],
+                    "name": "Stage 16",
+                    "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
@@ -336,14 +334,15 @@
                             }
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "stages": [
                 {
-                    "name": "Stage 14",
-                    "dependsOnList": [
-                        "Stage 4"
-                    ],
+                    "name": "Stage 5",
+                    "dependsOnList": [],
                     "isLast": 0,
-                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "Equals1",
@@ -421,26 +420,28 @@
             "stages": [
                 {
                     "name": "Stage 7",
-                    "dependsOnList": [
-                        "Stage 5"
-                    ],
+                    "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [
-                        "Stage 14"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
                     "actors": [
                         {
-                            "name": "NotNull1",
+                            "name": "JavaScript1",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "NotNull",
-                                "inputs": [],
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var result = true;\r\nif(population == null || population == []) {\r\n    result = false;\r\n}\r\nresult;",
+                                            "script": "var result = true;\n\nif (population == null || population == []) {\n  result = false;\n}\n\nresult;"
+                                        }
+                                    },
+                                    {
+                                        "name": "population",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -483,19 +484,8 @@
             "stages": [
                 {
                     "name": "Stage 12",
-                    "dependsOnList": [
-                        "Stage 7"
-                    ],
-                    "isLast": 1,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 11",
-                    "dependsOnList": [
-                        "Stage 6"
-                    ],
-                    "isLast": 1,
-                    "isTransactional": false,
+                    "dependsOnList": [],
+                    "isLast": 0,
                     "actors": [
                         {
                             "name": "MapMerge1",
@@ -537,19 +527,8 @@
             "stages": [
                 {
                     "name": "Stage 10",
-                    "dependsOnList": [
-                        "Stage 12"
-                    ],
+                    "dependsOnList": [],
                     "isLast": 1,
-                    "actors": []
-                },
-                {
-                    "name": "Stage 13",
-                    "dependsOnList": [
-                        "Stage 11"
-                    ],
-                    "isLast": 1,
-                    "isTransactional": false,
                     "actors": [
                         {
                             "name": "StringBuild1",
@@ -571,19 +550,18 @@
         {
             "stages": [
                 {
-                    "name": "Stage 8",
-                    "dependsOnList": [
-                        "Stage 10"
-                    ],
-                    "isLast": 0,
-                    "isTransactional": false,
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 1,
                     "actors": []
-                },
+                }
+            ]
+        },
+        {
+            "stages": [
                 {
-                    "name": "Stage 15",
-                    "dependsOnList": [
-                        "Stage 13"
-                    ],
+                    "name": "Stage 8",
+                    "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
@@ -745,12 +723,10 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
+                "actor": "MapMerge1",
+                "name": "maps"
             },
-            "path": [
-                "active"
-            ]
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -758,10 +734,12 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "MapMerge1",
-                "name": "maps"
+                "actor": "Equals1",
+                "name": "a"
             },
-            "arrayPosition": 0
+            "path": [
+                "active"
+            ]
         },
         {
             "leftPort": {
@@ -813,13 +791,10 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "NotNull1",
-                "name": "value"
+                "actor": "JavaScript1",
+                "name": "population"
             },
-            "iterate": "Iterate",
-            "path": [
-                "name"
-            ]
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
@@ -856,11 +831,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "TDM_LIBRARY_PAHT"
+                "name": "TDM_LIBRARY_PATH"
             },
             "rightPort": {
                 "actor": "TDM_LIBRARY folder",
-                "name": "TDM_LIBRARY_PAHT"
+                "name": "TDM_LIBRARY_PATH"
             }
         },
         {
