@@ -1,0 +1,1025 @@
+{
+    "tags": [
+        "Generate Data",
+        "GeneratorFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "any"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Parent & Sequential Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CUSTOMER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Parent & Sequential Fields Maps",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build CUSTOMER_ID Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "CUSTOMER_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CUSTOMER_ID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge Maps & Call Catalog Generator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Parent & Sequential Felds Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CUSTOMER_ID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Catalog Generator Record",
+                            "actorType": {
+                                "parentType": "CatalogGeneratorRecord",
+                                "inputs": [
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "CRM_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "contract"
+                                    },
+                                    {
+                                        "name": "mtable",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If Catalog Returns Nothing",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty Data From Catalog",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Generate Default Values",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "contract.typeDefaultsGenerator"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                },
+                                                "test2": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_description": {
+                                                    "type": "string"
+                                                },
+                                                "from_date": {
+                                                    "type": "string"
+                                                },
+                                                "to_date": {
+                                                    "type": "string"
+                                                },
+                                                "test": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_id": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": "integer"
+                                                },
+                                                "associated_line": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Catalog Returned Data",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Catalog Generated Data",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Generated Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Generated Value For Rest Of Fields",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                },
+                                                "test2": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_description": {
+                                                    "type": "string"
+                                                },
+                                                "from_date": {
+                                                    "type": "string"
+                                                },
+                                                "to_date": {
+                                                    "type": "string"
+                                                },
+                                                "test": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_id": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": "integer"
+                                                },
+                                                "associated_line": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Override default values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "MTable Associtaed Line",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "Associated_line"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MTable Contract ref id and desc",
+                            "actorType": {
+                                "parentType": "MTableRandom",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "OfferContractMapping"
+                                    },
+                                    {
+                                        "name": "contract_ref_id",
+                                        "const": "102",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "remark": "Select the Contract ref id for Contract Offer Mapping",
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_contract_description": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Override default values-2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "ASSOCIATED_LINE",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "ASSOCIATED_LINE_FMT",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "CONTRACT_REF_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "DESCRIPTION",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Override default values-3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "MapCreate1",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [
+                                    {
+                                        "name": "ASSOCIATED_LINE",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ASSOCIATED_LINE_FMT",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "CONTRACT_REF_ID",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_contract_description": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "CONTRACT_DESCRIPTION",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "offer_contract_description": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CONTRACT_REF_ID": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "contract_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_contract_description": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "CONTRACT_DESCRIPTION": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "contract_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_contract_description": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "ASSOCIATED_LINE": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "associated_line": {
+                                                            "type": "string"
+                                                        },
+                                                        "associated_line_fmt": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "ASSOCIATED_LINE_FMT": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "associated_line": {
+                                                            "type": "string"
+                                                        },
+                                                        "associated_line_fmt": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge All Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Merge Maps of all Fields",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [
+                                    {
+                                        "name": "mapType",
+                                        "const": "TreeMapIgnoreCase"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "associated_line": {
+                                                    "type": "string"
+                                                },
+                                                "associated_line_fmt": {
+                                                    "type": "string"
+                                                },
+                                                "contract_description": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "contract_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_contract_description": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "contract_id": {
+                                                    "type": "integer"
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "contract_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_ref_id": {
+                                                            "type": "string"
+                                                        },
+                                                        "offer_contract_description": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "CUSTOMER_ID": {},
+                                                "from_date": {
+                                                    "type": "string"
+                                                },
+                                                "test": {
+                                                    "type": "integer"
+                                                },
+                                                "test2": {
+                                                    "type": "integer"
+                                                },
+                                                "to_date": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "path": [
+                "customer_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CUSTOMER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build CUSTOMER_ID Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build CUSTOMER_ID Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Empty Data From Catalog",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generate Default Values",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Associtaed Line",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ASSOCIATED_LINE",
+                "name": "value"
+            },
+            "path": [
+                "associated_line"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Associtaed Line",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ASSOCIATED_LINE_FMT",
+                "name": "value"
+            },
+            "path": [
+                "associated_line_fmt"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Contract ref id and desc",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DESCRIPTION",
+                "name": "value"
+            },
+            "path": [
+                "offer_contract_description"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MTable Contract ref id and desc",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "value"
+            },
+            "path": [
+                "contract_ref_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ASSOCIATED_LINE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "ASSOCIATED_LINE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ASSOCIATED_LINE_FMT",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "ASSOCIATED_LINE_FMT"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "CONTRACT_REF_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "CONTRACT_REF_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "DESCRIPTION",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "CONTRACT_DESCRIPTION"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapCreate1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "contract_ref_id"
+            },
+            "rightPort": {
+                "actor": "MTable Contract ref id and desc",
+                "name": "contract_ref_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

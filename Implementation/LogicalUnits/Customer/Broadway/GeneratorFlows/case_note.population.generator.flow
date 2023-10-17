@@ -49,6 +49,25 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -547,6 +566,25 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Merge Maps of all Fields",
                             "actorType": {

@@ -49,6 +49,25 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -475,34 +494,6 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "MTable Associated Line",
-                            "actorType": {
-                                "parentType": "MTableRandom",
-                                "inputs": [
-                                    {
-                                        "name": "mtable",
-                                        "const": "Associated_line"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "associated_line": {
-                                                    "type": "string"
-                                                },
-                                                "associated_line_fmt": {
-                                                    "type": "string"
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "MTable Contract Description",
                             "actorType": {
                                 "parentType": "MTableRandom",
@@ -631,46 +622,6 @@
                             }
                         },
                         {
-                            "name": "ASSOCIATED_LINE",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "ASSOCIATED_LINE_FMT",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "DESCRIPTION",
                             "actorType": {
                                 "parentType": "Const",
@@ -703,6 +654,81 @@
                                 "outputs": [
                                     {
                                         "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Phone number",
+                            "actorType": {
+                                "parentType": "Masking",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "genPhoneNum"
+                                    },
+                                    {
+                                        "name": "flowName",
+                                        "const": "generatePhoneNumbers"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_AND_CACHE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Phone number 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "reformatPhoneNumber1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "reformatPhoneNumber"
+                                    },
+                                    {
+                                        "name": "phone_number",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "formatted_phone_number",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -782,16 +808,16 @@
                                                 "TO_DATE": {
                                                     "type": "date"
                                                 },
-                                                "ASSOCIATED_LINE": {
-                                                    "type": "string"
-                                                },
-                                                "ASSOCIATED_LINE_FMT": {
-                                                    "type": "string"
-                                                },
                                                 "CONTRACT_DESCRIPTION": {
                                                     "type": "string"
                                                 },
                                                 "CONTRACT_REF_ID": {
+                                                    "type": "string"
+                                                },
+                                                "ASSOCIATED_LINE": {
+                                                    "type": "string"
+                                                },
+                                                "ASSOCIATED_LINE_FMT": {
                                                     "type": "string"
                                                 }
                                             }
@@ -812,6 +838,25 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Merge Maps of all Fields",
                             "actorType": {
@@ -887,6 +932,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Phone number",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "CUSTOMER_ID",
                 "name": "value"
             },
@@ -902,6 +957,16 @@
             },
             "rightPort": {
                 "actor": "Build contract_id Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "contract_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Phone number",
                 "name": "value"
             }
         },
@@ -991,32 +1056,6 @@
         },
         {
             "leftPort": {
-                "actor": "MTable Associated Line",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "ASSOCIATED_LINE_FMT",
-                "name": "value"
-            },
-            "path": [
-                "associated_line_fmt"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "MTable Associated Line",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "ASSOCIATED_LINE",
-                "name": "value"
-            },
-            "path": [
-                "associated_line"
-            ]
-        },
-        {
-            "leftPort": {
                 "actor": "MTable Contract Description",
                 "name": "result"
             },
@@ -1063,26 +1102,6 @@
         },
         {
             "leftPort": {
-                "actor": "ASSOCIATED_LINE",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MapCreate1",
-                "name": "ASSOCIATED_LINE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ASSOCIATED_LINE_FMT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "MapCreate1",
-                "name": "ASSOCIATED_LINE_FMT"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "DESCRIPTION",
                 "name": "value"
             },
@@ -1099,6 +1118,36 @@
             "rightPort": {
                 "actor": "MapCreate1",
                 "name": "CONTRACT_REF_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Phone number",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "ASSOCIATED_LINE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Phone number",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "reformatPhoneNumber1",
+                "name": "phone_number"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "reformatPhoneNumber1",
+                "name": "formatted_phone_number"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "ASSOCIATED_LINE_FMT"
             }
         },
         {

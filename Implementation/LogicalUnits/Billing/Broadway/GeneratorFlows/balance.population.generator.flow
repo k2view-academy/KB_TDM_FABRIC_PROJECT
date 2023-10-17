@@ -7,7 +7,7 @@
         {
             "stages": [
                 {
-                    "name": "Get The Parent Record",
+                    "name": "Get The Parent Record & Eable Masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -35,6 +35,39 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -43,12 +76,32 @@
         {
             "stages": [
                 {
-                    "name": "Sequence Fields",
+                    "name": "Set Parent & Sequential Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "BALANCE_ID",
+                            "name": "SUBSCRIBER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "balance_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -83,7 +136,7 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "any"
+                                            "const": null
                                         }
                                     },
                                     {
@@ -146,17 +199,198 @@
         {
             "stages": [
                 {
-                    "name": "Set Outputs",
+                    "name": "Build Parent & Sequential Fields Maps",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "SUBSCRIBER_ID",
+                            "name": "Build SUBSCRIBER_ID Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "SUBSCRIBER_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SUBSCRIBER_ID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Build balance_id Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "balance_id"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "balance_id": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge Maps & Call Catalog Generator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Parent & Sequential Felds Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SUBSCRIBER_ID": {
+                                                    "type": "string"
+                                                },
+                                                "balance_id": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Catalog Generator Record",
+                            "actorType": {
+                                "parentType": "CatalogGeneratorRecord",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "balance"
+                                    },
+                                    {
+                                        "name": "mtable",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If Catalog Returns Nothing",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty Data From Catalog",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Generate Default Values",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "balance.typeDefaultsGenerator"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {}
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Catalog Returned Data",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Catalog Generated Data",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
                                     {
                                         "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
                                         "const": null
                                     }
                                 ],
@@ -164,126 +398,52 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "any"
+                                            "type": "object"
                                         }
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Generated Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
-                            "name": "BALANCE_REF_ID",
+                            "name": "Generated Value For Rest Of Fields",
                             "actorType": {
-                                "parentType": "InnerFlow",
+                                "parentType": "Const",
                                 "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 1000000,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 10000000,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "AVAILABLE_AMOUNT",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 10,
-                                        "schema": {
-                                            "type": "number"
+                                            "type": "object"
                                         },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 100,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
+                                        "const": null
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
-                        },
-                        {
-                            "name": "RESET_AMOUNT",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomNumber.actor"
-                                    },
-                                    {
-                                        "name": "minimum",
-                                        "const": 1,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    },
-                                    {
-                                        "name": "maximum",
-                                        "const": 50,
-                                        "schema": {
-                                            "type": "number"
-                                        },
-                                        "mandatory": false,
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Override catalog values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
                             "name": "RESET_DATE",
                             "actorType": {
@@ -323,6 +483,76 @@
                     ]
                 }
             ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create a Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "MapCreate1",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [
+                                    {
+                                        "name": "RESET_DATE",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge All Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Merge Maps of all Fields",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [
+                                    {
+                                        "name": "mapType",
+                                        "const": "TreeMapIgnoreCase"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "connections": [
@@ -341,6 +571,141 @@
         },
         {
             "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build SUBSCRIBER_ID Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "balance_id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build balance_id Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build SUBSCRIBER_ID Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Build balance_id Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Empty Data From Catalog",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generate Default Values",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "RESET_DATE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "RESET_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapCreate1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
                 "name": "parent_row"
             },
@@ -351,58 +716,8 @@
         },
         {
             "leftPort": {
-                "actor": "BALANCE_ID",
-                "name": "value"
-            },
-            "rightPort": {
                 "actor": "flowArgs",
-                "name": "BALANCE_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SUBSCRIBER_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "SUBSCRIBER_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "BALANCE_REF_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "BALANCE_REF_ID"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "AVAILABLE_AMOUNT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "AVAILABLE_AMOUNT"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "RESET_AMOUNT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "RESET_AMOUNT"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "reset_date"
+                "name": "balance_reset_date"
             },
             "rightPort": {
                 "actor": "RESET_DATE",
@@ -411,12 +726,12 @@
         },
         {
             "leftPort": {
-                "actor": "RESET_DATE",
-                "name": "value"
+                "actor": "Merge Maps of all Fields",
+                "name": "map"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "RESET_DATE"
+                "name": "result"
             }
         }
     ]

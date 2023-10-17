@@ -11,19 +11,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Logger1",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Updating the parameters tables"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "UpgradeDistinctValues1",
                             "actorType": {
                                 "parentType": "InnerFlow",
@@ -47,19 +34,6 @@
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
-                        {
-                            "name": "Logger2",
-                            "actorType": {
-                                "parentType": "Logger",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "Converting the translation objects to MTables"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "convertLuTranslations1",
                             "actorType": {

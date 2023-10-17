@@ -1,0 +1,338 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDM_LIBRARY folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${TDM_LIBRARY_PAHT}Translations/"
+                                    },
+                                    {
+                                        "name": "TDM_LIBRARY_PAHT",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LU Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${LU_PATH}Translations/"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ls TDM_LIBRARY translation",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "."
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    },
+                                                    "createTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastModifiedTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastAccessTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "directory": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Concat1",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Concat2",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace1",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "file://"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Replace2",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "file://"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "cp1",
+                            "actorType": {
+                                "parentType": "cp",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "file://./"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "TDM_LIBRARY folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "ls TDM_LIBRARY translation",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDM_LIBRARY folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Concat2",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "ls TDM_LIBRARY translation",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Concat1",
+                "name": "elements"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ],
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "ls TDM_LIBRARY translation",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Concat2",
+                "name": "elements"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Concat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace1",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Concat2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Replace2",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "cp1",
+                "name": "from"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "cp1",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "TDM_LIBRARY_PAHT"
+            },
+            "rightPort": {
+                "actor": "TDM_LIBRARY folder",
+                "name": "TDM_LIBRARY_PAHT"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "LU Folder",
+                "name": "LU_PATH"
+            }
+        }
+    ]
+}

@@ -19,6 +19,11 @@ INSERT INTO ${@schema}.tdm_general_parameters (param_name,param_value)
 select 'MAX_RETENTION_DAYS_FOR_TESTER','90'
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RETENTION_DAYS_FOR_TESTER');
 
+-- add a new row in tdm_general_params for max reservation days for tester
+INSERT INTO ${@schema}.tdm_general_parameters (param_name,param_value)
+select 'MAX_RESERVATION_DAYS_FOR_TESTER','90'
+where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
+
 -- Seperate Avaliable Options For Reservation And Retention 
 UPDATE ${@schema}.tdm_general_parameters
 SET param_value = '{"retentionDefaultPeriod":{"units":"Do Not Delete","value":-1},"reservationDefaultPeriod":{"units":"Days","value":5},"versioningRetentionPeriod":{"units":"Days","value":5,"allow_doNotDelete":True},"versioningRetentionPeriodForTesters":{"units":"Days","value":5,"allow_doNotDelete":False},"permissionGroups":["admin","owner","tester"],"retentionPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"reservationPeriodTypes":[{"name":"Minutes","units":0.00069444444},{"name":"Hours","units":0.04166666666},{"name":"Days","units":1},{"name":"Weeks","units":7},{"name":"Years","units":365}],"enable_reserve_by_params":False}'

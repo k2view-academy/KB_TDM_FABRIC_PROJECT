@@ -491,12 +491,12 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
     
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '8.0' 
+    select 'TDM_VERSION', '8.1' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 insert into ${@schema}.tdm_general_parameters(
 		param_name, param_value) 
-	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 10 
+	select 'MAX_RESERVATION_DAYS_FOR_TESTER', 90 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'MAX_RESERVATION_DAYS_FOR_TESTER');
 
 insert into ${@schema}.tdm_general_parameters(

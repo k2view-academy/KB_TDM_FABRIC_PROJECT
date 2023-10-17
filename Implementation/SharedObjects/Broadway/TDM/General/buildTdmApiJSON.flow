@@ -17,7 +17,7 @@
                                 "inputs": [
                                     {
                                         "name": "interface",
-                                        "const": "http://localhost:3213/"
+                                        "const": "http://localhost:3214/"
                                     },
                                     {
                                         "name": "path",
@@ -17222,7 +17222,7 @@
                                 "inputs": [
                                     {
                                         "name": "pattern",
-                                        "const": "Graphit|catalog|common|Lu"
+                                        "const": "Graphit|catalog|common|fabric|Lu"
                                     }
                                 ],
                                 "outputs": []

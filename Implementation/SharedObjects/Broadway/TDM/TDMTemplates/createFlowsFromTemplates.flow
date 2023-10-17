@@ -76,6 +76,31 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Create TAR Tables?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": "",
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Create Delete Table Flows From Template",
                             "actorType": {
                                 "parentType": "createDeleteTableFlows",
@@ -184,6 +209,16 @@
             "rightPort": {
                 "actor": "Create Load All Tables Flow From Template",
                 "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "CREATE_DELETE_TABLES"
+            },
+            "rightPort": {
+                "actor": "Create TAR Tables?",
+                "name": "a"
             }
         },
         {

@@ -49,6 +49,25 @@
                                 ],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -303,72 +322,35 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "First Name",
+                            "name": "generateFirstAndLastName1",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
                                     {
                                         "name": "flowName",
-                                        "const": "firstName"
+                                        "const": "generateFirstAndLastName"
                                     }
                                 ],
                                 "outputs": [
                                     {
                                         "name": "first_name",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Last Name",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "LastName"
-                                    }
-                                ],
-                                "outputs": [
+                                        "schema": {}
+                                    },
                                     {
                                         "name": "last_name",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "schema": {}
                                     }
                                 ]
                             }
                         },
                         {
-                            "name": "SSN",
+                            "name": "RandomSSN1",
                             "actorType": {
-                                "parentType": "GenerateConsistent",
+                                "parentType": "RandomSSN",
                                 "inputs": [
                                     {
-                                        "name": "maskingId",
-                                        "const": "maskSSN"
-                                    },
-                                    {
-                                        "name": "flowName",
-                                        "const": "RandomSSN.actor"
-                                    },
-                                    {
-                                        "name": "useInstanceId",
-                                        "const": true
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "DB_CASSANDRA"
-                                    },
-                                    {
                                         "name": "delimiter",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "const": "-"
                                     }
                                 ],
                                 "outputs": []
@@ -422,6 +404,25 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Merge Maps of all Fields",
                             "actorType": {
@@ -549,7 +550,7 @@
         },
         {
             "leftPort": {
-                "actor": "First Name",
+                "actor": "generateFirstAndLastName1",
                 "name": "first_name"
             },
             "rightPort": {
@@ -559,7 +560,7 @@
         },
         {
             "leftPort": {
-                "actor": "Last Name",
+                "actor": "generateFirstAndLastName1",
                 "name": "last_name"
             },
             "rightPort": {
@@ -569,7 +570,7 @@
         },
         {
             "leftPort": {
-                "actor": "SSN",
+                "actor": "RandomSSN1",
                 "name": "value"
             },
             "rightPort": {

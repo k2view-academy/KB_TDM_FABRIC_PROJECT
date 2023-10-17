@@ -498,7 +498,10 @@ public class TdmExecuteTask {
 		try {
 			List<Map<String, Object>> postProcessList = MtableLookup("PostProcessList", postProcessInputs, MTable.Feature.caseInsensitive);
 			for (Map<String, Object> t : postProcessList) {
-				luName = "" + t.get("lu_name");
+				Object luNameObj = t.get("lu_name");
+				if (luNameObj != null) {
+					luName = luNameObj.toString();
+				}
 			}
 
 			if ((luName == null || luName.isEmpty()) && postProcessList.size()>0) {
@@ -691,10 +694,12 @@ public class TdmExecuteTask {
 				entityInclusion = "SELECT '" + env + separator + addSeparators(entitiesList) + "#params#{\"clone_id\" : '||generate_series(1, " + NUM_OF_ENTITIES.get(taskProperties) + " )||'}' as entity_id ";
 				break;
 			case "P": // In case the task has criteria based on parameters
+				entitiesList = entitiesList.replaceAll("'", "''");
 				listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
 				entityInclusion = "SELECT entity_id FROM (SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 " + entityExclusionListWhere + " LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
 				break;
 			case "PR": // In case the task has criteria based on parameters and random list
+				entitiesList = entitiesList.replaceAll("'", "''");
 				listOfMatchingEntities = generateListOfMatchingEntitiesQuery(BE_ID.get(taskProperties), entitiesList, SOURCE_ENVIRONMENT_NAME.get(taskProperties));
 				entityInclusion = "SELECT entity_id FROM ( SELECT '" + env + "'" + getEntityIDSelect("entity_id") + " as entity_id FROM (" + listOfMatchingEntities + ")  AS ALIAS0) AS ALIAS1 " + entityExclusionListWhere + "  ORDER BY md5(entity_id || '" + CREATION_DATE.get(taskProperties) + "') LIMIT " + NUM_OF_ENTITIES.get(taskProperties);
 				break;

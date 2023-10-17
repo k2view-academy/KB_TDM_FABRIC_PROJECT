@@ -7,7 +7,7 @@
         {
             "stages": [
                 {
-                    "name": "Get The Parent Record",
+                    "name": "Get The Parent Record & Eable Masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -35,6 +35,39 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -43,12 +76,32 @@
         {
             "stages": [
                 {
-                    "name": "Sequence Fields",
+                    "name": "Set Parent & Sequential Fields",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "PAYMENT_ID",
+                            "name": "INVOICE_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "payment_id",
                             "actorType": {
                                 "parentType": "Masking",
                                 "inputs": [
@@ -83,7 +136,7 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "any"
+                                            "const": null
                                         }
                                     },
                                     {
@@ -146,17 +199,198 @@
         {
             "stages": [
                 {
-                    "name": "Set Outputs",
+                    "name": "Build Parent & Sequential Fields Maps",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "INVOICE_ID",
+                            "name": "Build INVOICE_ID Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "INVOICE_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "INVOICE_ID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Build payment_id Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "payment_id"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "payment_id": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge Maps & Call Catalog Generator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Parent & Sequential Felds Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "INVOICE_ID": {
+                                                    "type": "string"
+                                                },
+                                                "payment_id": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Catalog Generator Record",
+                            "actorType": {
+                                "parentType": "CatalogGeneratorRecord",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "payment"
+                                    },
+                                    {
+                                        "name": "mtable",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If Catalog Returns Nothing",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty Data From Catalog",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Generate Default Values",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "payment.typeDefaultsGenerator"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {}
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Catalog Returned Data",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Catalog Generated Data",
                             "actorType": {
                                 "parentType": "Const",
                                 "inputs": [
                                     {
                                         "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
                                         "const": null
                                     }
                                 ],
@@ -164,48 +398,52 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "any"
+                                            "type": "object"
                                         }
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Generated Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
-                            "name": "ISSUED_DATE",
+                            "name": "Generated Value For Rest Of Fields",
                             "actorType": {
-                                "parentType": "RandomDistribution",
+                                "parentType": "Const",
                                 "inputs": [
-                                    {
-                                        "name": "distribution",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "distribution": "string",
-                                                "round": "boolean",
-                                                "minimum": "date",
-                                                "maximum": "date"
-                                            }
-                                        },
-                                        "const": {
-                                            "distribution": "uniform",
-                                            "round": false,
-                                            "type": "date",
-                                            "minimum": "2015-01-01T05:00:00.000",
-                                            "maximum": "2017-12-30T22:00:00.000"
-                                        },
-                                        "isDefault": true
-                                    }
-                                ],
-                                "outputs": [
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "date"
-                                        }
+                                            "type": "object"
+                                        },
+                                        "const": null
                                     }
-                                ]
+                                ],
+                                "outputs": []
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Override catalog values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
                             "name": "STATUS",
                             "actorType": {
@@ -252,15 +490,72 @@
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create a Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
-                            "name": "AMOUNT",
+                            "name": "MapCreate1",
                             "actorType": {
-                                "parentType": "RandomRegexGenerator",
+                                "parentType": "MapCreate",
                                 "inputs": [
                                     {
-                                        "name": "regex",
-                                        "const": "([1-9]|[1-9][0-9]{1,2}|1000)"
+                                        "name": "STATUS",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge All Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Merge Maps of all Fields",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [
+                                    {
+                                        "name": "mapType",
+                                        "const": "TreeMapIgnoreCase"
                                     }
                                 ],
                                 "outputs": []
@@ -287,22 +582,12 @@
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "parent_row"
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
             },
             "rightPort": {
-                "actor": "parent_row",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PAYMENT_ID",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "PAYMENT_ID"
+                "actor": "Catalog Generator Record",
+                "name": "interface"
             }
         },
         {
@@ -311,28 +596,133 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "flowArgs",
-                "name": "INVOICE_ID"
+                "actor": "Build INVOICE_ID Map",
+                "name": "value"
             }
         },
         {
             "leftPort": {
-                "actor": "flowArgs",
-                "name": "payment_issued_date"
-            },
-            "rightPort": {
-                "actor": "ISSUED_DATE",
-                "name": "distribution"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "ISSUED_DATE",
+                "actor": "payment_id",
                 "name": "value"
             },
             "rightPort": {
+                "actor": "Build payment_id Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build INVOICE_ID Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Build payment_id Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Empty Data From Catalog",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generate Default Values",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "STATUS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapCreate1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
                 "actor": "flowArgs",
-                "name": "ISSUED_DATE"
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
             }
         },
         {
@@ -347,22 +737,12 @@
         },
         {
             "leftPort": {
-                "actor": "STATUS",
-                "name": "value"
+                "actor": "Merge Maps of all Fields",
+                "name": "map"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "STATUS"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "AMOUNT",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "AMOUNT"
+                "name": "result"
             }
         }
     ]

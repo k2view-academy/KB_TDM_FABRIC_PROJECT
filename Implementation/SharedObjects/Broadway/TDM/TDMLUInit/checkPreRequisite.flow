@@ -1,0 +1,1084 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "SysEnv1",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_DIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "SysEnv2",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "USERDOMAIN_ROAMINGPROFILE": {
+                                                    "type": "string"
+                                                },
+                                                "PROCESSOR_LEVEL": {
+                                                    "type": "string"
+                                                },
+                                                "BASEDIR": {
+                                                    "type": "string"
+                                                },
+                                                "GENERIC_DB_SERVER_PORT": {
+                                                    "type": "string"
+                                                },
+                                                "CODE_GUARD_KEY_FILE": {
+                                                    "type": "string"
+                                                },
+                                                "SESSIONNAME": {
+                                                    "type": "string"
+                                                },
+                                                "ALLUSERSPROFILE": {
+                                                    "type": "string"
+                                                },
+                                                "JDBC_SERVER_PORT": {
+                                                    "type": "string"
+                                                },
+                                                "PROCESSOR_ARCHITECTURE": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_JDK_HOME": {
+                                                    "type": "string"
+                                                },
+                                                "PSModulePath": {
+                                                    "type": "string"
+                                                },
+                                                "SystemDrive": {
+                                                    "type": "string"
+                                                },
+                                                "WEB_SERVER_PORT": {
+                                                    "type": "string"
+                                                },
+                                                "USERNAME": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_ERR_LOG": {
+                                                    "type": "string"
+                                                },
+                                                "K2_CASSANDRA_HOME": {
+                                                    "type": "string"
+                                                },
+                                                "ProgramFiles(x86)": {
+                                                    "type": "string"
+                                                },
+                                                "PROJECT_FOLDER_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "_JDK_MODULES": {
+                                                    "type": "string"
+                                                },
+                                                "FPS_BROWSER_USER_PROFILE_STRING": {
+                                                    "type": "string"
+                                                },
+                                                "addProjectCompiledClassesToClasspath": {
+                                                    "type": "string"
+                                                },
+                                                "PATHEXT": {
+                                                    "type": "string"
+                                                },
+                                                "DriverData": {
+                                                    "type": "string"
+                                                },
+                                                "COMPILATION_DIR": {
+                                                    "type": "string"
+                                                },
+                                                "ProgramData": {
+                                                    "type": "string"
+                                                },
+                                                "ProgramW6432": {
+                                                    "type": "string"
+                                                },
+                                                "HOMEPATH": {
+                                                    "type": "string"
+                                                },
+                                                "PROCESSOR_IDENTIFIER": {
+                                                    "type": "string"
+                                                },
+                                                "javaPath": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_CONF": {
+                                                    "type": "string"
+                                                },
+                                                "EFC_14532": {
+                                                    "type": "string"
+                                                },
+                                                "ProgramFiles": {
+                                                    "type": "string"
+                                                },
+                                                "PUBLIC": {
+                                                    "type": "string"
+                                                },
+                                                "windir": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_OUT_LOG": {
+                                                    "type": "string"
+                                                },
+                                                "ZES_ENABLE_SYSMAN": {
+                                                    "type": "string"
+                                                },
+                                                "LOCALAPPDATA": {
+                                                    "type": "string"
+                                                },
+                                                "JVM_OPTIONS_DEBUG": {
+                                                    "type": "string"
+                                                },
+                                                "ROOTDIR": {
+                                                    "type": "string"
+                                                },
+                                                "PROJECT_DIR": {
+                                                    "type": "string"
+                                                },
+                                                "USERDOMAIN": {
+                                                    "type": "string"
+                                                },
+                                                "FPS_BROWSER_APP_PROFILE_STRING": {
+                                                    "type": "string"
+                                                },
+                                                "LOGONSERVER": {
+                                                    "type": "string"
+                                                },
+                                                "JAVA_HOME": {
+                                                    "type": "string"
+                                                },
+                                                "PROMPT": {
+                                                    "type": "string"
+                                                },
+                                                "OneDrive": {
+                                                    "type": "string"
+                                                },
+                                                "=C:": {
+                                                    "type": "string"
+                                                },
+                                                "APPDATA": {
+                                                    "type": "string"
+                                                },
+                                                "INTELLIJ_DEBUG_AGENT_PORT": {
+                                                    "type": "string"
+                                                },
+                                                "jdkhome": {
+                                                    "type": "string"
+                                                },
+                                                "CommonProgramFiles": {
+                                                    "type": "string"
+                                                },
+                                                "Path": {
+                                                    "type": "string"
+                                                },
+                                                "OS": {
+                                                    "type": "string"
+                                                },
+                                                "COMPUTERNAME": {
+                                                    "type": "string"
+                                                },
+                                                "PROCESSOR_REVISION": {
+                                                    "type": "string"
+                                                },
+                                                "CLASSPATH": {
+                                                    "type": "string"
+                                                },
+                                                "CommonProgramW6432": {
+                                                    "type": "string"
+                                                },
+                                                "cp": {
+                                                    "type": "string"
+                                                },
+                                                "EXTERNAL_JARS": {
+                                                    "type": "string"
+                                                },
+                                                "ComSpec": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_HOME": {
+                                                    "type": "string"
+                                                },
+                                                "SystemRoot": {
+                                                    "type": "string"
+                                                },
+                                                "TEMP": {
+                                                    "type": "string"
+                                                },
+                                                "HOMEDRIVE": {
+                                                    "type": "string"
+                                                },
+                                                "USERPROFILE": {
+                                                    "type": "string"
+                                                },
+                                                "LOCAL_DEPLOY": {
+                                                    "type": "string"
+                                                },
+                                                "TMP": {
+                                                    "type": "string"
+                                                },
+                                                "CommonProgramFiles(x86)": {
+                                                    "type": "string"
+                                                },
+                                                "NUMBER_OF_PROCESSORS": {
+                                                    "type": "string"
+                                                },
+                                                "java.specification.version": {
+                                                    "type": "string"
+                                                },
+                                                "sun.cpu.isalist": {
+                                                    "type": "string"
+                                                },
+                                                "sun.jnu.encoding": {
+                                                    "type": "string"
+                                                },
+                                                "java.class.path": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.vendor": {
+                                                    "type": "string"
+                                                },
+                                                "oracle.jdbc.implicitStatementCacheSize": {
+                                                    "type": "string"
+                                                },
+                                                "sun.arch.data.model": {
+                                                    "type": "string"
+                                                },
+                                                "user.variant": {
+                                                    "type": "string"
+                                                },
+                                                "nashorn.args": {
+                                                    "type": "string"
+                                                },
+                                                "java.vendor.url": {
+                                                    "type": "string"
+                                                },
+                                                "catalina.useNaming": {
+                                                    "type": "string"
+                                                },
+                                                "java.locale.providers": {
+                                                    "type": "string"
+                                                },
+                                                "user.timezone": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_WEB_SERVER_PORT": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.specification.version": {
+                                                    "type": "string"
+                                                },
+                                                "os.name": {
+                                                    "type": "string"
+                                                },
+                                                "sun.java.launcher": {
+                                                    "type": "string"
+                                                },
+                                                "user.country": {
+                                                    "type": "string"
+                                                },
+                                                "sun.boot.library.path": {
+                                                    "type": "string"
+                                                },
+                                                "projectDir": {
+                                                    "type": "string"
+                                                },
+                                                "sun.java.command": {
+                                                    "type": "string"
+                                                },
+                                                "jdk.debug": {
+                                                    "type": "string"
+                                                },
+                                                "ProductDynamicJarsDir": {
+                                                    "type": "string"
+                                                },
+                                                "sun.cpu.endian": {
+                                                    "type": "string"
+                                                },
+                                                "user.home": {
+                                                    "type": "string"
+                                                },
+                                                "user.language": {
+                                                    "type": "string"
+                                                },
+                                                "java.specification.vendor": {
+                                                    "type": "string"
+                                                },
+                                                "java.version.date": {
+                                                    "type": "string"
+                                                },
+                                                "java.home": {
+                                                    "type": "string"
+                                                },
+                                                "compilationDir": {
+                                                    "type": "string"
+                                                },
+                                                "file.separator": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.compressedOopsMode": {
+                                                    "type": "string"
+                                                },
+                                                "line.separator": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.specification.vendor": {
+                                                    "type": "string"
+                                                },
+                                                "java.system.class.loader": {
+                                                    "type": "string"
+                                                },
+                                                "java.specification.name": {
+                                                    "type": "string"
+                                                },
+                                                "localDeploy": {
+                                                    "type": "string"
+                                                },
+                                                "oracle.jdbc.maxCachedBufferSize": {
+                                                    "type": "string"
+                                                },
+                                                "javax.xml.parsers.DocumentBuilderFactory": {
+                                                    "type": "string"
+                                                },
+                                                "studioNoAuth": {
+                                                    "type": "string"
+                                                },
+                                                "user.script": {
+                                                    "type": "string"
+                                                },
+                                                "sun.management.compiler": {
+                                                    "type": "string"
+                                                },
+                                                "javax.xml.parsers.SAXParserFactory": {
+                                                    "type": "string"
+                                                },
+                                                "java.runtime.version": {
+                                                    "type": "string"
+                                                },
+                                                "user.name": {
+                                                    "type": "string"
+                                                },
+                                                "path.separator": {
+                                                    "type": "string"
+                                                },
+                                                "os.version": {
+                                                    "type": "string"
+                                                },
+                                                "java.runtime.name": {
+                                                    "type": "string"
+                                                },
+                                                "broadwayUI": {
+                                                    "type": "string"
+                                                },
+                                                "file.encoding": {
+                                                    "type": "string"
+                                                },
+                                                "DynamicJarsDir": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.name": {
+                                                    "type": "string"
+                                                },
+                                                "FABRIC_JDBC_SERVER_PORT": {
+                                                    "type": "string"
+                                                },
+                                                "java.vendor.url.bug": {
+                                                    "type": "string"
+                                                },
+                                                "app.class.path": {
+                                                    "type": "string"
+                                                },
+                                                "java.io.tmpdir": {
+                                                    "type": "string"
+                                                },
+                                                "catalina.home": {
+                                                    "type": "string"
+                                                },
+                                                "java.version": {
+                                                    "type": "string"
+                                                },
+                                                "oracle.jdbc.ReadTimeout": {
+                                                    "type": "string"
+                                                },
+                                                "user.dir": {
+                                                    "type": "string"
+                                                },
+                                                "K2_FABRIC_SERVER_HOME": {
+                                                    "type": "string"
+                                                },
+                                                "os.arch": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.specification.name": {
+                                                    "type": "string"
+                                                },
+                                                "sun.os.patch.level": {
+                                                    "type": "string"
+                                                },
+                                                "genericPort": {
+                                                    "type": "string"
+                                                },
+                                                "catalina.base": {
+                                                    "type": "string"
+                                                },
+                                                "native.encoding": {
+                                                    "type": "string"
+                                                },
+                                                "java.library.path": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.info": {
+                                                    "type": "string"
+                                                },
+                                                "java.vendor": {
+                                                    "type": "string"
+                                                },
+                                                "java.vm.version": {
+                                                    "type": "string"
+                                                },
+                                                "sun.io.unicode.encoding": {
+                                                    "type": "string"
+                                                },
+                                                "javax.xml.transform.TransformerFactory": {
+                                                    "type": "string"
+                                                },
+                                                "java.class.version": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "SysEnv3",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "BASEDIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Deploy Env Command",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "DEPLOY ENVIRONMENTS FROM FILE '${PROJECT_DIR}/Implementation/SharedObjects/Environments/Environments.k2fabEnv.xml'"
+                                    },
+                                    {
+                                        "name": "PROJECT_DIR",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "StringFormat1",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://${BASE_DIR}"
+                                    },
+                                    {
+                                        "name": "BASE_DIR",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TMP BuildArtifacts",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "@echo off\n\n::==============================================================================::\n:: \t\t\tUSAGE: buildArtifacts.bat <PATH_TO_PROJECT> <LUTNAME>\t\t\t\t::\t\n::\t\t\tDESCRIPTION: This script builds artifacts for given lu\t\t\t\t::\n::==============================================================================::\n\necho \"creating lu artifacts...\"\n:: creating ludbXmls.zip\nset FABRIC_DIR=%~dp0..\nset PROJDIR=%~1\nset PROJDIR=%PROJDIR:\"=%\n\nset LUTNAME=%~2\n \n:: creating ludb.jar\nif exist \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\" ( rmdir /s /q \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\" )\nmkdir \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\"\n\n%SystemRoot%\\system32\\xcopy.exe /s /i \"%PROJDIR%\\Implementation\\SharedObjects\\Java\\resources\" \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\"\n%SystemRoot%\\system32\\xcopy.exe /s /i \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\resources\" \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\"\n\ndir /s /B \"%PROJDIR%\\Implementation\\SharedObjects\\Java\\src\\*.java\" >> sources.txt\ndir /s /B \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\src\\*.java\" >> sources.txt\n\nset JPATH=\nfor /F \"tokens=*\" %%A in (sources.txt) do call set JPATH=%%JPATH%% ^\"%%A^\" \n\n\"%java_home%\\bin\\javac.exe\" -source 1.8 -target 1.8 -parameters -encoding UTF-8 -g -cp \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\";\"%FABRIC_DIR%\\lib\\fabric\\*\";\"%FABRIC_DIR%\\lib\\provided\\*\";\"%PROJDIR%\\lib\\*\" -sourcepath \"%PROJDIR%\\Implementation\\SharedObjects\\Java\\src\";src -d \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\" %JPATH%\n\"%java_home%\\bin\\jar.exe\" cvf \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\ludb.jar\" -C \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\" .\n\nrmdir /s /q \"%PROJDIR%\\Implementation\\LogicalUnits\\%LUTNAME%\\Java\\_bin\"\ndel sources.txt\n\necho \"done creating ludb.jar...\"\n\n:: Compresstion\n::call tmp-compress-project.bat -pd \"%PROJDIR%\" -l %LUTNAME%\n\n"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TMP Compress Script",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "@echo off\nsetlocal enabledelayedexpansion enableextensions\n\n:: BASEDIR is the scripts dir\nSET BASEDIR=%~dp0\n:: remove trailing slash\nIF %BASEDIR:~-1%==\\ SET BASEDIR=%BASEDIR:~0,-1%\n\nSET ROOTDIR=%BASEDIR%\\..\n:: set full path\nfor %%G in (\"%ROOTDIR%\") do set ROOTDIR=%%~fG\n\nSET FABRIC_HOME=%ROOTDIR%\\..\n\nset CLASSPATH=%CLASSPATH%;\"%ROOTDIR%\\lib\\fabric\\*\"\n\ncall :set_classpath %CLASSPATH%\n\njava ^\n\t-classpath %CLASSPATH% ^\n\t-DFABRIC_HOME=\"%FABRIC_HOME%\" ^\n\t%JVM_OPTIONS_DEBUG% ^\n\tcom.k2view.cdbms.utils.lutype.CompressProject %*\nexit /b 0\n\n:set_classpath\n   call \"%BASEDIR%\\common.bat\" %*\nexit /b 0\n\n\n\n"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "StringFormat2",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${BASE_DIR}\\"
+                                    },
+                                    {
+                                        "name": "BASE_DIR",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Deploy Environments",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Create TMP BuildArtifacts",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "tmp-buildArtifacts.bat"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create TMP CompressProject",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "tmp-compress-project.bat"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Exec1",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "Exec",
+                                "inputs": [
+                                    {
+                                        "name": "command",
+                                        "const": "dir"
+                                    },
+                                    {
+                                        "name": "in",
+                                        "const": "C:\\\\WINDOWS\\\\System32\\\\WindowsPowerShell\\\\v1.0\\\\"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LuFunction1",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnExecuteShell"
+                                    },
+                                    {
+                                        "name": "basedir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "tmp-buildArtifacts.bat",
+                                        "name": "scBuild",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "tmp-compress-project.bat",
+                                        "name": "scCompress",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "projDir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "p",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": true,
+                                                    "log": false,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Check LU deploy",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "list lut lu_name='${LU_NAME}'"
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Missing Deploy:",
+                            "actorType": {
+                                "parentType": "Fail",
+                                "inputs": [
+                                    {
+                                        "name": "message",
+                                        "const": "Please deploy LU ${LU_NAME}"
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "SysEnv1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Deploy Env Command",
+                "name": "PROJECT_DIR"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SysEnv1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "LuFunction1",
+                "name": "projDir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SysEnv2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "BASE_DIR"
+            },
+            "path": [
+                "BASEDIR"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "SysEnv2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "StringFormat2",
+                "name": "BASE_DIR"
+            },
+            "path": [
+                "BASEDIR"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Deploy Env Command",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Deploy Environments",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Create TMP CompressProject",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Create TMP BuildArtifacts",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TMP BuildArtifacts",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Create TMP BuildArtifacts",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TMP Compress Script",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Create TMP CompressProject",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat2",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "LuFunction1",
+                "name": "basedir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check LU deploy",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
+            },
+            "iterate": "First",
+            "path": [
+                "LU_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "LuFunction1",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ErrorHandler1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Check LU deploy",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Missing Deploy:",
+                "name": "LU_NAME"
+            }
+        }
+    ]
+}

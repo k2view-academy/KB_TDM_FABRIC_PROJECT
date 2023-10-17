@@ -682,7 +682,15 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		    	    result.add(map);
 		    	}
 			}
-		}
+		} else {
+
+            Map<String, String> map = new HashMap<>();
+            //log.info("getPopArgumentListForDelete REL IS NULL");
+            map.put("PARENT_TABLE", "FABRIC_TDM_ROOT");
+            map.put("PARENT_FIELD_NAME", getGlobal("ROOT_COLUMN_NAME", luName));
+            map.put("FIELD_NAME", getGlobal("ROOT_COLUMN_NAME", luName));
+            result.add(map);
+        }
 		return result;
 	}
 	

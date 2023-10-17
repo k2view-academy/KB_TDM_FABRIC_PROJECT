@@ -33,9 +33,8 @@ import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 import com.k2view.cdbms.shared.logging.LogEntry.*;
 import com.k2view.cdbms.func.oracle.OracleToDate;
 import com.cronutils.utils.StringUtils;
-import com.k2view.cdbms.func.oracle.OracleRownum;
 
-import org.apache.commons.lang3.math.NumberUtils;
+
 import org.json.JSONObject;
 
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
@@ -61,7 +60,7 @@ public class Logic extends WebServiceUserCode {
 	public static final String LU_SQL = "SELECT product_id as productID, product_name as productName, lu_id as logicalUnitID, lu_name as logicalUnitName FROM " + schema + ".product_logical_units WHERE be_id = ? ORDER BY lu_id";
 	final static String admin_pg_access_denied_msg = "Access Denied. Please login with administrator privileges and try again";
 	public enum PARAM_TYPES{
-		COMBO, NUMBER, TEXT;
+		NUMBER, TEXT;
 		public String getName(){
 			return this.toString().toLowerCase();
 		}
@@ -147,7 +146,7 @@ public class Logic extends WebServiceUserCode {
 			"  \"errorCode\": \"SUCCESS\",\r\n" +
 			"  \"message\": null\r\n" +
 			"}")
-	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {
+	public static Object wsPostBusinessEntity(String be_name, String be_description) throws Exception {		
 		String permissionGroup = fnGetUserPermissionGroup("");
 		if ("admin".equals(permissionGroup)) {
 			try {
@@ -157,7 +156,7 @@ public class Logic extends WebServiceUserCode {
 				String sql = "INSERT INTO " + schema + ".business_entities (be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) " +
 						"VALUES (?, ?, ?, ?, ?, ?, ?) " +
 						"RETURNING be_id,be_name, be_description, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status";
-		
+
 				String username = sessionUser().name();
 				Db.Row row = db(TDM).fetch(sql, be_name, be_description!=null?be_description:"", username, now, now, username, "Active").firstRow();
 				HashMap<String,Object> businessEntity=new HashMap<>();
@@ -169,7 +168,7 @@ public class Logic extends WebServiceUserCode {
 				businessEntity.put("be_last_updated_date", row.get("be_last_updated_date"));
 				businessEntity.put("be_last_updated_by", row.get("be_last_updated_by"));
 				businessEntity.put("be_status", row.get("be_status"));
-		
+
 				String activityDesc = "Business entity " + be_name + " was created";
 				try {
 					fnInsertActivity("create", "Business entities", activityDesc);
@@ -177,7 +176,7 @@ public class Logic extends WebServiceUserCode {
 				catch(Exception e){
 					log.error(e.getMessage());
 				}
-		
+
 				return wrapWebServiceResults("SUCCESS",null,businessEntity);
 			}
 			catch (Exception e){
@@ -1061,6 +1060,7 @@ public class Logic extends WebServiceUserCode {
 	static void fnAddLogicalUnits(List<Map<String,Object>> logicalUnits,long beId) throws Exception{
 		for(Map<String,Object> logicalUnit:logicalUnits){
 			Map<String,Object> luParent = (Map<String,Object>)logicalUnit.get("lu_parent");
+
 			String sql = "INSERT INTO " + schema + ".product_logical_units " +
 					"(lu_name, lu_description, be_id, lu_parent_id, lu_parent_name, product_id) " +
 					"VALUES (?, ?, ?, ?, ?, ?) RETURNING lu_id,lu_name";
@@ -1068,18 +1068,19 @@ public class Logic extends WebServiceUserCode {
 			Db.Rows rows = db(TDM).fetch(sql, logicalUnit.get("lu_name"),
 					logicalUnit.get("lu_description"),
 					beId,
-					(luParent !=null)? luParent.get("lu_id"):null,
-					(luParent !=null)? luParent.get("logical_unit"):null,
+					(luParent !=null) ? luParent.get("lu_id") : null,
+					(luParent !=null) ? luParent.get("logical_unit") : null,
 					-1);
 			logicalUnit.put("lu_id",rows.firstRow().get("lu_id"));
 			if (rows != null) {
 				rows.close();
 			}
 		}
-		fn_updateParentLogicalUnits(logicalUnits);
+		fn_updateParentLogicalUnits(logicalUnits, beId);
 	}
 
-	static void fn_updateParentLogicalUnits(List<Map<String,Object>> logicalUnits) throws Exception{
+	static void fn_updateParentLogicalUnits(List<Map<String,Object>> logicalUnits, long beId) throws Exception{
+		
 		List<Map<String,Object>> updatedList=new ArrayList<>();
 
 		for(Map<String,Object> logicalUnit:logicalUnits) {
@@ -1091,6 +1092,29 @@ public class Logic extends WebServiceUserCode {
 
 		if(updatedList.size()==0) return ;
 
+		String getBeLUsSql = "SELECT lu_name, lu_id FROM " + schema + ".product_logical_units " +
+				"WHERE be_id = ? ";
+		Db.Rows beLUsRows = db(TDM).fetch(getBeLUsSql,beId);
+
+		for(Db.Row row : beLUsRows) {
+			Map<String, Object> beLUs= new HashMap<>();
+			Object luName = row.get("lu_name");
+			boolean luExists = false;
+			for (Map<String, Object> map : logicalUnits) {
+				if (map.get("lu_name").equals(luName)) {
+					luExists = true;
+					break;
+				}
+			}
+			if (!luExists) {
+				beLUs.put("lu_name", row.get("lu_name"));
+				beLUs.put("lu_id", row.get("lu_id"));
+				logicalUnits.add(beLUs);
+			}
+		}
+		if (beLUsRows != null) {
+			beLUsRows.close();
+		}
 		for(Map<String,Object> logicalUnit:updatedList){
 			Map<String, Object> luParent = (Map<String, Object>) logicalUnit.get("lu_parent");
 			Map<String,Object> temp=null;
@@ -1275,56 +1299,39 @@ public class Logic extends WebServiceUserCode {
 		for(Db.Row luRow : luRes) {
 			String luName = luRow.get("logicalunitname").toString();
 			
-            String getDistinctValuesSQL = "SELECT *, array_length(field_values, 1) as len FROM " + schema +".tdm_params_distinct_values " +
+            String getDistinctValuesSQL = "SELECT * FROM " + schema +".tdm_params_distinct_values " +
                     "WHERE lu_name = ?";
 
             Db.Rows luFieldsValues = tdmDB.fetch(getDistinctValuesSQL, luName.toUpperCase());
             for (Db.Row fieldValuesRec : luFieldsValues) {
-                String fieldName = fieldValuesRec.get("field_name").toString();
                 String colNameUpper = fieldValuesRec.get("field_name").toString().toUpperCase().replaceAll("\"", "");
-                String fieldValues = fieldValuesRec.get("field_values").toString();
-                int columnDistinctValue = (int)fieldValuesRec.get("len");
+                Long numOfValues = Long.parseLong(fieldValuesRec.get("number_of_values").toString());
+
+                String isCombo = "false";
+                Boolean isNumeric = Boolean.parseBoolean(fieldValuesRec.get("is_numeric").toString());
+                String min = fieldValuesRec.get("min_value").toString();
+                String max = fieldValuesRec.get("max_value").toString();
                 
-                if (columnDistinctValue > 0 && columnDistinctValue < maxNumOfValues) {
+                String fieldValues = "\\N";
+                if (numOfValues < maxNumOfValues) {
+                    isCombo = "true";
+                    fieldValues = fieldValuesRec.get("field_values").toString();
                     fieldValues = fieldValues.replace("{", "");
                     fieldValues = fieldValues.replace("}", "");
                     fieldValues = fieldValues.replace("\"", "");
-                    List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
-                    
-                   	beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-                                                                    PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"true", 
-                                                                    VALID_VALUES, columnDistinctValues, MIN_VALUE, "\\N", MAX_VALUE, "\\N", 
-                                                                    LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
-                } else {
-					//int colNum = getColNumber(env, tdmDB, fieldName, beTableName);
-                    fieldValues = fieldValues.replace("{", "");
-                    fieldValues = fieldValues.replace("}", "");
-                    List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
-                    boolean isNumeric = true;
-                    for (String value : columnDistinctValues) {
-                        if (NumberUtils.isCreatable(value)) {
-                            isNumeric = false;
-                            break;
-                        }
-                    }
-					if (isNumeric) {
-						// In case it is, prepare the query to bring the column's min and max values
-						Map<String, String> minMax = getMinMaxValues(columnDistinctValues);
-                        String min = minMax.get("MIN").equals("\\N") ? "\\N" : minMax.get("MIN");
-                        String max = minMax.get("MAX").equals("\\N") ? "\\N" : minMax.get("MAX");
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-							PARAM_TYPE, PARAM_TYPES.NUMBER.getName(), COMBO_INDICATOR,"false", VALID_VALUES, "\\N", MIN_VALUE,
-							min, MAX_VALUE, max, LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-						));
-					} else {
-						// Mark it as text
-						beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
-                                                    PARAM_TYPE, PARAM_TYPES.TEXT.getName(),COMBO_INDICATOR,"false", VALID_VALUES, 
-                                                    "\\N", MIN_VALUE, "\\N", MAX_VALUE, "\\N", LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"
-						));
-					}
-				}
+                }
 
+                List<String> columnDistinctValues = Arrays.asList(fieldValues.split(","));
+                String paramType = isNumeric ? PARAM_TYPES.NUMBER.getName() : PARAM_TYPES.TEXT.getName();
+                                                    
+				beParametersColumnTypes.put(colNameUpper, Util.map(BE_ID, beID, LU_NAME, luName, PARAM_NAME, colNameUpper, 
+                                                                    PARAM_TYPE, paramType, COMBO_INDICATOR, isCombo, 
+                                                                    VALID_VALUES, columnDistinctValues, MIN_VALUE, min, MAX_VALUE, max, 
+                                                                    LU_PARAMS_TABLE_NAME, luName.toLowerCase() + "_params"));
+                    
+            }
+            if (luFieldsValues != null) {
+                luFieldsValues.close();
             }
 		}
 		if (luRes != null) {
@@ -1357,84 +1364,5 @@ public class Logic extends WebServiceUserCode {
 				"VALUES (?, ?, ?, ?, ?, ?)";
 		db(TDM).execute(sql,now,action,entity,userId,username,description);
 	}
-	private static boolean isNumeric(String string) {
-		int intValue;
-		System.out.printf("Parsing string: \"%s\"%n", string);
-		if(string == null || string.equals("")) {
-			System.out.println("String cannot be parsed, it is null or empty.");
-			return false;
-		}
-		try {
-			intValue = Integer.parseInt(string);
-			
-		} catch (NumberFormatException e) {
-			
-		}
-		return false;
-	}
-
-    private static Map<String, String> getMinMaxValues(List<String> columnDistinctValues) {
-        Map<String, String> result = new HashMap<String, String>();
-        
-        result.put("MIN", "\\N");
-        result.put("MAX", "\\N");
-        String min = null;
-        String max = null;
-
-        for (String value : columnDistinctValues) {
-            Integer intValue = null;
-            Long longValue = null;
-            Double doubleValue = null;
-            value = value.replace("\"", "");
-
-            try {
-                intValue = Integer.parseInt(value);
-                if (min == null || intValue < Integer.parseInt(min)) {
-                    min = value;
-                }
-                if (max == null || intValue > Integer.parseInt(max)) {
-                    max = value;
-                }
-            } catch (NumberFormatException e) {
-                // Do nothing
-            }
-            if (intValue == null) {
-                try {
-                    longValue = Long.parseLong(value);
-                    if (min == null || longValue <Long.parseLong(min)) {
-                        min = value;
-                    }
-                    if (max == null || longValue > Long.parseLong(max)) {
-                        max = value;
-                    }
-
-                } catch (NumberFormatException e) {
-                    // Do nothing
-                }
-            }
-
-            if (intValue == null && longValue == null) {
-                try {
-                    doubleValue = Double.parseDouble(value);
-                    if (min == null || doubleValue < Double.parseDouble(min)) {
-                        min = value;
-                    }
-                    if (max == null || doubleValue > Double.parseDouble(max)) {
-                        max = value;
-                    }
-                } catch (NumberFormatException e) {
-                    // Do nothing
-                }
-                if (min == null) {
-                    return result;
-                }
-            }
-        }
-
-        result.put("MIN", min);
-        result.put("MAX", max);
-        
-        return result;
-    }
-
+	
 }

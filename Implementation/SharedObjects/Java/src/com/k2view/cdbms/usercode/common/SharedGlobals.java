@@ -146,7 +146,4 @@ public class SharedGlobals {
 	public static final String TDM_PARAMETERS_SEPARATOR = "<#>";
 
 
-
-
-
 }

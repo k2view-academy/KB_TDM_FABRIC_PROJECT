@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Sequences"
+    ],
     "levels": [
         {
             "stages": [
@@ -61,16 +64,16 @@
                                         "const": "DB_CASSANDRA"
                                     },
                                     {
+                                        "name": "TTL",
+                                        "const": 0
+                                    },
+                                    {
                                         "name": "sequenceInterface",
-                                        "const": "ORDERING_DB"
+                                        "const": "ORDERS_DB"
                                     },
                                     {
                                         "name": "initialValue",
                                         "const": "OrderIdInit"
-                                    },
-									{
-                                        "name": "TTL",
-                                        "const": 0
                                     }
                                 ],
                                 "outputs": [
@@ -78,12 +81,12 @@
                                         "name": "value",
                                         "schema": {
                                             "type": "string"
-										}
-									}
-								]
-							}
-                        }						 
-					]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },

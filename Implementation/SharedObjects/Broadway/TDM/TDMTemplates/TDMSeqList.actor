@@ -7,23 +7,6 @@
     "inputs": [
         {
             "name": "table",
-            "schema": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "SEQUENCE_NAME": {
-                            "type": "string"
-                        },
-                        "SEQUENCE_REDIS_OR_DB": {
-                            "type": "string"
-                        },
-                        "INITIATE_VALUE_OR_FLOW": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
             "const": [
                 {
                     "SEQUENCE_NAME": "CUSTOMER_ID_SEQ",
@@ -77,7 +60,7 @@
                 },
                 {
                     "SEQUENCE_NAME": "ORDER_ID_SEQ",
-                    "SEQUENCE_REDIS_OR_DB": "ORDERING_DB",
+                    "SEQUENCE_REDIS_OR_DB": "ORDERS_DB",
                     "INITIATE_VALUE_OR_FLOW": "OrderIdInit"
                 },
                 {
@@ -85,7 +68,24 @@
                     "SEQUENCE_REDIS_OR_DB": "COLLECTION_DB",
                     "INITIATE_VALUE_OR_FLOW": "CollectionIdInit"
                 }
-            ]
+            ],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "SEQUENCE_NAME": {
+                            "type": "string"
+                        },
+                        "SEQUENCE_REDIS_OR_DB": {
+                            "type": "string"
+                        },
+                        "INITIATE_VALUE_OR_FLOW": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     ],
     "outputs": [],

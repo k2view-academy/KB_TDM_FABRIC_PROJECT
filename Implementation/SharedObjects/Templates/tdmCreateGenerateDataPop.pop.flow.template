@@ -6,7 +6,7 @@
         {
             "stages": [
                 {
-                    "name": "Get The Parent Record",
+                    "name": "Get The Parent Record & Eable Masking",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -48,6 +48,25 @@
                                     {
                                         "name": "key",
                                         "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
                                         "isDefault": false
                                     }
                                 ],
@@ -466,6 +485,25 @@
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Merge Maps of all Fields",
                             "actorType": {
