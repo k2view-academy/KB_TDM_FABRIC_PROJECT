@@ -30,43 +30,36 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "CUSTOMER_ID": {
+                                                "customer_id": {
                                                     "type": "integer"
                                                 },
-                                                "FIRST_NAME": {
+                                                "ssn": {
                                                     "type": "string"
                                                 },
-                                                "LAST_NAME": {
+                                                "first_name": {
                                                     "type": "string"
                                                 },
-                                                "SOCIAL_NET_FB": {
-                                                    "type": "string"
-                                                },
-                                                "SOCIAL_NET_TW": {
-                                                    "type": "string"
-                                                },
-                                                "EMAIL": {
-                                                    "type": "string"
-                                                },
-                                                "SOCIAL_NET_LNK": {
-                                                    "type": "string"
-                                                },
-                                                "ADDITIONAL_PHONE": {
-                                                    "type": "string"
-                                                },
-                                                "PRIMARY_PHONE": {
-                                                    "type": "string"
-                                                },
-                                                "OCCUPATION": {
-                                                    "type": "string"
-                                                },
-                                                "ID_NUMBER": {
+                                                "last_name": {
                                                     "type": "string"
                                                 }
                                             }
                                         }
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -333,7 +326,14 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -357,7 +357,14 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -393,17 +400,25 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": null
                                     },
                                     {
                                         "name": "delimiter",
+                                        "const": "-",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -418,7 +433,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Name Concat",
+                            "name": "Masked Values Map",
                             "minHeight": 170,
                             "actorType": {
                                 "parentType": "MapCreate",
@@ -438,7 +453,7 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "id_number",
+                                        "name": "ssn",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -455,6 +470,9 @@
                                                     "type": "string"
                                                 },
                                                 "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "ssn": {
                                                     "type": "string"
                                                 }
                                             }
@@ -564,7 +582,7 @@
                 "name": "value"
             },
             "path": [
-                "FIRST_NAME"
+                "first_name"
             ]
         },
         {
@@ -577,7 +595,7 @@
                 "name": "value"
             },
             "path": [
-                "LAST_NAME"
+                "last_name"
             ]
         },
         {
@@ -590,8 +608,38 @@
                 "name": "value"
             },
             "path": [
-                "ID_NUMBER"
+                "ssn"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Masking SSN",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Masking Last Name",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Masking First Name",
+                "name": "interface"
+            }
         },
         {
             "leftPort": {
@@ -619,7 +667,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Name Concat",
+                "actor": "Masked Values Map",
                 "name": "first_name"
             }
         },
@@ -629,7 +677,7 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Name Concat",
+                "actor": "Masked Values Map",
                 "name": "last_name"
             }
         },
@@ -639,13 +687,13 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Name Concat",
-                "name": "id_number"
+                "actor": "Masked Values Map",
+                "name": "ssn"
             }
         },
         {
             "leftPort": {
-                "actor": "Name Concat",
+                "actor": "Masked Values Map",
                 "name": "map"
             },
             "rightPort": {

@@ -5,77 +5,77 @@
     <Environment enabled="true" name="SRC">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~RKIUrVR0ndP5iWzAsBmLja+E5OSD+c9cYtv8dL9TuXEg9lvLkIHBhF7mm3M=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>oqIamLIeH3kjxCAwUCgdZ/6bk77rR6LGMMr7fmsynIU=:rBAQaTTd+Ls9l5ndwBuEj7UIr8ZGsenrm6cYizfzGME=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~wFbsCM/yNjE9JRH06rhF1upJQpwjFMxcVrdgT2vM5q2MPbSy42WhW42gkRm/RHw=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>Z4vNIG2vZYpbvk7YshA94BAOFvXCqZOzcSQTSZQz1PM=:zz9GHja0iUOmP/dbVafciM4jTY10Fm1+trk0MhvYMGM=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~IKtxzWojwAfSTFAB5mhqESo/U0vM6nusmqKhICNDnZ9gJfDJlER1Dw==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/CRM_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>oPyNv420dIR79vmUJhrqr6YVXo2XjSGLd31R9jlk9Pw=:CZJ6OLSxnElR0RgoEcgiNh1Ov20l+khXVkj4goKOBTY=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
-          <dbPasswordEncrypted>~encs2~b2rpHZrNr4ui6RcF4xt3Qtmu1vKLxyk83lmXmNWJdpduC1vZPFGddNE=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <dbPasswordEncrypted>+suLEUL/JlMp2jFA17J+0n+4QGYNY2zUM//pynb3mwA=:fdZqiDXqips6X607ApOD03aJLl7v476iM5G4RCP3SUc=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>ORDERING_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~2cQvlJUtCZSZeSbUo4oFXq4V+GeoE2ZnqvR91DsYqPElnYc6r+WpGwNCfg==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>6sZR40JP5KtkTEPfYQgMrGX+XtTRin80uAQ3QT4C8AI=:Hp8csxAT7jTAenOK1w1avPQLO3Jf89yqUn2OwE4V/U0=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~pnDT9SL+qPvAXcptKAitBUxsYV1XLsDagJEpCBl5ySWNoklQl1QViw==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>5cjORV8tT00d/sGXQAwOxjHirHMkAtFzIDgoVUG2fXI=:SKaKGzxDPDGlsaTK7W7EQPaIbmFx52X3e2Ln8Xj9LEo=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~p6wS4iRDbfvRLhqfEykzI6Bpk5zu/eMMQsv56/Hi8BEKZT0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>YmnnbUnvJ7HScTj4lS38ykxRLF71tRaDtnjP2nEB1LQ=:W2qTnZQuBxfvnhdimCCd/DcyyZjMSBUBDiWVK++jyog=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -188,30 +188,26 @@
         <Global name="clone_id" luName="">
           <Value>0</Value>
         </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="LOAD_MASKING_FLAG" luName="">
           <Value>false</Value>
         </Global>
         <Global name="TDM_SUMMARY_REPORT_LIMIT" luName="">
           <Value>10000</Value>
         </Global>
-        <Global name="TDM_DELETE_TABLES_PREFIX" luName="">
-          <Value>TAR_</Value>
-        </Global>
-        <Global name="EXTRACT_MASKING_FLAG" luName="">
+        <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
         </Global>
-        <Global name="TDM_POPULATE_JMX_STATS" luName="">
-          <Value>false</Value>
-          <Comment>Indicates whether to run add TDM statitics</Comment>
+        <Global name="BUILD_TDMDB" luName="">
+          <Value>true</Value>
         </Global>
-        <Global name="SEQ_DO_TRUNCATE" luName="">
-          <Value>false</Value>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
         </Global>
-        <Global name="SEQ_DROP_KEYSPACE" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="SEQ_CACHE_INTERFACE" luName="">
-          <Value>DB_CASSANDRA</Value>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -255,14 +251,6 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value />
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value />
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
@@ -270,62 +258,6 @@
           <Properties>
             <Property name="section">
               <Value>default</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
-          <Name>FabricRedis</Name>
-          <Properties>
-            <Property name="Servers">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="Password">
-              <Value />
-            </Property>
-            <Property name="ClientName">
-              <Value />
-            </Property>
-            <Property name="ConnectionTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="SoTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="MaxAttempts">
-              <Value>10</Value>
-            </Property>
-            <Property name="MaxTotal">
-              <Value>128</Value>
-            </Property>
-            <Property name="MaxIdle">
-              <Value>128</Value>
-            </Property>
-            <Property name="MinIdle">
-              <Value>16</Value>
-            </Property>
-            <Property name="TestOnBorrow">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestOnReturn">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestWhileIdle">
-              <Value>True</Value>
-            </Property>
-            <Property name="MinEvictableIdle">
-              <Value>60000</Value>
-            </Property>
-            <Property name="EvictionRunIntervals">
-              <Value>30000</Value>
-            </Property>
-            <Property name="TestPerEviction">
-              <Value>3</Value>
-            </Property>
-            <Property name="BlockWhenExhausted">
-              <Value>False</Value>
-            </Property>
-            <Property name="SslEnabled">
-              <Value>False</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -348,77 +280,77 @@
     <Environment enabled="true" name="TAR">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_BILLING_DB</dbScheme>
           <dbUser>TAR_BILLING_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~GQmxYXK7bGww2ColChA1eRr8tGiw/oFLHZuQd5uhZUW66EBuS09TKZhD2iuJfzAV</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>xW3rdFtCkBf/yYx39QPDq8p/spBB2TzGngCV2OxtPiw=:PCLwZUMQA4jYNeL2V5z/dHGJ8tau9nhE2qVgvFkgeK8=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_COLLECTION</dbScheme>
           <dbUser>TAR_COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~MwVnXzzf59o2fIY0KBtkeHxwyK7K+n3GnmYxpoCI96pIyiFHk4xhKFE1x0R4Q2bzqMHv</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_COLLECTION?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>8GkuYaWe7yCugB0SmGEG+9asqwFJuL4MzJOwimg41mU=:lPzSD6uTKP5tZ/x6ucBbrBeykNDl+qeG6RZYbPu4THM=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_COLLECTION?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_CRM_DB</dbScheme>
           <dbUser>TAR_CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~WfjXhEcuZdK6QxmZuSfxyThFJoiDatUF0w1uYhlJlr0KkXObXKbwaO2KVGI=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_CRM_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>v4632VfuExM84dq+LkFqMmgEwen35SEnaqJsVExokL4=:XXpo0Zv46xP8EEjQMZFVjPc+B9+kq8b2g5J+4XnlInM=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
-          <dbPasswordEncrypted>~encs2~+qiVZmBlAdG8GBnbXXPSnsdm3O52x//i6laFI6CHmGi1lNtuKjeBxmA=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <dbPasswordEncrypted>UFBySXwDNOYqfMMkHj349gFAIfkK+bFFOCypraCreJ0=:AiJAOqVNHLPPNO8E4uRyOO9QClPmAzswUwfucdfhzPA=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TAR_ORDERING</dbScheme>
           <dbUser>TAR_ORDERING_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~3LHoFCyMIMe4V/D1uRsk86RNsdTApb0roF+e3P/c950YDLy06bjENduSDzjlj7FHRw==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TAR_ORDERING?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>GPUF2jh6+3X4CP9WdRiHvg+zFHnVEJQNoYax3tSej34=:neK1998noqwmt7b4Lh/POgfLOsdSCrxuWBAQBXh1HLk=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TAR_ORDERING?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~EKfua8MKSduCMNzIn9KRGKOZhOIkaxPYV1H6RQHSQzwuVAtXllVsuQ==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>Yl52y085M1bTzUjR22JejPsjfJSWS5C10sOJKd9Rm+s=:YtIh+sVkU6QZPD7Dm3UVkw9TjtOewVDnQRHaP2PalAg=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~1RBehdq9OaRebtA1ms/jjb7FcLkP0iWTHJaaRlaVl1OJrhU=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>aJQWWf+JdZZ+iVDALeBQy3R8ZkTsblni/Wj891KzzFQ=:wYIqxK/DIC8yRrMSbzkaik0CexoA2Sl2s3+A/zoasYU=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -531,30 +463,26 @@
         <Global name="clone_id" luName="">
           <Value>0</Value>
         </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>false</Value>
+        </Global>
         <Global name="LOAD_MASKING_FLAG" luName="">
           <Value>false</Value>
         </Global>
         <Global name="TDM_SUMMARY_REPORT_LIMIT" luName="">
           <Value>10000</Value>
         </Global>
-        <Global name="TDM_DELETE_TABLES_PREFIX" luName="">
-          <Value>TAR_</Value>
-        </Global>
-        <Global name="EXTRACT_MASKING_FLAG" luName="">
+        <Global name="TDM_SYNTHETIC_DATA" luName="">
           <Value>false</Value>
         </Global>
-        <Global name="TDM_POPULATE_JMX_STATS" luName="">
-          <Value>false</Value>
-          <Comment>Indicates whether to run add TDM statitics</Comment>
+        <Global name="BUILD_TDMDB" luName="">
+          <Value>true</Value>
         </Global>
-        <Global name="SEQ_DO_TRUNCATE" luName="">
-          <Value>false</Value>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
         </Global>
-        <Global name="SEQ_DROP_KEYSPACE" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="SEQ_CACHE_INTERFACE" luName="">
-          <Value>DB_CASSANDRA</Value>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -598,14 +526,6 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value />
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value />
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
@@ -613,62 +533,6 @@
           <Properties>
             <Property name="section">
               <Value>default</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
-          <Name>FabricRedis</Name>
-          <Properties>
-            <Property name="Servers">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="Password">
-              <Value />
-            </Property>
-            <Property name="ClientName">
-              <Value />
-            </Property>
-            <Property name="ConnectionTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="SoTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="MaxAttempts">
-              <Value>10</Value>
-            </Property>
-            <Property name="MaxTotal">
-              <Value>128</Value>
-            </Property>
-            <Property name="MaxIdle">
-              <Value>128</Value>
-            </Property>
-            <Property name="MinIdle">
-              <Value>16</Value>
-            </Property>
-            <Property name="TestOnBorrow">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestOnReturn">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestWhileIdle">
-              <Value>True</Value>
-            </Property>
-            <Property name="MinEvictableIdle">
-              <Value>60000</Value>
-            </Property>
-            <Property name="EvictionRunIntervals">
-              <Value>30000</Value>
-            </Property>
-            <Property name="TestPerEviction">
-              <Value>3</Value>
-            </Property>
-            <Property name="BlockWhenExhausted">
-              <Value>False</Value>
-            </Property>
-            <Property name="SslEnabled">
-              <Value>False</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -691,77 +555,77 @@
     <Environment enabled="true" name="Synthetic">
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>BILLING_DB</dbScheme>
           <dbUser>BILLING_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~uhAQxINvYAif/5V5Hj1L5DA37+Sz1KKJgsi2PlNP9UJYrgG6QEot6s8tMq0=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/BILLING_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>2vnUPqcVC1yNnRxE7XcMrgL9UAfhuNA71GV4prnpVNg=:uSkFJo6jljAI8uzS2A4mkTBmxYXprvEuyzj3iTxsKSc=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/BILLING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="COLLECTION_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>COLLECTION_DB</dbScheme>
           <dbUser>COLLECTION_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~v7fe5zA5/D0qB5XfemVXdKykCP5c0KJNTx0+7fyOo+WvymYlV9SyHIeA/KjVL3w=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/COLLECTION_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>P9nNW0Ak4E9dAjOs+XSOSYuqBfymkk2YTOzrKaNrGcg=:v0XfOjyWJtadmDlOFLW3mSKTQnpyNjAdm6Fq8XP6XDk=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/COLLECTION_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="CRM_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>CRM_DB</dbScheme>
           <dbUser>CRM_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~UahV3RD7uMg0ZLUrREwrixSEt9eIj9AFjCgq56NwqmgU0rFo0JgCtQ==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/CRM_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>NYVRJtsKq0OdLPRGMQhjXD3nAORi73M8Uxm9cgQK9yw=:NVpCTaZ4YXsgYjGr88TJR8tVRrv5u+icknVKoMXd6LE=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/CRM_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="DB_CASSANDRA" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>9042</dbPort>
           <dbUser>cassandra</dbUser>
-          <dbPasswordEncrypted>~encs2~4nHQkE+AJkjqLPI74zWgoKU1Zqsia4MdKfFXekrsco2S0X53ohL+uFk=</dbPasswordEncrypted>
-          <connString>jdbc:cassandra://localhost:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
+          <dbPasswordEncrypted>gZ1BeYQS1dy9MwoggKoStA6Oo6WHtkpw/ZdSCHFDFHQ=:K8KHqc34wNBcL1L78MmqkPeHdQPYscqBR9JKdDdMJ+U=</dbPasswordEncrypted>
+          <connString>jdbc:cassandra://host.docker.internal:9042/?consistency=QUORUM&amp;internodesssl=false</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ORDERS_DB" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>ORDERING_DB</dbScheme>
           <dbUser>ORDERS_USER</dbUser>
-          <dbPasswordEncrypted>~encs2~Ac76LlcKC1kdaaieGx2de7/HX7E+gU8ZjEf2if1NqkuJtH0V1sHK8od3fQ==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/ORDERING_DB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>koTYl/zpEbj4LzNpWHStKqW5xia5VX96xQJkLOapiJw=:fDWZkjumiDGn8KNoAvhvtCFqgUa3SPg9mbckse9D8lU=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/ORDERING_DB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="POSTGRESQL_ADMIN" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
           <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~EOVN+2Zwey30LL+6C4C9//WbQshjplYe8KzdzkPFFH+TVBAdY9tWrw==</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>0iSKGOd+rD5G/u6bYTYqAsoVxQgE5P2RAEOgUrtgU2I=:D80affKciSqO5n/1no4E0piP0ZHUSrYxF49euIx1CJE=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/postgres?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="TDM" dbType="genericdb" active="true">
-          <dbHost>localhost</dbHost>
+          <dbHost>host.docker.internal</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>TDMDB</dbScheme>
           <dbUser>tdm</dbUser>
-          <dbPasswordEncrypted>~encs2~iRYUZzbz3YSge4Mub8vSo43gp40SoVBBgadhjgaagoUBvmE=</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://localhost:5432/TDMDB?stringtype=unspecified</connString>
+          <dbPasswordEncrypted>57QIl2gl5gjk6hAK9FG6yJ1tMbfLD9Qvxtqg5QK5+Tw=:hkr54OQNdzzhpgK8VWu2yQTetJo74G37V1P7OPJIOB0=</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://host.docker.internal:5432/TDMDB?stringtype=unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -875,30 +739,26 @@
         <Global name="clone_id" luName="">
           <Value>0</Value>
         </Global>
+        <Global name="EXTRACT_MASKING_FLAG" luName="">
+          <Value>true</Value>
+        </Global>
         <Global name="LOAD_MASKING_FLAG" luName="">
           <Value>false</Value>
         </Global>
         <Global name="TDM_SUMMARY_REPORT_LIMIT" luName="">
           <Value>10000</Value>
         </Global>
-        <Global name="TDM_DELETE_TABLES_PREFIX" luName="">
-          <Value>TAR_</Value>
+        <Global name="TDM_SYNTHETIC_DATA" luName="">
+          <Value>false</Value>
         </Global>
-        <Global name="EXTRACT_MASKING_FLAG" luName="">
+        <Global name="BUILD_TDMDB" luName="">
           <Value>true</Value>
         </Global>
-        <Global name="TDM_POPULATE_JMX_STATS" luName="">
-          <Value>false</Value>
-          <Comment>Indicates whether to run add TDM statitics</Comment>
+        <Global name="DEVELOPMENT_PRODUCT_VERSION" luName="">
+          <Value>DEV</Value>
         </Global>
-        <Global name="SEQ_DO_TRUNCATE" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="SEQ_DROP_KEYSPACE" luName="">
-          <Value>false</Value>
-        </Global>
-        <Global name="SEQ_CACHE_INTERFACE" luName="">
-          <Value>DB_CASSANDRA</Value>
+        <Global name="PRODUCTION_PRODUCT_VERSION" luName="">
+          <Value>PROD</Value>
         </Global>
         <Global name="ROOT_TABLE_NAME" luName="Billing">
           <Value>SUBSCRIBER</Value>
@@ -942,14 +802,6 @@
         <Global name="TDM_DEPLOY_ENVIRONMENTS" luName="TDM">
           <Value>false</Value>
         </Global>
-        <Global name="ROOT_TABLE_NAME" luName="TDM_LIBRARY">
-          <Value />
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="TDM_LIBRARY">
-          <Value />
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
       </GlobalsList>
       <GenericInterfacesList>
         <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
@@ -957,62 +809,6 @@
           <Properties>
             <Property name="section">
               <Value>default</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
-          <Name>FabricRedis</Name>
-          <Properties>
-            <Property name="Servers">
-              <Value>localhost</Value>
-            </Property>
-            <Property name="Password">
-              <Value />
-            </Property>
-            <Property name="ClientName">
-              <Value />
-            </Property>
-            <Property name="ConnectionTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="SoTimeout">
-              <Value>10000</Value>
-            </Property>
-            <Property name="MaxAttempts">
-              <Value>10</Value>
-            </Property>
-            <Property name="MaxTotal">
-              <Value>128</Value>
-            </Property>
-            <Property name="MaxIdle">
-              <Value>128</Value>
-            </Property>
-            <Property name="MinIdle">
-              <Value>16</Value>
-            </Property>
-            <Property name="TestOnBorrow">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestOnReturn">
-              <Value>True</Value>
-            </Property>
-            <Property name="TestWhileIdle">
-              <Value>True</Value>
-            </Property>
-            <Property name="MinEvictableIdle">
-              <Value>60000</Value>
-            </Property>
-            <Property name="EvictionRunIntervals">
-              <Value>30000</Value>
-            </Property>
-            <Property name="TestPerEviction">
-              <Value>3</Value>
-            </Property>
-            <Property name="BlockWhenExhausted">
-              <Value>False</Value>
-            </Property>
-            <Property name="SslEnabled">
-              <Value>False</Value>
             </Property>
           </Properties>
         </GenericInterface>

@@ -190,6 +190,20 @@
                                 "inputs": [],
                                 "outputs": []
                             }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 }
@@ -213,7 +227,14 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -237,7 +258,14 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
                                     }
                                 ],
                                 "outputs": [
@@ -251,17 +279,33 @@
                             }
                         },
                         {
-                            "name": "MaskingSSN",
+                            "name": "MaskSSN",
                             "actorType": {
-                                "parentType": "MaskingSSN",
+                                "parentType": "Masking",
                                 "inputs": [
                                     {
                                         "name": "maskingId",
                                         "const": "maskSSN"
                                     },
                                     {
+                                        "name": "flowName",
+                                        "const": "RandomSSN.actor"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "delimiter",
+                                        "const": "-",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -448,10 +492,16 @@
                                                 "db_affected_insert_public.CUSTOMER": {
                                                     "type": "integer"
                                                 },
+                                                "db_affected_insert_public.tdm_seq_mapping": {
+                                                    "type": "integer"
+                                                },
                                                 "db_exec": {
                                                     "type": "integer"
                                                 },
                                                 "db_exec_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.tdm_seq_mapping": {
                                                     "type": "integer"
                                                 }
                                             }
@@ -531,20 +581,6 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "MaskingSSN",
-                "name": "value"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "SSN"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get Table Data",
-                "name": "result"
-            },
-            "rightPort": {
                 "actor": "MaskFirstName",
                 "name": "value"
             },
@@ -566,6 +602,17 @@
             "path": [
                 "LAST_NAME"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskSSN",
+                "name": "value"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {
@@ -609,6 +656,36 @@
         },
         {
             "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskLastName",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskFirstName",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MaskSSN",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "MaskFirstName",
                 "name": "value"
             },
@@ -629,7 +706,7 @@
         },
         {
             "leftPort": {
-                "actor": "MaskingSSN",
+                "actor": "MaskSSN",
                 "name": "value"
             },
             "rightPort": {
