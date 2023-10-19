@@ -1356,6 +1356,7 @@ public class SharedLogic {
 				}
 				overrideParams.put("DATAFLUX_RETENTION_PARAMS",dataVersionRetentionPeriod);
 			} else{
+                if (!"reserve".equalsIgnoreCase(taskType) && (!deleteBeforeLoad || insertToTarget)) {
 				Map<String, String> dataRetentionPeriod = new HashMap<>();
 				dataRetentionPeriod.put("units", taskData.getString("retention_period_type"));
 				dataRetentionPeriod.put("value", String.valueOf(taskData.getLong("retention_period_value")));
@@ -1364,6 +1365,7 @@ public class SharedLogic {
 				if (validateMessages != null && !validateMessages.isEmpty()) {
 					return wrapWebServiceResults("FAILED", "RetentionPeriod", validateMessages.get("retention"));
 				}
+            }
 			}
 			if(reserveInd) {
 				if (reserveRetention != null) {
