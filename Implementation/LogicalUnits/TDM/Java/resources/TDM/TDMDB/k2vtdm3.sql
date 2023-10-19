@@ -694,19 +694,6 @@ CREATE TABLE IF NOT EXISTS ${@schema}.permission_groups_mapping
     CONSTRAINT permission_groups_mapping_pkey PRIMARY KEY (fabric_role)
 );
 
--- Add initial mapping for admin user
-insert into ${@schema}.permission_groups_mapping (
-	description,
-	fabric_role,
-	permission_group,
-	created_by,
-	updated_by,
-	creation_date,
-	update_date) 
-select'Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW()  
-where not exists (select 1 from ${@schema}.permission_groups_mapping where fabric_role = 'admin');
-
-
 -- Table: ${@schema}.task_execution_override_attrs - TDM 7.2
 
 -- DROP TABLE IF EXISTS ${@schema}.task_execution_override_attrs;
