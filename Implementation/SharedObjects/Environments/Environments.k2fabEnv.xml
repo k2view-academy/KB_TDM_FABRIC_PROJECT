@@ -265,14 +265,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
-          <Name>CASSANDRA_LD</Name>
-          <Properties>
-            <Property name="section">
-              <Value>default</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
         <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
@@ -329,17 +321,11 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
-          <Name>TDM_APIDOC_JSON</Name>
+        <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
+          <Name>CASSANDRA_LD</Name>
           <Properties>
-            <Property name="WorkingDir">
-              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value />
-            </Property>
-            <Property name="Affinity">
-              <Value />
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -608,14 +594,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
-          <Name>CASSANDRA_LD</Name>
-          <Properties>
-            <Property name="section">
-              <Value>default</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
         <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
@@ -672,17 +650,11 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
-          <Name>TDM_APIDOC_JSON</Name>
+        <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
+          <Name>CASSANDRA_LD</Name>
           <Properties>
-            <Property name="WorkingDir">
-              <Value>C:\K2view\Projects\TDM_8.0_DEMO\Implementation\LogicalUnits\TDM\web\TDM</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value />
-            </Property>
-            <Property name="Affinity">
-              <Value />
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -952,14 +924,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
-          <Name>CASSANDRA_LD</Name>
-          <Properties>
-            <Property name="section">
-              <Value>default</Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
         <GenericInterface type="REDIS" displayName="Redis" enabled="false" version="1.8">
           <Name>FabricRedis</Name>
           <Properties>
@@ -1016,17 +980,11 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" displayName="Local File System" enabled="false" version="1.4">
-          <Name>TDM_APIDOC_JSON</Name>
+        <GenericInterface type="CassandraLoader" displayName="Cassandra Loader" enabled="true" version="1.0">
+          <Name>CASSANDRA_LD</Name>
           <Properties>
-            <Property name="WorkingDir">
-              <Value />
-            </Property>
-            <Property name="FilesFilter">
-              <Value />
-            </Property>
-            <Property name="Affinity">
-              <Value />
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
