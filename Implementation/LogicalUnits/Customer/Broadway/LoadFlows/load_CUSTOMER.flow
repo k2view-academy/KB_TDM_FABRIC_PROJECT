@@ -80,16 +80,16 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "CUSTOMER_ID": {
-                                                        "type": "Any"
+                                                        "type": "string"
                                                     },
                                                     "SSN": {
-                                                        "type": "Any"
+                                                        "type": "string"
                                                     },
                                                     "FIRST_NAME": {
-                                                        "type": "Any"
+                                                        "type": "string"
                                                     },
                                                     "LAST_NAME": {
-                                                        "type": "Any"
+                                                        "type": "string"
                                                     }
                                                 }
                                             }
@@ -300,8 +300,8 @@
                                         "const": null
                                     },
                                     {
-                                        "name": "delimiter",
                                         "const": "-",
+                                        "name": "delimiter",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -612,7 +612,10 @@
                 "actor": "MaskSSN",
                 "name": "value"
             },
-            "iterate": "Iterate"
+            "iterate": "Iterate",
+            "path": [
+                "SSN"
+            ]
         },
         {
             "leftPort": {
