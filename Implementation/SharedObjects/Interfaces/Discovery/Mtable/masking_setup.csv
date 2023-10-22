@@ -1,0 +1,10 @@
+classification,masking_actor,params
+GENDER,MaskingWithCollection,"{""collection"":""[Male,Female]""}"
+PHONE,MaskingRandomNumber,"{""minimum"":""10"",""maximum"":""10""}"
+RACE_ETHNICITY,MaskingWithCollection,"{""collection"":""[White,Black,African American,American Indian,Alaska Native,Asian,Hawaiian]""}"
+SOCIAL_SECURITY_NUMBER,MaskingSSN,
+CREDIT_CARD,MaskingCreditCard,
+DATE_OF_BIRTH,Masking,"{""flowName"": ""RandomRegexGenerator.actor"",""regex"": ""\d{1,2}[/-]\d{1,2}[/-]\d{4}""}"
+FULL_NAME,MaskingRandomString,"{""minimum"":""4"",""maximum"":""10""}"
+PASSPORT_NUMBER,Masking,"{""flowName"":""RandomRegexGenerator.actor"",""regex"":""[A-Z]{2}[0-9]{7}""}"
+DRIVER'S_LICENSE,Masking,"{""flowName"":""RandomRegexGenerator.actor"",""regex"":""[A-Z]{1,2}\d{1,6}[A-Z]?""}"

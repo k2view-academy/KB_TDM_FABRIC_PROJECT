@@ -434,7 +434,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sql"
+                "name": "SQL on TDM DB"
             },
             "rightPort": {
                 "actor": "Run Input SQL",

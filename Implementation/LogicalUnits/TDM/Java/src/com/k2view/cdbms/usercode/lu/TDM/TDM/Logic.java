@@ -1374,57 +1374,57 @@ public class Logic extends UserCode {
 		}
 		    
 		Db.Row tableRow = db(TDM).fetch(sql, luName.toUpperCase(), maxNumOfValues).firstRow();
-		
-		String tableName = tableRow.get("table_name").toString();
-		String[] columnsArr = tableRow.get("columns").toString().split(",");
-		for (int idx = 0; idx < columnsArr.length; idx++) {
-		    columnsArr[idx] = "array_to_string(" + columnsArr[idx] + ", '" + TDM_PARAMETERS_SEPARATOR + "') as " + columnsArr[idx];
-		}
-		String newSelClause = String.join(",", columnsArr);
-		String query = "SELECT " + newSelClause + " FROM "  + TDMDB_SCHEMA + "." + tableName +
-		    " p, "  + TDMDB_SCHEMA + ".task_execution_entities t WHERE p.root_lu_name = t.root_lu_name " +
-		    "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = ? " +
-		    "AND t.lu_name = ?";
+		if (tableRow != null && !tableRow.isEmpty()) {
+		    String tableName = tableRow.get("table_name").toString();
+		    String[] columnsArr = tableRow.get("columns").toString().split(",");
+		    for (int idx = 0; idx < columnsArr.length; idx++) {
+		        columnsArr[idx] = "array_to_string(" + columnsArr[idx] + ", '" + TDM_PARAMETERS_SEPARATOR + "') as " + columnsArr[idx];
+		    }
+		    String newSelClause = String.join(",", columnsArr);
+		    String query = "SELECT " + newSelClause + " FROM "  + TDMDB_SCHEMA + "." + tableName +
+		        " p, "  + TDMDB_SCHEMA + ".task_execution_entities t WHERE p.root_lu_name = t.root_lu_name " +
+		        "AND p.root_iid = t.root_entity_id and p.entity_id = t.iid AND t.task_execution_id = ? " +
+		        "AND t.lu_name = ?";
 		    
-		Db.Rows tableRecords;
+		    Db.Rows tableRecords;
 		
-		tableRecords = db(TDM).fetch(query, taskExecId, luName);
+		    tableRecords = db(TDM).fetch(query, taskExecId, luName);
 		
-		List<String> columnNames = tableRecords.getColumnNames();
+		    List<String> columnNames = tableRecords.getColumnNames();
 		
-		for (Db.Row row : tableRecords) {
-		    for (String columnName : columnNames) {
-		        if (row.get(columnName) != null) {
-		            String value = row.get(columnName).toString();
-		            value = value.replace("{", "");
-		            value = value.replace("}", "");
-		            HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
-		            disitnctValuesMap = fnUpdateDistinctFieldData(columnName , disitnctValuesMap, values);
+		    for (Db.Row row : tableRecords) {
+		        for (String columnName : columnNames) {
+		            if (row.get(columnName) != null) {
+		                String value = row.get(columnName).toString();
+		                value = value.replace("{", "");
+		                value = value.replace("}", "");
+		                HashSet<String> values = new HashSet<String>(Arrays.stream(value.split(TDM_PARAMETERS_SEPARATOR)).collect(Collectors.toSet()));
+		                disitnctValuesMap = fnUpdateDistinctFieldData(columnName , disitnctValuesMap, values);
+		            }
 		        }
 		    }
-		}
-		
-		if (tableRecords != null) {
-		    tableRecords.close();
-		}
-		for (String key : disitnctValuesMap.keySet()) {
-		    Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
-		    Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());
-		    Boolean isNumeric  = Boolean.parseBoolean(fieldinfo.get("isNumeric").toString());
-		    String minValue = fieldinfo.get("minValue").toString();
-		    String maxValue = fieldinfo.get("maxValue").toString();
-		    HashSet<String> valuesSet = (HashSet<String>)fieldinfo.get("fieldValues");
-		    Boolean newField  = Boolean.parseBoolean(fieldinfo.get("newField").toString());
-		    String newFieldvalues= String.join(TDM_PARAMETERS_SEPARATOR, valuesSet);
-		    if (newField) {
-		        db(TDM).execute(insertDistintValuesSql, luName.toUpperCase(), key,
-		            numberOfValues, newFieldvalues, isNumeric, minValue, maxValue);
-		    } else {
-		        db(TDM).execute(updateDistintValuesSql, numberOfValues, newFieldvalues, isNumeric, 
-		            minValue, maxValue, luName.toUpperCase(), key);
+
+		    if (tableRecords != null) {
+		        tableRecords.close();
 		    }
-		}
-		    
+		    for (String key : disitnctValuesMap.keySet()) {
+		        Map<String, Object> fieldinfo = disitnctValuesMap.get(key);
+		        Long numberOfValues = Long.parseLong(fieldinfo.get("numberOfValues").toString());
+		        Boolean isNumeric  = Boolean.parseBoolean(fieldinfo.get("isNumeric").toString());
+		        String minValue = fieldinfo.get("minValue").toString();
+		        String maxValue = fieldinfo.get("maxValue").toString();
+		        HashSet<String> valuesSet = (HashSet<String>)fieldinfo.get("fieldValues");
+		        Boolean newField  = Boolean.parseBoolean(fieldinfo.get("newField").toString());
+		        String newFieldvalues= String.join(TDM_PARAMETERS_SEPARATOR, valuesSet);
+		        if (newField) {
+		            db(TDM).execute(insertDistintValuesSql, luName.toUpperCase(), key,
+		                numberOfValues, newFieldvalues, isNumeric, minValue, maxValue);
+		        } else {
+		            db(TDM).execute(updateDistintValuesSql, numberOfValues, newFieldvalues, isNumeric, 
+		                minValue, maxValue, luName.toUpperCase(), key);
+		        }
+		    }
+        }
 		//log.info("Finished fnUpdateParamDistinctValues");	
 	}
 }

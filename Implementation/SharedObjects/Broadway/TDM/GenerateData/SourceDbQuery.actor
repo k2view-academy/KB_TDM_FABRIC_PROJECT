@@ -115,7 +115,7 @@
     {
       "name":"rowsGeneratorDistribution",
       "const": -1,
-      "schema": {},
+      "schema": {"type": "integer"},
       "editor": {"id":"com.k2view.distribution"},
       "doc": "In case the ROWS_GENERATOR option is set, this distribution will be used to randomize the number of rows per parent row. See the RowsGenerator actor documentation for more."
     }

@@ -124,7 +124,6 @@
           <ig_sql>Select customer_id
 From customer
 Limit 1000</ig_sql>
-          <external_table_flow>getCustomerListForExtract</external_table_flow>
         </trnMigrateList>
       </DocumentElement>
     </diffgr:diffgram>
