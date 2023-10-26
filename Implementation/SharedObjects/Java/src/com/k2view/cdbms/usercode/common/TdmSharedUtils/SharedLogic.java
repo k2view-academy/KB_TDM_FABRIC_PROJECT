@@ -143,7 +143,7 @@ public class SharedLogic {
 	public static String generateListOfMatchingEntitiesQuery(Long beID, String whereStmt, String sourceEnv) throws Exception {
 				
 		//UserCode.log.info("generateListOfMatchingEntitiesQuery - whereStmt: " + whereStmt);
-		String rootLUsSql = "SELECT ARRAY_AGG(lu_name) FROM product_logical_units WHERE " +
+		String rootLUsSql = "SELECT ARRAY_AGG(lu_name) FROM " + TDMDB_SCHEMA + ".product_logical_units WHERE " +
 		    "be_id = ? AND lu_parent_id is null";
 		
 		String rootLUs = "" + db(TDM).fetch(rootLUsSql, beID).firstValue();

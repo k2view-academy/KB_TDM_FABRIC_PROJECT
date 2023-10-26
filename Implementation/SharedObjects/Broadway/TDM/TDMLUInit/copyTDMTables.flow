@@ -420,8 +420,10 @@
             "stages": [
                 {
                     "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 1,
                     "actors": [
                         {
                             "name": "JavaScript1",
@@ -438,15 +440,86 @@
                                     },
                                     {
                                         "name": "population",
-                                        "schema": {},
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "size": {
+                                                    "type": "integer"
+                                                },
+                                                "createTime": {
+                                                    "type": "integer"
+                                                },
+                                                "lastModifiedTime": {
+                                                    "type": "integer"
+                                                },
+                                                "lastAccessTime": {
+                                                    "type": "integer"
+                                                },
+                                                "directory": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        },
                                         "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "MapBuild1",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "population"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "population": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 11",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "MapBuild2",
                             "actorType": {
                                 "parentType": "MapBuild",
                                 "inputs": [
@@ -528,7 +601,7 @@
                 {
                     "name": "Stage 10",
                     "dependsOnList": [],
-                    "isLast": 1,
+                    "isLast": 0,
                     "actors": [
                         {
                             "name": "StringBuild1",
@@ -799,6 +872,17 @@
         {
             "leftPort": {
                 "actor": "MapBuild1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge1",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild2",
                 "name": "map"
             },
             "rightPort": {

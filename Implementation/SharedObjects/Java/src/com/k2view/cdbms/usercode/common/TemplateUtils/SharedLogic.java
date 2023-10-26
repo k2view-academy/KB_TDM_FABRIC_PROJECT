@@ -204,7 +204,16 @@ public class SharedLogic {
 		map.put("TARGET_SCHEMA", targetDbSchema);
 		map.put("TARGET_TABLE", targetDbTable);
 		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
-		map.put("TARGET_TABLE_PKS", targetTableData[1]);
+        List <String> linkFields = (ArrayList<String>) targetTableData[1];
+        if (linkFields == null || linkFields.size() == 0) {
+
+            Set<Map<String,String>> argsFields = getPopArgumentListForDelete(luName, luTable);
+            for (Map<String,String> rec : argsFields) {
+                linkFields.add(rec.get("FIELD_NAME"));
+            }
+        }
+        
+        map.put("TARGET_TABLE_PKS", linkFields);
 		
 		Object mainTableName = fabric().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue();
 		
@@ -441,8 +450,8 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String catalogSchema, String table) throws Exception {
 		ResultSet rs = null;
-		      ResultSet rs1 = null;
-		      ResultSet rs2 = null;
+		ResultSet rs1 = null;
+		ResultSet rs2 = null;
 		String[] types = {"TABLE"};
 		String targetTableName = table;
 		
