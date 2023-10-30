@@ -437,103 +437,16 @@ public class Logic extends WebServiceUserCode {
 				for (String columnName : columnNames) {
 					productData.put(columnName, resultset.getObject(columnName));
 				}
-				String interfaceName;
-				try{
-					interfaceName=resultset.getString("interface_name");
-				} catch (Exception e){
-					interfaceName=null;
-				}
-		
-				if (interfaceName != null) {
-					HashMap<String, Object> envProductInterface = new HashMap<>();
-					envProductInterface.put("interface_name", resultset.getString("interface_name"));
-					envProductInterface.put("interface_type", resultset.getString("interface_type"));
-					envProductInterface.put("db_host", resultset.getString("db_host"));
-					try {
-						envProductInterface.put("db_port", Integer.parseInt(resultset.getString("db_port")));
-					} catch (Exception e){
-						envProductInterface.put("db_port", null);
-					}
-					envProductInterface.put("db_user", resultset.getString("db_user"));
-					envProductInterface.put("db_password", resultset.getString("db_password"));
-					envProductInterface.put("db_schema", resultset.getString("db_schema"));
-					envProductInterface.put("db_connection_string", resultset.getString("db_connection_string"));
-					envProductInterface.put("env_product_interface_id", resultset.getString("env_product_interface_id"));
-					productData.put("interface", envProductInterface);
-				}
-				products.add(productData);
+
+				if (envId < 0) {
+                    productData.put("product_versions", productData.get("product_version"));
+                }
+                products.add(productData);
 			}
-		
-		
-		
-			for (int i = 0; i < products.size(); i++) {
-				Map<String, Object> productData = products.get(i);
-				List<Map<String, Object>> interfaces = new ArrayList<>();
-				interfaces.add((HashMap<String, Object>)productData.get("interface"));
-				for (int j = i + 1; j < products.size(); j++) {
-					Map<String, Object> productData2 = products.get(j);
-					if (productData.get("environment_product_id").toString().equals(productData.get("environment_product_id").toString())) {
-						if (productData2.get("interface_name") != null) {
-							interfaces.add((HashMap<String, Object>) productData2.get("interface"));
-						}
-						products.remove(j); j--;
-					}
-				}
-				productData.put("interfaces", interfaces);
-			}
-		
-			//end updateEnvProductInterfaces
-		
-			sql = "SELECT * FROM " + schema + ".environment_products " +
-					"INNER JOIN " + schema + ".products " +
-					"ON (environment_products.product_id = products.product_id) " +
-					"WHERE environment_id = " + envId;
-		
-			Db.Rows otherProducts = db(TDM).fetch(sql);
-		
-			List<HashMap<String, Object>> otherProductsList = new ArrayList<>();
-			otherProducts: for (Db.Row row : otherProducts) {
-				for (Map<String, Object> productData : products) {
-					if (productData.get("environment_product_id").toString().equals(row.get("environment_product_id").toString()))
-						continue otherProducts;
-				}
-				HashMap<String, Object> productData = new HashMap<>();
-				productData.put("environment_product_id", row.get("environment_product_id"));
-				productData.put("environment_id", row.get("environment_id"));
-				productData.put("product_id", row.get("product_id"));
-				productData.put("product_version", row.get("product_version"));
-				productData.put("created_by", row.get("created_by"));
-				productData.put("creation_date", row.get("creation_date"));
-				productData.put("last_updated_date", row.get("last_updated_date"));
-				productData.put("last_updated_by", row.get("last_updated_by"));
-				productData.put("status", row.get("status"));
-				productData.put("data_center_name", row.get("data_center_name"));
-				productData.put("product_name", row.get("product_name"));
-				productData.put("product_description", row.get("product_description"));
-				productData.put("product_vendor", row.get("product_vendor"));
-				if (envId == -1) {
-					productData.put("product_versions", row.get("product_version"));
-				} else {
-					productData.put("product_versions", row.get("product_versions"));
-				}
-				productData.put("product_id1", row.get("product_id"));
-				productData.put("product_created_by", row.get("product_created_by"));
-				productData.put("product_creation_date", row.get("product_creation_date"));
-				productData.put("product_last_updated_date", row.get("product_last_updated_date"));
-				productData.put("product_last_updated_by", row.get("product_last_updated_by"));
-				productData.put("product_status", row.get("product_status"));
-				otherProductsList.add(productData);
-			}
-			products.addAll(otherProductsList);
-			response.put("result", products);
-			errorCode = "SUCCESS";
-			if(rows != null) {
-				rows.close();
-			}
-			
-			if (otherProducts != null) {
-				otherProducts.close();
-			}
+
+            errorCode = "SUCCESS";
+            response.put("result", products);
+
 		} catch (Exception e) {
 			errorCode = "FAILED";
 			message = e.getMessage();

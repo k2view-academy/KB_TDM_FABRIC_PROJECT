@@ -94,7 +94,21 @@
 									}
 								]
 							}
-						}
+                       },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }						  
 					]
 				}
 			]
@@ -102,12 +116,38 @@
 		{
 			"stages": [
 				{
-					"name": "Stage 1",
+					"name": "Mask Data Based On Catalog",
 					"dependsOnList": [],
 					"isLast": 0,
-					"actors": []
-				}
-			]
+					"actors": [
+                        {
+                            "name": "Catalog Masking Mapper",
+                            "actorType": {
+                                "parentType": "CatalogMaskingMapper",
+                                "inputs": [
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "COLLECTION_DB"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "collection"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
 		},
 		{
 			"stages": [
@@ -199,8 +239,8 @@
 		},
 		{
 			"leftPort": {
-				"actor": "Query",
-				"name": "result"
+				"actor": "Catalog Masking Mapper",
+				"name": "values"
 			},
 			"rightPort": {
 				"actor": "collection",
@@ -210,6 +250,27 @@
 		},
 		{
 			"leftPort": {
+				"actor": "Query",
+				"name": "result"
+			},
+			"rightPort": {
+				"actor": "Catalog Masking Mapper",
+				"name": "values"
+			 
+			}
+		},
+		{
+			"leftPort": {
+              "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Masking Mapper",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {											   
 				"actor": "flowArgs",
 				"name": "schema"
 			},
@@ -246,6 +307,7 @@
 			"rightPort": {
 				"actor": "PopulationArgs",
 				"name": "customer_id"
+			 
 			}
 		},
 		{
@@ -256,6 +318,7 @@
 			"rightPort": {
 				"actor": "PopulationArgs",
 				"name": "collection_id"
+			 
 			}
 		},
 		{
@@ -266,6 +329,7 @@
 			"rightPort": {
 				"actor": "PopulationArgs",
 				"name": "last_update"
+			 
 			}
 		},
 		{
@@ -276,6 +340,7 @@
 			"rightPort": {
 				"actor": "PopulationArgs",
 				"name": "collection_status"
+			 
 			}
 		}
 	]
