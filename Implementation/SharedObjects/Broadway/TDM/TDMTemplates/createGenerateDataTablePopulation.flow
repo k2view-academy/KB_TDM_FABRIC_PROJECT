@@ -218,9 +218,28 @@
         {
             "stages": [
                 {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IsNull1",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Sequential Field?",
                     "dependsOnList": [
-                        "Input Argument?"
+                        "Stage 1"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -288,7 +307,7 @@
                 {
                     "name": "Stage 13",
                     "dependsOnList": [
-                        "Input Argument?"
+                        "Stage 1"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -1235,6 +1254,16 @@
         {
             "leftPort": {
                 "actor": "Check If Field is an Input Argument",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IsNull1",
                 "name": "result"
             },
             "rightPort": {
