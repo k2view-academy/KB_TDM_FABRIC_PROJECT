@@ -244,11 +244,25 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Not Input Argument",
+                            "name": "Equals1",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
                                 "outputs": []
                             }
                         },
@@ -1267,8 +1281,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Not Input Argument",
-                "name": "value"
+                "actor": "Equals1",
+                "name": "a"
             }
         },
         {
