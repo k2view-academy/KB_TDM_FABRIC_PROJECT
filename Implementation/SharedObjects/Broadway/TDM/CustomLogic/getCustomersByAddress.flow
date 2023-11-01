@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -35,7 +38,12 @@
                             "name": "Split Input to Array",
                             "actorType": {
                                 "parentType": "Split",
-                                "inputs": [],
+                                "inputs": [
+                                    {
+                                        "name": "string",
+                                        "remark": "State list (separated by a comma)"
+                                    }
+                                ],
                                 "outputs": []
                             }
                         }

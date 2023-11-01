@@ -10,7 +10,7 @@ public class SharedGlobals {
 
 	@desc("Maximum values of combo box input object")
 	@category("TDM")
-	public static String COMBO_MAX_COUNT = "49";
+	public static final String COMBO_MAX_COUNT = "49";
 
 
 	@desc("Indicator to delete the instance to target DB")
@@ -139,7 +139,7 @@ public class SharedGlobals {
 
 	@desc("The interface to be used for storing the cache of Masking")
 	@category("TDM")
-	public static String SEQ_CACHE_INTERFACE = "DB_CASSANDRA";
+	public static String SEQ_CACHE_INTERFACE = "TDM";
 
 	@desc("The separator to be used for parsing the values of Parameters")
 	@category("TDM")

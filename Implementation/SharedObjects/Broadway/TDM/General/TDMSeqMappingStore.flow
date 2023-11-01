@@ -441,6 +441,26 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
+                "name": "table_name"
+            },
+            "rightPort": {
+                "actor": "Check If Root Table And Field",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "column_name"
+            },
+            "rightPort": {
+                "actor": "Check If Root Table And Field",
+                "name": "fieldName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
                 "name": "lu_type"
             },
             "rightPort": {

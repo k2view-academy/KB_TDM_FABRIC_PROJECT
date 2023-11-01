@@ -680,7 +680,11 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	public static Set<Map<String,String>> getPopArgumentList(String luName, String tableName) throws Exception {
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
-		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        Map<String, List<LudbRelationInfo>> rel = null;
+        if (luType.getLudbOppositePhysicalRelations() != null) {
+		    rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        }
+        
 		if (rel != null) {
 			for (Object key : rel.keySet()) {
 			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
@@ -707,7 +711,10 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	public static Set<Map<String,String>> getPopArgumentListForDelete(String luName, String tableName) throws Exception {
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
-		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        Map<String, List<LudbRelationInfo>> rel = null;
+        if (luType.getLudbOppositePhysicalRelations() != null) {
+		    rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        }
 
 		if (rel != null) {
             //log.info("REL IS NOT NULL, Handling table: <" + tableName + ">" + ", size of rel: " + rel.size() + ", keySet size: " + rel.keySet().size());

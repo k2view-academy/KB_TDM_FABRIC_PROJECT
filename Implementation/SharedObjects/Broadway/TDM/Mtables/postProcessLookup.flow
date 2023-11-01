@@ -99,44 +99,7 @@
                                         "name": "map",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "postTaskExePrintToLog": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "lu_name": {}
-                                                    }
-                                                },
-                                                "yay": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "lu_name": {}
-                                                    }
-                                                },
-                                                "meow": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "lu_name": {}
-                                                    }
-                                                },
-                                                "help": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "lu_name": {}
-                                                    }
-                                                },
-                                                "wooho": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "lu_name": {}
-                                                    }
-                                                },
-                                                "ahsgfq": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "lu_name": {}
-                                                    }
-                                                }
-                                            }
+                                            "properties": {}
                                         }
                                     }
                                 ]
@@ -163,13 +126,7 @@
                                         "name": "map",
                                         "schema": {
                                             "type": "object",
-                                            "properties": {
-                                                "Meow": {
-                                                    "type": "string"
-                                                },
-                                                "postTaskExePrintToLog": {},
-                                                "jojo": {}
-                                            }
+                                            "properties": {}
                                         }
                                     }
                                 ]

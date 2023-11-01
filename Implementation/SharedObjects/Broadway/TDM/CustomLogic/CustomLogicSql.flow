@@ -263,7 +263,7 @@
                                     {
                                         "name": "interface",
                                         "remark": "Set the DB interface for the select query.",
-                                        "const": "TDM"
+                                        "const": null
                                     },
                                     {
                                         "name": "sql",

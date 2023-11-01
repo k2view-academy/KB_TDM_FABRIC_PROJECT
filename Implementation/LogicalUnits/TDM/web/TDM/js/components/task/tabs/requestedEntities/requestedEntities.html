@@ -11,6 +11,7 @@
             <div class="fields-row" style="position: relative">
                 <div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && 
+                        !requestedEntitiesCtrl.taskData.delete_before_load &&
                         (!requestedEntitiesCtrl.taskData.version_ind || 
                         (requestedEntitiesCtrl.taskData.sync_mode === 'FORCE' || !requestedEntitiesCtrl.taskData.sync_mode))">
                         <div style="display: flex; align-items: center;">
@@ -183,7 +184,7 @@
             <div class="fields-row" style="position: relative">
                 <div style="margin-bottom: 15px;">
                     <div class="m-t-xs">
-                        <label>Entity Clone selection selection_method
+                        <label>Entity Clone Type
                         </label>
                     </div>
                     <div >
@@ -193,7 +194,7 @@
                                 ng-change="requestedEntitiesCtrl.entityCloneChange()"
                                 ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;position: relative;">
-                                Provide an entity id
+                                Provide an Entity Id
                             </label>
                         </div>
                     </div>
@@ -204,7 +205,7 @@
                                 ng-change="requestedEntitiesCtrl.entityCloneChange()"
                                 ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;position: relative;">
-                                Parameters based selection
+                                Parameters Based Selection
                             </label>
                         </div>
                     </div>

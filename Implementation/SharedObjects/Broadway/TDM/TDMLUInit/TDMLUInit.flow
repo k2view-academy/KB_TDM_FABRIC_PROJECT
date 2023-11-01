@@ -457,8 +457,7 @@
                                         "editor": {
                                             "id": "com.k2view.interface",
                                             "interfaceType": [
-                                                "database",
-                                                "CassandraLoader"
+                                                "database"
                                             ]
                                         },
                                         "mandatory": false
@@ -482,51 +481,6 @@
             "stages": [
                 {
                     "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Update Load Root Table Flow",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "updateLoadRootTableFlow"
-                                    },
-                                    {
-                                        "name": "LU_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "ROOT_TABLE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "column_entity_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 8",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -631,16 +585,6 @@
         },
         {
             "leftPort": {
-                "actor": "LU folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Update Load Root Table Flow",
-                "name": "LU_PATH"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Copy TDM Tables",
                 "name": "table_id"
             },
@@ -658,34 +602,6 @@
                 "actor": "Update LU Schema",
                 "name": "tables_to_add"
             }
-        },
-        {
-            "leftPort": {
-                "actor": "Update LU Schema",
-                "name": "rootInfo"
-            },
-            "rightPort": {
-                "actor": "Update Load Root Table Flow",
-                "name": "ROOT_TABLE"
-            },
-            "iterate": "First",
-            "path": [
-                "table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Update LU Schema",
-                "name": "rootInfo"
-            },
-            "rightPort": {
-                "actor": "Update Load Root Table Flow",
-                "name": "column_entity_id"
-            },
-            "iterate": "First",
-            "path": [
-                "column_name"
-            ]
         },
         {
             "leftPort": {
