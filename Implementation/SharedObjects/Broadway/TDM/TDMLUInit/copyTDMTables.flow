@@ -420,7 +420,9 @@
             "stages": [
                 {
                     "name": "Stage 7",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -474,6 +476,33 @@
                                         }
                                     }
                                 ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 11",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "MapBuild2",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "population"
+                                    }
+                                ],
+                                "outputs": []
                             }
                         }
                     ]
@@ -799,6 +828,17 @@
         {
             "leftPort": {
                 "actor": "MapBuild1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "MapMerge1",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "MapBuild2",
                 "name": "map"
             },
             "rightPort": {
