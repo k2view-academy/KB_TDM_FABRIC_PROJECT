@@ -1309,7 +1309,7 @@ public class Logic extends UserCode {
 			//log.info("Custom Logic batchCommand: " + batchCommand);
 			
 			String broadwayCommand = "broadway " + luName + "."  +  customLogicFlow +  " iid=?," + fabricCommandParams;
-			//log.info("TEST- Custom Logic broadwayCommand: " + broadwayCommand);
+			//log.info("Custom Logic broadwayCommand: " + broadwayCommand);
 			String batchId = "" + fabric().fetch(batchCommand, broadwayCommand).firstValue();
 			db(TDM).execute("UPDATE " + TDMDB_SCHEMA + ".task_execution_list set execution_status = 'STARTEXECUTIONREQUESTED', fabric_execution_id = ? " +
 					"WHERE task_execution_id=? and lu_id = ?", batchId, taskExecutionId, luId);

@@ -541,7 +541,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "target_id"
+                "name": "target_value"
             },
             "rightPort": {
                 "actor": "Insert into TDM_SEQ_MAPPING table",

@@ -423,57 +423,15 @@
                     "dependsOnList": [
                         "Stage 5"
                     ],
-                    "isLast": 1,
+                    "isLast": 0,
                     "actors": [
                         {
-                            "name": "JavaScript1",
+                            "name": "NotNull1",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "JavaScript",
-                                "inputs": [
-                                    {
-                                        "name": "script",
-                                        "const": {
-                                            "userCode": "var result = true;\r\nif(population == null || population == []) {\r\n    result = false;\r\n}\r\nresult;",
-                                            "script": "var result = true;\n\nif (population == null || population == []) {\n  result = false;\n}\n\nresult;"
-                                        }
-                                    },
-                                    {
-                                        "name": "population",
-                                        "schema": {
-                                            "type": "object",
-                                            "properties": {
-                                                "name": {
-                                                    "type": "string"
-                                                },
-                                                "size": {
-                                                    "type": "integer"
-                                                },
-                                                "createTime": {
-                                                    "type": "integer"
-                                                },
-                                                "lastModifiedTime": {
-                                                    "type": "integer"
-                                                },
-                                                "lastAccessTime": {
-                                                    "type": "integer"
-                                                },
-                                                "directory": {
-                                                    "type": "boolean"
-                                                }
-                                            }
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
                             }
                         },
                         {
@@ -514,7 +472,7 @@
                     "dependsOnList": [
                         "Stage 5"
                     ],
-                    "isLast": 1,
+                    "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
@@ -853,7 +811,7 @@
                 "actor": "MapBuild1",
                 "name": "value"
             },
-            "iterate": "Iterate",
+            "iterate": "First",
             "path": [
                 "name"
             ]
@@ -864,10 +822,10 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "JavaScript1",
-                "name": "population"
+                "actor": "NotNull1",
+                "name": "value"
             },
-            "iterate": "Iterate"
+            "iterate": "First"
         },
         {
             "leftPort": {

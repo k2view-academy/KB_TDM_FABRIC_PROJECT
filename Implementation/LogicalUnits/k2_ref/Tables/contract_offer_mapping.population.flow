@@ -1,0 +1,172 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Query",
+                            "actorType": {
+                                "parentType": "SourceDbQuery",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT * FROM public.contract_offer_mapping"
+                                    }
+                                ],
+                                "outputs": [
+									{
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                
+                "contract_ref_id": {
+                    "type": {}
+                },
+                "offer_ref_id": {
+                    "type": {}
+                },
+                "offer_contract_description": {
+                    "type": {}
+                }
+                                            }
+                                        }
+                                    }
+								]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LU Table",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "contract_offer_mapping",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+									{
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "contract_ref_id",
+"offer_ref_id",
+"offer_contract_description"
+                                        ]
+                                    },
+									{
+                                        "name": "keys",
+                                        "const": [
+                                            
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+									
+                {
+                    "name": "contract_ref_id",
+                    "schema": {}
+                }
+                ,
+
+                {
+                    "name": "offer_ref_id",
+                    "schema": {}
+                }
+                ,
+
+                {
+                    "name": "offer_contract_description",
+                    "schema": {}
+                }
+                
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+		{
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "contract_offer_mapping",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+		{
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "contract_offer_mapping",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "contract_offer_mapping",
+                "name": "table"
+            }
+        }
+    ]
+}
