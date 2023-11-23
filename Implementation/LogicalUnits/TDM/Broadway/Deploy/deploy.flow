@@ -342,6 +342,38 @@
         {
             "stages": [
                 {
+                    "name": "Create Cassandra Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CreateTargetCassandraTables1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "CreateTargetCassandraTables"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "k2customer",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get Globals",
                     "dependsOnList": [],
                     "isLast": 0,

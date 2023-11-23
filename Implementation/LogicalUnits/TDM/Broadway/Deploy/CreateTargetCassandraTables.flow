@@ -1,0 +1,462 @@
+{
+    "tags": [
+        "Setup",
+        "Deploy"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Preperation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create Keyspace",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "CREATE KEYSPACE IF NOT EXISTS ${@schema} \nWITH REPLICATION = { \n   'class' : 'SimpleStrategy', \n   'replication_factor' : 1 \n  };"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "customer",
+                            "actorType": {
+                                "parentType": "DbCassandraCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "customer"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "customer_id",
+                                                "type": "int",
+                                                "partition_key": true,
+                                                "clustering_key": true,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "ssn",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "first_name",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "last_name",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "department",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "occupation",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "mobile_phone",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "office_phone",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "office_fax",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "email",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_street1",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_street2",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_city",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_state",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_country",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_postal",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_longitude",
+                                                "type": "decimal",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "primary_address_latitude",
+                                                "type": "decimal",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "financial_cc_info",
+                            "actorType": {
+                                "parentType": "DbCassandraCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "financial_cc_info"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "ssn",
+                                                "type": "text",
+                                                "partition_key": true,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "credit_card_number",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": true,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "credit_card_provider",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "financial_bank_info",
+                            "actorType": {
+                                "parentType": "DbCassandraCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "financial_bank_info"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "ssn",
+                                                "type": "text",
+                                                "partition_key": true,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "account_number",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": true,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "routing_number",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": true,
+                                                "mandatory": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "financial_loan_info",
+                            "actorType": {
+                                "parentType": "DbCassandraCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "financial_loan_info"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "ssn",
+                                                "type": "text",
+                                                "partition_key": true,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "loan_id",
+                                                "type": "int",
+                                                "partition_key": false,
+                                                "clustering_key": true,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "loan_type",
+                                                "type": "text",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "loan_open_date",
+                                                "type": "date",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "opening_balance",
+                                                "type": "double",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "tenure",
+                                                "type": "int",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "installment_no",
+                                                "type": "int",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "current_balance",
+                                                "type": "double",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "expected_closing_date",
+                                                "type": "date",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "loan_closure_date",
+                                                "type": "date",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "interest_rate",
+                                                "type": "double",
+                                                "partition_key": false,
+                                                "clustering_key": false,
+                                                "mandatory": false
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Create Keyspace",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "customer",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "financial_cc_info",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "financial_bank_info",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "financial_loan_info",
+                "name": "schema"
+            }
+        }
+    ]
+}

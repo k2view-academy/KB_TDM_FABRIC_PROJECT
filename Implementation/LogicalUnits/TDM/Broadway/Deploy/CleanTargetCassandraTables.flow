@@ -1,0 +1,195 @@
+{
+    "tags": [
+        "Setup",
+        "Deploy"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Preparation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Truncate Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TRUNCATE customer",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "TRUNCATE TABLE ${@keyspace}.customer"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "keyspace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TRUNCATE financial_cc_info",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "TRUNCATE TABLE ${@keyspace}.financial_cc_info"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "keyspace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TRUNCATE financial_bank_info",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "TRUNCATE TABLE ${@keyspace}.financial_bank_info"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "keyspace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TRUNCATE financial_loan_info",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "TRUNCATE TABLE ${@keyspace}.financial_loan_info"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "keyspace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "TRUNCATE customer",
+                "name": "keyspace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "TRUNCATE financial_cc_info",
+                "name": "keyspace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "TRUNCATE financial_bank_info",
+                "name": "keyspace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "keyspace"
+            },
+            "rightPort": {
+                "actor": "TRUNCATE financial_loan_info",
+                "name": "keyspace"
+            }
+        }
+    ]
+}
