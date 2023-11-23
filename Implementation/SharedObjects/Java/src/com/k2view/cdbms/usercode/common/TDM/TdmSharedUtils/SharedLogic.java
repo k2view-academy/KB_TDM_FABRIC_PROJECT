@@ -1,4 +1,4 @@
-package com.k2view.cdbms.usercode.common.TdmSharedUtils;
+package com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils;
 
 //import com.google.gson.Gson;
 
@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDM_REF_UPD_SIZE;
-import static com.k2view.cdbms.usercode.common.TaskExecutionUtils.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetIIDListForMigration;
-import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.fnValidateNumberOfReserveEntities;
-import static com.k2view.cdbms.usercode.common.TemplateUtils.SharedLogic.getDBCollection;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateNumberOfReserveEntities;
+import static com.k2view.cdbms.usercode.common.TDM.TemplateUtils.SharedLogic.getDBCollection;
 
 import java.sql.*;
 import java.math.*;

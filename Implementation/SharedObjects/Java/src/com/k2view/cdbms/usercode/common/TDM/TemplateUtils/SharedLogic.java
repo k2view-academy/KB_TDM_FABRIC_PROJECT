@@ -2,7 +2,7 @@
 // Project Shared Functions
 /////////////////////////////////////////////////////////////////////////
 
-package com.k2view.cdbms.usercode.common.TemplateUtils;
+package com.k2view.cdbms.usercode.common.TDM.TemplateUtils;
 
 import java.util.*;
 import java.sql.*;

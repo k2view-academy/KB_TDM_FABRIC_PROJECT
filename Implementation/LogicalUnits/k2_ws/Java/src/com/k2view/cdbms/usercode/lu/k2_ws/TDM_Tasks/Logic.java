@@ -24,10 +24,10 @@ import static com.k2view.cdbms.usercode.common.SharedGlobals.MAX_NUMBER_OF_ENTIT
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnGetReferenceSummaryData;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.fnSplitUID;
-import static com.k2view.cdbms.usercode.common.TaskExecutionUtils.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.fnValidateSourceEnvForTask;
-import static com.k2view.cdbms.usercode.common.TaskValidationsUtils.SharedLogic.fnValidateTargetEnvForTask;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateSourceEnvForTask;
+import static com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils.SharedLogic.fnValidateTargetEnvForTask;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import java.sql.*;
 import java.math.*;
 import java.io.*;

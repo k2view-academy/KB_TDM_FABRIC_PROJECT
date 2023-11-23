@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnStartTask;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnStartTask;
 
 public class TdmTaskScheduler {
     public static final Log log = Log.a(TdmTaskScheduler.class);

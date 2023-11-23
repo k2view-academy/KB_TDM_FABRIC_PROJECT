@@ -10,7 +10,7 @@ public class SharedGlobals {
 
 	@desc("Maximum values of combo box input object")
 	@category("TDM")
-	public static String COMBO_MAX_COUNT = "49";
+	public static String COMBO_MAX_COUNT = "100";
 
 
 	@desc("Indicator to delete the instance to target DB")

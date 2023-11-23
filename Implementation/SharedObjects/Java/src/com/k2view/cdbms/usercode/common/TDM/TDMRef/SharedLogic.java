@@ -2,7 +2,7 @@
 // Project Shared Functions
 /////////////////////////////////////////////////////////////////////////
 
-package com.k2view.cdbms.usercode.common.TDMRef;
+package com.k2view.cdbms.usercode.common.TDM.TDMRef;
 
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
@@ -21,7 +21,7 @@ import java.util.Set;
 import static com.k2view.cdbms.shared.user.UserCode.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.getRetention;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.createJsonArrayFromTableRecords;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.createJsonArrayFromTableRecords;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public class SharedLogic {

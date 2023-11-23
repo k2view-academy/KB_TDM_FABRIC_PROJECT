@@ -2,7 +2,7 @@
 // Project Shared Functions
 /////////////////////////////////////////////////////////////////////////
 
-package com.k2view.cdbms.usercode.common.TaskExecutionUtils;
+package com.k2view.cdbms.usercode.common.TDM.TaskExecutionUtils;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -13,7 +13,7 @@ import static com.k2view.cdbms.shared.user.UserCode.fabric;
 import static com.k2view.cdbms.shared.user.WebServiceUserCode.graphit;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TDMRef.SharedLogic.fnTdmReference;
+import static com.k2view.cdbms.usercode.common.TDM.TDMRef.SharedLogic.fnTdmReference;
 
 import com.k2view.cdbms.shared.*;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
@@ -41,7 +41,7 @@ import org.json.JSONObject;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "unchecked", "rawtypes"})
 public class SharedLogic {

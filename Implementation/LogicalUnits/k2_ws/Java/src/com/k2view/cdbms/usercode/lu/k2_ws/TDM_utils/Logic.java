@@ -8,7 +8,7 @@ package com.k2view.cdbms.usercode.lu.k2_ws.TDM_utils;
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.WebServiceUserCode;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.desc;
-import com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic;
+import com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic;
 import com.k2view.fabric.api.endpoint.Endpoint.MethodType;
 import com.k2view.fabric.api.endpoint.Endpoint.Produce;
 import com.k2view.fabric.api.endpoint.Endpoint.resultMetaData;
@@ -38,8 +38,8 @@ import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.*;
 import static com.k2view.cdbms.shared.user.ProductFunctions.*;
 import static com.k2view.cdbms.usercode.common.SharedLogic.*;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
 
 
 

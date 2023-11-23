@@ -20,9 +20,9 @@ import java.util.*;
 import java.util.stream.StreamSupport;
 
 import static com.k2view.cdbms.usercode.common.SharedGlobals.COMBO_MAX_COUNT;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.getFabricResponse;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.getFabricResponse;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.wrapWebServiceResults;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetUserPermissionGroup;
 import java.sql.*;
 import java.math.*;
 import java.io.*;

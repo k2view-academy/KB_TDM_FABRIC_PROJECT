@@ -29,7 +29,7 @@ import java.util.Date;
 import static com.k2view.cdbms.shared.utils.UserCodeDescribe.FunctionType.UserJob;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.*;
 import static com.k2view.cdbms.usercode.common.TDM.SharedLogic.*;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.*;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.*;
 import java.io.*;
 import java.util.stream.Collectors;
 import java.sql.*;

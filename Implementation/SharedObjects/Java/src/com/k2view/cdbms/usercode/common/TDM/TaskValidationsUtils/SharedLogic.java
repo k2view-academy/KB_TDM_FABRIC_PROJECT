@@ -2,7 +2,7 @@
 // Project Shared Functions
 /////////////////////////////////////////////////////////////////////////
 
-package com.k2view.cdbms.usercode.common.TaskValidationsUtils;
+package com.k2view.cdbms.usercode.common.TDM.TaskValidationsUtils;
 
 import com.k2view.cdbms.shared.Db;
 import com.k2view.cdbms.shared.user.UserCode;
@@ -18,8 +18,8 @@ import java.util.Map;
 import static com.k2view.cdbms.shared.user.UserCode.db;
 import static com.k2view.cdbms.shared.user.UserCode.sessionUser;
 import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnGetRetentionPeriod;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnIsAdminOrOwner;
 import java.util.*;
 import java.sql.*;
 import java.math.*;
