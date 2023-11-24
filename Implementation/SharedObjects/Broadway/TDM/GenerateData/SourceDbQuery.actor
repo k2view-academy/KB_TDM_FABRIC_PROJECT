@@ -1,6 +1,6 @@
 {
 	"type": "SourceDbQuery",
-	"actorClass": "com.k2view.cdbms.usercode.common.TDMSourceDbQuery",
+	"actorClass": "com.k2view.cdbms.usercode.common.TDM.TDMSourceDbQuery",
 	"badge": "TQ",
 	"doc": [
 	  "To improve performance with less calls to source, data from parent table is aggregated to groups",
