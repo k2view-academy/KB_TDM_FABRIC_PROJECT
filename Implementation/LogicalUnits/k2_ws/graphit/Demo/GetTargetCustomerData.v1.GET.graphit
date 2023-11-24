@@ -1,0 +1,209 @@
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "sql",
+      "code": "broadway k2_ws.GetTargetCustomerData 'customer_id'=${customer_id}",
+      "one": true,
+      "serializerSettings": [
+        {
+          "set": "nice",
+          "value": "true"
+        }
+      ],
+      "children": [
+        {
+          "type": "function",
+          "code": "var broadway_result = result;"
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "one": true,
+      "sessionProvider": "DB_CASSANDRA",
+      "serializerSettings": [
+        {
+          "set": "nice",
+          "value": "true"
+        }
+      ],
+      "children": [
+        {
+          "name": "customer_id",
+          "type": "function",
+          "code": "broadway_result.customer_id"
+        },
+        {
+          "name": "ssn",
+          "type": "function",
+          "code": "broadway_result.ssn"
+        },
+        {
+          "name": "first_name",
+          "type": "function",
+          "code": "broadway_result.first_name"
+        },
+        {
+          "name": "last_name",
+          "type": "function",
+          "code": "broadway_result.last_name"
+        },
+        {
+          "name": "email_address",
+          "type": "function",
+          "code": "broadway_result.email_address"
+        },
+        {
+          "name": "occupation",
+          "type": "function",
+          "code": "broadway_result.occupation"
+        },
+        {
+          "name": "department",
+          "type": "function",
+          "code": "broadway_result.department"
+        },
+        {
+          "name": "contact",
+          "collapsed": true,
+          "children": [
+            {
+              "name": "mobile_phone",
+              "type": "function",
+              "code": "broadway_result.contact.mobile_phone"
+            },
+            {
+              "name": "office_phone",
+              "type": "function",
+              "code": "broadway_result.contact.office_phone"
+            },
+            {
+              "name": "office_fax",
+              "type": "function",
+              "code": "broadway_result.contact.office_fax"
+            }
+          ]
+        },
+        {
+          "name": "address",
+          "collapsed": true,
+          "children": [
+            {
+              "name": "address_street_1",
+              "type": "function",
+              "code": "broadway_result.address.address_street_1"
+            },
+            {
+              "name": "address_street_2",
+              "type": "function",
+              "code": "broadway_result.address.address_street_2"
+            },
+            {
+              "name": "city",
+              "type": "function",
+              "code": "broadway_result.address.city"
+            },
+            {
+              "name": "state",
+              "type": "function",
+              "code": "broadway_result.address.state"
+            },
+            {
+              "name": "country",
+              "type": "function",
+              "code": "broadway_result.address.country"
+            },
+            {
+              "name": "zip_code",
+              "type": "function",
+              "code": "broadway_result.address.zip_code"
+            }
+          ]
+        },
+        {
+          "name": "financials",
+          "children": [
+            {
+              "name": "credit_card_type",
+              "type": "function",
+              "code": "broadway_result.financials.credit_card_type"
+            },
+            {
+              "name": "credit_card_number",
+              "type": "function",
+              "code": "broadway_result.financials.credit_card_number"
+            },
+            {
+              "name": "bank_account_number",
+              "type": "function",
+              "code": "broadway_result.financials.bank_account_number"
+            },
+            {
+              "name": "bank_routing_number",
+              "type": "function",
+              "code": "broadway_result.financials.bank_routing_number"
+            },
+            {
+              "name": "loan",
+              "children": [
+                {
+                  "name": "loan_id",
+                  "type": "function",
+                  "code": "broadway_result.financials.loan.loan_id"
+                },
+                {
+                  "name": "loan_type",
+                  "type": "function",
+                  "code": "broadway_result.financials.loan.loan_type"
+                },
+                {
+                  "name": "loan_open_date",
+                  "type": "function",
+                  "code": "broadway_result.financials.loan.loan_open_date"
+                },
+                {
+                  "name": "opening_balance",
+                  "type": "function",
+                  "code": "broadway_result.financials.loan.opening_balance"
+                },
+                {
+                  "name": "tenure",
+                  "type": "function",
+                  "code": "broadway_result.financials.loan.tenure"
+                },
+                {
+                  "name": "installment_no",
+                  "type": "function",
+                  "code": "broadway_result.financials.loan.installment_no"
+                },
+                {
+                  "name": "current_balance",
+                  "type": "function",
+                  "code": "(broadway_result.financials.loan.current_balance != null ) ? broadway_result.financials.loan.current_balance.toFixed(2) : null;"
+                },
+                {
+                  "name": "interest_rate",
+                  "type": "function",
+                  "code": "(broadway_result.financials.loan.interest_rate != null ) ? broadway_result.financials.loan.interest_rate.toFixed(2) : null;"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "customer_id",
+      "dataType": "Integer",
+      "description": "Customer ID",
+      "mandatory": true
+    }
+  ],
+  "exposeAsEndpoint": true,
+  "path": "CUSTOMER/{customer_id}/DATA/TARGET",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

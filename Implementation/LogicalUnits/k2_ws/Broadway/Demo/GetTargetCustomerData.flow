@@ -1,0 +1,746 @@
+{
+    "tags": [
+        "Reconciliation"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Customer Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Customer Data",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT customer_id, \n       ssn, \n       first_name, \n       last_name, \n       mobile_phone, \n       office_phone, \n       office_fax, \n       occupation, \n       department, \n       email, \n       primary_address_street1, \n       primary_address_street2, \n       primary_address_city, \n       primary_address_state, \n       primary_address_country, \n       primary_address_postal\nFROM   k2view_customer.customer\nWHERE  customer_id = ${customer_id}"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "mobile_phone": {
+                                                    "type": "string"
+                                                },
+                                                "office_phone": {
+                                                    "type": "string"
+                                                },
+                                                "office_fax": {
+                                                    "type": "string"
+                                                },
+                                                "occupation": {
+                                                    "type": "string"
+                                                },
+                                                "department": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_street1": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_street2": {},
+                                                "primary_address_city": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_state": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_country": {},
+                                                "primary_address_postal": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Financial Data",
+                    "dependsOnList": [
+                        "Get Customer Data"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Not Null",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Credit Card Data",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT credit_card_number,\n       credit_card_provider\nFROM   k2view_customer.financial_cc_info\nWHERE  ssn = ${ssn}"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "ssn",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "credit_card_number": {
+                                                    "type": "string"
+                                                },
+                                                "credit_card_provider": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Bank Data",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT account_number,\n       routing_number\nFROM   k2view_customer.financial_bank_info\nWHERE  ssn = ${ssn}"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "ssn",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "account_number": {
+                                                    "type": "string"
+                                                },
+                                                "routing_number": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Loan Data",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "DB_CASSANDRA"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT * \nFROM   k2view_customer.financial_loan_info\nWHERE  ssn = ${ssn}"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "ssn",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "loan_id": {
+                                                    "type": "integer"
+                                                },
+                                                "current_balance": {
+                                                    "type": "number"
+                                                },
+                                                "expected_closing_date": {
+                                                    "type": "date"
+                                                },
+                                                "installment_no": {
+                                                    "type": "integer"
+                                                },
+                                                "interest_rate": {
+                                                    "type": "number"
+                                                },
+                                                "loan_closure_date": {},
+                                                "loan_open_date": {
+                                                    "type": "date"
+                                                },
+                                                "loan_type": {
+                                                    "type": "string"
+                                                },
+                                                "opening_balance": {
+                                                    "type": "number"
+                                                },
+                                                "tenure": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Null",
+                    "dependsOnList": [
+                        "Get Customer Data"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Credit Card Map",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Bank Map",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Loan Map",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Objects",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build Output",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "({\n  \"customer_id\":null || contact_map.customer_id,\n  \"ssn\":null || contact_map.ssn,\n  \"first_name\":null || contact_map.first_name,\n  \"last_name\":null || contact_map.last_name,\n  \"email_address\":null || contact_map.email,\n  \"occupation\":null || contact_map.occupation,\n  \"department\":null || contact_map.department,\n  \"contact\":{\n    \"mobile_phone\":null || contact_map.mobile_phone,\n    \"office_phone\":null || contact_map.office_phone,\n    \"office_fax\":null || contact_map.office_fax\n  },\n  \"address\":{\n    \"address_street_1\":null || contact_map.primary_address_street1,\n    \"address_street_2\":null || contact_map.primary_address_street2,\n    \"city\":null || contact_map.primary_address_city,\n    \"state\":null || contact_map.primary_address_state,\n    \"country\":null || contact_map.primary_address_country,\n    \"zip_code\":null || contact_map.primary_address_postal\n  },\n  \"financials\":{\n    \"credit_card_type\":null || credit_card_map.credit_card_provider,\n    \"credit_card_number\":null || credit_card_map.credit_card_number,\n    \"bank_routing_number\":null || bank_map.routing_number,\n    \"bank_account_number\":null || bank_map.account_number,\n    \"loan\":{\n      \"loan_id\":null || loan_map.loan_id,\n      \"loan_type\":null || loan_map.loan_type,\n      \"loan_open_date\":null || loan_map.loan_open_date,\n      \"opening_balance\":null || loan_map.opening_balance,\n      \"tenure\":null || loan_map.tenure,\n      \"installment_no\":null || loan_map.installment_no,\n      \"current_balance\":null || loan_map.current_balance,\n      \"interest_rate\":null || loan_map.interest_rate\n    }\n  }\n})"
+                                    },
+                                    {
+                                        "name": "contact_map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "mobile_phone": {
+                                                    "type": "string"
+                                                },
+                                                "office_phone": {
+                                                    "type": "string"
+                                                },
+                                                "office_fax": {
+                                                    "type": "string"
+                                                },
+                                                "occupation": {
+                                                    "type": "string"
+                                                },
+                                                "department": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_street1": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_street2": {},
+                                                "primary_address_city": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_state": {
+                                                    "type": "string"
+                                                },
+                                                "primary_address_country": {},
+                                                "primary_address_postal": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "credit_card_map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "credit_card_number": {
+                                                    "type": "string"
+                                                },
+                                                "credit_card_provider": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "bank_map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "account_number": {
+                                                    "type": "string"
+                                                },
+                                                "routing_number": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "loan_map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "loan_id": {
+                                                    "type": "integer"
+                                                },
+                                                "current_balance": {
+                                                    "type": "number"
+                                                },
+                                                "expected_closing_date": {
+                                                    "type": "date"
+                                                },
+                                                "installment_no": {
+                                                    "type": "integer"
+                                                },
+                                                "interest_rate": {
+                                                    "type": "number"
+                                                },
+                                                "loan_closure_date": {},
+                                                "loan_open_date": {
+                                                    "type": "date"
+                                                },
+                                                "loan_type": {
+                                                    "type": "string"
+                                                },
+                                                "opening_balance": {
+                                                    "type": "number"
+                                                },
+                                                "tenure": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "email_address": {
+                                                    "type": "string"
+                                                },
+                                                "occupation": {
+                                                    "type": "string"
+                                                },
+                                                "department": {
+                                                    "type": "string"
+                                                },
+                                                "contact": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "mobile_phone": {
+                                                            "type": "string"
+                                                        },
+                                                        "office_phone": {
+                                                            "type": "string"
+                                                        },
+                                                        "office_fax": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "address": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "address_street_1": {
+                                                            "type": "string"
+                                                        },
+                                                        "address_street_2": {},
+                                                        "city": {
+                                                            "type": "string"
+                                                        },
+                                                        "state": {
+                                                            "type": "string"
+                                                        },
+                                                        "country": {},
+                                                        "zip_code": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "financials": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "credit_card_type": {
+                                                            "type": "string"
+                                                        },
+                                                        "credit_card_number": {
+                                                            "type": "integer"
+                                                        },
+                                                        "bank_routing_number": {
+                                                            "type": "integer"
+                                                        },
+                                                        "bank_account_number": {
+                                                            "type": "integer"
+                                                        },
+                                                        "loan": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "loan_id": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "loan_type": {
+                                                                    "type": "string"
+                                                                },
+                                                                "loan_open_date": {
+                                                                    "type": "string"
+                                                                },
+                                                                "opening_balance": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "tenure": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "installment_no": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "current_balance": {
+                                                                    "type": "string"
+                                                                },
+                                                                "interest_rate": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Customer Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "contact_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Customer Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Credit Card Data",
+                "name": "ssn"
+            },
+            "path": [
+                "ssn"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Customer Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Bank Data",
+                "name": "ssn"
+            },
+            "path": [
+                "ssn"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Customer Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Loan Data",
+                "name": "ssn"
+            },
+            "path": [
+                "ssn"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Customer Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Not Null",
+                "name": "value"
+            },
+            "path": [
+                "ssn"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Credit Card Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "credit_card_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Bank Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "bank_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Loan Data",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "loan_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Credit Card Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "credit_card_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Bank Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "bank_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Loan Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Build Output",
+                "name": "loan_map"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "customer_id"
+            },
+            "rightPort": {
+                "actor": "Customer Data",
+                "name": "customer_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build Output",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

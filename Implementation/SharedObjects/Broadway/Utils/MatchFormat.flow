@@ -1,0 +1,222 @@
+{
+    "tags": [
+        "Masking"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build Format",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "switch(format){\r\n    case \"Numeric\"         : \"\\\\d\";       break;\r\n    case \"Non-Numeric\"     : \"\\\\D\";       break;\r\n    case \"Alpha\"           : \"[A-Za-z]\";  break;\r\n    case \"Non-Alpha\"       : \"[^A-Za-z]\"; break;\r\n    case \"Alphanumeric\"    : \"\\\\w\";       break;\r\n    case \"Non-Alphanumeric\": \"\\\\W\";       break;\r\n    case \"White-Space\"     : \"\\\\s\";       break;\r\n    case \"Non-White-Space\" : \"\\\\S\";       break;\r\n    case \"Custom\"          : regex;       break;\r\n    default                : \".\";         break;\r\n}",
+                                            "script": "switch (format) {\n  case \"Numeric\":\n    \"\\\\d\";\n    break;\n\n  case \"Non-Numeric\":\n    \"\\\\D\";\n    break;\n\n  case \"Alpha\":\n    \"[A-Za-z]\";\n    break;\n\n  case \"Non-Alpha\":\n    \"[^A-Za-z]\";\n    break;\n\n  case \"Alphanumeric\":\n    \"\\\\w\";\n    break;\n\n  case \"Non-Alphanumeric\":\n    \"\\\\W\";\n    break;\n\n  case \"White-Space\":\n    \"\\\\s\";\n    break;\n\n  case \"Non-White-Space\":\n    \"\\\\S\";\n    break;\n\n  case \"Custom\":\n    regex;\n    break;\n\n  default:\n    \".\";\n    break;\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "format",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "regex",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Match Format",
+                    "dependsOnList": [
+                        "Get Inputs"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Input Not Null",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Reformat",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "// Will hold the output string\r\nvar formattedString = \"\";\r\n\r\n// Loop through values\r\nfor (let iOriginal = 0, iNew = 0, iExit = 0; iOriginal < originalValue.length || iNew < newValue.length; iOriginal++ , iExit++) {\r\n  formattedString += (iOriginal < originalValue.length && !originalValue.charAt(iOriginal).match(format))\r\n    ? originalValue.charAt(iOriginal) \r\n    : (!newValue.charAt(iNew).match(format)) ? (iNew++ && iOriginal--) ? \"\" : \"\" : newValue.charAt(iNew++);\r\n    if(iExit > loopLimit) throw \"Incorrect Format\";\r\n}\r\n\r\n// Return the formatted value\r\nformattedString;",
+                                            "script": "// Will hold the output string\nvar formattedString = \"\"; // Loop through values\n\nfor (var iOriginal = 0, iNew = 0, iExit = 0; iOriginal < originalValue.length || iNew < newValue.length; iOriginal++, iExit++) {\n  formattedString += iOriginal < originalValue.length && !originalValue.charAt(iOriginal).match(format) ? originalValue.charAt(iOriginal) : !newValue.charAt(iNew).match(format) ? iNew++ && iOriginal-- ? \"\" : \"\" : newValue.charAt(iNew++);\n  if (iExit > loopLimit) throw \"Incorrect Format\";\n} // Return the formatted value\n\n\nformattedString;"
+                                        }
+                                    },
+                                    {
+                                        "name": "originalValue",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "newValue",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "format",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "loopLimit",
+                                        "const": 500,
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Is Null",
+                    "dependsOnList": [
+                        "Get Inputs"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Build Format",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Reformat",
+                "name": "format"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "format"
+            },
+            "rightPort": {
+                "actor": "Build Format",
+                "name": "format"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "regex"
+            },
+            "rightPort": {
+                "actor": "Build Format",
+                "name": "regex"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "original"
+            },
+            "rightPort": {
+                "actor": "Input Not Null",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "original"
+            },
+            "rightPort": {
+                "actor": "Reformat",
+                "name": "originalValue"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Reformat",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "new"
+            },
+            "rightPort": {
+                "actor": "Reformat",
+                "name": "newValue"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "loopLimit"
+            },
+            "rightPort": {
+                "actor": "Reformat",
+                "name": "loopLimit"
+            }
+        }
+    ]
+}

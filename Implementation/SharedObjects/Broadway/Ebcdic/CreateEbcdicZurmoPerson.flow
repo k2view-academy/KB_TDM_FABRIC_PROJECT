@@ -1,0 +1,146 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Persons",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "ZURMO"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT * FROM zurmo_production.person"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "companyname": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "latestactivitydatetime": {
+                                                        "type": "date"
+                                                    },
+                                                    "website": {
+                                                        "type": "string"
+                                                    },
+                                                    "googlewebtrackingid": {
+                                                        "type": "string"
+                                                    },
+                                                    "twitterid": {
+                                                        "type": "string"
+                                                    },
+                                                    "facebookid": {
+                                                        "type": "string"
+                                                    },
+                                                    "person_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "account_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "industry_customfield_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "secondaryaddress_address_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "secondaryemail_email_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "source_customfield_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "state_contactstate_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "statuscstm": {
+                                                        "type": "string"
+                                                    },
+                                                    "creditcardcstm": {
+                                                        "type": "string"
+                                                    },
+                                                    "ssncstm": {
+                                                        "type": "string"
+                                                    },
+                                                    "contact_idcstm": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create EBCDIC",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Ebcdic Loader",
+                            "actorType": {
+                                "parentType": "EbcdicLoader",
+                                "inputs": [
+                                    {
+                                        "name": "file",
+                                        "const": "/opt/apps/fabric/workspace/project/project-resources/persons.ebcdic"
+                                    },
+                                    {
+                                        "name": "copybook",
+                                        "const": "/opt/apps/fabric/workspace/project/project-resources/zurmo-person.cpy"
+                                    },
+                                    {
+                                        "name": "organization",
+                                        "const": "IO_STANDARD_TEXT_FILE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Persons",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Loader",
+                "name": "data"
+            },
+            "iterate": "Iterate"
+        }
+    ]
+}

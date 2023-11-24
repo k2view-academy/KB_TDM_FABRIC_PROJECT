@@ -1,0 +1,301 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Contacts",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "ZURMO"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT contact.*,\n       person.id AS \"person-id\",\n       person.department,\n       person.firstname,\n       person.jobtitle,\n       person.lastname,\n       person.mobilephone,\n       person.officephone,\n       person.officefax,\n       person.ownedsecurableitem_id,\n       person.primaryaddress_address_id,\n       person.primaryemail_email_id,\n       person.title_customfield_id,\n       address.id AS \"address-id\",\n       address.city,\n       address.country,\n       address.invalid,\n       address.latitude,\n       address.longitude,\n       address.postalcode,\n       address.street1,\n       address.street2,\n       address.state,\n       email.id AS \"email-id\",\n       email.emailaddress,\n       email.isinvalid,\n       email.optout\nFROM   zurmo_production.contact\n  JOIN zurmo_production.person  ON (contact.person_id                = person.id )\n  JOIN zurmo_production.address ON (person.primaryaddress_address_id = address.id)\n  JOIN zurmo_production.email   ON (person.primaryemail_email_id     = email.id  )"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "companyname": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "latestactivitydatetime": {
+                                                        "type": "date"
+                                                    },
+                                                    "website": {
+                                                        "type": "string"
+                                                    },
+                                                    "googlewebtrackingid": {
+                                                        "type": "string"
+                                                    },
+                                                    "twitterid": {
+                                                        "type": "string"
+                                                    },
+                                                    "facebookid": {
+                                                        "type": "string"
+                                                    },
+                                                    "person_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "account_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "industry_customfield_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "secondaryaddress_address_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "secondaryemail_email_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "source_customfield_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "state_contactstate_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "statuscstm": {
+                                                        "type": "string"
+                                                    },
+                                                    "creditcardcstm": {
+                                                        "type": "string"
+                                                    },
+                                                    "ssncstm": {
+                                                        "type": "string"
+                                                    },
+                                                    "contact_idcstm": {
+                                                        "type": "integer"
+                                                    },
+                                                    "person-id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "department": {
+                                                        "type": "string"
+                                                    },
+                                                    "firstname": {
+                                                        "type": "string"
+                                                    },
+                                                    "jobtitle": {
+                                                        "type": "string"
+                                                    },
+                                                    "lastname": {
+                                                        "type": "string"
+                                                    },
+                                                    "mobilephone": {
+                                                        "type": "string"
+                                                    },
+                                                    "officephone": {
+                                                        "type": "string"
+                                                    },
+                                                    "officefax": {
+                                                        "type": "string"
+                                                    },
+                                                    "ownedsecurableitem_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "primaryaddress_address_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "primaryemail_email_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "title_customfield_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "address-id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "city": {
+                                                        "type": "string"
+                                                    },
+                                                    "country": {
+                                                        "type": "string"
+                                                    },
+                                                    "invalid": {
+                                                        "type": "integer"
+                                                    },
+                                                    "latitude": {
+                                                        "type": "number"
+                                                    },
+                                                    "longitude": {
+                                                        "type": "number"
+                                                    },
+                                                    "postalcode": {
+                                                        "type": "string"
+                                                    },
+                                                    "street1": {
+                                                        "type": "string"
+                                                    },
+                                                    "street2": {
+                                                        "type": "string"
+                                                    },
+                                                    "state": {
+                                                        "type": "string"
+                                                    },
+                                                    "email-id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "emailaddress": {
+                                                        "type": "string"
+                                                    },
+                                                    "isinvalid": {
+                                                        "type": "integer"
+                                                    },
+                                                    "optout": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "File Prep",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "File Name",
+                            "minHeight": 142,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "/opt/apps/fabric/workspace/project/project-resources/ebcdic/customer-${file}.ebcdic"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "const": ""
+                                    },
+                                    {
+                                        "name": "file",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create EBCDIC",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Ebcdic Loader",
+                            "actorType": {
+                                "parentType": "EbcdicLoader",
+                                "inputs": [
+                                    {
+                                        "name": "file",
+                                        "const": "/opt/apps/fabric/workspace/project/project-resources//sample-customer-data.ebcdic"
+                                    },
+                                    {
+                                        "name": "copybook",
+                                        "const": "/opt/apps/fabric/workspace/project/project-resources/zurmo-customers.cpy"
+                                    },
+                                    {
+                                        "name": "organization",
+                                        "const": "IO_STANDARD_TEXT_FILE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Reset Actor",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Reset Ebcdic Loader",
+                            "isDisabled": true,
+                            "actorType": {
+                                "parentType": "ResetActors",
+                                "inputs": [
+                                    {
+                                        "name": "actorId",
+                                        "const": [
+                                            "Ebcdic Loader"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Contacts",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Loader",
+                "name": "data"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Get Contacts",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "File Name",
+                "name": "file"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "id"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,65 @@
+{
+    "type": "MapKeyToCase",
+    "tags": [
+        "data"
+    ],
+    "parentType": "JavaScript",
+    "inputs": [
+        {
+            "name": "script",
+            "const": {
+                "userCode": "// Only return if Map is not Empty\r\nif(map != null){\r\n    // Initiate the response Map\r\n    var newMap = {};\r\n\r\n    // For each key in the input map\r\n    for(const key in map){\r\n        // Switch Case:\r\n        switch(keyCase){\r\n\r\n            // Insert to the result map with Uppercase Key\r\n            case \"Uppercase\":  newMap[key.toUpperCase()] = map[key]; break;\r\n\r\n            // Insert to the result map with Lowercase Key\r\n            case \"Lowercase\":  newMap[key.toLowerCase()] = map[key]; break;\r\n\r\n            // Default - Lowercase\r\n            default: newMap[key.toLowerCase()] = map[key];\r\n\r\n        }\r\n    };\r\n\r\n    // Return the new Map\r\n    newMap;\r\n}",
+                "script": "// Only return if Map is not Empty\nif (map != null) {\n  // Initiate the response Map\n  var newMap = {}; // For each key in the input map\n\n  for (var key in map) {\n    // Switch Case:\n    switch (keyCase) {\n      // Insert to the result map with Uppercase Key\n      case \"Uppercase\":\n        newMap[key.toUpperCase()] = map[key];\n        break;\n      // Insert to the result map with Lowercase Key\n\n      case \"Lowercase\":\n        newMap[key.toLowerCase()] = map[key];\n        break;\n      // Default - Lowercase\n\n      default:\n        newMap[key.toLowerCase()] = map[key];\n    }\n  }\n\n  ; // Return the new Map\n\n  newMap;\n}"
+            },
+            "hidden": true
+        },
+        {
+            "name": "map",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "HOD": {
+                        "type": "string"
+                    },
+                    "ROTEM": {
+                        "type": "number"
+                    }
+                }
+            },
+            "mandatory": false
+        },
+        {
+            "const": "Lowercase",
+            "name": "keyCase",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "editor": {
+                "id": "com.k2view.dropdown",
+                "options": [
+                    "Uppercase",
+                    "Lowercase"
+                ]
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "hod": {
+                        "type": "string"
+                    },
+                    "rotem": {
+                        "type": "number"
+                    }
+                }
+            }
+        }
+    ],
+    "badge": "Map",
+    "addInput": false
+}
