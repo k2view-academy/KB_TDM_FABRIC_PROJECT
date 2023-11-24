@@ -42,5 +42,5 @@
         }
     ],
     "outputs": [],
-    "actorClass": "com.k2view.cdbms.usercode.common.StatsLoader"
+    "actorClass": "com.k2view.cdbms.usercode.common.TDM.StatsLoader"
 }

@@ -106,7 +106,7 @@
       "name": "financials",
       "type": "sql",
       "code": "SELECT cc_info.cc_type,\n       cc_info.cc_number,\n       bank_info.routing_number,\n       bank_info.account_number,\n       loans.*\nFROM   billing_prod.contact_info\n  JOIN billing_prod.cc_info ON (contact_info.ssn = cc_info.ssn)\n  JOIN billing_prod.bank_info ON (contact_info.ssn = bank_info.ssn)\n  JOIN billing_prod.loans ON (contact_info.ssn = loans.ssn)\nWHERE  contact_info.contact_id = ${id}",
-      "sessionProvider": "FINANCE_DB",
+      "sessionProvider": "BILLING_DB",
       "one": true,
       "children": [
         {

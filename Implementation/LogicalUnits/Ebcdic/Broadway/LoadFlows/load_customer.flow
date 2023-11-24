@@ -44,19 +44,6 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Get LU Keyspace",
-                            "actorType": {
-                                "parentType": "LuKeyspace",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "Customer"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get Table Data",
                             "actorType": {
                                 "parentType": "DbCommand",
@@ -635,19 +622,8 @@
                         {
                             "name": "Set Target Entity ID",
                             "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TARGET_ENTITY_ID",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
+                                "parentType": "setTargetEntityId_Actor",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -662,7 +638,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": null
+                                        "const": "k2customer"
                                     },
                                     {
                                         "name": "table",
@@ -931,16 +907,6 @@
     "connections": [
         {
             "leftPort": {
-                "actor": "Get LU Keyspace",
-                "name": "keyspace"
-            },
-            "rightPort": {
-                "actor": "Load customer Table",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
                 "actor": "Get Table Data",
                 "name": "result"
             },
@@ -957,7 +923,7 @@
             },
             "rightPort": {
                 "actor": "Set Target Entity ID",
-                "name": "value"
+                "name": "target_entity_id"
             },
             "path": [
                 "ID"

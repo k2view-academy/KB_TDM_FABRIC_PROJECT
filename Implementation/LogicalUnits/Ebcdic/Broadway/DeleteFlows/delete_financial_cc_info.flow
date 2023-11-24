@@ -52,19 +52,6 @@
                     "isTransactional": false,
                     "actors": [
                         {
-                            "name": "Get LU Keyspace",
-                            "actorType": {
-                                "parentType": "LuKeyspace",
-                                "inputs": [
-                                    {
-                                        "name": "luType",
-                                        "const": "Customer"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get Table Data",
                             "actorType": {
                                 "parentType": "DbCommand",
@@ -140,7 +127,7 @@
                                     },
                                     {
                                         "name": "schema",
-                                        "const": null
+                                        "const": "k2customer"
                                     },
                                     {
                                         "name": "table",
@@ -167,16 +154,6 @@
         }
     ],
     "connections": [
-        {
-            "leftPort": {
-                "actor": "Get LU Keyspace",
-                "name": "keyspace"
-            },
-            "rightPort": {
-                "actor": "Delete financial_cc_info Table",
-                "name": "schema"
-            }
-        },
         {
             "leftPort": {
                 "actor": "Get Table Data",

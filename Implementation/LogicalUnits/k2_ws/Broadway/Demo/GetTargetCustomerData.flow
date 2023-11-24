@@ -1,6 +1,7 @@
 {
     "tags": [
-        "Reconciliation"
+        "Reconciliation",
+        "Demo"
     ],
     "levels": [
         {
@@ -21,7 +22,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT customer_id, \n       ssn, \n       first_name, \n       last_name, \n       mobile_phone, \n       office_phone, \n       office_fax, \n       occupation, \n       department, \n       email, \n       primary_address_street1, \n       primary_address_street2, \n       primary_address_city, \n       primary_address_state, \n       primary_address_country, \n       primary_address_postal\nFROM   k2view_customer.customer\nWHERE  customer_id = ${customer_id}"
+                                        "const": "SELECT customer_id, \n       ssn, \n       first_name, \n       last_name, \n       mobile_phone, \n       office_phone, \n       office_fax, \n       occupation, \n       department, \n       email, \n       primary_address_street1, \n       primary_address_street2, \n       primary_address_city, \n       primary_address_state, \n       primary_address_country, \n       primary_address_postal\nFROM   k2customer.customer\nWHERE  customer_id = ${customer_id}"
                                     },
                                     {
                                         "name": "params",
@@ -127,7 +128,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT credit_card_number,\n       credit_card_provider\nFROM   k2view_customer.financial_cc_info\nWHERE  ssn = ${ssn}"
+                                        "const": "SELECT credit_card_number,\n       credit_card_provider\nFROM   k2customer.financial_cc_info\nWHERE  ssn = ${ssn}"
                                     },
                                     {
                                         "name": "params",
@@ -173,7 +174,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT account_number,\n       routing_number\nFROM   k2view_customer.financial_bank_info\nWHERE  ssn = ${ssn}"
+                                        "const": "SELECT account_number,\n       routing_number\nFROM   k2customer.financial_bank_info\nWHERE  ssn = ${ssn}"
                                     },
                                     {
                                         "name": "params",
@@ -219,7 +220,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "SELECT * \nFROM   k2view_customer.financial_loan_info\nWHERE  ssn = ${ssn}"
+                                        "const": "SELECT * \nFROM   k2customer.financial_loan_info\nWHERE  ssn = ${ssn}"
                                     },
                                     {
                                         "name": "params",

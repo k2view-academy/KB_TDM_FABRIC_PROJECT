@@ -66,6 +66,15 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Not Null",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "File Name",
                             "actorType": {
                                 "parentType": "StringFormat",
@@ -798,6 +807,20 @@
             "rightPort": {
                 "actor": "File Name",
                 "name": "id"
+            },
+            "iterate": "First",
+            "path": [
+                "id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Not Null",
+                "name": "value"
             },
             "iterate": "First",
             "path": [
