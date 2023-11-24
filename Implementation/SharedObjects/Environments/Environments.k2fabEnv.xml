@@ -60,6 +60,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>Cassandra</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ZURMO" dbType="genericdb" active="true">
+          <dbHost>tdm.dbs.demos.k2view.com</dbHost>
+          <dbPort>3306</dbPort>
+          <dbScheme>zurmo_production</dbScheme>
+          <dbUser>zurmo_production</dbUser>
+          <dbPasswordEncrypted>~encs2~tUfzQsZCAB4qzIqMUSXVpltrdNlnLnS8oUQd1vWbZsuSdBceiuwx68ogkyx5vJGz</dbPasswordEncrypted>
+          <connString>jdbc:mysql://tdm.dbs.demos.k2view.com:3306/zurmo_production?retainStatementAfterResultSetClose&#x3D;true&amp;autoReconnect&#x3D;true&amp;useSSL&#x3D;false</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>MySQL</JdbcDriverName>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
@@ -379,6 +390,17 @@
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="ZURMO" dbType="genericdb" active="true">
+          <dbHost>tdm.dbs.demos.k2view.com</dbHost>
+          <dbPort>3306</dbPort>
+          <dbScheme>zurmo_production</dbScheme>
+          <dbUser>zurmo_production</dbUser>
+          <dbPasswordEncrypted>~encs2~SQAtJDTZOqK+M0JySs6oBL7pd56qNroCaxE+HLh/EXN0sLbHt79mXm6BV3lhAchi</dbPasswordEncrypted>
+          <connString>jdbc:mysql://tdm.dbs.demos.k2view.com:3306/zurmo_production?retainStatementAfterResultSetClose&#x3D;true&amp;autoReconnect&#x3D;true&amp;useSSL&#x3D;false</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>MySQL</JdbcDriverName>
         </DbInterface>
       </DbInterfacesList>
       <GlobalsList>

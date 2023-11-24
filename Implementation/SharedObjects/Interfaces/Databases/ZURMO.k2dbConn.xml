@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="ZURMO" type="genericdb" version="7.2.0">
+    <JdbcDriverName>MySQL</JdbcDriverName>
+    <Active>true</Active>
+    <ConnectionProperties></ConnectionProperties>
+    <ConnectionStringServerSide>jdbc:mysql://tdm.dbs.demos.k2view.com:3306/zurmo_production?retainStatementAfterResultSetClose=true&amp;autoReconnect=true&amp;useSSL=false</ConnectionStringServerSide>
+    <PortNum>3306</PortNum>
+    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+    <MinConnectionsNumber>0</MinConnectionsNumber>
+    <MaxConnectionsNumber>60</MaxConnectionsNumber>
+    <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+    <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+    <OfflineMode>true</OfflineMode>
+    <DataSource>tdm.dbs.demos.k2view.com</DataSource>
+    <DataBase>zurmo_production</DataBase>
+    <UserId>zurmo_production</UserId>
+    <Password>~encs2~kGiIJcp3YkcG0fSSUB/6xkSlkaR6jLMU7v9P0++LfhxuzvekrDquAkWW3MwWD4r/</Password>
+    <SchemaFilter></SchemaFilter>
+    <CommandList></CommandList>
+</DBConn>
