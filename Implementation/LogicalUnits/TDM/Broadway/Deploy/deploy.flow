@@ -356,8 +356,8 @@
                                         "const": "CreateTargetCassandraTables"
                                     },
                                     {
-                                        "name": "schema",
                                         "const": "k2customer",
+                                        "name": "schema",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -516,6 +516,38 @@
                                     {
                                         "name": "level",
                                         "const": "info"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Demo Objects",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CreateDemoObjectsInTDMDB1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "CreateDemoObjectsInTDMDB"
+                                    },
+                                    {
+                                        "name": "Reset",
+                                        "const": false,
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
