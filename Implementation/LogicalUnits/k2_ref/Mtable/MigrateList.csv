@@ -1,1 +1,2 @@
 lu_name,source_env_name,interface_name,ig_sql,external_table_flow
+Customer,Production,BILLING_DB,"SELECT contact_id FROM billing_prod.contact_info WHERE contact_id <= 1012",

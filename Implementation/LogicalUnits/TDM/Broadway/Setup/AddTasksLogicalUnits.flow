@@ -1,0 +1,287 @@
+{
+    "tags": [
+        "Demo"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Systems",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CRM": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "system": {
+                                                            "type": "string"
+                                                        },
+                                                        "vendor": {
+                                                            "type": "string"
+                                                        },
+                                                        "version": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": {
+                                                            "type": "string"
+                                                        },
+                                                        "product_desc": {
+                                                            "type": "string"
+                                                        },
+                                                        "lu_name": {},
+                                                        "lu_id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "product_lu_id": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                },
+                                                "FINANCE": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "system": {
+                                                            "type": "string"
+                                                        },
+                                                        "vendor": {
+                                                            "type": "string"
+                                                        },
+                                                        "version": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": {
+                                                            "type": "string"
+                                                        },
+                                                        "product_desc": {
+                                                            "type": "string"
+                                                        },
+                                                        "lu_name": {},
+                                                        "lu_id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "product_lu_id": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "System",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "System in Scope Syntehtic",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "system": {
+                                                    "type": "string"
+                                                },
+                                                "vendor": {
+                                                    "type": "string"
+                                                },
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "description": {
+                                                    "type": "string"
+                                                },
+                                                "product_desc": {
+                                                    "type": "string"
+                                                },
+                                                "lu_name": {},
+                                                "lu_id": {
+                                                    "type": "integer"
+                                                },
+                                                "product_lu_id": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "tasks_logical_units",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "tasks_logical_units"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "task_id",
+                                            "lu_id",
+                                            "lu_name"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "task_id",
+                                            "lu_name"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "System in Scope Syntehtic",
+                "name": "value"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "System in Scope Syntehtic",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "tasks_logical_units",
+                "name": "lu_name"
+            },
+            "path": [
+                "system"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "System in Scope Syntehtic",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "tasks_logical_units",
+                "name": "lu_id"
+            },
+            "path": [
+                "lu_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "systems"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_id"
+            },
+            "rightPort": {
+                "actor": "tasks_logical_units",
+                "name": "task_id"
+            }
+        }
+    ]
+}

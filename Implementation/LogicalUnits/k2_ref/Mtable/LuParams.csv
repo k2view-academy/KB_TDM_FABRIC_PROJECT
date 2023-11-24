@@ -1,1 +1,13 @@
 lu_name,column_name,sql
+Customer,state,SELECT DISTINCT STATE FROM Customer.ADDRESS;
+Customer,creditcard_provider,SELECT DISTINCT CC_TYPE FROM Customer.CC_INFO;
+Customer,loan_type,SELECT DISTINCT LOAN_TYPE FROM Customer.LOANS;
+Customer,loan_duration,SELECT DISTINCT TENURE FROM Customer.LOANS;
+Customer,loan_payments_made,SELECT DISTINCT INSTALLMENT_NO FROM Customer.LOANS;
+Customer,loan_current_balance,"SELECT DISTINCT round(CURRENT_BALANCE,2) AS CURRENT_BALANCE FROM Customer.LOANS;"
+Customer,loan_interest_rate,"SELECT DISTINCT round(INTEREST_RATE,2) AS INTEREST_RATE FROM Customer.LOANS;"
+Customer,loan_opening_balance,"SELECT DISTINCT round(OPENING_BALANCE,2) AS OPENING_BALANCE FROM Customer.LOANS;"
+Customer,loan_opening_year,"SELECT DISTINCT strftime('%Y', LOAN_OPEN_DATE) AS LOAN_OPENING_YEAR FROM Customer.LOANS;"
+Customer,loan_age,"SELECT (strftime('%Y', 'now') - strftime('%Y', LOAN_OPEN_DATE)) - (strftime('%m-%d', 'now') < strftime('%m-%d', LOAN_OPEN_DATE)) AS LOAN_AGE FROM Customer.LOANS;"
+Customer,department,SELECT DISTINCT DEPARTMENT FROM Customer.PERSON;
+Customer,occupation,SELECT DISTINCT JOBTITLE FROM Customer.PERSON;

@@ -1,0 +1,114 @@
+{
+    "tags": [
+        "Demo"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Delete TDMDB",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "DeleteTDMDB",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "DeleteTDMDB"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Sleep 5 Seconds",
+                            "actorType": {
+                                "parentType": "Sleep",
+                                "inputs": [
+                                    {
+                                        "name": "millis",
+                                        "const": 5000
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create TDMDB",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "TDMDB",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "TDMDB"
+                                    },
+                                    {
+                                        "const": true,
+                                        "name": "is_first_deploy",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Sleep 2 Seconds",
+                            "actorType": {
+                                "parentType": "Sleep",
+                                "inputs": [
+                                    {
+                                        "name": "millis",
+                                        "const": 2000
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Demo Objects",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "CreateDemoObjectsInTDMDB",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "CreateDemoObjectsInTDMDB"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": []
+}
