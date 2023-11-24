@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>contact</Name>
+  <ID>tbl_contact</ID>
+  <EntityId>id</EntityId>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
+  <Columns>
+    <Column name="id" id="id" index="0" datatype="INTEGER" />
+    <Column name="companyname" id="companyname" index="1" datatype="TEXT" />
+    <Column name="description" id="description" index="2" datatype="TEXT" />
+    <Column name="latestactivitydatetime" id="latestactivitydatetime" index="3" datatype="DATETIME" />
+    <Column name="website" id="website" index="4" datatype="TEXT" />
+    <Column name="googlewebtrackingid" id="googlewebtrackingid" index="5" datatype="TEXT" />
+    <Column name="twitterid" id="twitterid" index="6" datatype="TEXT" />
+    <Column name="facebookid" id="facebookid" index="7" datatype="TEXT" />
+    <Column name="person_id" id="person_id" index="8" datatype="INTEGER" />
+    <Column name="account_id" id="account_id" index="9" datatype="INTEGER" />
+    <Column name="industry_customfield_id" id="industry_customfield_id" index="10" datatype="INTEGER" />
+    <Column name="secondaryaddress_address_id" id="secondaryaddress_address_id" index="11" datatype="INTEGER" />
+    <Column name="secondaryemail_email_id" id="secondaryemail_email_id" index="12" datatype="INTEGER" />
+    <Column name="source_customfield_id" id="source_customfield_id" index="13" datatype="INTEGER" />
+    <Column name="state_contactstate_id" id="state_contactstate_id" index="14" datatype="INTEGER" />
+    <Column name="statuscstm" id="statuscstm" index="15" datatype="TEXT" />
+    <Column name="creditcardcstm" id="creditcardcstm" index="16" datatype="TEXT" />
+    <Column name="ssncstm" id="ssncstm" index="17" datatype="TEXT" />
+    <Column name="contact_idcstm" id="contact_idcstm" index="18" datatype="INTEGER" />
+  </Columns>
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>

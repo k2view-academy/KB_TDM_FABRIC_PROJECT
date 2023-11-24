@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>person</Name>
+  <ID>tbl_person</ID>
+  <Columns>
+    <Column name="id" id="id" index="0" datatype="INTEGER" />
+    <Column name="department" id="department" index="1" datatype="TEXT" />
+    <Column name="firstname" id="firstname" index="2" datatype="TEXT" />
+    <Column name="jobtitle" id="jobtitle" index="3" datatype="TEXT" />
+    <Column name="lastname" id="lastname" index="4" datatype="TEXT" />
+    <Column name="mobilephone" id="mobilephone" index="5" datatype="TEXT" />
+    <Column name="officephone" id="officephone" index="6" datatype="TEXT" />
+    <Column name="officefax" id="officefax" index="7" datatype="TEXT" />
+    <Column name="ownedsecurableitem_id" id="ownedsecurableitem_id" index="8" datatype="INTEGER" />
+    <Column name="primaryaddress_address_id" id="primaryaddress_address_id" index="9" datatype="INTEGER" />
+    <Column name="primaryemail_email_id" id="primaryemail_email_id" index="10" datatype="INTEGER" />
+    <Column name="title_customfield_id" id="title_customfield_id" index="11" datatype="INTEGER" />
+  </Columns>
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>

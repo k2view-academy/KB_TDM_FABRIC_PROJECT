@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
+  <Name>vdb</Name>
+  <RootView>contact</RootView>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00">
+  	<DecisionFunction></DecisionFunction>
+  </LuLazyDataUpdate>
+  <EventsList>
+  </EventsList>
+  <IidFinderProp>
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+  </IidFinderProp>
+  <Tables>
+	 <Table>address</Table>
+	 <Table>contact</Table>
+	 <Table>email</Table>
+	 <Table>person</Table>
+  </Tables>
+  <TablesProperties>
+	 <TableProperties name="contact">
+      <Populations>
+        <Population name="population.flow" order="1" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+  </EnrichmentsOrderList>
+  <ReferencesList>
+  </ReferencesList>
+  <Relations />
+  <DatabaseRelations>
+  </DatabaseRelations>
+  <DiagramGraph>
+    <Graph name="vdb.k2vdb.xml">
+      <Node name="address" pos="716 -21" viewType="Table" />
+      <Node name="contact" pos="156 12" viewType="Table" />
+      <Node name="email" pos="715 156" viewType="Table" />
+      <Node name="person" pos="427 47" viewType="Table" />
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

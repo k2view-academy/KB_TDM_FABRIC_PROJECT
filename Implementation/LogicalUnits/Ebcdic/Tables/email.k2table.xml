@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>email</Name>
+  <ID>tbl_email</ID>
+  <Columns>
+    <Column name="id" id="id" index="0" datatype="INTEGER" />
+    <Column name="emailaddress" id="emailaddress" index="1" datatype="TEXT" />
+    <Column name="isinvalid" id="isinvalid" index="2" datatype="INTEGER" />
+    <Column name="optout" id="optout" index="3" datatype="INTEGER" />
+  </Columns>
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
+</TableObject>
