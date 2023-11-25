@@ -103,7 +103,7 @@
                                         "const": "populateDbs"
                                     },
                                     {
-                                        "const": "POSTGRESQL_ADMIN",
+                                        "const": "PG_BILL_DB",
                                         "name": "interface",
                                         "schema": {
                                             "type": "string"

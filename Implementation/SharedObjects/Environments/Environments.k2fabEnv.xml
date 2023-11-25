@@ -71,6 +71,17 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>MySQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="PG_BILL_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <dbUser>billing_prod</dbUser>
+          <dbPasswordEncrypted>~encs2~Mn55CrRiN6ZW2bmxBkBkk0OPtH9s0ZR/+kNlTTqdPct5WBcPwWxpYfNbuHo&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
         <Global name="INSTANCES_RANDOM_MAX" luName="TDM">
@@ -108,14 +119,6 @@
         <Global name="REF_TABLE_COUNT" luName="TDM_Reference">
           <Value>NOT_SET</Value>
           <Comment></Comment>
-        </Global>
-        <Global name="ROOT_COLUMN_NAME" luName="Customer">
-          <Value>contact_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Customer">
-          <Value>contact_info</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
         </Global>
         <Global name="BE_ID" luName="">
           <Value>0</Value>
@@ -295,20 +298,6 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="LOCAL" enabled="false" version="">
-          <Name>TDM_APIDOC_JSON</Name>
-          <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources/TDM_APIDOC_JSON</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
-            </Property>
-          </Properties>
-        </GenericInterface>
         <GenericInterface type="CassandraLoader" enabled="true" version="">
           <Name>CASSANDRA_LD</Name>
           <Properties>
@@ -322,6 +311,20 @@
           <Properties>
             <Property name="WorkingDir">
               <Value>/opt/apps/fabric/workspace/project/project-resources/ebcdic/source</Value>
+            </Property>
+            <Property name="FilesFilter">
+              <Value></Value>
+            </Property>
+            <Property name="Affinity">
+              <Value></Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
+        <GenericInterface type="LOCAL" enabled="false" version="">
+          <Name>TDM_APIDOC_JSON</Name>
+          <Properties>
+            <Property name="WorkingDir">
+              <Value>/opt/apps/fabric/workspace/project/project-resources/TDM_APIDOC_JSON</Value>
             </Property>
             <Property name="FilesFilter">
               <Value></Value>
@@ -402,16 +405,19 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>MySQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="PG_BILL_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <dbUser>billing_prod</dbUser>
+          <dbPasswordEncrypted>~encs2~40A40V2utNSVaoqvfuBIuzOIf1GupPHTmJn3r2RyhVcC6QjKgLcvZpFEpUc&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Customer">
-          <Value>contact_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Customer">
-          <Value>contact_info</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="BUILD_TDMDB" luName="TDM">
           <Value>true</Value>
           <Comment></Comment>
@@ -751,16 +757,19 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>MySQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="PG_BILL_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <dbUser>billing_prod</dbUser>
+          <dbPasswordEncrypted>~encs2~oiWExeJ825xsiung1FVNsc3wIYOPzz0AejVNLZInsov1qOQ5M6z0D/ct/+8&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Customer">
-          <Value>contact_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Customer">
-          <Value>contact_info</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="BUILD_TDMDB" luName="TDM">
           <Value>true</Value>
           <Comment></Comment>
@@ -980,31 +989,16 @@
           <Properties>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" enabled="true" version="">
-          <Name>EBCDIC_FILES</Name>
+        <GenericInterface type="" enabled="" version="">
+          <Name></Name>
           <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources/ebcdic/source</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
-            </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" enabled="false" version="">
-          <Name>TDM_APIDOC_JSON</Name>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
           <Properties>
-            <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources/TDM_APIDOC_JSON</Value>
-            </Property>
-            <Property name="FilesFilter">
-              <Value></Value>
-            </Property>
-            <Property name="Affinity">
-              <Value></Value>
+            <Property name="section">
+              <Value>default</Value>
             </Property>
           </Properties>
         </GenericInterface>
@@ -1079,16 +1073,19 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>MySQL</JdbcDriverName>
         </DbInterface>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="PG_BILL_DB" dbType="genericdb" active="true">
+          <dbHost>dev-pg-service</dbHost>
+          <dbPort>5432</dbPort>
+          <dbScheme>BILLING_DB</dbScheme>
+          <dbUser>billing_prod</dbUser>
+          <dbPasswordEncrypted>~encs2~H22IX57SgiBpVUE6bTzhOMZvvnd1sy+nLlYZkgDNXkAmxDOzO+mxdCo1UN0&#x3D;</dbPasswordEncrypted>
+          <connString>jdbc:postgresql://dev-pg-service:5432/BILLING_DB?stringtype&#x3D;unspecified</connString>
+          <minConnectionsNumber>0</minConnectionsNumber>
+          <maxConnectionsNumber>60</maxConnectionsNumber>
+          <JdbcDriverName>PostgreSQL</JdbcDriverName>
+        </DbInterface>
       </DbInterfacesList>
       <GlobalsList>
-        <Global name="ROOT_COLUMN_NAME" luName="Customer">
-          <Value>contact_id</Value>
-          <Comment>The column name of the entity id. The name and the order of the root column name must be aligned with root_table_name. For example- if you populate two tables in root_Table_name (separated by a comma), you must populate also two values in this global where the first column referes to the first table name the second column refers to the second table name</Comment>
-        </Global>
-        <Global name="ROOT_TABLE_NAME" luName="Customer">
-          <Value>contact_info</Value>
-          <Comment>The name of the main source LU table or tables. You can populate several tables separated by a comma.</Comment>
-        </Global>
         <Global name="BUILD_TDMDB" luName="TDM">
           <Value>true</Value>
           <Comment></Comment>
@@ -1303,16 +1300,11 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="" enabled="" version="">
-          <Name></Name>
-          <Properties>
-          </Properties>
-        </GenericInterface>
-        <GenericInterface type="LOCAL" enabled="true" version="">
-          <Name>EBCDIC_FILES</Name>
+        <GenericInterface type="LOCAL" enabled="false" version="">
+          <Name>TDM_APIDOC_JSON</Name>
           <Properties>
             <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources/ebcdic/source</Value>
+              <Value>/opt/apps/fabric/workspace/project/project-resources/TDM_APIDOC_JSON</Value>
             </Property>
             <Property name="FilesFilter">
               <Value></Value>
@@ -1322,11 +1314,19 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="LOCAL" enabled="false" version="">
-          <Name>TDM_APIDOC_JSON</Name>
+        <GenericInterface type="CassandraLoader" enabled="true" version="">
+          <Name>CASSANDRA_LD</Name>
+          <Properties>
+            <Property name="section">
+              <Value>default</Value>
+            </Property>
+          </Properties>
+        </GenericInterface>
+        <GenericInterface type="LOCAL" enabled="true" version="">
+          <Name>EBCDIC_FILES</Name>
           <Properties>
             <Property name="WorkingDir">
-              <Value>/opt/apps/fabric/workspace/project/project-resources/TDM_APIDOC_JSON</Value>
+              <Value>/opt/apps/fabric/workspace/project/project-resources/ebcdic/source</Value>
             </Property>
             <Property name="FilesFilter">
               <Value></Value>
