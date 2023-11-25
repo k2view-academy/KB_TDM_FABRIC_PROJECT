@@ -6,25 +6,65 @@
     ],
     "inputs": [
         {
-            "name": "data",
+            "const": "",
+            "name": "interface",
             "schema": {
-                "type": "object"
+                "type": "string"
             },
-            "mandatory": false
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "local"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The Local Filesystem Interface to use for the ebcidic file."
+            ]
         },
         {
             "name": "file",
             "schema": {
                 "type": "string"
             },
-            "mandatory": true
+            "mandatory": true,
+            "doc": [
+                "Relative path to ebcdic file."
+            ]
+        },
+        {
+            "const": "",
+            "name": "copybook_interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "local"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The Local Filesystem Interface to use for the copybook file."
+            ]
         },
         {
             "name": "copybook",
             "schema": {
                 "type": "string"
             },
-            "mandatory": true
+            "mandatory": true,
+            "doc": [
+                "Relative path to copybook file."
+            ]
+        },
+        {
+            "name": "data",
+            "schema": {
+                "type": "object"
+            },
+            "mandatory": false
         },
         {
             "const": "Cp037",

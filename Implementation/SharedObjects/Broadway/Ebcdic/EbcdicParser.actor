@@ -6,16 +6,58 @@
     ],
     "inputs": [
         {
-            "name": "stream",
+            "const": "",
+            "name": "interface",
             "schema": {
-                "type": "array",
-                "items": {
-                    "type": "blob"
-                }
+                "type": "string"
             },
-            "mandatory": false,
-            "hidden": true,
-            "doc": "An input stream represented by an iterable collection of blobs or strings.\n\t\t\t\tThe parser will keep running until the end of the stream is detected"
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "local"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The Local Filesystem Interface to use for the ebcidic file."
+            ]
+        },
+        {
+            "name": "file",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "Relative path to ebcdic file."
+            ]
+        },
+        {
+            "const": "",
+            "name": "copybook_interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "local"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The Local Filesystem Interface to use for the copybook file."
+            ]
+        },
+        {
+            "name": "copybook",
+            "schema": {
+                "type": "string"
+            },
+            "mandatory": true,
+            "doc": [
+                "Relative path to copybook file."
+            ]
         },
         {
             "const": false,
@@ -26,20 +68,6 @@
             "mandatory": false,
             "hidden": true,
             "doc": "Expect only a single object in the input stream.\n\nIn this case, the result will be a single object as opposed to an array."
-        },
-        {
-            "name": "file",
-            "schema": {
-                "type": "string"
-            },
-            "mandatory": true
-        },
-        {
-            "name": "copybook",
-            "schema": {
-                "type": "string"
-            },
-            "mandatory": true
         },
         {
             "const": "Cp037",
@@ -460,6 +488,18 @@
                     "SPLIT_HIGHEST_REPEATING"
                 ]
             }
+        },
+        {
+            "name": "stream",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "blob"
+                }
+            },
+            "mandatory": false,
+            "hidden": true,
+            "doc": "An input stream represented by an iterable collection of blobs or strings.\n\t\t\t\tThe parser will keep running until the end of the stream is detected"
         }
     ],
     "outputs": [

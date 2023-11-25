@@ -81,7 +81,7 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/ebcdic/source/customer-${id}.ebcdic"
+                                        "const": "customer-${id}.ebcdic"
                                     },
                                     {
                                         "name": "params",
@@ -187,8 +187,16 @@
                                 "parentType": "EbcdicParser",
                                 "inputs": [
                                     {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
+                                        "name": "copybook_interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
                                         "name": "copybook",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/ebcdic/copybooks/zurmo-customers.cpy"
+                                        "const": "../copybooks/zurmo-customers.cpy"
                                     },
                                     {
                                         "name": "organization",

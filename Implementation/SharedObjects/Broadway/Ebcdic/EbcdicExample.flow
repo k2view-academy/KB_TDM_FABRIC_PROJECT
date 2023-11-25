@@ -13,12 +13,20 @@
                                 "parentType": "EbcdicParser",
                                 "inputs": [
                                     {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
                                         "name": "file",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/sample-customer-data.ebcdic"
+                                        "const": "../copybooks/sample-customer-data.ebcdic"
+                                    },
+                                    {
+                                        "name": "copybook_interface",
+                                        "const": "EBCDIC_FILES"
                                     },
                                     {
                                         "name": "copybook",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/zurmo-customers.cpy"
+                                        "const": "../copybooks/zurmo-customers.cpy"
                                     },
                                     {
                                         "name": "organization",
@@ -189,12 +197,20 @@
                                 "parentType": "EbcdicParser",
                                 "inputs": [
                                     {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
                                         "name": "file",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/sample-customer-data.ebcdic.out"
+                                        "const": "../../sample-customer-data.ebcdic.out"
+                                    },
+                                    {
+                                        "name": "copybook_interface",
+                                        "const": "EBCDIC_FILES"
                                     },
                                     {
                                         "name": "copybook",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/zurmo-customers.cpy"
+                                        "const": "../copybooks/zurmo-customers.cpy"
                                     },
                                     {
                                         "name": "organization",
@@ -553,12 +569,20 @@
                                 "parentType": "EbcdicLoader",
                                 "inputs": [
                                     {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
                                         "name": "file",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/sample-customer-data.ebcdic.out"
+                                        "const": "../../sample-customer-data.ebcdic.out"
+                                    },
+                                    {
+                                        "name": "copybook_interface",
+                                        "const": "EBCDIC_FILES"
                                     },
                                     {
                                         "name": "copybook",
-                                        "const": "/opt/apps/fabric/workspace/project/project-resources/zurmo-customers.cpy"
+                                        "const": "../copybooks/zurmo-customers.cpy"
                                     },
                                     {
                                         "name": "organization",

@@ -12,6 +12,9 @@ import com.k2view.broadway.model.Context;
 import com.k2view.broadway.model.Data;
 import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
+import com.k2view.cdbms.interfaces.FabricInterface;
+import com.k2view.cdbms.interfaces.jobs.local.LocalFileSystemInterface;
+import com.k2view.cdbms.lut.InterfacesManager;
 
 import net.sf.JRecord.Common.CommonBits;
 import net.sf.JRecord.Common.Constants;
@@ -36,13 +39,15 @@ import java.util.stream.StreamSupport;
 @SuppressWarnings({"all"})
 public class EbcdicLoader implements Actor {
 
-    private final String DATA              = "data";
-    private final String FILE              = "file";
-    private final String FILE_LAYOUT       = "copybook";
-    private final String FILE_FONT         = "font";
-    private final String FILE_DIALECT      = "dialect";
-    private final String FILE_ORGANIZATION = "organization";
-    private final String FILE_SPLIT        = "split";
+    private final String INTERFACE          = "interface";
+    private final String FILE               = "file";
+    private final String COPYBOOK_INTERFACE = "copybook_interface";
+    private final String COPYBOOK           = "copybook";
+    private final String DATA               = "data";
+    private final String FILE_FONT          = "font";
+    private final String FILE_DIALECT       = "dialect";
+    private final String FILE_ORGANIZATION  = "organization";
+    private final String FILE_SPLIT         = "split";
 
     private transient ICobolIOBuilder iob;
     private transient AbstractLineWriter writer = null;
@@ -53,15 +58,27 @@ public class EbcdicLoader implements Actor {
 
     public void action(Data input, Data output, Context context) throws NoSuchFieldException, IllegalAccessException, IOException {
 
+        // File Definition
+        FabricInterface fileInterface = InterfacesManager.getInstance().getInterface(input.string(INTERFACE));
+        String fileDir    = ((LocalFileSystemInterface) fileInterface).getDir();
+        String fileFilter = ((LocalFileSystemInterface) fileInterface).getFileFilter();
+        String filePath   = fileDir + "/" + (!Util.isEmpty(input.string(FILE)) ? input.string(FILE) : fileFilter);
+
+        // Copybook Definition
+        FabricInterface copybookInterface = InterfacesManager.getInstance().getInterface(input.string(COPYBOOK_INTERFACE));
+        String copybookDir    = ((LocalFileSystemInterface) copybookInterface).getDir();
+        String copybookFilter = ((LocalFileSystemInterface) copybookInterface).getFileFilter();
+        String copybookPath   = copybookDir + "/" + (!Util.isEmpty(input.string(COPYBOOK)) ? input.string(COPYBOOK) : copybookFilter);
+
         if(this.writer == null) {
             this.iob = JRecordInterface1.COBOL
-                    .newIOBuilder(input.string(FILE_LAYOUT))
+                    .newIOBuilder(copybookPath)
                     .setDialect((int) ICopybookDialects.class.getDeclaredField(input.string(FILE_DIALECT)).get(ICopybookDialects.class))
                     .setFont(input.string(FILE_FONT).toString().toUpperCase())
                     .setFileOrganization((int) Constants.class.getDeclaredField(input.string(FILE_ORGANIZATION)).get(Constants.class))
                     .setSplitCopybook((int) ICobolSplitOptions.class.getDeclaredField(input.string(FILE_SPLIT)).get(ICobolSplitOptions.class));
 
-            this.writer = iob.newWriter(input.string(FILE));
+            this.writer = iob.newWriter(filePath);
         }
 
         AbstractLine line = this.iob.newLine();
