@@ -1,0 +1,189 @@
+{
+    "tags": [
+        "Custom"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Collect Customers",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Customers",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "ZURMO"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT contact.id\nFROM   zurmo_production.contact\n  JOIN zurmo_production.person  ON (contact.person_id                = person.id )\n  JOIN zurmo_production.address ON (person.primaryaddress_address_id = address.id)\n  JOIN zurmo_production.email   ON (person.primaryemail_email_id     = email.id  )"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "id": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Init Record Count",
+                            "actorType": {
+                                "parentType": "InitRecordCount",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stringify",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "To String",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check Reserve",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Check Reserve and Load to Entity List",
+                            "actorType": {
+                                "parentType": "CheckReserveAndLoadToEntityList",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stop Loop on Count",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Check and Stop Loop",
+                            "actorType": {
+                                "parentType": "CheckAndStopLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Customers",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "To String",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "To String",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Check Reserve and Load to Entity List",
+                "name": "SOURCE_IID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check Reserve and Load to Entity List",
+                "name": "recordLoaded"
+            },
+            "rightPort": {
+                "actor": "Check and Stop Loop",
+                "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Check Reserve and Load to Entity List",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "Check and Stop Loop",
+                "name": "NUM_OF_ENTITIES"
+            }
+        }
+    ]
+}

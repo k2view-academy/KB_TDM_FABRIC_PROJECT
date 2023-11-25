@@ -316,6 +316,30 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "is_first_deploy",
+                            "remark": "A boolean representing if this is the first deploy",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "name": "populatePGDBS",
                             "actorType": {
                                 "parentType": "InnerFlow",
@@ -347,7 +371,30 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "CreateTargetCassandraTables1",
+                            "name": "First Deploy ?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create Target Cassandra Tables",
                             "actorType": {
                                 "parentType": "InnerFlow",
                                 "inputs": [
@@ -542,8 +589,8 @@
                                         "const": "CreateDemoObjectsInTDMDB"
                                     },
                                     {
-                                        "name": "Reset",
                                         "const": false,
+                                        "name": "Reset",
                                         "schema": {
                                             "type": "boolean"
                                         },
@@ -614,6 +661,16 @@
         },
         {
             "leftPort": {
+                "actor": "is_first_deploy",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "First Deploy ?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "SEQ_DROP_KEYSPACE",
                 "name": "result"
             },
@@ -660,6 +717,16 @@
             "rightPort": {
                 "actor": "createPGDBS",
                 "name": "is_first_deploy"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "is_first_deploy"
+            },
+            "rightPort": {
+                "actor": "is_first_deploy",
+                "name": "value"
             }
         },
         {
