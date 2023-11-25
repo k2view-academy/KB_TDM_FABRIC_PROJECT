@@ -367,7 +367,9 @@
             "stages": [
                 {
                     "name": "Create Cassandra Tables",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Populate PGDBS"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -415,6 +417,16 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Else",
+                    "dependsOnList": [
+                        "Populate PGDBS"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
                 }
             ]
         },

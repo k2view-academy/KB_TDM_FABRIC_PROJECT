@@ -19,17 +19,8 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-do
-$$
-begin
-  if not exists (SELECT 1 FROM pg_database WHERE datname = 'BILLING_DB') then
-     CREATE DATABASE "BILLING_DB" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1;
-     ALTER DATABASE "BILLING_DB" OWNER TO "billing_prod";
-  end if;
-  if not exists (SELECT 1 FROM pg_database WHERE datname = 'TAR_BILLING_DB') then
-     CREATE DATABASE "TAR_BILLING_DB" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1;
-     ALTER DATABASE "TAR_BILLING_DB" OWNER TO "tar_billing_prod";
-  end if;
-end
-$$
-;
+CREATE DATABASE "BILLING_DB" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1;
+ALTER DATABASE "BILLING_DB" OWNER TO "billing_prod";
+
+CREATE DATABASE "TAR_BILLING_DB" WITH TEMPLATE = template0 ENCODING = 'UTF8' CONNECTION LIMIT = -1;
+ALTER DATABASE "TAR_BILLING_DB" OWNER TO "tar_billing_prod";
