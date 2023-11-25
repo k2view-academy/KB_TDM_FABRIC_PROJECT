@@ -592,6 +592,29 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "First Deploy ? ",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "CreateDemoObjectsInTDMDB1",
                             "actorType": {
                                 "parentType": "InnerFlow",
@@ -678,6 +701,16 @@
             },
             "rightPort": {
                 "actor": "First Deploy ?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "is_first_deploy",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "First Deploy ? ",
                 "name": "a"
             }
         },
