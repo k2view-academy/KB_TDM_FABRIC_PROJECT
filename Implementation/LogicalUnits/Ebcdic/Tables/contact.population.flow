@@ -177,6 +177,47 @@
         {
             "stages": [
                 {
+                    "name": "Read File",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Read EBCDIC File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Read Copybook File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "../copybooks/zurmo-customers.cpy"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Source",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -187,20 +228,18 @@
                                 "parentType": "EbcdicParser",
                                 "inputs": [
                                     {
-                                        "name": "interface",
-                                        "const": "EBCDIC_FILES"
-                                    },
-                                    {
-                                        "name": "copybook_interface",
-                                        "const": "EBCDIC_FILES"
-                                    },
-                                    {
-                                        "name": "copybook",
-                                        "const": "../copybooks/zurmo-customers.cpy"
-                                    },
-                                    {
                                         "name": "organization",
                                         "const": "IO_STANDARD_TEXT_FILE"
+                                    },
+                                    {
+                                        "const": "EBCDIC_FILES",
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "const": "EBCDIC_FILES",
+                                        "name": "copybook_interface",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": [
@@ -841,8 +880,28 @@
                 "name": "string"
             },
             "rightPort": {
+                "actor": "Read EBCDIC File",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read EBCDIC File",
+                "name": "stream"
+            },
+            "rightPort": {
                 "actor": "Ebcdic Parser",
-                "name": "file"
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Copybook File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Parser",
+                "name": "copybook"
             }
         },
         {
