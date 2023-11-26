@@ -10,12 +10,14 @@ import com.k2view.broadway.actors.builtin.LinesParser;
 import com.k2view.broadway.model.Actor;
 import com.k2view.broadway.model.Context;
 import com.k2view.broadway.model.Data;
+import com.k2view.broadway.util.InputStreamIterator;
 import com.k2view.fabric.common.ParamConvertor;
 import com.k2view.fabric.common.Util;
 import com.k2view.cdbms.interfaces.FabricInterface;
 import com.k2view.cdbms.interfaces.jobs.local.LocalFileSystemInterface;
 import com.k2view.cdbms.lut.InterfacesManager;
 
+import net.sf.JRecord.Common.ByteArray;
 import net.sf.JRecord.Common.CommonBits;
 import net.sf.JRecord.Common.Constants;
 import net.sf.JRecord.Details.AbstractLine;
@@ -37,10 +39,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @SuppressWarnings({"all"})
-public class EbcdicLoader implements Actor {
+public class EbcdicBuilder implements Actor {
 
-    private final String INTERFACE          = "interface";
-    private final String FILE               = "file";
     private final String COPYBOOK           = "copybook";
     private final String DATA               = "data";
     private final String FILE_FONT          = "font";
@@ -52,18 +52,11 @@ public class EbcdicLoader implements Actor {
     private transient AbstractLineWriter writer = null;
 
 
-    public EbcdicLoader() {
+    public EbcdicBuilder() {
     }
 
     public void action(Data input, Data output, Context context) throws NoSuchFieldException, IllegalAccessException, IOException {
 
-        // File Definition
-        FabricInterface fileInterface = InterfacesManager.getInstance().getInterface(input.string(INTERFACE));
-        String fileDir    = ((LocalFileSystemInterface) fileInterface).getDir();
-        String fileFilter = ((LocalFileSystemInterface) fileInterface).getFileFilter();
-        String filePath   = fileDir + "/" + (!Util.isEmpty(input.string(FILE)) ? input.string(FILE) : fileFilter);
-
-        
         InputStream copybookIO = new ByteArrayInputStream(input.buffer(COPYBOOK));
 
         if(this.writer == null) {
@@ -73,13 +66,11 @@ public class EbcdicLoader implements Actor {
                     .setFont(input.string(FILE_FONT).toString().toUpperCase())
                     .setFileOrganization((int) Constants.class.getDeclaredField(input.string(FILE_ORGANIZATION)).get(Constants.class))
                     .setSplitCopybook((int) ICobolSplitOptions.class.getDeclaredField(input.string(FILE_SPLIT)).get(ICobolSplitOptions.class));
-
-            this.writer = iob.newWriter(filePath);
         }
 
         AbstractLine line = this.iob.newLine();
         createRecordCopybook(line,input.object(DATA));
-        this.writer.write(line);
+        output.put("stream",InputStreamIterator.byteStream(new ByteArrayInputStream(line.getData())));
     }
 
     private void createRecordCopybook(AbstractLine line,Map<String,Object> data) throws IOException {

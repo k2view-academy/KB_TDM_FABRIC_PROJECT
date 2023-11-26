@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="LOCAL" displayName="" enabled="true" version="1.4">
+    <Name>EBCDIC_FILES</Name>
+    <Properties>
+        <Property name="WorkingDir">
+            <Value>/opt/apps/fabric/workspace/project/project-resources/ebcdic/source</Value>
+        </Property>
+        <Property name="FilesFilter">
+            <Value></Value>
+        </Property>
+        <Property name="Affinity">
+            <Value></Value>
+        </Property>
+    </Properties>
+</GenericInterface>

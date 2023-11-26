@@ -3,6 +3,7 @@ package com.k2view.libraries.actors.ebcdic;
 
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineReader;
+import com.k2view.broadway.actors.builtin.AbstractParser.AbstractBinaryParser;
 //import com.google.gson.stream.JsonReader;
 //import com.google.gson.stream.JsonToken;
 import com.k2view.broadway.actors.builtin.AbstractParser.AbstractTextParser;
@@ -35,19 +36,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @SuppressWarnings({"all"})
-public class EbcdicParser extends AbstractTextParser {
+public class EbcdicParser extends AbstractBinaryParser {
     public EbcdicParser() {
     }
 
-    protected Iterator<Object> parser(Reader reader, Data input, Context context) throws IOException, NoSuchFieldException, IllegalAccessException {
+    protected Iterator<Object> parser(InputStream reader, Data input, Context context) throws IOException, NoSuchFieldException, IllegalAccessException {
         return new EbcdicParser.EbcdicStreamReader(reader, input);
     }
 
     static class EbcdicStreamReader implements Iterator<Object>, AutoCloseable {
 
-        private final String INTERFACE           = "interface";
         private final String FILE                = "file";
-        private final String COPYBOOK_INTERFACE  = "copybook_interface";
         private final String COPYBOOK            = "copybook";
         private final String FILE_FONT           = "font";
         private final String FILE_DIALECT        = "dialect";
@@ -62,29 +61,18 @@ public class EbcdicParser extends AbstractTextParser {
         //private String dataFile     = "D:/K2View/K2Files/sample-customer-data.ebcdic";
         //private String copybookName = "D:/K2View/K2Files/cust-record-copybook.txt";
 
-        EbcdicStreamReader(Reader reader, Data input) throws IOException, NoSuchFieldException, IllegalAccessException {
-
-            // File Definition
-            FabricInterface fileInterface = InterfacesManager.getInstance().getInterface(input.string(INTERFACE));
-            String fileDir    = ((LocalFileSystemInterface) fileInterface).getDir();
-            String fileFilter = ((LocalFileSystemInterface) fileInterface).getFileFilter();
-            String filePath   = fileDir + "/" + (!Util.isEmpty(input.string(FILE)) ? input.string(FILE) : fileFilter);
-
-            // Copybook Definition
-            FabricInterface copybookInterface = InterfacesManager.getInstance().getInterface(input.string(COPYBOOK_INTERFACE));
-            String copybookDir    = ((LocalFileSystemInterface) copybookInterface).getDir();
-            String copybookFilter = ((LocalFileSystemInterface) copybookInterface).getFileFilter();
-            String copybookPath   = copybookDir + "/" + (!Util.isEmpty(input.string(COPYBOOK)) ? input.string(COPYBOOK) : copybookFilter);
-
+        EbcdicStreamReader(InputStream reader, Data input) throws IOException, NoSuchFieldException, IllegalAccessException {
+            
+            InputStream copybookIO = new ByteArrayInputStream(input.buffer(COPYBOOK));
 
             this.iob = JRecordInterface1.COBOL
-                    .newIOBuilder       (copybookPath)
+                    .newIOBuilder(copybookIO,"Copybook")
                     .setDialect         ((int)ICopybookDialects.class.getDeclaredField(input.string(FILE_DIALECT)).get(ICopybookDialects.class))
                     .setFont            (input.string(FILE_FONT).toString().toUpperCase())
                     .setFileOrganization((int)Constants.class.getDeclaredField(input.string(FILE_ORGANIZATION)).get(Constants.class))
                     .setSplitCopybook   ((int)ICobolSplitOptions.class.getDeclaredField(input.string(FILE_SPLIT)).get(ICobolSplitOptions.class));
 
-            this.reader = this.iob.newReader(filePath);
+            this.reader = this.iob.newReader(reader);
         }
 
 

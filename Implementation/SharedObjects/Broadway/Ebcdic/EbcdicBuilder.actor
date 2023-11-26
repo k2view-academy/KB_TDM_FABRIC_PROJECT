@@ -1,21 +1,10 @@
 {
-    "type": "EbcdicParser",
-    "badge": "⚙️",
+    "type": "EbcdicBuilder",
+    "badge": "📝",
     "tags": [
         "EBCDIC"
     ],
     "inputs": [
-        {
-            "name": "stream",
-            "schema": {
-                "type": "array",
-                "items": {
-                    "type": "blob"
-                }
-            },
-            "mandatory": true,
-            "doc": "An input stream represented by an iterable collection of blobs or strings.\n\t\t\t\tThe parser will keep running until the end of the stream is detected"
-        },
         {
             "name": "copybook",
             "schema": {
@@ -27,11 +16,19 @@
             ]
         },
         {
+            "name": "data",
+            "schema": {
+                "type": "object"
+            },
+            "mandatory": false
+        },
+        {
             "const": "Cp037",
             "name": "font",
             "schema": {
                 "type": "string"
             },
+            "mandatory": false,
             "editor": {
                 "id": "com.k2view.dropdown",
                 "options": [
@@ -352,8 +349,7 @@
                     "x-windows-950",
                     "x-windows-iso2022jp"
                 ]
-            },
-            "mandatory": false
+            }
         },
         {
             "const": "FMT_MAINFRAME",
@@ -361,6 +357,7 @@
             "schema": {
                 "type": "string"
             },
+            "mandatory": false,
             "editor": {
                 "id": "com.k2view.dropdown",
                 "options": [
@@ -385,8 +382,7 @@
                     "FMT_OPEN_COBOL_BE",
                     "FMT_OPEN_COBOL_MVS_BE"
                 ]
-            },
-            "mandatory": false
+            }
         },
         {
             "const": "IO_DEFAULT",
@@ -394,6 +390,7 @@
             "schema": {
                 "type": "string"
             },
+            "mandatory": false,
             "editor": {
                 "id": "com.k2view.dropdown",
                 "options": [
@@ -425,8 +422,7 @@
                     "IO_FIXED_LENGTH_CHAR",
                     "IO_CONTINOUS_NO_LINE_MARKER"
                 ]
-            },
-            "mandatory": false
+            }
         },
         {
             "const": "SPLIT_NONE",
@@ -434,6 +430,7 @@
             "schema": {
                 "type": "string"
             },
+            "mandatory": false,
             "editor": {
                 "id": "com.k2view.dropdown",
                 "options": [
@@ -443,26 +440,20 @@
                     "SPLIT_TOP_LEVEL",
                     "SPLIT_HIGHEST_REPEATING"
                 ]
-            },
-            "mandatory": false
-        },
-        {
-            "const": true,
-            "name": "single",
-            "schema": {
-                "type": "boolean"
-            },
-            "mandatory": false,
-            "hidden": true,
-            "doc": "Expect only a single object in the input stream.\n\nIn this case, the result will be a single object as opposed to an array."
+            }
         }
     ],
     "outputs": [
         {
-            "name": "object",
-            "schema": {},
-            "doc": "Return a collection of parsed objects or a single object in case single is set to true"
+            "name": "stream",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "blob"
+                }
+            },
+            "doc": "An input stream represented by an iterable collection of blobs or strings.\n\t\t\t\tThe parser will keep running until the end of the stream is detected"
         }
     ],
-    "actorClass": "com.k2view.libraries.actors.ebcdic.EbcdicParser"
+    "actorClass": "com.k2view.libraries.actors.ebcdic.EbcdicBuilder"
 }

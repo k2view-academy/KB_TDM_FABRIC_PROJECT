@@ -3,182 +3,290 @@
         {
             "stages": [
                 {
-                    "name": "EBCDIC Parser",
+                    "name": "Copybook",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Ebcdic Parser",
+                            "name": "Get Copybook File",
+                            "minHeight": 249,
                             "actorType": {
-                                "parentType": "EbcdicParser",
+                                "parentType": "FileRead",
                                 "inputs": [
                                     {
                                         "name": "interface",
                                         "const": "EBCDIC_FILES"
                                     },
                                     {
-                                        "name": "file",
-                                        "const": "../copybooks/sample-customer-data.ebcdic"
+                                        "name": "path",
+                                        "const": "../copybooks/zurmo-customers.cpy"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Buffer",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "To Buffer",
+                            "minHeight": 248,
+                            "actorType": {
+                                "parentType": "ToBuffer",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse Original ?",
+                    "dependsOnList": [
+                        "Buffer"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Original ?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
                                     },
                                     {
-                                        "name": "copybook_interface",
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get EBCDIC File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
                                         "const": "EBCDIC_FILES"
                                     },
                                     {
-                                        "name": "copybook",
-                                        "const": "../copybooks/zurmo-customers.cpy"
-                                    },
-                                    {
-                                        "name": "organization",
-                                        "const": "IO_STANDARD_TEXT_FILE"
+                                        "name": "path",
+                                        "const": "../copybooks/sample-customer-data.ebcdic"
                                     }
                                 ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Parse Transformed ?",
+                    "dependsOnList": [
+                        "Buffer"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Get Output EBCDIC File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "../copybooks/sample-customer-data.ebcdic.out"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parser Original",
+                    "dependsOnList": [
+                        "Parse Original ?"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Ebcdic Parser",
+                            "actorType": {
+                                "parentType": "EbcdicParser",
+                                "inputs": [],
                                 "outputs": [
                                     {
                                         "name": "object",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "CONTACT-RECORD": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "COMPANYNAME": {},
-                                                            "DESCRIPTION": {},
-                                                            "LATESTACTIVITYDATETIME": {},
-                                                            "WEBSITE": {
-                                                                "type": "string"
-                                                            },
-                                                            "GOOGLEWEBTRACKINGID": {},
-                                                            "TWITTERID": {},
-                                                            "FACEBOOKID": {},
-                                                            "PERSON_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "ACCOUNT_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "INDUSTRY_CUSTOMFIELD_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "SECONDARYADDRESS_ADDRESS_ID": {},
-                                                            "SECONDARYEMAIL_EMAIL_ID": {},
-                                                            "SOURCE_CUSTOMFIELD_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "STATE_CONTACTSTATE_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "CUSTOM-ATTR": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "STATUSCSTM": {},
-                                                                    "CREDITCARDCSTM": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "SSNCSTM": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "CONTACT_IDCSTM": {
-                                                                        "type": "integer"
-                                                                    }
+                                            "type": "object",
+                                            "properties": {
+                                                "CONTACT-RECORD": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "COMPANYNAME": {},
+                                                        "DESCRIPTION": {},
+                                                        "LATESTACTIVITYDATETIME": {},
+                                                        "WEBSITE": {
+                                                            "type": "string"
+                                                        },
+                                                        "GOOGLEWEBTRACKINGID": {},
+                                                        "TWITTERID": {},
+                                                        "FACEBOOKID": {},
+                                                        "PERSON_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ACCOUNT_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "INDUSTRY_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "SECONDARYADDRESS_ADDRESS_ID": {},
+                                                        "SECONDARYEMAIL_EMAIL_ID": {},
+                                                        "SOURCE_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "STATE_CONTACTSTATE_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "CUSTOM-ATTR": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "STATUSCSTM": {},
+                                                                "CREDITCARDCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "SSNCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "CONTACT_IDCSTM": {
+                                                                    "type": "integer"
                                                                 }
-                                                            },
-                                                            "PERSON-RECORD": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "PERSON-ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "DEPARTMENT": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "NAME": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "FIRSTNAME": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "LASTNAME": {
-                                                                                "type": "string"
-                                                                            }
+                                                            }
+                                                        },
+                                                        "PERSON-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "PERSON-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "DEPARTMENT": {
+                                                                    "type": "string"
+                                                                },
+                                                                "NAME": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "FIRSTNAME": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LASTNAME": {
+                                                                            "type": "string"
                                                                         }
-                                                                    },
-                                                                    "JOBTITLE": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "PHONE-INFO": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "MOBILEPHONE": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "OFFICEPHONE": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "OFFICEFAX": {
-                                                                                "type": "string"
-                                                                            }
+                                                                    }
+                                                                },
+                                                                "JOBTITLE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "PHONE-INFO": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "MOBILEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEFAX": {
+                                                                            "type": "string"
                                                                         }
-                                                                    },
-                                                                    "OWNEDSECURABLEITEM_ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "PRIMARYADDRESS_ADDRESS_ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "PRIMARYEMAIL_EMAIL_ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "TITLE_CUSTOMFIELD_ID": {
-                                                                        "type": "integer"
                                                                     }
+                                                                },
+                                                                "OWNEDSECURABLEITEM_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYADDRESS_ADDRESS_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYEMAIL_EMAIL_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "TITLE_CUSTOMFIELD_ID": {
+                                                                    "type": "integer"
                                                                 }
-                                                            },
-                                                            "ADDRESS-RECORD": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "ADDRESS-ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "STREET1": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "STREET2": {},
-                                                                    "CITY": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "STATE": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "COUNTRY": {},
-                                                                    "POSTALCODE": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "LATITUDE": {},
-                                                                    "LONGITUDE": {},
-                                                                    "INVALID": {
-                                                                        "type": "string"
-                                                                    }
+                                                            }
+                                                        },
+                                                        "ADDRESS-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "ADDRESS-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "STREET1": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STREET2": {},
+                                                                "CITY": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STATE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "COUNTRY": {},
+                                                                "POSTALCODE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LATITUDE": {},
+                                                                "LONGITUDE": {},
+                                                                "INVALID": {
+                                                                    "type": "string"
                                                                 }
-                                                            },
-                                                            "EMAIL-RECORD": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "EMAIL-ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "EMAILADDRESS": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "ISINVALID": {},
-                                                                    "OPTOUT": {
-                                                                        "type": "string"
-                                                                    }
+                                                            }
+                                                        },
+                                                        "EMAIL-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "EMAIL-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "EMAILADDRESS": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ISINVALID": {},
+                                                                "OPTOUT": {
+                                                                    "type": "string"
                                                                 }
                                                             }
                                                         }
@@ -189,180 +297,165 @@
                                     }
                                 ]
                             }
-                        },
+                        }
+                    ]
+                },
+                {
+                    "name": "Parse Transformed",
+                    "dependsOnList": [
+                        "Parse Transformed ?"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
                         {
                             "name": "Ebcdic Parser Out",
-                            "isDisabled": true,
                             "actorType": {
                                 "parentType": "EbcdicParser",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "EBCDIC_FILES"
-                                    },
-                                    {
-                                        "name": "file",
-                                        "const": "../../sample-customer-data.ebcdic.out"
-                                    },
-                                    {
-                                        "name": "copybook_interface",
-                                        "const": "EBCDIC_FILES"
-                                    },
-                                    {
-                                        "name": "copybook",
-                                        "const": "../copybooks/zurmo-customers.cpy"
-                                    },
-                                    {
-                                        "name": "organization",
-                                        "const": "IO_STANDARD_TEXT_FILE"
-                                    }
-                                ],
+                                "inputs": [],
                                 "outputs": [
                                     {
                                         "name": "object",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "CONTACT-RECORD": {
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "COMPANYNAME": {},
-                                                            "DESCRIPTION": {},
-                                                            "LATESTACTIVITYDATETIME": {},
-                                                            "WEBSITE": {
-                                                                "type": "string"
-                                                            },
-                                                            "GOOGLEWEBTRACKINGID": {},
-                                                            "TWITTERID": {},
-                                                            "FACEBOOKID": {},
-                                                            "PERSON_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "ACCOUNT_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "INDUSTRY_CUSTOMFIELD_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "SECONDARYADDRESS_ADDRESS_ID": {},
-                                                            "SECONDARYEMAIL_EMAIL_ID": {},
-                                                            "SOURCE_CUSTOMFIELD_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "STATE_CONTACTSTATE_ID": {
-                                                                "type": "integer"
-                                                            },
-                                                            "CUSTOM-ATTR": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "STATUSCSTM": {},
-                                                                    "CREDITCARDCSTM": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "SSNCSTM": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "CONTACT_IDCSTM": {
-                                                                        "type": "integer"
-                                                                    }
+                                            "type": "object",
+                                            "properties": {
+                                                "CONTACT-RECORD": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "COMPANYNAME": {},
+                                                        "DESCRIPTION": {},
+                                                        "LATESTACTIVITYDATETIME": {},
+                                                        "WEBSITE": {
+                                                            "type": "string"
+                                                        },
+                                                        "GOOGLEWEBTRACKINGID": {},
+                                                        "TWITTERID": {},
+                                                        "FACEBOOKID": {},
+                                                        "PERSON_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ACCOUNT_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "INDUSTRY_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "SECONDARYADDRESS_ADDRESS_ID": {},
+                                                        "SECONDARYEMAIL_EMAIL_ID": {},
+                                                        "SOURCE_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "STATE_CONTACTSTATE_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "CUSTOM-ATTR": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "STATUSCSTM": {},
+                                                                "CREDITCARDCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "SSNCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "CONTACT_IDCSTM": {
+                                                                    "type": "integer"
                                                                 }
-                                                            },
-                                                            "PERSON-RECORD": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "PERSON-ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "DEPARTMENT": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "NAME": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "FIRSTNAME": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "LASTNAME": {
-                                                                                "type": "string"
-                                                                            }
+                                                            }
+                                                        },
+                                                        "PERSON-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "PERSON-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "DEPARTMENT": {
+                                                                    "type": "string"
+                                                                },
+                                                                "NAME": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "FIRSTNAME": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LASTNAME": {
+                                                                            "type": "string"
                                                                         }
-                                                                    },
-                                                                    "JOBTITLE": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "PHONE-INFO": {
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "MOBILEPHONE": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "OFFICEPHONE": {
-                                                                                "type": "string"
-                                                                            },
-                                                                            "OFFICEFAX": {
-                                                                                "type": "string"
-                                                                            }
+                                                                    }
+                                                                },
+                                                                "JOBTITLE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "PHONE-INFO": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "MOBILEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEFAX": {
+                                                                            "type": "string"
                                                                         }
-                                                                    },
-                                                                    "OWNEDSECURABLEITEM_ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "PRIMARYADDRESS_ADDRESS_ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "PRIMARYEMAIL_EMAIL_ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "TITLE_CUSTOMFIELD_ID": {
-                                                                        "type": "integer"
                                                                     }
+                                                                },
+                                                                "OWNEDSECURABLEITEM_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYADDRESS_ADDRESS_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYEMAIL_EMAIL_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "TITLE_CUSTOMFIELD_ID": {
+                                                                    "type": "integer"
                                                                 }
-                                                            },
-                                                            "ADDRESS-RECORD": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "ADDRESS-ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "STREET1": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "STREET2": {},
-                                                                    "CITY": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "STATE": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "COUNTRY": {},
-                                                                    "POSTALCODE": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "LATITUDE": {},
-                                                                    "LONGITUDE": {},
-                                                                    "INVALID": {
-                                                                        "type": "string"
-                                                                    }
+                                                            }
+                                                        },
+                                                        "ADDRESS-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "ADDRESS-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "STREET1": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STREET2": {},
+                                                                "CITY": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STATE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "COUNTRY": {},
+                                                                "POSTALCODE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LATITUDE": {},
+                                                                "LONGITUDE": {},
+                                                                "INVALID": {
+                                                                    "type": "string"
                                                                 }
-                                                            },
-                                                            "EMAIL-RECORD": {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "EMAIL-ID": {
-                                                                        "type": "integer"
-                                                                    },
-                                                                    "EMAILADDRESS": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "ISINVALID": {},
-                                                                    "OPTOUT": {
-                                                                        "type": "string"
-                                                                    }
+                                                            }
+                                                        },
+                                                        "EMAIL-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "EMAIL-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "EMAILADDRESS": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ISINVALID": {},
+                                                                "OPTOUT": {
+                                                                    "type": "string"
                                                                 }
                                                             }
                                                         }
@@ -381,8 +474,10 @@
         {
             "stages": [
                 {
-                    "name": "TRANSFORM",
-                    "dependsOnList": [],
+                    "name": "Transform Original",
+                    "dependsOnList": [
+                        "Parser Original"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -553,51 +648,314 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Out Transformed",
+                    "dependsOnList": [
+                        "Parse Transformed"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Out Object",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CONTACT-RECORD": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "COMPANYNAME": {},
+                                                        "DESCRIPTION": {},
+                                                        "LATESTACTIVITYDATETIME": {},
+                                                        "WEBSITE": {
+                                                            "type": "string"
+                                                        },
+                                                        "GOOGLEWEBTRACKINGID": {},
+                                                        "TWITTERID": {},
+                                                        "FACEBOOKID": {},
+                                                        "PERSON_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ACCOUNT_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "INDUSTRY_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "SECONDARYADDRESS_ADDRESS_ID": {},
+                                                        "SECONDARYEMAIL_EMAIL_ID": {},
+                                                        "SOURCE_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "STATE_CONTACTSTATE_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "CUSTOM-ATTR": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "STATUSCSTM": {},
+                                                                "CREDITCARDCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "SSNCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "CONTACT_IDCSTM": {
+                                                                    "type": "integer"
+                                                                }
+                                                            }
+                                                        },
+                                                        "PERSON-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "PERSON-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "DEPARTMENT": {
+                                                                    "type": "string"
+                                                                },
+                                                                "NAME": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "FIRSTNAME": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LASTNAME": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "JOBTITLE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "PHONE-INFO": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "MOBILEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEFAX": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "OWNEDSECURABLEITEM_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYADDRESS_ADDRESS_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYEMAIL_EMAIL_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "TITLE_CUSTOMFIELD_ID": {
+                                                                    "type": "integer"
+                                                                }
+                                                            }
+                                                        },
+                                                        "ADDRESS-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "ADDRESS-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "STREET1": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STREET2": {},
+                                                                "CITY": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STATE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "COUNTRY": {},
+                                                                "POSTALCODE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LATITUDE": {},
+                                                                "LONGITUDE": {},
+                                                                "INVALID": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "EMAIL-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "EMAIL-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "EMAILADDRESS": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ISINVALID": {},
+                                                                "OPTOUT": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
         {
             "stages": [
                 {
-                    "name": "EBCDIC LOADER",
-                    "dependsOnList": [],
-                    "isLast": 1,
+                    "name": "Build Original",
+                    "dependsOnList": [
+                        "Transform Original"
+                    ],
+                    "isLast": 0,
                     "actors": [
                         {
-                            "name": "Ebcdic Loader",
+                            "name": "Ebcdic Builder",
                             "actorType": {
-                                "parentType": "EbcdicLoader",
+                                "parentType": "EbcdicBuilder",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [
+                        "Out Transformed"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Write Original",
+                    "dependsOnList": [
+                        "Build Original"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Write to File",
+                            "actorType": {
+                                "parentType": "FileWrite",
                                 "inputs": [
                                     {
                                         "name": "interface",
                                         "const": "EBCDIC_FILES"
                                     },
                                     {
-                                        "name": "file",
-                                        "const": "../../sample-customer-data.ebcdic.out"
-                                    },
-                                    {
-                                        "name": "copybook_interface",
-                                        "const": "EBCDIC_FILES"
-                                    },
-                                    {
-                                        "name": "copybook",
-                                        "const": "../copybooks/zurmo-customers.cpy"
-                                    },
-                                    {
-                                        "name": "organization",
-                                        "const": "IO_STANDARD_TEXT_FILE"
+                                        "name": "path",
+                                        "const": "../copybooks/sample-customer-data.ebcdic.out"
                                     }
                                 ],
                                 "outputs": []
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 7"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         }
     ],
     "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Copybook File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "To Buffer",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "To Buffer",
+                "name": "buffer"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Parser",
+                "name": "copybook"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "To Buffer",
+                "name": "buffer"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Parser Out",
+                "name": "copybook"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "To Buffer",
+                "name": "buffer"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Builder",
+                "name": "copybook"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get EBCDIC File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Parser",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Output EBCDIC File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Ebcdic Parser Out",
+                "name": "stream"
+            }
+        },
         {
             "leftPort": {
                 "actor": "Ebcdic Parser",
@@ -606,6 +964,17 @@
             "rightPort": {
                 "actor": "Transform Data",
                 "name": "values"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Ebcdic Parser Out",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Out Object",
+                "name": "value"
             }
         },
         {
@@ -614,10 +983,30 @@
                 "name": "values"
             },
             "rightPort": {
-                "actor": "Ebcdic Loader",
+                "actor": "Ebcdic Builder",
                 "name": "data"
             },
             "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Ebcdic Builder",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Write to File",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "original"
+            },
+            "rightPort": {
+                "actor": "Original ?",
+                "name": "a"
+            }
         }
     ]
 }
