@@ -9,6 +9,8 @@ import java.sql.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.apache.kafka.common.protocol.types.Field.Bool;
+
 import com.github.jknack.handlebars.*;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.k2view.cdbms.shared.*;
@@ -209,7 +211,9 @@ public class SharedLogic {
 
             Set<Map<String,String>> argsFields = getPopArgumentListForDelete(luName, luTable);
             for (Map<String,String> rec : argsFields) {
-                linkFields.add(rec.get("FIELD_NAME"));
+                if ("".equals(rec.get("PARENT_TABLE"))) {
+                    linkFields.add(rec.get("FIELD_NAME"));
+                }
             }
         }
         
@@ -709,6 +713,7 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	
 	@out(name = "result", type = Set.class, desc = "")
 	public static Set<Map<String,String>> getPopArgumentListForDelete(String luName, String tableName) throws Exception {
+       
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
         Map<String, List<LudbRelationInfo>> rel = null;
@@ -732,10 +737,10 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			        map.put("FIELD_NAME", ri.to.get("column"));
 			        map.put("FIELD_TYPE", luType.ludbObjects.get(tableName).getLudbColumnMap().get(ri.to.get("column")).columnType);
                     
-                    //log.info("getPopArgumentListForDelete Adding Map with type:"  + map.get("FIELD_TYPE"));
+                    //log.info("getPopArgumentListForDelete Adding Map for field: " +  map.get("FIELD_NAME") + " with type:"  + map.get("FIELD_TYPE"));
 		    	    result.add(map);
 		    	}
-			    break;
+			    //break;
 			}
 		} else {
             Map<String, String> map = new HashMap<>();
@@ -747,6 +752,45 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
             result.add(map);
         }
 
+        Map<String, List<LudbRelationInfo>> relChild = null;
+        if (luType.getLudbPhysicalRelations() != null) {
+		    relChild = luType.getLudbPhysicalRelations().get(tableName);
+        }
+
+		if (relChild != null) {
+            //log.info("relChild IS NOT NULL, Handling table: <" + tableName + ">" + ", size of relChild: " + relChild.size() + ", keySet size: " + relChild.keySet().size());
+            //log.info("relChild IS: " + relChild);
+            //log.info("getPopArgumentListForDelete comparing - result: " + result);
+			for (Object key : relChild.keySet()) {
+                //log.info("getPopArgumentListForDelete handling key:"  + key);
+                
+			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) relChild.get(key)) {
+			        //log.info("getPopArgumentListForDelete handling ri.from:"  + ri.from.get("column"));
+                    Boolean fieldFound = false;
+                    for (Map<String, String> relMap : result) {
+                        //log.info("getPopArgumentListForDelete - relMap: " + relMap);
+                        if (relMap.get("FIELD_NAME").equals(ri.from.get("column"))) {
+                            //log.info("getPopArgumentListForDelete match found");
+                            fieldFound = true;
+                            break;
+                        }
+
+                    }
+                    if (!fieldFound) {
+                        //log.info("getPopArgumentListForDelete Adding field: " + ri.from.get("column"));
+			            Map<String, String> map = new HashMap<>();
+                  
+    		    	    map.put("PARENT_TABLE", "");
+		        	    map.put("PARENT_FIELD_NAME", "");
+			            map.put("FIELD_NAME", ri.from.get("column"));
+			            map.put("FIELD_TYPE", luType.ludbObjects.get(tableName).getLudbColumnMap().get(ri.from.get("column")).columnType);
+                    
+                        //log.info("getPopArgumentListForDelete Adding Map with type:"  + map.get("FIELD_TYPE"));
+		    	        result.add(map);
+                    }
+		    	}
+			}
+		}
 
 		return result;
 	}
@@ -805,6 +849,23 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 			if (rs1 != null)
 				rs1.close();
 		}
+	}
+
+
+	@out(name = "res", type = List.class, desc = "")
+	public static List<String> getLuTablesForAIML(String luName) throws Exception {
+		List<String> al = new ArrayList<>();
+		LUType luType = null;
+		if (luName == null || Util.isEmpty(luName)) {
+			luType = getLuType();
+		} else {
+			luType = LUType.getTypeByName(luName);
+		}
+		
+		if(luType == null)
+			return al;
+		luType.ludbTables.forEach((s, s2) -> al.add(s));
+		return al;
 	}
 
 }

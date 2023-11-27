@@ -299,6 +299,133 @@
         {
             "stages": [
                 {
+                    "name": "Stage 1",
+                    "dependsOnList": [
+                        "Prepare Input Data"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Table Relation",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "  <Relation>\r\n    <From tableType=\"TableObject\" table=\"${parentTableName}\" column=\"${parentColumnName}\" columnId=\"${parentColumnName}\" />\r\n    <To tableType=\"TableObject\" table=\"${tableName}\" populationObjectName=\"population.flow\" column=\"${columnName}\" columnId=\"${columnName}\" />\r\n  </Relation>\r\n"
+                                    },
+                                    {
+                                        "name": "columnName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "parentTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "parentColumnName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Prepare Input Data"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Aggregate Table's  Relations1",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Format Additional Striings",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -341,47 +468,6 @@
                                     },
                                     {
                                         "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Format Table Relation",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "  <Relation>\r\n    <From tableType=\"TableObject\" table=\"${parentTableName}\" column=\"${parentColumnName}\" columnId=\"${parentColumnName}\" />\r\n    <To tableType=\"TableObject\" table=\"${tableName}\" populationObjectName=\"population.flow\" column=\"${columnName}\" columnId=\"${columnName}\" />\r\n  </Relation>\r\n"
-                                    },
-                                    {
-                                        "name": "columnName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "parentTableName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "parentColumnName",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -971,6 +1057,7 @@
                 "actor": "Format Table Relation",
                 "name": "parentTableName"
             },
+            "iterate": "Iterate",
             "path": [
                 "PARENT_TABLE_DATA",
                 "PARENT_TABLE"
@@ -985,6 +1072,7 @@
                 "actor": "Format Table Relation",
                 "name": "parentColumnName"
             },
+            "iterate": "Iterate",
             "path": [
                 "PARENT_TABLE_DATA",
                 "PARENT_FIELD_NAME"
@@ -999,9 +1087,25 @@
                 "actor": "Format Table Relation",
                 "name": "columnName"
             },
+            "iterate": "Iterate",
             "path": [
                 "PARENT_TABLE_DATA",
                 "FIELD_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "PARENT_TABLE_DATA",
+                "PARENT_TABLE"
             ]
         },
         {
@@ -1013,6 +1117,28 @@
                 "actor": "Format TableProperties",
                 "name": "tableOrder"
             }
+        },
+        {
+            "leftPort": {
+                "actor": "Format Table Relation",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Aggregate Table's  Relations1",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Aggregate Table's  Relations1",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Aggregate Table's  Relations",
+                "name": "input"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -1032,17 +1158,6 @@
             },
             "rightPort": {
                 "actor": "Aggregate Table's Names",
-                "name": "input"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Format Table Relation",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Aggregate Table's  Relations",
                 "name": "input"
             },
             "arrayPosition": 0
