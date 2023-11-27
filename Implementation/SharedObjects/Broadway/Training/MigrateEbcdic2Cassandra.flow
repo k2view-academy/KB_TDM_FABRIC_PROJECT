@@ -1,0 +1,575 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "List EBCDIC Files",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
+                                        "name": "pattern",
+                                        "const": "*.ebcdic"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Read",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Read EBCDIC File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Read Copybook File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "EBCDIC_FILES"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "../copybooks/zurmo-customers.cpy"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Parse EBCDIC File",
+                            "actorType": {
+                                "parentType": "EbcdicParser",
+                                "inputs": [
+                                    {
+                                        "name": "organization",
+                                        "const": "IO_STANDARD_TEXT_FILE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CONTACT-RECORD": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "COMPANYNAME": {},
+                                                        "DESCRIPTION": {},
+                                                        "LATESTACTIVITYDATETIME": {},
+                                                        "WEBSITE": {
+                                                            "type": "string"
+                                                        },
+                                                        "GOOGLEWEBTRACKINGID": {},
+                                                        "TWITTERID": {},
+                                                        "FACEBOOKID": {},
+                                                        "PERSON_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "ACCOUNT_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "INDUSTRY_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "SECONDARYADDRESS_ADDRESS_ID": {},
+                                                        "SECONDARYEMAIL_EMAIL_ID": {},
+                                                        "SOURCE_CUSTOMFIELD_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "STATE_CONTACTSTATE_ID": {
+                                                            "type": "integer"
+                                                        },
+                                                        "CUSTOM-ATTR": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "STATUSCSTM": {},
+                                                                "CREDITCARDCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "SSNCSTM": {
+                                                                    "type": "string"
+                                                                },
+                                                                "CONTACT_IDCSTM": {
+                                                                    "type": "integer"
+                                                                }
+                                                            }
+                                                        },
+                                                        "PERSON-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "PERSON-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "DEPARTMENT": {
+                                                                    "type": "string"
+                                                                },
+                                                                "NAME": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "FIRSTNAME": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LASTNAME": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "JOBTITLE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "PHONE-INFO": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "MOBILEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEPHONE": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "OFFICEFAX": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "OWNEDSECURABLEITEM_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYADDRESS_ADDRESS_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "PRIMARYEMAIL_EMAIL_ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "TITLE_CUSTOMFIELD_ID": {
+                                                                    "type": "integer"
+                                                                }
+                                                            }
+                                                        },
+                                                        "ADDRESS-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "ADDRESS-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "STREET1": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STREET2": {},
+                                                                "CITY": {
+                                                                    "type": "string"
+                                                                },
+                                                                "STATE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "COUNTRY": {},
+                                                                "POSTALCODE": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LATITUDE": {},
+                                                                "LONGITUDE": {},
+                                                                "INVALID": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "EMAIL-RECORD": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "EMAIL-ID": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "EMAILADDRESS": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ISINVALID": {},
+                                                                "OPTOUT": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Transform",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Transform SSN",
+                            "minHeight": 241,
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "(.{3})(.{2})(.{4})"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": "$1-$2-$3"
+                                    },
+                                    {
+                                        "name": "regex",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Delete",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Delete from Cassandra",
+                            "minHeight": 175,
+                            "actorType": {
+                                "parentType": "DbDelete",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "CUSTOMER_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "k2customer"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "customer"
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "customer_id"
+                                        ]
+                                    },
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Load to Cassandra",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "CUSTOMER_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "k2customer"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "customer"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "customer_id",
+                                            "department",
+                                            "email",
+                                            "first_name",
+                                            "last_name",
+                                            "mobile_phone",
+                                            "occupation",
+                                            "office_fax",
+                                            "office_phone",
+                                            "primary_address_city",
+                                            "primary_address_country",
+                                            "primary_address_latitude",
+                                            "primary_address_longitude",
+                                            "primary_address_postal",
+                                            "primary_address_state",
+                                            "primary_address_street1",
+                                            "primary_address_street2",
+                                            "ssn"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            "ssn"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "cassandra"
+                                    },
+                                    {
+                                        "name": "customer_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "department",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "email",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "first_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "last_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "mobile_phone",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "occupation",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "office_fax",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "office_phone",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_city",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_country",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_latitude",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_longitude",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_postal",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_state",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_street1",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "primary_address_street2",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ssn",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "List EBCDIC Files",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Read EBCDIC File",
+                "name": "path"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Read EBCDIC File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Parse EBCDIC File",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Copybook File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Parse EBCDIC File",
+                "name": "copybook"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Parse EBCDIC File",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Delete from Cassandra",
+                "name": "customer_id"
+            },
+            "path": [
+                "CONTACT-RECORD",
+                "ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Parse EBCDIC File",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Load to Cassandra",
+                "name": "customer_id"
+            },
+            "path": [
+                "CONTACT-RECORD",
+                "ID"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Parse EBCDIC File",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Transform SSN",
+                "name": "string"
+            },
+            "path": [
+                "CONTACT-RECORD",
+                "CUSTOM-ATTR",
+                "SSNCSTM"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Transform SSN",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load to Cassandra",
+                "name": "ssn"
+            }
+        }
+    ]
+}
