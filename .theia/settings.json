@@ -32,13 +32,13 @@
     "java.project.outputPath": ".studioWeb/java/bin",
     "java.project.sourcePaths": [
 		"Implementation/SharedObjects/Java/src",	
-		"Implementation/LogicalUnits/Collection/Java/src",	
 		"Implementation/LogicalUnits/k2_ws/Java/src",	
 		"Implementation/LogicalUnits/k2_ref/Java/src",	
 		"Implementation/LogicalUnits/Orders/Java/src",	
-		"Implementation/LogicalUnits/TDM_Reference/Java/src",	
 		"Implementation/LogicalUnits/TDM/Java/src",	
-		"Implementation/LogicalUnits/TDM_LIBRARY/Java/src"	
+		"Implementation/LogicalUnits/Collection/Java/src",	
+		"Implementation/LogicalUnits/TDM_LIBRARY/Java/src",	
+		"Implementation/LogicalUnits/TDM_Reference/Java/src"	
 	],
 	"java.project.resourceFilters": [
         "node_modules",
@@ -86,7 +86,7 @@
         "**/Environments.k2fabEnv_encrypted.xml": true,
 		"ItemsProperties.k2projItems.xml": true,
 		"*.k2proj": true,
-		"**/Implementation/SharedObjects/Interfaces/Discovery": true
+		"**/Implementation/SharedObjects/Interfaces/Discovery": false
 	},
     "files.watcherExclude": {
         "**/.git/objects/**": true,
