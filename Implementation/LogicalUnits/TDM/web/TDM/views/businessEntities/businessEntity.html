@@ -8,6 +8,7 @@
                 </div>
                 <div class="col-lg-2 pull-right">
                     <a mwl-confirm uib-tooltip="Remove Business Entity"
+                        id="be_remove"
                        message="{{businessEntityCtrl.productCount > 0 ? 'Business Entity ' + businessEntityCtrl.businessEntityData.be_name +' is attached to active products and tasks. Are you sure you want to delete it?': 'Are you sure you want to delete Business Entity?'}}"
                        confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>" cancel-text="No <i class='glyphicon glyphicon-remove'></i>" placement="left"
                        tooltip-placement="left" role-handler role="0" ng-if="!businessEntityCtrl.disableChange" class="pull-right"
@@ -25,18 +26,18 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">{{"NAME" | translate}}<span style="color: red">*</span></label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control1" ng-model="businessEntityCtrl.businessEntityData.be_name" disabled>
+                                <input id="be_name" type="text" class="form-control1" ng-model="businessEntityCtrl.businessEntityData.be_name" disabled>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">{{"DESCRIPTION" | translate}}</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control1" ng-model="businessEntityCtrl.businessEntityData.be_description" ng-disabled="businessEntityCtrl.disableChange">
+                                <input id="be_description" type="text" class="form-control1" ng-model="businessEntityCtrl.businessEntityData.be_description" ng-disabled="businessEntityCtrl.disableChange">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <button class="pull-right  K2-primary-btn" type="submit" ng-if="!businessEntityCtrl.disableChange" role-handler role="0">{{"SAVE_CHANGES" | translate}}</button>
+                                <button id="be_save" class="pull-right  K2-primary-btn" type="submit" ng-if="!businessEntityCtrl.disableChange" role-handler role="0">{{"SAVE_CHANGES" | translate}}</button>
                             </div>
                         </div>
                     </div>
@@ -51,7 +52,8 @@
             <div style="background-color: white;">
                 <ul class="nav nav-pills" style="display: block;">
                     <span  ng-show="tab == 1" class="pull-right">
-                        <button uib-tooltip="Attach Logical Unit" tooltip-placement="left" 
+                        <button id="be_add_lus"
+                            uib-tooltip="Attach Logical Unit" tooltip-placement="left" 
                                 role-handler role="0" ng-if="!businessEntityCtrl.disableChange"
                                 ng-click="businessEntityCtrl.addLogicalUnit()"
                                 class="k2-secondary-btn pull-right" type="button">
@@ -63,7 +65,7 @@
                                 </button>
                     </span>
                     <span  ng-show="tab == 2" class="pull-right">
-                            <button uib-tooltip="Attach Post Execution Process" tooltip-placement="left" 
+                            <button id="be_add_post_execution_process" uib-tooltip="Attach Post Execution Process" tooltip-placement="left" 
                             role-handler role="0" ng-if="!businessEntityCtrl.disableChange"
                             ng-click="businessEntityCtrl.PostExecutionProcessActions(true)"
                             class="k2-secondary-btn pull-right" type="button">         
@@ -75,7 +77,7 @@
                         </button>
                     </span>
                     <li ng-class="{'active' : tab == 1}">
-                            <a ng-click="tab = 1" ng-init="tab = 1">
+                            <a id="be_lu_tab" ng-click="tab = 1" ng-init="tab = 1">
                                 <span ng-class="{'tab-title' : tab == 1}">
                                 <i class="fa fa-user"></i>
                                     Logical Units
@@ -84,7 +86,7 @@
                        
                     </li>
                     <li ng-class=" {'active' : tab == 2}">
-                            <a ng-click="tab = 2">
+                            <a id="be_post_execution_process_tab" ng-click="tab = 2">
                                 <span ng-class="{'tab-title' : tab == 2}">
                                 <i class="fa fa-briefcase"></i>
                                 Post Execution Processes

@@ -1,6 +1,6 @@
 <div>
         <div class="k2-header">
-            <button type="button" ng-click="newLogicalUnitsCtrl.close();" class="close" data-dismiss="modal"><span
+            <button id="be_add_lus_close" type="button" ng-click="newLogicalUnitsCtrl.close();" class="close" data-dismiss="modal"><span
                     aria-hidden="true">×</span><span class="sr-only">Close</span></button>
             <div class="k2-card-title">{{"ADD_LOGICAL_UNITS" | translate}}</div>
         </div>
@@ -15,7 +15,7 @@
             <div class="row" ng-show="newLogicalUnitsCtrl.logicalUnits">
                 <div class="col-lg-12 form-group">
                     <label class="option-button"> 
-                        <input type="radio" ng-value="'all'" name="beLU" ng-model="newLogicalUnitsCtrl.chooseOption" >
+                        <input id="be_add_all_lus" type="radio" ng-value="'all'" name="beLU" ng-model="newLogicalUnitsCtrl.chooseOption" >
                         <label class="option-button-label">
                             All Logical Units
                         </span>
@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-lg-12 form-group">
                     <label class="option-button">
-                        <input type="radio" ng-value="'custom'" name="beLU" ng-model="newLogicalUnitsCtrl.chooseOption">
+                        <input id="be_choose_lus" type="radio" ng-value="'custom'" name="beLU" ng-model="newLogicalUnitsCtrl.chooseOption">
                         <label class="option-button-label">
                             Select :
                         </span>
@@ -60,16 +60,17 @@
                             <div class="col-lg-10">
                                 <div class="col-lg-4">
                                     <select class="form-control1" ng-model="logcalUnit.lu_name" required
-                                    
+                                        id="be_choose_Lus_lu_{{$index}}"
                                         ng-options="option as option.logical_unit for option in (newLogicalUnitsCtrl.logicalUnits | getAvailableLogicalUnits:newLogicalUnitsCtrl.newLogicalUnits:logcalUnit.lu_name.logical_unit)">
                                         <option value=""></option>
                                     </select>
                                 </div>
                                 <div class="col-lg-4">
-                                    <input class="form-control1" type="text" ng-model="logcalUnit.lu_description">
+                                    <input id="be_choose_Lus_description_{{$index}}"  class="form-control1" type="text" ng-model="logcalUnit.lu_description">
                                 </div>
                                 <div class="col-lg-4">
                                     <select class="form-control1" ng-model="logcalUnit.lu_parent"
+                                        id="be_choose_Lus_parent_{{$index}}"
                                         ng-disabled="!logcalUnit.lu_name"
                                         ng-options="option as option for option in (logcalUnit.lu_name.lu_parents | getAvailableParentLogicalUnits:newLogicalUnitsCtrl.newLogicalUnits:$index)">
                                         <option value=""></option>
@@ -79,14 +80,14 @@
                             <div class="col-lg-2">
                                 <div class="row">
                                     <div class="col-lg-6">
-                                        <a class="col-lg-6" ng-click="newLogicalUnitsCtrl.deleteLogicalUnit($index)"
+                                        <a id="be_choose_Lus_delete_{{$index}}" class="col-lg-6" ng-click="newLogicalUnitsCtrl.deleteLogicalUnit($index)"
                                             ng-show="newLogicalUnitsCtrl.newLogicalUnits.length > 1">
                                             <i class="fa fa-trash fa-2x" style="color: var(--secondary-text-color)"
                                                 aria-hidden="true"></i>
                                         </a>
                                     </div>
                                     <div class="col-lg-6">
-                                        <a ng-click="newLogicalUnitsCtrl.addLogicalUnit()"
+                                        <a id="be_choose_Lus_add" ng-click="newLogicalUnitsCtrl.addLogicalUnit()"
                                             ng-show="$last && newLogicalUnitsCtrl.logicalUnits.length > newLogicalUnitsCtrl.newLogicalUnits.length">
                                             <div class="k2-secondary-icon-btn" style="border: 1px solid;">
                                                 <div class="fa fa-plus"></div>
@@ -106,7 +107,8 @@
                                 </uib-alert>
                             </div>
                             <div class="col-lg-4" style="display: flex;flex-direction: row;justify-content: flex-end;">
-                                <button class="k2-card-ok-cancel-btn custom-hover" pull-right type="submit">{{"ADD_LOGICAL_UNITS" |
+                                <button id="be_lus_save" class="k2-card-ok-cancel-btn custom-hover" 
+                                    pull-right type="submit">{{"ADD_LOGICAL_UNITS" |
                                     translate}}
                                 </button>
                             </div>  

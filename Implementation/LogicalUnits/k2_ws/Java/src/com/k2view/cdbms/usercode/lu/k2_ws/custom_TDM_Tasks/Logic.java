@@ -242,6 +242,10 @@ public class Logic extends WebServiceUserCode {
 				Data.put("task_id",row.get("task_id"));
 				returnedResult.add(Data);
 			}
+			
+			if (rows != null) {
+				rows.close();
+			}
 		
 			return returnedResult;
 		}catch(Exception e){

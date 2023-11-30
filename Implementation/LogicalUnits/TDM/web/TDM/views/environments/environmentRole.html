@@ -7,7 +7,8 @@
                     ng-if="environmentCtrl.roleData.role_status == 'Inactive'">{{ 'INACTIVE' | translate }}</h5>
             </div>
             <div class="col-lg-4 pull-right">
-                <a uib-tooltip="Delete Permission Setting" tooltip-placement="left" type="button" role-handler role="1"
+                <a id="environment_delete_role"
+                    uib-tooltip="Delete Permission Setting" tooltip-placement="left" type="button" role-handler role="1"
                    ng-if="!environmentCtrl.disableChangeRole" class="pull-right"
                    mwl-confirm message="Are you sure you want to Delete Permission Setting?"
                    confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>"
@@ -26,25 +27,25 @@
                 <div class="col-lg-12">
                     <div class="form-group col-lg-12">
                         <label>{{"NAME" | translate}}</label>
-                        <input type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_name" disabled>
+                        <input id="environment_role_name" type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_name" disabled>
                     </div>
                     <div class="form-group col-lg-12">
                         <label>{{"DESCRIPTION" | translate}}</label>
-                        <input type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_description"
+                        <input id="environment_role_description" type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_description"
                                ng-disabled="environmentCtrl.disableChangeRole">
                     </div>
                     <div class="col-lg-12" ng-if="environmentCtrl.environmentDataOrig.allow_read">
                         <div class="row">
                             <div class="col-lg-3" style="margin-top: 18px;">
                                 <div class="form-group option-button">
-                                    <input ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.allow_read == true && !environmentCtrl.roleData.allow_write" 
+                                    <input id="environment_role_allow_read" ng-disabled="environmentCtrl.disableChangeRole || environmentCtrl.roleData.allow_read == true && !environmentCtrl.roleData.allow_write" 
                                         type="checkbox" ng-model="environmentCtrl.roleData.allow_read"/>
                                     <label class="control-label option-button-label">Read</label>
                                 </div>
                             </div>
                             <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_read">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
-                                <input style="width: 100%" type="number" class="form-control1" min="1" 
+                                <input id="environment_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1" 
                                     ng-disabled="environmentCtrl.disableChangeRole"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_read === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_read = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_read" ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_read"/>
                             </div>
@@ -54,14 +55,14 @@
                         <div class="row">
                             <div class="col-lg-3" style="margin-top: 18px;">
                                 <div class="form-group option-button">
-                                    <input ng-disabled="environmentCtrl.disableChangeRole ||  !environmentCtrl.roleData.allow_read && environmentCtrl.roleData.allow_write" 
+                                    <input id="environment_role_allow_write" ng-disabled="environmentCtrl.disableChangeRole ||  !environmentCtrl.roleData.allow_read && environmentCtrl.roleData.allow_write" 
                                         type="checkbox" ng-init="environmentCtrl.showAllInterfaces = false;" ng-model="environmentCtrl.roleData.allow_write"/>
                                     <label class="control-label option-button-label">Write</label>
                                 </div>
                             </div>
                             <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_write">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
-                                <input style="width: 100%" type="number" class="form-control1" min="1" 
+                                <input id="environment_role_entities_write" style="width: 100%" type="number" class="form-control1" min="0" 
                                     ng-disabled="environmentCtrl.disableChangeRole"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy" ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy"/>
                             </div>
@@ -70,12 +71,12 @@
                     <div class="form-group col-lg-12" ng-if="!environmentCtrl.hideUsersInput">
                         <label>{{"TESTERS" | translate}}</label>
                         <div style="display: flex">
-                            <select width="'100%'" ng-disabled="environmentCtrl.disableChangeRole" chosen multiple
+                            <select id="environment_role_testers" width="'100%'" ng-disabled="environmentCtrl.disableChangeRole" chosen multiple
                                     class="form-control1 chosen-select" ng-model="environmentCtrl.testers"
                                     ng-options="option as option.username for option in environmentCtrl.allTestersRole track by option.user_id">
                             </select>
                             <div ng-if="!environmentCtrl.disableChangeRole" off-click="environmentCtrl.isOpen1 = false" off-click-activator="environmentCtrl.isOpen1">
-                                <button uib-tooltip="Add Tester" tooltip-placement="top" popover-placement="left"
+                                <button id="environment_role_add_tester" uib-tooltip="Add Tester" tooltip-placement="top" popover-placement="left"
                                     ng-click="environmentCtrl.initAddNewTesterPopup()" type="button"
                                     class="btn k2-primary-btn">
                                     <i class="fa fa-plus"></i>
@@ -130,7 +131,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_ignore_test_connection" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox" ng-model="environmentCtrl.roleData.allowed_test_conn_failure"/>
                         </div>
                         <label class="option-button-label">
@@ -139,7 +140,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput" ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_delete_before_load" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox" ng-model="environmentCtrl.roleData.allowed_delete_before_load"/>
                         </div>
                         <label class="option-button-label">
@@ -148,7 +149,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput" ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_entity_clone" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox"
                                    ng-model="environmentCtrl.roleData.allowed_creation_of_synthetic_data"/>
                         </div>
@@ -158,7 +159,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput" ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_random_selection" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox"
                                    ng-model="environmentCtrl.roleData.allowed_random_entity_selection"/>
                         </div>
@@ -168,7 +169,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_request_fresh_data" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox"
                                    ng-model="environmentCtrl.roleData.allowed_request_of_fresh_data"/>
                         </div>
@@ -178,7 +179,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_refresh_refernce_data" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox"
                                    ng-model="environmentCtrl.roleData.allowed_refresh_reference_data"/>
                         </div>
@@ -188,7 +189,7 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" 
+                            <input id="environment_role_task_scheduling" ng-disabled="environmentCtrl.disableChangeRole" 
                                    type="checkbox" ng-model="environmentCtrl.roleData.allowed_task_scheduling"/>
                         </div>
                         <label class="option-button-label">
@@ -198,7 +199,7 @@
                     <div class="form-group col-lg-12 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput"
                         ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" type="checkbox"
+                            <input id="environment_role_replace_sequences" ng-disabled="environmentCtrl.disableChangeRole" type="checkbox"
                                 ng-model="environmentCtrl.roleData.allowed_replace_sequences" />
                         </div>
                         <label class="option-button-label">
@@ -208,7 +209,7 @@
                     <div class="form-group col-lg-12 permissionsLabels" ng-if="!environmentCtrl.hideUsersInput"
                         ng-if="environmentCtrl.isFluxMode">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" type="checkbox"
+                            <input id="environment_role_data_versioning" ng-disabled="environmentCtrl.disableChangeRole" type="checkbox"
                                 ng-model="environmentCtrl.roleData.allowed_entity_versioning" />
                         </div>
                         <label class="option-button-label">
@@ -220,16 +221,18 @@
                             <label class="option-button-label">
                                 Max Number of Reserved Entities On Env
                             </label>
-                            <input ng-disabled="environmentCtrl.disableChangeRole" style="width: 100%" type="number" class="form-control1" min="0"
+                            <input id="environment_role_reserve_entities" ng-disabled="environmentCtrl.disableChangeRole" style="width: 100%" type="number" class="form-control1" 
+                            min="{{!environmentCtrl.roleData.allowed_number_of_entities_to_copy && environmentCtrl.envType === 'Target' ? 1 : 0}}"
                                 ng-model="environmentCtrl.roleData.allowed_number_of_reserved_entities" />
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-12 form-buttons">
-                            <button class="btn k2-primary-btn pull-left" ng-if="!environmentCtrl.disableChangeRole"
+                            <button id="environment_role_save" class="btn k2-primary-btn pull-left" ng-if="!environmentCtrl.disableChangeRole"
                                     type="submit" role-handler role="1">{{"SAVE_CHANGES" | translate}}
                             </button>
                             <a 	uib-tooltip="Close Role Editor"
+                                id="environment_role_close"
                                   tooltip-placement="left"
                                   type="button"
                                   role-handler
@@ -244,7 +247,7 @@
                                   on-cancel="cancelClicked = true"
                                   confirm-button-type="danger"
                                   cancel-button-type="default">
-
+                                
                                 <button class="btn k2-primary-btn pull-right" type="button">{{"CLOSE" | translate}}</button>
                             </a>
                         </div>

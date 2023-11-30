@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TAR_ORDERS_DB" type="genericdb" version="7.1.0.31">
+<DBConn xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="DBConnGenericAdoJdbc" name="TAR_ORDERS_DB" type="genericdb" version="7.2.0.17">
   <Active>true</Active>
   <DataSource>dev-pg-service</DataSource>
   <PortNum>5432</PortNum>
   <DataBase>TAR_ORDERING</DataBase>
   <UserId>TAR_ORDERING_USER</UserId>
-  <Password>w+agKG6QFlt7g0q7jY81dUiLaU7L13US8+ElMg/ZU+M=:cHj723pjhewe8X9E7s5bPl/u93hg7bRtRiQ0BJtjNXI=</Password>
+  <Password>~encs2~Tp/4jrYPB7UsIeJjcUIj18Jrahu/Tt/4ervc+erz4OQXuska8KA/MqCqOVFhgnVQ3w==</Password>
   <ConnectionStringServerSide>jdbc:postgresql://dev-pg-service:5432/TAR_ORDERING?stringtype=unspecified</ConnectionStringServerSide>
   <MinConnectionsNumber>0</MinConnectionsNumber>
   <MaxConnectionsNumber>60</MaxConnectionsNumber>

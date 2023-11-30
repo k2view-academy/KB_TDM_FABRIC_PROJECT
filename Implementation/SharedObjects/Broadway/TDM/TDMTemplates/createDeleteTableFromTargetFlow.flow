@@ -93,10 +93,56 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
+                                                "DELETE_TABLE": {
+                                                    "type": "string"
+                                                },
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
                                                 "LU_TABLE": {
                                                     "type": "string"
                                                 },
-                                                "LU_TABLE_COLUMNS": {},
+                                                "LU_TABLE_COLUMNS": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "MAIN_TABLE_IND": {
+                                                    "type": "string"
+                                                },
+                                                "MAIN_TABLE_SEQ_ID": {
+                                                    "type": "string"
+                                                },
+                                                "MAIN_TABLE_SEQ_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "TABLE_SEQ_DATA": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "LU_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "TARGET_TABLE_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "TARGET_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FABRIC_TABLE_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FABRIC_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "SEQUENCE_NAME": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                },
                                                 "TARGET_INTERFACE": {
                                                     "type": "string"
                                                 },
@@ -201,7 +247,9 @@
                                     },
                                     {
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "templateContent",

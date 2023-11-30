@@ -29,6 +29,33 @@
                                     }
                                 ]
                             }
+                        },
+                        {
+                            "name": "Get Max Population Order",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getMaxPopulationOrder"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
                         }
                     ]
                 }
@@ -110,30 +137,16 @@
                             }
                         },
                         {
-                            "name": "Get Max Population Order",
+                            "name": "MathAdd1",
                             "actorType": {
-                                "parentType": "LuFunction",
+                                "parentType": "MathAdd",
                                 "inputs": [
                                     {
-                                        "name": "functionName",
-                                        "const": "getMaxPopulationOrder"
-                                    },
-                                    {
-                                        "name": "luName",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "name": "b",
+                                        "const": 10
                                     }
                                 ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "integer"
-                                        }
-                                    }
-                                ]
+                                "outputs": []
                             }
                         }
                     ]
@@ -820,6 +833,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get Max Population Order",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MathAdd1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "LU's Folder",
                 "name": "string"
             },
@@ -868,7 +891,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get Max Population Order",
+                "actor": "MathAdd1",
                 "name": "result"
             },
             "rightPort": {
@@ -1211,6 +1234,16 @@
                 "name": "luName"
             },
             "rightPort": {
+                "actor": "Get Max Population Order",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
                 "actor": "LU's Folder",
                 "name": "LU_NAME"
             }
@@ -1222,16 +1255,6 @@
             },
             "rightPort": {
                 "actor": "List Population Flows",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luName"
-            },
-            "rightPort": {
-                "actor": "Get Max Population Order",
                 "name": "luName"
             }
         },

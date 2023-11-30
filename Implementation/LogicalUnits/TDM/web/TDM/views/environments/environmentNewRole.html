@@ -13,17 +13,18 @@
                 <div class="col-lg-12">
                     <div class="form-group col-lg-12">
                         <label>{{"NAME" | translate}}</label>
-                        <input type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_name" required>
+                        <input id="environment_new_role_name" type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_name" required>
                     </div>
                     <div class="form-group col-lg-12">
                         <label>{{"DESCRIPTION" | translate}}</label>
-                        <input type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_description">
+                        <input id="environment_new_role_description" type="text" class="form-control1" ng-model="environmentCtrl.roleData.role_description">
                     </div>
                     <div class="col-lg-12" ng-if="environmentCtrl.environmentDataOrig.allow_read">
                         <div class="row">
                             <div class="col-lg-3" style="margin-top: 18px;">
                                 <div class="form-group option-button">
                                     <input
+                                        id="environment_new_role_allow_read"
                                         ng-disabled="environmentCtrl.roleData.allow_read == true && !environmentCtrl.roleData.allow_write"
                                         type="checkbox" ng-change="environmentCtrl.checkBoxChanged()"
                                         ng-model="environmentCtrl.roleData.allow_read" />
@@ -32,7 +33,8 @@
                             </div>
                             <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_read">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
-                                <input style="width: 100%" type="number" class="form-control1" min="1"
+                                <input 
+                                    id="environment_new_role_entities_read" style="width: 100%" type="number" class="form-control1" min="1"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_read === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_read = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_read"
                                     ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_read" />
                             </div>
@@ -43,6 +45,7 @@
                             <div class="col-lg-3" style="margin-top: 18px;">
                                 <div class="form-group option-button">
                                     <input
+                                        id="environment_new_role_allow_write"
                                         ng-disabled="!environmentCtrl.roleData.allow_read && environmentCtrl.roleData.allow_write == true"
                                         type="checkbox" ng-change="environmentCtrl.checkBoxChanged()"
                                         ng-model="environmentCtrl.roleData.allow_write" />
@@ -51,7 +54,8 @@
                             </div>
                             <div class="form-group col-lg-9" ng-show="environmentCtrl.roleData.allow_write">
                                 <label>{{"NUMBER_OF_ENTITIES" | translate}}</label>
-                                <input style="width: 100%" type="number" class="form-control1" min="1"
+                                <input 
+                                    id="environment_new_role_entities_write" style="width: 100%" type="number" class="form-control1" min="0"
                                     ng-change="environmentCtrl.roleData.allowed_number_of_entities_to_copy === undefined ? environmentCtrl.roleData.allowed_number_of_entities_to_copy = 1 : environmentCtrl.roleData.allowed_number_of_entities_to_copy"
                                     ng-model="environmentCtrl.roleData.allowed_number_of_entities_to_copy" />
                             </div>
@@ -61,11 +65,13 @@
                         <label>{{"TESTERS" | translate}}</label>
                         <div style="display: flex;">
                             <select width="'100%'" chosen multiple class="form-control1 chosen-select"
+                                id="environment_new_role_testers"
                                 ng-model="environmentCtrl.testers"
                                 ng-options="option as option.username for option in environmentCtrl.allTesters track by option.user_id">
                             </select>
                             <div off-click="environmentCtrl.isOpen1 = false" off-click-activator="environmentCtrl.isOpen1">
-                                <button uib-tooltip="Add Tester" tooltip-placement="top" popover-placement="left"
+                                <button  id="environment_new_role_add_testers"
+                                    uib-tooltip="Add Tester" tooltip-placement="top" popover-placement="left"
                                     ng-click="environmentCtrl.initAddNewTesterPopup()" type="button"
                                     class="btn k2-primary-btn">
                                     <i class="fa fa-plus"></i>
@@ -119,7 +125,9 @@
                     </div>
                     <div class="form-group col-lg-6 permissionsLabels">
                         <div class="option-button">
-                            <input ng-disabled="environmentCtrl.disableChangeRole" type="checkbox"
+                            <input 
+                                id="environment_new_role_ignore_test_connection"
+                                ng-disabled="environmentCtrl.disableChangeRole" type="checkbox"
                                 ng-model="environmentCtrl.roleData.allowed_test_conn_failure" />
                             <label class="option-button-label">
                                 {{"ENABLE_TASK_EXECUTION_UPON_FAILURE" | translate}}
@@ -129,7 +137,7 @@
                     <div class="form-group col-lg-12 permissionsLabelsNew"
                         ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input type="checkbox" ng-model="environmentCtrl.roleData.allowed_delete_before_load" />
+                            <input type="checkbox" id="environment_new_role_delete_before_load" ng-model="environmentCtrl.roleData.allowed_delete_before_load" />
                             <label class="option-button-label">
                                 {{"DELETE_BEFORE_LOAD" | translate}}
                             </label>
@@ -139,6 +147,7 @@
                         ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
                             <input type="checkbox"
+                                id="environment_new_role_entity_clone"
                                 ng-model="environmentCtrl.roleData.allowed_creation_of_synthetic_data" />
                             <label class="option-button-label">
                                 Entity Clone
@@ -148,7 +157,7 @@
                     <div class="form-group col-lg-12 permissionsLabelsNew"
                         ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input type="checkbox"
+                            <input type="checkbox" id="environment_new_role_random_selection"
                                 ng-model="environmentCtrl.roleData.allowed_random_entity_selection" />
                             <label class="option-button-label">
                                 {{"RANDOM_ENTITY_SELECTION" | translate}}
@@ -157,7 +166,8 @@
                     </div>
                     <div class="form-group col-lg-12 permissionsLabelsNew">
                         <div class="option-button">
-                            <input type="checkbox" ng-model="environmentCtrl.roleData.allowed_request_of_fresh_data" />
+                            <input type="checkbox" id="environment_new_role_request_fresh_data" 
+                                ng-model="environmentCtrl.roleData.allowed_request_of_fresh_data" />
                             <label class="option-button-label">
                                 {{"REQUEST_OF_FRESH_DATA" | translate}}
                             </label>
@@ -165,7 +175,8 @@
                     </div>
                     <div class="form-group col-lg-12 permissionsLabelsNew">
                         <div class="option-button">
-                            <input type="checkbox" ng-model="environmentCtrl.roleData.allowed_refresh_reference_data" />
+                            <input type="checkbox" id="environment_new_role_refresh_refernce_data" 
+                                ng-model="environmentCtrl.roleData.allowed_refresh_reference_data" />
                             <label class="option-button-label">
                                 {{"REFRESH_REFERENCE_DATA" | translate}}
                             </label>
@@ -173,7 +184,8 @@
                     </div>
                     <div class="form-group col-lg-12 permissionsLabelsNew">
                         <div class="option-button">
-                            <input type="checkbox" ng-model="environmentCtrl.roleData.allowed_task_scheduling" />
+                            <input type="checkbox" id="environment_new_role_task_scheduling" 
+                                ng-model="environmentCtrl.roleData.allowed_task_scheduling" />
                             <label class="option-button-label">
                                 {{"TASK_SCHEDULING" | translate}}
                             </label>
@@ -182,7 +194,8 @@
                     <div class="form-group col-lg-12 permissionsLabelsNew"
                         ng-show="environmentCtrl.roleData.allow_write">
                         <div class="option-button">
-                            <input type="checkbox" ng-model="environmentCtrl.roleData.allowed_replace_sequences" />
+                            <input type="checkbox" id="environment_new_role_replace_sequences" 
+                                ng-model="environmentCtrl.roleData.allowed_replace_sequences" />
                             <label class="option-button-label">
                                 {{"REPLACE_SEQUENCES" | translate}}
                             </label>
@@ -190,7 +203,8 @@
                     </div>
                     <div class="form-group col-lg-12 permissionsLabelsNew" ng-if="environmentCtrl.isFluxMode">
                         <div class="option-button">
-                            <input type="checkbox" ng-model="environmentCtrl.roleData.allowed_entity_versioning" />
+                            <input type="checkbox" id="environment_new_role_data_versioning"    
+                                ng-model="environmentCtrl.roleData.allowed_entity_versioning" />
                             <label class="option-button-label">
                                 Data Versioning
                             </label>
@@ -201,14 +215,16 @@
                             <label class="option-button-label">
                                 Max Number of Reserved Entities On Env
                             </label>
-                            <input style="width: 100%" type="number" class="form-control1" min="0"
+                            <input style="width: 100%" type="number" class="form-control1"  id="environment_new_role_reserve_entities"
+                                min="{{!environmentCtrl.roleData.allowed_number_of_entities_to_copy && environmentCtrl.envType === 'Target' ? 1 : 0}}"
                                 ng-model="environmentCtrl.roleData.allowed_number_of_reserved_entities" />
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-lg-12 form-buttons">
-                            <button class="btn k2-primary-btn pull-left" type="submit">{{"ADD" | translate}}</button>
+                            <button id="environment_new_role_save" class="btn k2-primary-btn pull-left" type="submit">{{"ADD" | translate}}</button>
                             <a uib-tooltip="Close Role Editor" tooltip-placement="left" type="button" role-handler
+                                id="environment_new_role_close"
                                 role="1" ng-if="!environmentCtrl.disableChangeRole" class="pull-right" mwl-confirm
                                 message="Are you sure you want to close?"
                                 confirm-text="Yes <i class='glyphicon glyphicon-ok'></i>"

@@ -14,7 +14,9 @@
                     <div class="col-lg-6">
                         <div class="form-group col-lg-12">
                             <label>{{"NAME" | translate}} <span style="color: red">*</span></label>
-                            <select width="'100%'" class=""
+                            <select 
+                                    id="add_environment_name"
+                                    width="'100%'" class=""
                                     required
                                     ng-model="newEnvironmentCtrl.environmentData.environment_name"
                                     ng-options="env as env for env in newEnvironmentCtrl.availableSourceEnvironments">
@@ -23,7 +25,7 @@
                         </div>
                         <div class="form-group col-lg-12">
                             <label>{{"DESCRIPTION" | translate}}</label>
-                            <input type="text" class="" ng-model="newEnvironmentCtrl.environmentData.environment_description">
+                            <input id="add_environment_description" type="text" class="" ng-model="newEnvironmentCtrl.environmentData.environment_description">
                         </div>
                         <div class="form-group col-lg-12">
                             <label>{{"ENVIRONMENT_OWNERS" | translate}}</label>
@@ -33,7 +35,9 @@
                                     ng-options="option as option.username for option in newEnvironmentCtrl.allOwners track by option.user_id">
                                 </select>
                                 <div off-click="environmentCtrl.isOpen = false" off-click-activator="environmentCtrl.isOpen">
-                                    <button uib-tooltip="Add Owner" tooltip-placement="top" popover-placement="left"
+                                    <button 
+                                        id="add_environment_environments_owners"
+                                        uib-tooltip="Add Owner" tooltip-placement="top" popover-placement="left"
                                         ng-click="newEnvironmentCtrl.initAddNewOwnerPopup()" type="button"
                                         class="btn k2-primary-btn">
                                         <i class="fa fa-plus"></i>
@@ -89,6 +93,7 @@
                         <div class="form-group col-lg-12">
                             <label>{{"ENV_TYPE" | translate}} <span style="color: red">*</span></label>
                             <select width="'100%'" class=""
+                                    id="add_environment_type"
                                     required
                                     ng-model="newEnvironmentCtrl.envType"
                                     ng-change="newEnvironmentCtrl.envTypeChanged()"
@@ -99,37 +104,45 @@
                         <div class="form-group col-lg-12" ng-if="['Source','Both'].indexOf(newEnvironmentCtrl.envType) >= 0">
                             <label>Override Sync Mode</label>
                             <select width="'100%'" class=""
+                                    id="add_environment_override_sync_mode"
                                     ng-model="newEnvironmentCtrl.environmentData.sync_mode"
                                     ng-options="env.value as env.text for env in newEnvironmentCtrl.syncModes">
                                     <option value=""></option>
                             </select>
                         </div>
+                        <div style="display: flex;align-items: flex-end;" class="form-group col-lg-12" ng-if="['Source','Both'].indexOf(newEnvironmentCtrl.envType) >= 0">
+                            <input type="checkbox"
+                                id="add_environment_mask_senstive_data"
+                                ng-model="newEnvironmentCtrl.environmentData.mask_sensitive_data"/>
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Mask Sensitive Data</label>
+                        </div>
                     </div>
                     <div class="col-lg-6 b-l">
                         <div class="form-group col-lg-6">
                             <label>{{"FIRST_NAME" | translate}}</label>
-                            <input type="text" class="" ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_fist_name">
+                            <input id="add_environment_first_name" type="text" class="" ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_fist_name">
                         </div>
                         <div class="form-group col-lg-6">
                             <label>{{"LAST_NAME" | translate}}</label>
-                            <input type="text" class="" ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_last_name">
+                            <input id="add_environment_last_name" type="text" class="" ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_last_name">
                         </div>
                         <div class="form-group col-lg-12">
                             <label>{{"EMAIL" | translate}}</label>
-                            <input type="email" class="" ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_email">
+                            <input id="add_environment_email" type="email" class="" ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_email">
                         </div>
                         <div class="form-group col-lg-6">
                             <label>{{"PHONE_1" | translate}}</label>
-                            <input type="text" class="" data-mask="(999) 999-9999"
+                            <input id="add_environment_phone1" type="text" class="" data-mask="(999) 999-9999"
                                    ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_phone1">
                         </div>
                         <div class="form-group col-lg-6">
                             <label>{{"PHONE_2" | translate}}</label>
-                            <input type="text" class="" data-mask="(999) 999-9999"
+                            <input id="add_environment_phone2" type="text" class="" data-mask="(999) 999-9999"
                                    ng-model="newEnvironmentCtrl.environmentData.environment_point_of_contact_phone2">
                         </div>
                         <div class="form-group col-lg-12" style="margin-top: 23px">
-                            <button class="btn k2-primary-btn pull-right" type="submit">{{"CREATE" | translate}}</button>
+                            <button id="add_environment_create_button" class="btn k2-primary-btn pull-right" type="submit">{{"CREATE" | translate}}</button>
                         </div>
                     </div>
                 </form>

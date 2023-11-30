@@ -13,6 +13,7 @@
                     "actors": [
                         {
                             "name": "TDMDB_SCHEMA",
+                            "minHeight": 472,
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -592,7 +593,7 @@
                     "dependsOnList": [
                         "Special Case"
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
                     "actors": [
                         {
                             "name": "ErrorHandler   ",
@@ -658,7 +659,7 @@
                     "dependsOnList": [
                         "Do Nothing                    "
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
                     "isTransactional": false,
                     "actors": []
                 },
@@ -667,9 +668,196 @@
                     "dependsOnList": [
                         "Do Nothing  "
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
                     "isTransactional": false,
                     "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Find Old Entity List Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Entity List Tables",
+                            "minHeight": 447,
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select  table_name from INFORMATION_SCHEMA.tables where table_schema = ${schema} and table_name like 'entity_list_%'"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "table_name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Task Execution ID",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Substring1",
+                            "actorType": {
+                                "parentType": "Substring",
+                                "inputs": [
+                                    {
+                                        "name": "begin",
+                                        "const": 12
+                                    },
+                                    {
+                                        "name": "end",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Drop Table is Task Execution Already Deleted",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check If Task Execution Still Exists",
+                            "actorType": {
+                                "parentType": "DbFetchField",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "SELECT count(1) as cnt from ${@schema}.task_execution_list \r\nwhere task_execution_id = ${taskExecutionId}"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecutionId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Drop Entity List Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "If Task Execution Cleaned Up",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Drop Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "DROP TABLE IF EXISTS ${@schema}.${@tableName}"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
                 }
             ]
         }
@@ -697,12 +885,42 @@
         },
         {
             "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Entity List Tables",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check If Task Execution Still Exists",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Drop Table",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "tdm_general_parameters",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Empty String",
-                "name": "a"
+                "actor": "date_trunc",
+                "name": "retentionPeriod"
             },
             "path": [
                 "param_value"
@@ -727,8 +945,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "date_trunc",
-                "name": "retentionPeriod"
+                "actor": "Empty String",
+                "name": "a"
             },
             "path": [
                 "param_value"
@@ -848,6 +1066,54 @@
             "rightPort": {
                 "actor": "CleanUp Statement",
                 "name": "TRUNC_DATE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Entity List Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Substring1",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Entity List Tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Drop Table",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Substring1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Check If Task Execution Still Exists",
+                "name": "taskExecutionId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check If Task Execution Still Exists",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Task Execution Cleaned Up",
+                "name": "a"
             }
         }
     ]

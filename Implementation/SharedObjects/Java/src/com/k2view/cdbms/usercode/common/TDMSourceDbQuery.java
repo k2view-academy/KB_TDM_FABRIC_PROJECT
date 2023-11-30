@@ -23,8 +23,11 @@ public class TDMSourceDbQuery extends SourceDbQuery {
 
     @Override
     public void action(Data input, Data output, Context ctx) throws Exception {
-        if (input.get("rowsGeneratorDistribution") == null) {
+        //log.info("TDMSourceDbQuery - Input table: " + ctx.externals().get("table").toString() + ", Input Dist: " + input.get("rowsGeneratorDistribution").toString());
+        
+        if ("-1".equals(input.get("rowsGeneratorDistribution").toString()) && !"common".equals(ctx.externals().get("schema").toString())) {
             Object noOfRecsExernal = tdmSourceDbQuery(input, output, ctx);
+            //log.info("TDMSourceDbQuery - new Dist: " + noOfRecsExernal);
             if (noOfRecsExernal != null) {
                 input.put("rowsGeneratorDistribution", noOfRecsExernal);
             }

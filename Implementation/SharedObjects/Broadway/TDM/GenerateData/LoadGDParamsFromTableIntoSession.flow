@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -22,7 +25,7 @@
                             }
                         },
                         {
-                            "name": "Get ",
+                            "name": "Get TDM_TASK_ID",
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
@@ -442,7 +445,7 @@
         },
         {
             "leftPort": {
-                "actor": "Get ",
+                "actor": "Get TDM_TASK_ID",
                 "name": "result"
             },
             "rightPort": {

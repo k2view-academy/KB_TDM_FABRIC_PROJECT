@@ -45,6 +45,11 @@ public class SharedLogic {
 			}
 		});
 		
+        handlebars.registerHelper("indexPlusLength", new Helper<Integer>() {
+			public Integer apply(Integer index, Options options) {
+				return index + Integer.parseInt(options.param(0).toString());
+			} 
+		});
 		      handlebars.registerHelper("increase", new Helper<Integer>() {
 			public Integer apply(Integer number, Options options) {
 				return number + (Integer)options.hash.get("inc");
@@ -122,6 +127,11 @@ public class SharedLogic {
 			}
 		});
 		
+		handlebars.registerHelper("getSeqCacheInterface", new Helper<String>() {
+			public String apply(String luName, Options options) {
+                return getGlobal("SEQ_CACHE_INTERFACE", "TDM");
+			}
+		});
 		
 		handlebars.registerHelper("if_even", new Helper<Integer>(){
 			public Boolean apply(Integer index, Options options) {
@@ -161,6 +171,7 @@ public class SharedLogic {
 		
 		handlebars.registerHelper("eq", ConditionalHelpers.eq);
 		handlebars.registerHelper("neq", ConditionalHelpers.neq);
+        handlebars.registerHelper("or", ConditionalHelpers.or);
 		
 		Template template = handlebars.compileInline(templateContent);
 		
@@ -193,7 +204,16 @@ public class SharedLogic {
 		map.put("TARGET_SCHEMA", targetDbSchema);
 		map.put("TARGET_TABLE", targetDbTable);
 		map.put("TARGET_TABLE_COLUMNS", targetTableData[0]);
-		map.put("TARGET_TABLE_PKS", targetTableData[1]);
+        List <String> linkFields = (ArrayList<String>) targetTableData[1];
+        if (linkFields == null || linkFields.size() == 0) {
+
+            Set<Map<String,String>> argsFields = getPopArgumentListForDelete(luName, luTable);
+            for (Map<String,String> rec : argsFields) {
+                linkFields.add(rec.get("FIELD_NAME"));
+            }
+        }
+        
+        map.put("TARGET_TABLE_PKS", linkFields);
 		
 		Object mainTableName = fabric().fetch("SET " + luName + ".ROOT_TABLE_NAME").firstValue();
 		
@@ -202,7 +222,7 @@ public class SharedLogic {
 			mainTables = Arrays.asList(mainTableName.toString().split(","));
 		}
 		String mainTable = "false";
-		log.info("LU_NAME:" + luName + ", mainTables: " + mainTables + ", mainTableName: " + mainTableName);
+		//log.info("LU_NAME:" + luName + ", mainTables: " + mainTables + ", mainTableName: " + mainTableName);
 		if (mainTables.contains(luTable)) {
 			mainTable = "true";
 		}
@@ -233,7 +253,7 @@ public class SharedLogic {
 			map.put("TABLE_SEQ_DATA", null);
 		}
 		map.put("MAIN_TABLE_IND", mainTable);
-		log.info("MAIN_TABLE_IND: " + mainTable + ", table: " + luTable);
+		//log.info("MAIN_TABLE_IND: " + mainTable + ", table: " + luTable);
 		
 		return map;
 	}
@@ -276,30 +296,39 @@ public class SharedLogic {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-
+		
 			if (checkTable != null && checkTable.firstValue() != null) {
 				al.add(s);
 			}
+			if (checkTable != null) {
+				checkTable.close();
+			}
 		});
+		
+		
 		return al;
 	}
 
 	@out(name = "res", type = List.class, desc = "")
-	public static List<String> getLuTablesForGenerate(String luName) throws Exception {
-		List<String> al = new ArrayList<>();
+	public static List<Map<String,String>> getTablesForGenerate(String luName, String sourceInterface, String sourceSchema) throws Exception {
+		List<Map<String,String>> result = new ArrayList<>();
 		LUType luType = null;
 		if (luName == null || Util.isEmpty(luName)) {
 			luType = getLuType();
 		} else {
 			luType = LUType.getTypeByName(luName);
 		}
+        
+        List<String> sourceTables = getDbTables(sourceInterface, sourceSchema);
 
 		if(luType == null)
-			return al;
+			return result;
 		LUType finalLuType = luType;
 		luType.ludbTables.forEach((s, s2) -> {
 			Db.Rows checkTable = null;
+            Map<String, String> map = new HashMap<>();
 			try {
+                
 				checkTable = fabric().fetch("broadway " + finalLuType.luName + ".filterOutGenertors tableName='" +
 						s + "', luName=" + finalLuType.luName + ", RESULT_STRUCTURE=ROW");
 			} catch (SQLException e) {
@@ -307,10 +336,22 @@ public class SharedLogic {
 			}
 
 			if (checkTable != null && checkTable.firstValue() != null) {
-				al.add(s);
+                for (String sourceTable : sourceTables) {
+                    if (sourceTable.equalsIgnoreCase(s)) {
+                        map.put("luTable", s);
+                        map.put("sourceTable", sourceTable);
+                        result.add(map);
+                        break;
+                    }
+                }
+			}
+			if (checkTable != null) {
+				checkTable.close();
 			}
 		});
-		return al;
+
+
+		return result;
 	}
 
 	@out(name = "res", type = Object.class, desc = "")
@@ -356,6 +397,9 @@ public class SharedLogic {
 				tableFiltered = "" + checkTable.firstValue();
 			}
 			
+			if (checkTable != null) {
+				checkTable.close();
+			}
 			if( !tables.contains(originalTableName)  && !Util.isEmpty(tableFiltered)) {
 				tmpBucket.add(originalTableName);
 				tables.add(originalTableName);
@@ -406,8 +450,8 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	@out(name = "pks", type = Object[].class, desc = "")
 	public static Object[] getDbTableColumns(String dbInterfaceName, String catalogSchema, String table) throws Exception {
 		ResultSet rs = null;
-		      ResultSet rs1 = null;
-		      ResultSet rs2 = null;
+		ResultSet rs1 = null;
+		ResultSet rs2 = null;
 		String[] types = {"TABLE"};
 		String targetTableName = table;
 		
@@ -476,10 +520,9 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 
 
 	@out(name = "res", type = Object.class, desc = "")
-	public static Object buildSeqTemplateData(String seqName, String cacheDBName, String redisOrDBName, String initiationScriptOrValue) throws Exception {
+	public static Object buildSeqTemplateData(String seqName, String redisOrDBName, String initiationScriptOrValue) throws Exception {
 		Map<String, Object> map = new TreeMap<>();
 		map.put("SEQUENCE_NAME", seqName);
-		map.put("CACHE_DB_NAME", cacheDBName);
 		map.put("SEQUENCE_REDIS_DB", redisOrDBName);
 		map.put("INITIATE_VALUE_FLOW", initiationScriptOrValue);
 		return map;
@@ -600,6 +643,9 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 					log.warn("Table " + table + " has a population that is not a Broadway Flow, No Generator will be created for such population");
 				}
 			}
+			if (checkTable != null) {
+				checkTable.close();
+			}
 		});
 		return result;
 	}
@@ -625,7 +671,6 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 					maxTableOrder.set(tableEntry.gettablePopulationOrder());
 				}
 			}
-
 		});
 		return maxTableOrder.intValue();
 	}
@@ -635,7 +680,11 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	public static Set<Map<String,String>> getPopArgumentList(String luName, String tableName) throws Exception {
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
-		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        Map<String, List<LudbRelationInfo>> rel = null;
+        if (luType.getLudbOppositePhysicalRelations() != null) {
+		    rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        }
+        
 		if (rel != null) {
 			for (Object key : rel.keySet()) {
 			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
@@ -646,7 +695,15 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 		    	    result.add(map);
 		    	}
 			}
-		}
+		} else {
+
+            Map<String, String> map = new HashMap<>();
+            //log.info("getPopArgumentListForDelete REL IS NULL");
+            map.put("PARENT_TABLE", "FABRIC_TDM_ROOT");
+            map.put("PARENT_FIELD_NAME", getGlobal("ROOT_COLUMN_NAME", luName));
+            map.put("FIELD_NAME", getGlobal("ROOT_COLUMN_NAME", luName));
+            result.add(map);
+        }
 		return result;
 	}
 	
@@ -654,45 +711,61 @@ public static String[] getDBCollection(DatabaseMetaData md, String catalogSchema
 	public static Set<Map<String,String>> getPopArgumentListForDelete(String luName, String tableName) throws Exception {
 		Set<Map<String, String>> result = new HashSet<Map<String, String>>();
 		LUType luType = LUType.getTypeByName(luName);
-		Map <?,?> rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        Map<String, List<LudbRelationInfo>> rel = null;
+        if (luType.getLudbOppositePhysicalRelations() != null) {
+		    rel = luType.getLudbOppositePhysicalRelations().get(tableName);
+        }
+
 		if (rel != null) {
+            //log.info("REL IS NOT NULL, Handling table: <" + tableName + ">" + ", size of rel: " + rel.size() + ", keySet size: " + rel.keySet().size());
 			for (Object key : rel.keySet()) {
 			    for (LudbRelationInfo ri : (List<LudbRelationInfo>) rel.get(key)) {
-			    	//log.info("getPopArgumentListForDelete handling key:"  + key);
+			        //log.info("getPopArgumentListForDelete handling key:"  + key);
 			        Map<String, String> map = new HashMap<>();
 					String parentTable = key.toString();
-					if (!"FABRIC_TDM_ROOT".equalsIgnoreCase(parentTable)) {
-						parentTable = TDM_DELETE_TABLES_PREFIX + parentTable;
-					}
+                    //log.info("getPopArgumentListForDelete handling parentTable:"  + parentTable);
+                    if (!"FABRIC_TDM_ROOT".equalsIgnoreCase(parentTable)) {
+                        parentTable = TDM_DELETE_TABLES_PREFIX + parentTable;
+                    }
 		    	    map.put("PARENT_TABLE", parentTable);
 		        	map.put("PARENT_FIELD_NAME", ri.from.get("column"));
 			        map.put("FIELD_NAME", ri.to.get("column"));
 			        map.put("FIELD_TYPE", luType.ludbObjects.get(tableName).getLudbColumnMap().get(ri.to.get("column")).columnType);
-
+                    
+                    //log.info("getPopArgumentListForDelete Adding Map with type:"  + map.get("FIELD_TYPE"));
 		    	    result.add(map);
 		    	}
 			    break;
 			}
-		}
+		} else {
+            Map<String, String> map = new HashMap<>();
+            //log.info("getPopArgumentListForDelete REL IS NULL");
+            map.put("PARENT_TABLE", "FABRIC_TDM_ROOT");
+            map.put("PARENT_FIELD_NAME","IID");
+            map.put("FIELD_NAME", getGlobal("ROOT_COLUMN_NAME", luName));
+            map.put("FIELD_TYPE", "TEXT");
+            result.add(map);
+        }
+
+
 		return result;
 	}
 
-    @out(name = "result", type = List.class, desc = "")
-    public static  List<Map<String, String>>  filerOutSequences(List<Map<String, String>> Sequences, List<Map<String, String>> parentRec) throws Exception {
-        List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);
-
+	@out(name = "result", type = List.class, desc = "")
+	public static List<Map<String,String>> filerOutSequences(List<Map<String,String>> Sequences, List<Map<String,String>> parentRec) throws Exception {
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>(Sequences);
+		
 		for (Map<String, String> parentMap : parentRec) {
 			for (Map<String, String> seqMap : Sequences) {
 				if (seqMap.get("TARGET_FIELD_NAME").equalsIgnoreCase(parentMap.get("FIELD_NAME"))) {
 					result.remove(seqMap);
-                    break;
+					break;
 				}
 			}
 		}
-       
-	
-        return result;
-    }
+		
+		return result;
+	}
 
 	@out(name = "pks", type = List.class, desc = "")
 	public static List<String> getDbTablePKs(String dbInterfaceName, String catalogSchema, String table) throws Exception {

@@ -114,9 +114,6 @@
                                                     },
                                                     "INITIATE_VALUE_OR_FLOW": {
                                                         "type": "string"
-                                                    },
-                                                    "CACHE_DB_NAME": {
-                                                        "type": "string"
                                                     }
                                                 }
                                             }
@@ -512,20 +509,6 @@
             "iterate": "Iterate",
             "path": [
                 "SEQUENCE_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "TDMSeqList1",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "LuFunction2",
-                "name": "cacheDBName"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "CACHE_DB_NAME"
             ]
         },
         {

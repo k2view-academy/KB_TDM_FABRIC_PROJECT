@@ -120,7 +120,9 @@ public class Logic extends WebServiceUserCode {
 				roles.add(roleName);
 			}
 		}
-		
+		if (rolesList != null) {
+			rolesList.close();
+		}
 		return wrapWebServiceResults("SUCCESS", null, roles);
 	}
 

@@ -1,8 +1,15 @@
 {
-	"type": "PopulationArgs",
+	"type": "SourceDbQuery",
 	"actorClass": "com.k2view.cdbms.usercode.common.TDMSourceDbQuery",
 	"badge": "TQ",
-	"doc": "This actor starts fabric and TDM population",
+	"doc": [
+	  "To improve performance with less calls to source, data from parent table is aggregated to groups",
+	   "This actor create a query and generate the where clause and run it against the source",
+	   "The query is generated dynamically according to the input parameters.",
+	   "Generated data:",
+	   "In case the fabric session has ROWS_GENERATOR set to true, the actor will generate data by using the rowsGeneratorDistribution",
+	   "and a flow with the convention ${POPULATION}.population.generator Internally the RowsGenerator actor is used. For more information on how to use generated data, see the RowsGenerator actor documentation."
+	],
 	"addInput": true,
 	"tags": [
 		"TDM"
@@ -107,8 +114,8 @@
      },
     {
       "name":"rowsGeneratorDistribution",
-      "const": {"distribution": "uniform", "minimum": 0, "maximum": 10},
-      "schema": {},
+      "const": -1,
+      "schema": {"type": "integer"},
       "editor": {"id":"com.k2view.distribution"},
       "doc": "In case the ROWS_GENERATOR option is set, this distribution will be used to randomize the number of rows per parent row. See the RowsGenerator actor documentation for more."
     }

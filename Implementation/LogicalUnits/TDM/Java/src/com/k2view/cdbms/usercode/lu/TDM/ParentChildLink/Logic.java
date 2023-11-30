@@ -78,7 +78,7 @@ public class Logic extends UserCode {
 				String insertSqlTar = "insert into TDM.tdm_lu_type_rel_tar_eid (target_env, lu_type_1, lu_type_2, lu_type1_eid, lu_type2_eid, creation_date) " +
 							"values(?,?,?,?,?,?)";
 				if (loadEntity == 1 && "load".equalsIgnoreCase(taskType) && 
-					("CLONE".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSequences)))
+					(selectionMethod.toUpperCase().contains("CLONE") || "true".equalsIgnoreCase(replaceSequences)))
 				{
 					loadRelTar = true;
 				}
@@ -156,7 +156,7 @@ public class Logic extends UserCode {
 			// 2. Replace Sequences
 			// 3. Delete only task
 			try {
-				if ("load".equalsIgnoreCase(taskType) && ("CLONE".equalsIgnoreCase(selectionMethod) || "true".equalsIgnoreCase(replaceSeq) ||
+				if ("load".equalsIgnoreCase(taskType) && (selectionMethod.toUpperCase().contains("CLONE") || "true".equalsIgnoreCase(replaceSeq) ||
 					(loadEntity == 0 && deleteBeforeLoad == 1) ) ) {
 		
 					insertChildSql = "insert into TASK_EXECUTION_LINK_ENTITIES (LU_NAME,PARENT_LU_NAME,TARGET_ENTITY_ID,ENTITY_ID, " +

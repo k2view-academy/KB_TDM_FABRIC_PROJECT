@@ -1,6 +1,6 @@
 <div>
     <div class="k2-header">
-        <button type="button" ng-click="updateLogicalUnitsCtrl.close();" class="close" data-dismiss="modal"><span
+        <button id="update_lu_close" type="button" ng-click="updateLogicalUnitsCtrl.close();" class="close" data-dismiss="modal"><span
                 aria-hidden="true">×</span><span class="sr-only">Close</span></button>
         <div class="k2-card-title">{{"UPDATE_LOGICAL_UNIT" | translate}}</div>
     </div>
@@ -18,21 +18,21 @@
                         <label class="col-sm-6 control-label">{{"LOGICAL_UNIT_NAME" | translate}} <span
                                 style="color: red">*</span></label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control1" disabled
+                            <input id="update_lu_name" type="text" class="form-control1" disabled
                                 ng-model="updateLogicalUnitsCtrl.logicalUnit.lu_name">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-6 control-label">{{"LOGICAL_UNIT_DESCRIPTION" | translate}}</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control1"
+                            <input id="update_lu_description"   type="text" class="form-control1"
                                 ng-model="updateLogicalUnitsCtrl.logicalUnit.lu_description">
                         </div>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-6 control-label">{{"LOGICAL_UNIT_PARENT" | translate}}</label>
                         <div class="col-sm-6">
-                            <select class="form-control1" ng-model="updateLogicalUnitsCtrl.logicalUnit.lu_parent_name"
+                            <select id="update_lu_parent"  class="form-control1" ng-model="updateLogicalUnitsCtrl.logicalUnit.lu_parent_name"
                                 ng-options="option.lu_name as option.lu_name for option in updateLogicalUnitsCtrl.attachedLogicalUnits">
                                 <option value=""></option>
                             </select>
@@ -47,7 +47,7 @@
                             </uib-alert>
                         </div>
                         <div class="col-lg-4">
-                            <button class="k2-card-ok-cancel-btn custom-hover ng-binding pull-right" type="submit">{{"UPDATE" |
+                            <button id="update_lu_save" class="k2-card-ok-cancel-btn custom-hover ng-binding pull-right" type="submit">{{"UPDATE" |
                                 translate}}
                             </button>
                         </div>

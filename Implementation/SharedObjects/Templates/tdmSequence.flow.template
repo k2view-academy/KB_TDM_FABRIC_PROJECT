@@ -22,20 +22,6 @@
                             }
                         },
                         {
-                            "name": "Get Original IID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "INPUT_IID",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get LU Type",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -72,7 +58,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "{{CACHE_DB_NAME}}"
+                                        "const": "{{getSeqCacheInterface __LU_NAME}}"
                                     },
                                     {
                                         "name": "sequenceInterface",
@@ -152,16 +138,6 @@
             "rightPort": {
                 "actor": "Populate TDM_SEQ_MAPPING",
                 "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Original IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "iid"
             }
         },
         {

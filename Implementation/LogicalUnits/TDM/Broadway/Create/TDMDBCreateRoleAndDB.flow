@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Create"
+    ],
     "levels": [
         {
             "stages": [
@@ -137,7 +140,7 @@
         {
             "stages": [
                 {
-                    "name": "get create db and role",
+                    "name": "get create role",
                     "dependsOnList": [
                         "no database and role"
                     ],
@@ -153,7 +156,7 @@
                                         "const": "loadFromLUResource"
                                     },
                                     {
-                                        "const": "TDM/TDMDB/k2vtdm1.sql",
+                                        "const": "TDM/TDMDB/k2vtdm0.sql",
                                         "name": "path",
                                         "schema": {
                                             "type": "string"
@@ -174,7 +177,7 @@
                     ]
                 },
                 {
-                    "name": "Stage 7",
+                    "name": "Stage 1",
                     "dependsOnList": [
                         "exists"
                     ],
@@ -187,9 +190,9 @@
         {
             "stages": [
                 {
-                    "name": "create db and role",
+                    "name": "create role",
                     "dependsOnList": [
-                        "get create db and role"
+                        "get create role"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -239,9 +242,125 @@
                     ]
                 },
                 {
-                    "name": "Stage 8",
+                    "name": "Stage 2  ",
                     "dependsOnList": [
-                        "Stage 7"
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "get create db",
+                    "dependsOnList": [
+                        "create role"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get  SQL Resource File To Create TDMDB Schema And User1",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "loadFromLUResource"
+                                    },
+                                    {
+                                        "const": "TDM/TDMDB/k2vtdm1.sql",
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "blob"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3  ",
+                    "dependsOnList": [
+                        "Stage 2  "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "create db",
+                    "dependsOnList": [
+                        "get create db"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Create TDMDB Error Handler1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
+                                                "conditions": {
+                                                    "standardType": "UNIQUE_CONSTRAINT"
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": ""
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Create TDMDB User and Schema1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "POSTGRESQL_ADMIN"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3  "
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -304,6 +423,16 @@
             },
             "rightPort": {
                 "actor": "Create TDMDB User and Schema",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get  SQL Resource File To Create TDMDB Schema And User1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create TDMDB User and Schema1",
                 "name": "sql"
             }
         }

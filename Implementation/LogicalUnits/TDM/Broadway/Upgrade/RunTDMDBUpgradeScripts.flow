@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Upgrade"
+    ],
     "levels": [
         {
             "stages": [
@@ -28,6 +31,9 @@
                                                         "type": "integer"
                                                     },
                                                     "script_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "flow_name": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -92,6 +98,9 @@
                                                 },
                                                 "script_name": {
                                                     "type": "string"
+                                                },
+                                                "flow_name": {
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -142,6 +151,9 @@
                                                     "type": "integer"
                                                 },
                                                 "script_name": {
+                                                    "type": "string"
+                                                },
+                                                "flow_name": {
                                                     "type": "string"
                                                 }
                                             }
@@ -287,6 +299,9 @@
                                                 },
                                                 "script_name": {
                                                     "type": "string"
+                                                },
+                                                "flow_name": {
+                                                    "type": "string"
                                                 }
                                             }
                                         }
@@ -302,7 +317,63 @@
             "stages": [
                 {
                     "name": "Stage 5",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Split1",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 10",
+                    "dependsOnList": [
+                        "Stage 4"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 13",
+                    "dependsOnList": [
+                        "Stage 5"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -326,6 +397,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 14",
+                    "dependsOnList": [
+                        "Stage 10"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -333,7 +413,9 @@
             "stages": [
                 {
                     "name": "Stage 6",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Stage 13"
+                    ],
                     "isLast": 0,
                     "actors": [
                         {
@@ -377,6 +459,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 11",
+                    "dependsOnList": [
+                        "Stage 14"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -384,7 +475,9 @@
             "stages": [
                 {
                     "name": "Stage 7",
-                    "dependsOnList": [],
+                    "dependsOnList": [
+                        "Stage 6"
+                    ],
                     "isLast": 1,
                     "actors": [
                         {
@@ -406,6 +499,63 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 12",
+                    "dependsOnList": [
+                        "Stage 11"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "If Flow is Given",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Run Upgrade flow",
+                            "minHeight": 302,
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": null
                                     }
                                 ],
                                 "outputs": []
@@ -536,12 +686,62 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Format Upgrade Script name",
-                "name": "fileName"
+                "actor": "Run Upgrade flow",
+                "name": "flowName"
+            },
+            "path": [
+                "flow_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "If Flow is Given",
+                "name": "a"
+            },
+            "path": [
+                "flow_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
             },
             "path": [
                 "script_name"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Upgrade Script",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Split1",
+                "name": "string"
+            },
+            "path": [
+                "script_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Split1",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Format Upgrade Script name",
+                "name": "fileName"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

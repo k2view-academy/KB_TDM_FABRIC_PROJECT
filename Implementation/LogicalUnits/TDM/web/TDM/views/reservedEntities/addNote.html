@@ -15,6 +15,7 @@
                     ng-submit="addNoteCtrl.addNote()()">
                     <div class="col-lg-12">
                         <textarea
+                            id="add_note_text"
                             style="width: 100%; resize: none; border: 1px solid #cccccc;text-indent: 5px;"
                             placeholder="Enter text"
                             ng-model="addNoteCtrl.note" 
@@ -24,8 +25,8 @@
                                 style="flex: auto;
                                 padding-top: 5px;
                                 color: red;">Please fill in a note</span>
-                            <button class="k2-card-ok-cancel-btn custom-hover" type="button" ng-click="addNoteCtrl.close()">Cancel</button>
-                            <button class="k2-card-ok-cancel-btn custom-hover" type="submit">Add</button>
+                            <button id="add_note_close" class="k2-card-ok-cancel-btn custom-hover" type="button" ng-click="addNoteCtrl.close()">Cancel</button>
+                            <button id="add_note_add" class="k2-card-ok-cancel-btn custom-hover" type="submit">Add</button>
                         </div>
                     </div>
                 </form>

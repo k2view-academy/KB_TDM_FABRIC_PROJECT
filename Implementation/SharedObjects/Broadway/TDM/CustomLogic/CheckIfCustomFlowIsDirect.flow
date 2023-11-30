@@ -1,0 +1,496 @@
+{
+    "tags": [
+        "TDM",
+        "TDMCustomLogic"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Custom Flows",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Custom Logic Flows",
+                            "actorType": {
+                                "parentType": "CustomLogicFlows",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FLOW_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "DESCRIPTION": {
+                                                        "type": "string"
+                                                    },
+                                                    "DIRECT_FLOW": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check With Lu And Flow Names",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lookup For LU & Flow Names",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "LU_NAME",
+                                            "FLOW_NAME"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "FLOW_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "FLOW_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "type": "string"
+                                                },
+                                                "DIRECT_FLOW": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Flow Found",
+                    "dependsOnList": [
+                        "Check With Lu And Flow Names"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Flow Found ?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Flow Info",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "FLOW_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "type": "string"
+                                                },
+                                                "DIRECT_FLOW": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "FLOW_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "type": "string"
+                                                },
+                                                "DIRECT_FLOW": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Flow Not Found",
+                    "dependsOnList": [
+                        "Check With Lu And Flow Names"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Lookup For Flow Name and Empty LU Name",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "LU_NAME",
+                                            "FLOW_NAME"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
+                                    },
+                                    {
+                                        "const": "",
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "FLOW_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "FLOW_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "DESCRIPTION": {
+                                                    "type": "string"
+                                                },
+                                                "DIRECT_FLOW": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Return Indicator As IS",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Indicator Not Empty?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Return Direct Flow Indicator ",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "False",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Return False",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Custom Logic Flows",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Lookup For LU & Flow Names",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Custom Logic Flows",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Lookup For Flow Name and Empty LU Name",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For LU & Flow Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Flow Found ?",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For LU & Flow Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Flow Info",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Flow Info",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Indicator Not Empty?",
+                "name": "value"
+            },
+            "path": [
+                "DIRECT_FLOW"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Flow Info",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Return Direct Flow Indicator ",
+                "name": "value"
+            },
+            "path": [
+                "DIRECT_FLOW"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Flow Name and Empty LU Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Indicator Not Empty?",
+                "name": "value"
+            },
+            "path": [
+                "DIRECT_FLOW"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup For Flow Name and Empty LU Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Return Direct Flow Indicator ",
+                "name": "value"
+            },
+            "path": [
+                "DIRECT_FLOW"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Lookup For LU & Flow Names",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "FLOW_NAME"
+            },
+            "rightPort": {
+                "actor": "Lookup For LU & Flow Names",
+                "name": "FLOW_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "FLOW_NAME"
+            },
+            "rightPort": {
+                "actor": "Lookup For Flow Name and Empty LU Name",
+                "name": "FLOW_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Return Direct Flow Indicator ",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Return False",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

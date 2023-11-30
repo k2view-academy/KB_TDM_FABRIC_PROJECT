@@ -129,4 +129,28 @@ public class SharedGlobals {
 	public static String PRODUCTION_PRODUCT_VERSION = "PROD";
 
 
+	@desc("Limit the number of entities to be populated into the TDM execution tables for a task execution. By default, the number of entities for a task execution is unlimited (-1)")
+	@category("TDM")
+	public static final String TDM_BATCH_LIMIT = "-1";
+	@desc("When set to true (the default value), the task execution populates the TDM_SEQ_MAPPING ta ble and generates the Replace Sequence Summary Report tab in the task execution report. This Global can be set to false to avoid the population of TDM_SEQ_MAPPING and the generation of the Replace Sequence Summary Report for a better performance.")
+	@category("TDM")
+	public static final String TDM_SEQ_REPORT = "true";
+	@desc("Set this Global to true to enable the execution of populationJMX populatio n flow on TASK_EXECUTION TDM LU table.")
+	@category("TDM")
+	public static final String TDM_POPULATE_JMX_STATS = "false";
+	@desc("Starting from Fabric V7.2, SQLite and PostgreSQL are also supported as Fabric operational DBs in addition to Cassandra. If you use the TDM PG DB as the operational (system) DB, update this Global accordingly and set it to TDM.")
+	@category("TDM")
+	public static final String SEQ_CACHE_INTERFACE = "TDM";
+	@desc("The separator to be used for parsing the values of Parameters")
+	@category("TDM")
+	public static final String TDM_PARAMETERS_SEPARATOR = "<#>";
+	@desc("Indication whether to drop existing Masking Keyspace when deploying TDM LU")
+	@category("TDM")
+	public static final String SEQ_DROP_KEYSPACE = "false";
+	@desc("Indication whether to truncate the Masking Keyspace when deploying TDM LU")
+	@category("TDM")
+	public static final String SEQ_DO_TRUNCATE = "false";
+
+
+
 }

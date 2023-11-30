@@ -1,0 +1,626 @@
+{
+    "tags": [
+        "TDM",
+        "TDMGeneral"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Editor Input",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Json Parser",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "interfaceType": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "interfaces": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Start loop",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if Type is DB",
+                    "dependsOnList": [
+                        "Start loop"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "database",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "database"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "else  ",
+                    "dependsOnList": [
+                        "Start loop"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "db_Sources",
+                    "dependsOnList": [
+                        "Check if Type is DB"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "list DB_SOURCES ",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "list DB_SOURCES "
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "DB SOURCE": {
+                                                        "type": "string"
+                                                    },
+                                                    "ACTIVE": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "TYPE": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "interfaces",
+                    "dependsOnList": [
+                        "else  "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "list INTERFACES ",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "list INTERFACES "
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "INTERFACE": {
+                                                        "type": "string"
+                                                    },
+                                                    "ACTIVE": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "TYPE": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "get all active db_sources",
+                    "dependsOnList": [
+                        "db_Sources"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "JavaScript get active dbs",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function findActiveInterfaceWithType(data, inputType) {\r\n    if (data.ACTIVE === true ) {\r\n        return data[\"DB SOURCE\"];\r\n    } else {\r\n        return null;\r\n    }\r\n}\r\nconst interfaceData = input;\r\nconst result = findActiveInterfaceWithType(interfaceData, inputType);\r\nif (result !== null) {\r\n    result;\r\n}\r\n\r\n\r\n\r\n\r\n\r\n",
+                                            "script": "function findActiveInterfaceWithType(data, inputType) {\n  if (data.ACTIVE === true) {\n    return data[\"DB SOURCE\"];\n  } else {\n    return null;\n  }\n}\n\nvar interfaceData = input;\nvar result = findActiveInterfaceWithType(interfaceData, inputType);\n\nif (result !== null) {\n  result;\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "INTERFACE": {
+                                                    "type": "string"
+                                                },
+                                                "ACTIVE": {
+                                                    "type": "boolean"
+                                                },
+                                                "TYPE": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "get all active interfaces",
+                    "dependsOnList": [
+                        "interfaces"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "JavaScript get active interfaces",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function findActiveInterfaceWithType(data, inputType) {\r\n    if (data.ACTIVE === true && data.TYPE === inputType) {\r\n        return data.INTERFACE;\r\n    } else {\r\n        return null;\r\n    }\r\n}\r\nconst interfaceData = input;\r\nconst inputType = type;\r\nconst result = findActiveInterfaceWithType(interfaceData, inputType);\r\nif (result !== null) {\r\n    result;\r\n}\r\n\r\n\r\n\r\n\r\n\r\n",
+                                            "script": "function findActiveInterfaceWithType(data, inputType) {\n  if (data.ACTIVE === true && data.TYPE === inputType) {\n    return data.INTERFACE;\n  } else {\n    return null;\n  }\n}\n\nvar interfaceData = input;\nvar inputType = type;\nvar result = findActiveInterfaceWithType(interfaceData, inputType);\n\nif (result !== null) {\n  result;\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "type",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "INTERFACE": {
+                                                    "type": "string"
+                                                },
+                                                "ACTIVE": {
+                                                    "type": "boolean"
+                                                },
+                                                "TYPE": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Interface",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Interface Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "check if Null",
+                    "dependsOnList": [
+                        "Interface"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "IsNull",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Else",
+                    "dependsOnList": [
+                        "Interface"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder ",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "End loop",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Output",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "output Interfaces Names",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function addWordToElements(arr, word) {\r\n    const newArray = [];\r\n    newArray.push(word);\r\n    if(arr!==null){\r\n        for (let i = 0; i < arr.length; i++) {\r\n            newArray.push(arr[i]);\r\n        }\r\n    }\r\n\r\n    return newArray;\r\n}\r\n\r\nconst inputArray = [...input];\r\n\r\nconst wordToAdd = \"fabric\";\r\n\r\nconst modifiedArray = addWordToElements(inputArray, wordToAdd);\r\nmodifiedArray;\r\n\r\n",
+                                            "script": "function addWordToElements(arr, word) {\n  var newArray = [];\n  newArray.push(word);\n\n  if (arr !== null) {\n    for (var i = 0; i < arr.length; i++) {\n      newArray.push(arr[i]);\n    }\n  }\n\n  return newArray;\n}\n\nvar inputArray = [].concat(input);\nvar wordToAdd = \"fabric\";\nvar modifiedArray = addWordToElements(inputArray, wordToAdd);\nmodifiedArray;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Editor Input",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Json Parser",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Json Parser",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "database",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "interfaceType"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Json Parser",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "JavaScript get active interfaces",
+                "name": "type"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "interfaceType"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "list DB_SOURCES ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JavaScript get active dbs",
+                "name": "input"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "list INTERFACES ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JavaScript get active interfaces",
+                "name": "input"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript get active dbs",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Interface Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JavaScript get active interfaces",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Interface Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Interface Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "IsNull",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Interface Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder ",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder ",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "output Interfaces Names",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "editor"
+            },
+            "rightPort": {
+                "actor": "Editor Input",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "output Interfaces Names",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "array"
+            }
+        }
+    ]
+}
