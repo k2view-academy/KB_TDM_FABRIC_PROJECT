@@ -280,6 +280,68 @@
         {
             "stages": [
                 {
+                    "name": "Create PG DB Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "createPGDBS",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "createPGDBS"
+                                    },
+                                    {
+                                        "name": "is_first_deploy",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Populate PG DB Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "populatePGDBS",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "populatePGDBS"
+                                    },
+                                    {
+                                        "name": "is_first_deploy",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Get Globals For k2masking",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -505,6 +567,26 @@
             },
             "rightPort": {
                 "actor": "Create TDMDB",
+                "name": "is_first_deploy"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "is_first_deploy"
+            },
+            "rightPort": {
+                "actor": "createPGDBS",
+                "name": "is_first_deploy"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "is_first_deploy"
+            },
+            "rightPort": {
+                "actor": "populatePGDBS",
                 "name": "is_first_deploy"
             }
         }
