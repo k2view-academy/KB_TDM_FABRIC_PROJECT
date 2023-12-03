@@ -93,7 +93,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "TTL",

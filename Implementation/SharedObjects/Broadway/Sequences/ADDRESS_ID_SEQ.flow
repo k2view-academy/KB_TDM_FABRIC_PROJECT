@@ -1,7 +1,4 @@
 {
-    "tags": [
-        "TDM"
-    ],
     "levels": [
         {
             "stages": [
@@ -18,20 +15,6 @@
                                     {
                                         "name": "key",
                                         "const": "execution_id",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Original IID",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "INPUT_IID",
                                         "isDefault": false
                                     }
                                 ],
@@ -59,7 +42,7 @@
                                 "inputs": [
                                     {
                                         "name": "maskingId",
-                                        "const": "CONTRACT_ID_SEQ"
+                                        "const": "ADDRESS_ID_SEQ"
                                     },
                                     {
                                         "name": "useEnvironment",
@@ -75,19 +58,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
-                                    },
-                                    {
-                                        "name": "TTL",
-                                        "const": 0
-                                    },
-                                    {
-                                        "name": "onEmpty",
-                                        "const": "MASK_AND_CACHE"
-                                    },
-                                    {
-                                        "name": "sequenceId",
-                                        "const": "CONTRACT_ID_SEQ"
+                                        "const": "TDM"
                                     },
                                     {
                                         "name": "sequenceInterface",
@@ -95,7 +66,11 @@
                                     },
                                     {
                                         "name": "initialValue",
-                                        "const": "ContractIdInit"
+                                        "const": "AddressIdInit"
+                                    },
+									{
+                                        "name": "TTL",
+                                        "const": 0
                                     }
                                 ],
                                 "outputs": [
@@ -103,12 +78,12 @@
                                         "name": "value",
                                         "schema": {
                                             "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
+										}
+									}
+								]
+							}
+                        }						 
+					]
                 }
             ]
         },
@@ -143,7 +118,7 @@
                                 "inputs": [
                                     {
                                         "name": "seq_name",
-                                        "const": "CONTRACT_ID_SEQ"
+                                        "const": "ADDRESS_ID_SEQ"
                                     }
                                 ],
                                 "outputs": []
@@ -163,16 +138,6 @@
             "rightPort": {
                 "actor": "Populate TDM_SEQ_MAPPING",
                 "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Original IID",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Populate TDM_SEQ_MAPPING",
-                "name": "iid"
             }
         },
         {

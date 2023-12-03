@@ -57,6 +57,10 @@
                                         "const": "payment_id"
                                     },
                                     {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
                                         "name": "flowName",
                                         "const": "Sequence.actor"
                                     },
@@ -67,10 +71,6 @@
                                     {
                                         "name": "useEnvironment",
                                         "const": true
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "DB_CASSANDRA"
                                     },
                                     {
                                         "name": "TTL",

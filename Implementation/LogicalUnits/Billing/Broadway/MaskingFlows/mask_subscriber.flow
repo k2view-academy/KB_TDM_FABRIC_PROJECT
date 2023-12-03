@@ -324,7 +324,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": "TDM"
                                     }
                                 ],
                                 "outputs": [
@@ -348,7 +348,7 @@
                                     },
                                     {
                                         "name": "interface",
-                                        "const": "DB_CASSANDRA"
+                                        "const": "TDM"
                                     }
                                 ],
                                 "outputs": [
