@@ -214,6 +214,10 @@
                                     {
                                         "name": "interface",
                                         "const": "TDM"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
                                     }
                                 ],
                                 "outputs": [
@@ -238,6 +242,10 @@
                                     {
                                         "name": "interface",
                                         "const": "TDM"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
                                     }
                                 ],
                                 "outputs": [
@@ -262,6 +270,10 @@
                                     {
                                         "name": "interface",
                                         "const": "TDM"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
                                     }
                                 ],
                                 "outputs": [
@@ -448,10 +460,16 @@
                                                 "db_affected_insert_public.CUSTOMER": {
                                                     "type": "integer"
                                                 },
+                                                "db_affected_insert_public.tdm_seq_mapping": {
+                                                    "type": "integer"
+                                                },
                                                 "db_exec": {
                                                     "type": "integer"
                                                 },
                                                 "db_exec_insert_public.CUSTOMER": {
+                                                    "type": "integer"
+                                                },
+                                                "db_exec_insert_public.tdm_seq_mapping": {
                                                     "type": "integer"
                                                 }
                                             }
