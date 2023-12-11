@@ -10,12 +10,6 @@ Billing,VIP_STATUS,"Select Distinct VIP_STATUS
 From Billing.SUBSCRIBER"
 Billing,SUBSCRIBER_TYPE,"Select Distinct SUBSCRIBER.SUBSCRIBER_TYPE
 From Billing.SUBSCRIBER"
-Collection,COLLECTION_STATUS,"Select distinct COLLECTION.COLLECTION_STATUS
-From Collection.COLLECTION"
-Orders,ORDER_TYPE,"Select distinct ORDERS.ORDER_TYPE
-From Orders.ORDERS"
-Orders,ORDER_STATUS,"Select distinct ORDERS.ORDER_STATUS
-From Orders.ORDERS"
 Customer,FIRST_NAME,"Select CUSTOMER.FIRST_NAME
  From Customer.CUSTOMER"
 Customer,LAST_NAME,"Select CUSTOMER.LAST_NAME 
@@ -32,3 +26,9 @@ Customer,CITY,"Select Distinct ADDRESS.CITY
  From Customer.ADDRESS"
 Customer,STATE,"Select Distinct ADDRESS.STATE
  From Customer.ADDRESS"
+ Orders,ORDER_TYPE,"Select distinct ORDERS.ORDER_TYPE
+From Orders.ORDERS"
+Orders,ORDER_STATUS,"Select distinct ORDERS.ORDER_STATUS
+From Orders.ORDERS"
+Collection,COLLECTION_STATUS,"Select distinct COLLECTION.COLLECTION_STATUS
+From Collection.COLLECTION"
