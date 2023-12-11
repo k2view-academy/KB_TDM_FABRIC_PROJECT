@@ -213,6 +213,10 @@
                                     {
                                         "name": "interface",
                                         "const": "TDM"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
                                     }
                                 ],
                                 "outputs": [
