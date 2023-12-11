@@ -7,7 +7,13 @@
     "inputs": [
         {
             "name": "table",
-            "const": [],
+            "const": [
+                {
+                    "LU_NAME": "Customer",
+                    "FLOW_NAME": "getCustomersByAddress",
+                    "DESCRIPTION": ""
+                }
+            ],
             "schema": {
                 "type": "array",
                 "items": {
