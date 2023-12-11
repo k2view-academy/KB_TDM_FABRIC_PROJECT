@@ -25,7 +25,7 @@
     </TableProperties>
 	 <TableProperties name="LU_PARAMS">
       <Populations>
-        <Population name="populationLuParams.flow" order="2" disabled="false" populationType="Flow" />
+        <Population name="populationLuParams.flow" order="99" disabled="false" populationType="Flow" />
       </Populations>
     </TableProperties>
 	 <TableProperties name="orders">
