@@ -413,7 +413,7 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "id_number",
+                                        "name": "ssn",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -615,7 +615,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "id_number"
+                "name": "ssn"
             }
         },
         {
