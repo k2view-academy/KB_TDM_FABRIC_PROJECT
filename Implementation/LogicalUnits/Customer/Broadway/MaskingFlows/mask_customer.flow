@@ -30,37 +30,16 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "CUSTOMER_ID": {
+                                                "customer_id": {
                                                     "type": "integer"
                                                 },
-                                                "FIRST_NAME": {
+                                                "ssn": {
                                                     "type": "string"
                                                 },
-                                                "LAST_NAME": {
+                                                "first_name": {
                                                     "type": "string"
                                                 },
-                                                "SOCIAL_NET_FB": {
-                                                    "type": "string"
-                                                },
-                                                "SOCIAL_NET_TW": {
-                                                    "type": "string"
-                                                },
-                                                "EMAIL": {
-                                                    "type": "string"
-                                                },
-                                                "SOCIAL_NET_LNK": {
-                                                    "type": "string"
-                                                },
-                                                "ADDITIONAL_PHONE": {
-                                                    "type": "string"
-                                                },
-                                                "PRIMARY_PHONE": {
-                                                    "type": "string"
-                                                },
-                                                "OCCUPATION": {
-                                                    "type": "string"
-                                                },
-                                                "ID_NUMBER": {
+                                                "last_name": {
                                                     "type": "string"
                                                 }
                                             }
@@ -380,16 +359,16 @@
                                         "const": "maskSSN"
                                     },
                                     {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
                                         "name": "useEnvironment",
                                         "const": true
                                     },
                                     {
                                         "name": "useInstanceId",
                                         "const": false
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
                                     }
                                 ],
                                 "outputs": [
@@ -549,45 +528,6 @@
                 "name": "maps"
             },
             "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Record",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Masking First Name",
-                "name": "value"
-            },
-            "path": [
-                "FIRST_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Record",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Masking Last Name",
-                "name": "value"
-            },
-            "path": [
-                "LAST_NAME"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Record",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Masking SSN",
-                "name": "value"
-            },
-            "path": [
-                "ID_NUMBER"
-            ]
         },
         {
             "leftPort": {
