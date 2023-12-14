@@ -531,6 +531,45 @@
         },
         {
             "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Masking First Name",
+                "name": "value"
+            },
+            "path": [
+                "first_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Masking Last Name",
+                "name": "value"
+            },
+            "path": [
+                "last_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Masking SSN",
+                "name": "value"
+            },
+            "path": [
+                "ssn"
+            ]
+        },
+        {
+            "leftPort": {
                 "actor": "FirstNames",
                 "name": "strings"
             },
