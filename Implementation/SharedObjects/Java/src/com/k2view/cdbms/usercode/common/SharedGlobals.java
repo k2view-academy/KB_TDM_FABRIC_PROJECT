@@ -95,7 +95,7 @@ public class SharedGlobals {
 	@category("TDM_DEBUG")
 	public static String TASK_TYPE = "EXTRACT";
 	@category("TDM_DEBUG")
-	public static String enable_masking = "true";
+	public static String enable_masking = "false";
 	@category("TDM_DEBUG")
 	public static String enable_sequences = "false";
 
@@ -109,7 +109,7 @@ public class SharedGlobals {
 	public static String clone_id = "0";
 
 	@category("TDM")
-	public static String EXTRACT_MASKING_FLAG = "true";
+	public static String EXTRACT_MASKING_FLAG = "false";
 	@category("TDM")
 	public static String LOAD_MASKING_FLAG = "false";
 
