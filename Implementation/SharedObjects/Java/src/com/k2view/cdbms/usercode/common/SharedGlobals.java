@@ -95,7 +95,7 @@ public class SharedGlobals {
 	@category("TDM_DEBUG")
 	public static String TASK_TYPE = "EXTRACT";
 	@category("TDM_DEBUG")
-	public static String enable_masking = "false";
+	public static String enable_masking = "true";
 	@category("TDM_DEBUG")
 	public static String enable_sequences = "false";
 
@@ -111,7 +111,7 @@ public class SharedGlobals {
 	@category("TDM")
 	public static String EXTRACT_MASKING_FLAG = "false";
 	@category("TDM")
-	public static String LOAD_MASKING_FLAG = "false";
+	public static String LOAD_MASKING_FLAG = "true";
 
 	@category("TDM")
 	public static String TDM_SUMMARY_REPORT_LIMIT = "10000";
