@@ -292,7 +292,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select * from CUSTOMER"
+                                        "const": "select * from public.customer"
                                     },
                                     {
                                         "name": "rowsGeneratorDistribution",
@@ -310,16 +310,16 @@
                                             "items": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "CUSTOMER_ID": {
+                                                    "customer_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "ssn": {
                                                         "type": "string"
                                                     },
-                                                    "SSN": {
+                                                    "first_name": {
                                                         "type": "string"
                                                     },
-                                                    "FIRST_NAME": {
-                                                        "type": "string"
-                                                    },
-                                                    "LAST_NAME": {
+                                                    "last_name": {
                                                         "type": "string"
                                                     }
                                                 }
@@ -339,18 +339,17 @@
                                         "const": "getLuTableColumns"
                                     },
                                     {
-                                        "const": "Customer",
-                                        "name": "luType",
+                                        "name": "table",
                                         "schema": {
                                             "type": "string"
                                         }
                                     },
                                     {
-                                        "const": "CUSTOMER",
-                                        "name": "table",
+                                        "name": "luName",
                                         "schema": {
                                             "type": "string"
-                                        }
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -398,9 +397,90 @@
         {
             "stages": [
                 {
-                    "name": "Set instance As Found",
+                    "name": "Convert to Lowecase",
                     "dependsOnList": [
                         "Source"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lowercase",
+                            "actorType": {
+                                "parentType": "Lowercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Do Nothing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse",
+                    "dependsOnList": [
+                        "Convert to Lowecase"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonParser",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set instance As Found",
+                    "dependsOnList": [
+                        "Parse"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -429,7 +509,7 @@
                 {
                     "name": "Stage 2",
                     "dependsOnList": [
-                        "Do Nothing"
+                        "Stage 4"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -466,44 +546,20 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "newRow",
+                                        "name": "map",
                                         "schema": {
                                             "type": "object",
                                             "properties": {
                                                 "customer_id": {
                                                     "type": "integer"
                                                 },
-                                                "id_number": {
+                                                "ssn": {
                                                     "type": "string"
                                                 },
                                                 "first_name": {
                                                     "type": "string"
                                                 },
                                                 "last_name": {
-                                                    "type": "string"
-                                                },
-                                                "email": {
-                                                    "type": "string"
-                                                },
-                                                "primary_phone": {
-                                                    "type": "string"
-                                                },
-                                                "additional_phone": {
-                                                    "type": "string"
-                                                },
-                                                "social_net_fb": {
-                                                    "type": "string"
-                                                },
-                                                "social_net_tw": {
-                                                    "type": "string"
-                                                },
-                                                "social_net_lnk": {
-                                                    "type": "string"
-                                                },
-                                                "occupation": {
-                                                    "type": "string"
-                                                },
-                                                "picture": {
                                                     "type": "string"
                                                 }
                                             }
@@ -732,8 +788,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Mask Customer Data",
-                "name": "row"
+                "actor": "Lowercase",
+                "name": "string"
             },
             "iterate": "Iterate"
         },
@@ -769,8 +825,28 @@
         },
         {
             "leftPort": {
+                "actor": "Lowercase",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "JsonParser",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser",
+                "name": "object"
+            },
+            "rightPort": {
                 "actor": "Mask Customer Data",
-                "name": "newRow"
+                "name": "row"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Mask Customer Data",
+                "name": "map"
             },
             "rightPort": {
                 "actor": "Root Table",
@@ -795,6 +871,26 @@
             "rightPort": {
                 "actor": "Delete Root Table",
                 "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Get Tables Fields",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema"
+            },
+            "rightPort": {
+                "actor": "Get Tables Fields",
+                "name": "luName"
             }
         },
         {

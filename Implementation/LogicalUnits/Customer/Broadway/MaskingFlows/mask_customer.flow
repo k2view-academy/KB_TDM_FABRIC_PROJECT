@@ -30,16 +30,16 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "CUSTOMER_ID": {
+                                                "customer_id": {
                                                     "type": "string"
                                                 },
-                                                "SSN": {
+                                                "ssn": {
                                                     "type": "string"
                                                 },
-                                                "FIRST_NAME": {
+                                                "first_name": {
                                                     "type": "string"
                                                 },
-                                                "LAST_NAME": {
+                                                "last_name": {
                                                     "type": "string"
                                                 }
                                             }
@@ -399,21 +399,21 @@
                                 "parentType": "MapCreate",
                                 "inputs": [
                                     {
-                                        "name": "FIRST_NAME",
+                                        "name": "first_name",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "LAST_NAME",
+                                        "name": "last_name",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "SSN",
+                                        "name": "ssn",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -453,7 +453,7 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Final Record",
+                            "name": "MapMerge1",
                             "actorType": {
                                 "parentType": "MapMerge",
                                 "inputs": [],
@@ -464,39 +464,15 @@
                                             "type": "object",
                                             "properties": {
                                                 "customer_id": {
-                                                    "type": "integer"
+                                                    "type": "string"
                                                 },
-                                                "id_number": {
+                                                "ssn": {
                                                     "type": "string"
                                                 },
                                                 "first_name": {
                                                     "type": "string"
                                                 },
                                                 "last_name": {
-                                                    "type": "string"
-                                                },
-                                                "email": {
-                                                    "type": "string"
-                                                },
-                                                "primary_phone": {
-                                                    "type": "string"
-                                                },
-                                                "additional_phone": {
-                                                    "type": "string"
-                                                },
-                                                "social_net_fb": {
-                                                    "type": "string"
-                                                },
-                                                "social_net_tw": {
-                                                    "type": "string"
-                                                },
-                                                "social_net_lnk": {
-                                                    "type": "string"
-                                                },
-                                                "occupation": {
-                                                    "type": "string"
-                                                },
-                                                "picture": {
                                                     "type": "string"
                                                 }
                                             }
@@ -527,22 +503,11 @@
                 "name": "value"
             },
             "rightPort": {
-                "actor": "Final Record",
-                "name": "maps"
-            },
-            "arrayPosition": 0
-        },
-        {
-            "leftPort": {
-                "actor": "Record",
-                "name": "value"
-            },
-            "rightPort": {
                 "actor": "Masking SSN",
                 "name": "value"
             },
             "path": [
-                "SSN"
+                "ssn"
             ]
         },
         {
@@ -555,7 +520,7 @@
                 "name": "value"
             },
             "path": [
-                "FIRST_NAME"
+                "first_name"
             ]
         },
         {
@@ -568,8 +533,19 @@
                 "name": "value"
             },
             "path": [
-                "LAST_NAME"
+                "last_name"
             ]
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapMerge1",
+                "name": "maps"
+            },
+            "arrayPosition": 0
         },
         {
             "leftPort": {
@@ -598,7 +574,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "FIRST_NAME"
+                "name": "first_name"
             }
         },
         {
@@ -608,7 +584,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "LAST_NAME"
+                "name": "last_name"
             }
         },
         {
@@ -618,7 +594,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "SSN"
+                "name": "ssn"
             }
         },
         {
@@ -627,7 +603,7 @@
                 "name": "map"
             },
             "rightPort": {
-                "actor": "Final Record",
+                "actor": "MapMerge1",
                 "name": "maps"
             },
             "arrayPosition": 1
@@ -644,12 +620,12 @@
         },
         {
             "leftPort": {
-                "actor": "Final Record",
+                "actor": "MapMerge1",
                 "name": "map"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "newRow"
+                "name": "map"
             }
         }
     ]
