@@ -30,16 +30,16 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "customer_id": {
-                                                    "type": "integer"
-                                                },
-                                                "ssn": {
+                                                "CUSTOMER_ID": {
                                                     "type": "string"
                                                 },
-                                                "first_name": {
+                                                "SSN": {
                                                     "type": "string"
                                                 },
-                                                "last_name": {
+                                                "FIRST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "LAST_NAME": {
                                                     "type": "string"
                                                 }
                                             }
@@ -399,21 +399,21 @@
                                 "parentType": "MapCreate",
                                 "inputs": [
                                     {
-                                        "name": "first_name",
+                                        "name": "FIRST_NAME",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "last_name",
+                                        "name": "LAST_NAME",
                                         "schema": {
                                             "type": "string"
                                         },
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "ssn",
+                                        "name": "SSN",
                                         "schema": {
                                             "type": "string"
                                         },
@@ -430,6 +430,9 @@
                                                     "type": "string"
                                                 },
                                                 "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "ssn": {
                                                     "type": "string"
                                                 }
                                             }
@@ -535,11 +538,24 @@
                 "name": "value"
             },
             "rightPort": {
+                "actor": "Masking SSN",
+                "name": "value"
+            },
+            "path": [
+                "SSN"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
                 "actor": "Masking First Name",
                 "name": "value"
             },
             "path": [
-                "first_name"
+                "FIRST_NAME"
             ]
         },
         {
@@ -552,20 +568,7 @@
                 "name": "value"
             },
             "path": [
-                "last_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Record",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Masking SSN",
-                "name": "value"
-            },
-            "path": [
-                "ssn"
+                "LAST_NAME"
             ]
         },
         {
@@ -595,7 +598,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "first_name"
+                "name": "FIRST_NAME"
             }
         },
         {
@@ -605,7 +608,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "last_name"
+                "name": "LAST_NAME"
             }
         },
         {
@@ -615,7 +618,7 @@
             },
             "rightPort": {
                 "actor": "Name Concat",
-                "name": "ssn"
+                "name": "SSN"
             }
         },
         {
