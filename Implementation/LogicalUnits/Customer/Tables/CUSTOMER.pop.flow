@@ -397,7 +397,7 @@
         {
             "stages": [
                 {
-                    "name": "Convert to Lowecase",
+                    "name": "Convert to Lowercase",
                     "dependsOnList": [
                         "Source"
                     ],
@@ -429,7 +429,7 @@
                 {
                     "name": "Parse",
                     "dependsOnList": [
-                        "Convert to Lowecase"
+                        "Convert to Lowercase"
                     ],
                     "isLast": 0,
                     "actors": [

@@ -57,6 +57,10 @@
                                         "const": "order_id"
                                     },
                                     {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
                                         "name": "flowName",
                                         "const": "Sequence.actor"
                                     },
@@ -67,10 +71,6 @@
                                     {
                                         "name": "useEnvironment",
                                         "const": true
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
                                     },
                                     {
                                         "name": "TTL",
@@ -336,7 +336,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CONTRACT_ID"
+                "name": "contract_id"
             }
         },
         {
@@ -346,7 +346,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "ORDER_ID"
+                "name": "order_id"
             }
         },
         {
@@ -366,7 +366,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "ORDER_TYPE"
+                "name": "order_type"
             }
         },
         {
@@ -386,7 +386,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "ORDER_DATE"
+                "name": "order_date"
             }
         },
         {
@@ -406,7 +406,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "ORDER_STATUS"
+                "name": "order_status"
             }
         }
     ]

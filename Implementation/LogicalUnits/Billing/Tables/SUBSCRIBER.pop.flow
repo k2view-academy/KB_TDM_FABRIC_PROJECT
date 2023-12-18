@@ -410,9 +410,90 @@
         {
             "stages": [
                 {
-                    "name": "Set instance As Found",
+                    "name": "Convert to Lowercase",
                     "dependsOnList": [
                         "Source"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lowercase",
+                            "actorType": {
+                                "parentType": "Lowercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [
+                        "Do Nothing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Parse",
+                    "dependsOnList": [
+                        "Convert to Lowercase"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonParser",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ssn": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [
+                        "Stage 3"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set instance As Found",
+                    "dependsOnList": [
+                        "Parse"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -441,7 +522,7 @@
                 {
                     "name": "Do Nothing 1",
                     "dependsOnList": [
-                        "Do Nothing"
+                        "Stage 5"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -744,8 +825,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Mask Subscriber Data",
-                "name": "row"
+                "actor": "Lowercase",
+                "name": "string"
             },
             "iterate": "Iterate"
         },
@@ -777,6 +858,26 @@
             "rightPort": {
                 "actor": "Check if Instance Was Not Found In Source",
                 "name": "isChildLu"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lowercase",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "JsonParser",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Mask Subscriber Data",
+                "name": "row"
             }
         },
         {

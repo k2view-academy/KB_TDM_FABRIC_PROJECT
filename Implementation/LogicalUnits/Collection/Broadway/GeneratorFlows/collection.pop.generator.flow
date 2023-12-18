@@ -57,6 +57,10 @@
                                         "const": "customer_id"
                                     },
                                     {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
                                         "name": "flowName",
                                         "const": "Sequence.actor"
                                     },
@@ -67,10 +71,6 @@
                                     {
                                         "name": "useEnvironment",
                                         "const": true
-                                    },
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
                                     },
                                     {
                                         "name": "TTL",
@@ -297,7 +297,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "CUSTOMER_ID"
+                "name": "customer_id"
             }
         },
         {
@@ -307,7 +307,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "COLLECTION_ID"
+                "name": "collection_id"
             }
         },
         {
@@ -327,7 +327,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "LAST_UPDATE"
+                "name": "last_update"
             }
         },
         {
@@ -347,7 +347,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "COLLECTION_STATUS"
+                "name": "collection_status"
             }
         }
     ]
