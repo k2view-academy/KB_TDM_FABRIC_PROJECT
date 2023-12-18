@@ -30,28 +30,28 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "SUBSCRIBER_ID": {
+                                                "subscriber_id": {
                                                     "type": "string"
                                                 },
-                                                "MSISDN": {
+                                                "msisdn": {
                                                     "type": "string"
                                                 },
-                                                "IMSI": {
+                                                "imsi": {
                                                     "type": "string"
                                                 },
-                                                "SIM": {
+                                                "sim": {
                                                     "type": "string"
                                                 },
-                                                "SUBSCRIBER_TYPE": {
+                                                "subscriber_type": {
                                                     "type": "string"
                                                 },
-                                                "VIP_STATUS": {
+                                                "vip_status": {
                                                     "type": "string"
                                                 },
-                                                "FIRST_NAME": {
+                                                "first_name": {
                                                     "type": "string"
                                                 },
-                                                "LAST_NAME": {
+                                                "last_name": {
                                                     "type": "string"
                                                 }
                                             }
@@ -512,7 +512,7 @@
                 "name": "value"
             },
             "path": [
-                "FIRST_NAME"
+                "first_name"
             ]
         },
         {
@@ -525,7 +525,7 @@
                 "name": "value"
             },
             "path": [
-                "LAST_NAME"
+                "last_name"
             ]
         },
         {
