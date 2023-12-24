@@ -120,6 +120,10 @@
                                     {
                                         "name": "message",
                                         "const": "The task execution ended. Task ID: ${1}, task execution id: ${0}, task execution status: ${2}, \r\nnumber of processed entities: ${3}, \r\nnumber of successful entities: ${4},\r\nnumber of failed entities: ${5}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
                                     }
                                 ],
                                 "outputs": []
