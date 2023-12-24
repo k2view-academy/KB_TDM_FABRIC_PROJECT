@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "Create"
+    ],
     "levels": [
         {
             "stages": [
@@ -130,7 +133,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "INSERT INTO ${@schema}.permission_groups_mapping(\r\n\tdescription, fabric_role, permission_group, created_by, updated_by, creation_date, update_date)\r\n\tVALUES ('Initial mapping for admin user',${k2v_user} ,'admin', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\r\n\t"
+                                        "const": "INSERT INTO ${@schema}.permission_groups_mapping(\r\n\tdescription, fabric_role, permission_group, created_by, updated_by, creation_date, update_date)\r\n\tVALUES ('Initial mapping for TDM tester course user',${k2v_user} ,'tester', 'admin', 'admin', NOW(), NOW()) ON CONFLICT DO NOTHING;\r\n\t"
                                     },
                                     {
                                         "name": "k2v_user",
