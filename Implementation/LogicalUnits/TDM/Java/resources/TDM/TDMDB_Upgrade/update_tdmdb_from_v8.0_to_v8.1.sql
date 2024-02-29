@@ -1,6 +1,9 @@
 -- Update TDM version
 update ${@schema}.tdm_general_parameters set param_value = '8.1' where param_name = 'TDM_VERSION' ;
 
+ALTER TABLE ${@schema}.task_execution_list ALTER COLUMN task_executed_by TYPE text;
+ALTER TABLE ${@schema}.task_execution_summary ALTER COLUMN task_executed_by TYPE text;
+
 ALTER TABLE ${@schema}.product_logical_units
 DROP COLUMN IF EXISTS lu_dc_name;
 
