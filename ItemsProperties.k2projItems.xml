@@ -192,6 +192,11 @@
       <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\DEMO\orders_create.sql</RelativePath>
       <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@DEMO</CategoryKey>
     </ProjectItemProp>
+    <ProjectItemProp>
+      <NodeName>update_tdmdb_from_v8.0_to_v8.1.sql&amp;nbsp;&amp;nbsp;&lt;span style="font-size: 12px;color: #aaaaaa;"&gt;TDM\TDMDB_Upgrade&lt;/span&gt;</NodeName>
+      <RelativePath>Implementation\LogicalUnits\TDM\Java\resources\TDM\TDMDB_Upgrade\update_tdmdb_from_v8.0_to_v8.1.sql</RelativePath>
+      <CategoryKey>Implementation\LogicalUnits\TDM\Java\resources@UPGRADE</CategoryKey>
+    </ProjectItemProp>
   </ProjectItemPropList>
   <ProjectItemsCategoryList>
     <ProjectItemsCategory>
