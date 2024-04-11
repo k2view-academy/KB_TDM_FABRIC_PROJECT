@@ -725,7 +725,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "result"
+                "name": "value"
             }
         },
         {
@@ -735,7 +735,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "result"
+                "name": "value"
             }
         }
     ]
