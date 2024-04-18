@@ -366,13 +366,7 @@
                                     {
                                         "name": "fields",
                                         "const": [
-                                            "task_execution_id"
-                                        ]
-                                    },
-                                    {
-                                        "name": "keys",
-                                        "const": [
-                                            "task_execution_id"
+                                            "TASK_EXECUTION_ID"
                                         ]
                                     },
                                     {
@@ -380,11 +374,8 @@
                                         "const": "sqlite"
                                     },
                                     {
-                                        "name": "task_execution_id",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
+                                        "name": "TASK_EXECUTION_ID",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -432,16 +423,6 @@
                 "name": "iid"
             },
             "rightPort": {
-                "actor": "TASK_EXECUTION",
-                "name": "task_execution_id"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
                 "actor": "Reject Message",
                 "name": "TASK_EXECUTION_ID"
             }
@@ -454,6 +435,16 @@
             "rightPort": {
                 "actor": "Get Count Of unfinished LUs",
                 "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "TASK_EXECUTION",
+                "name": "TASK_EXECUTION_ID"
             }
         },
         {
