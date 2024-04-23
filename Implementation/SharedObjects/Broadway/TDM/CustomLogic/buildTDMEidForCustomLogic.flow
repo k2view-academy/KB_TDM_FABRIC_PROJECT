@@ -469,7 +469,7 @@
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "result"
+                "name": "value"
             }
         }
     ]
