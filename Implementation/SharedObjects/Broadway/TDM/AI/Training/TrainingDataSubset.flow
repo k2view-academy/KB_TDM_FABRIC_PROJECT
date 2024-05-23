@@ -1,0 +1,1253 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      luName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+        out:
+          value:
+            schema: string
+      dcName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: dcName
+        out:
+          value:
+            schema: string
+      taskExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionID
+        out:
+          value:
+            schema: string
+      LuID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: LuID
+            schema: string
+        out:
+          value:
+            schema: string
+      Now:
+        parent: Now
+      Set LuType:
+        parent: FabricSet
+        in:
+          key:
+            const: LU_TYPE
+          value:
+            const: null
+            external: luName
+            default: false
+  Set Inputs:
+    actors:
+      enable_masking:
+        parent: FabricSet
+        in:
+          key:
+            default: false
+          value:
+            default: false
+      postgres schema name:
+        parent: Lowercase
+        in:
+          string:
+            link: luName/value
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+      'Format the current date to load it ':
+        parent: DateFormat
+        in:
+          date:
+            link: Now/date
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      TDM_TASK_EXE_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+          value:
+            link: taskExecutionID/value
+      Set TDM_LU_NAME:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_LU_NAME
+            default: false
+          value:
+            link: luName/value
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+            default: false
+  'Get Execution Parameters ':
+    actors:
+      set environment:
+        parent: FabricSet
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: AI_ENVIRONMENT/result
+            default: false
+      'Space ID ':
+        parent: SysEnv
+        in:
+          name:
+            const: SPACE_NAME
+        out:
+          value:
+            schema: '#ref'
+      Tenant ID:
+        parent: SysEnv
+        in:
+          name:
+            const: TENANT_NAME
+        out:
+          value:
+            schema: '#ref'
+      StringFormat1:
+        parent: StringFormat
+        in:
+          format:
+            const: ${interfcae}_External
+          interfcae:
+            link: AI_DB_K2SYSTEM1/result
+            schema: string
+            mandatory: false
+  Prepare Infra:
+    actors:
+      namespace:
+        parent: StringFormat
+        in:
+          format:
+            const: tdmml${execID}-${space_id}-${tenant_id}
+          execID:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          space_id:
+            link: Space ID /value
+            schema: '#ref'
+            mandatory: false
+          tenant_id:
+            link: Tenant ID/value
+            schema: string
+            mandatory: false
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+      'Get Interface Details ':
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnValidateInterfaceDetails
+          Interface:
+            link: StringFormat1/string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Init Infra:
+    actors:
+      'ErrorHandler 3   ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      kubeBuildMedoidInfraInit1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeBuildMedoidInfraInit
+          namespace:
+            link: namespace/string
+            schema: string
+            mandatory: false
+          pg-pass:
+            link: Get Interface Details /result/Password
+            schema: string
+            mandatory: false
+          pg-host:
+            link: Get Interface Details /result/Host
+            schema: string
+            mandatory: false
+          pg-db:
+            link: Get Interface Details /result/Data
+            schema: string
+            mandatory: false
+          pg-port:
+            link: Get Interface Details /result/Port
+            schema: string
+            mandatory: false
+          pg-user:
+            link: Get Interface Details /result/User
+            schema: string
+            mandatory: false
+          storage-size:
+            const: 200Gi
+            schema: string
+            default: true
+            mandatory: false
+  'Execute Infra ':
+    actors:
+      kubeCreateTrainingTaskGPU1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: kubeCreateTrainingTaskGPU
+          namespace:
+            link: namespace/string
+            schema: string
+            mandatory: false
+          training_image:
+            const: europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-training-task:1.0.5
+            schema: string
+            mandatory: false
+          id:
+            const: gcr.io/k2view-medoid/medoid-postgres:latest
+            link: taskExecutionID/value
+            schema: string
+            default: true
+            mandatory: false
+      New Task task_executions:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: UPDATE ${@k2systemName}.task_executions SET status='NEW',last_update_time=NOW()
+              where id=${task_execution_id}
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          k2systemName:
+            link: Get k2system Schema Name/result
+            schema: string
+            mandatory: false
+      wait 10 Sec:
+        parent: Sleep
+        in:
+          millis:
+            const: 10000
+  'Update task execution list ':
+    actors:
+      task_execution_list:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@TDMDB_SCHEMA}.task_execution_list\r\n\tSET   execution_status='running'\r\
+              \n\tWHERE task_execution_id=${EXEID} and lu_id=${lu_id} and process_id=-1;"
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          EXEID:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          lu_id:
+            link: LuID/value
+            schema: string
+            mandatory: false
+  Check Training Task Status:
+    actors:
+      ErrorHandler 4:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Check task status:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnCheckMedoidTaskStatus
+          interface_name:
+            link: AI_DB_K2SYSTEM1/result
+            schema: string
+            mandatory: false
+          task_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+        out:
+          taskStatus:
+            schema: string
+  If Training Job Failed:
+    dependsOn: Check Training Task Status
+    actors:
+      EqualsIgnoreCase1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: FAILED
+            schema: string
+          a:
+            link: Check task status/taskStatus
+    split: '--------------------'
+  Do Nothing:
+    else: true
+    transactional: false
+    dependsOn: Check Training Task Status
+  'Fail  ':
+    dependsOn: If Training Job Failed
+    actors:
+      PopulateAITablesWithFailed:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: PopulateAITablesWithFailed
+          error:
+            schema: any
+            mandatory: false
+      Throw Exception:
+        parent: JavaScript
+        in:
+          script:
+            const: throw "The AI Task Failed"
+    split: '--------------------'
+  'Do Nothing   ':
+    transactional: false
+    dependsOn: Do Nothing
+schemas:
+  Space ID .out.value:
+    type: object
+    properties:
+      PROJECT_ID:
+        type: string
+      FABRIC_EXT_JARS:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT_FABRIC_PORT:
+        type: string
+      KUBERNETES_SERVICE_PORT:
+        type: string
+      JAVA:
+        type: string
+      PATH:
+        type: string
+      PROJECT_DIR:
+        type: string
+      KUBERNETES_PORT:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PROTO:
+        type: string
+      TENANT_ID:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_ADDR:
+        type: string
+      ADD_CERTS:
+        type: string
+      DEMO_DIR:
+        type: string
+      NVM_DIR:
+        type: string
+      FABRIC_URL_HOST:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_ADDR:
+        type: string
+      POSTGRES_SERVICE_PORT:
+        type: string
+      FABRIC_CONF:
+        type: string
+      JAVA_HOME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PROTO:
+        type: string
+      SPACE_NAME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PORT:
+        type: string
+      POSTGRES_SERVICE_SERVICE_HOST:
+        type: string
+      WEB_STUDIO:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP_ADDR:
+        type: string
+      K2_HOME:
+        type: string
+      TENANT_NAME:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PORT:
+        type: string
+      MONITORING:
+        type: string
+      HOSTNAME:
+        type: string
+      CLUSTER_ID:
+        type: string
+      SHLVL:
+        type: string
+      CODE_GUARD_KEY_FILE:
+        type: string
+      ROOTDIR:
+        type: string
+      CLASSPATH:
+        type: string
+      FABRIC_SERVICE_SERVICE_HOST:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT_POSTGRES_PORT:
+        type: string
+      HOME:
+        type: string
+      FABRIC_URL_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP:
+        type: string
+      SPACE_ID:
+        type: string
+      KUBERNETES_SERVICE_HOST:
+        type: string
+      FABRIC_URL_SCHEMA:
+        type: string
+      FABRIC_HOME:
+        type: string
+      JVM_OPTS:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT:
+        type: string
+      WORKSPACE:
+        type: string
+      CONFIG_UPDATE_FILE:
+        type: string
+      PROJECT_NAME:
+        type: string
+      COPY_FILES:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PROTO:
+        type: string
+      KUBERNETES_SERVICE_PORT_HTTPS:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP:
+        type: string
+      FABRIC_JDBC_PORT:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT:
+        type: string
+      JSTACK:
+        type: string
+      CLOUD_SCRIPTS_DIR:
+        type: string
+      PWD:
+        type: string
+      FABRIC_SERVICE_PORT:
+        type: string
+      com.sun.management.jmxremote.rmi.port:
+        type: string
+      java.specification.version:
+        type: string
+      javax.net.ssl.trustStorePassword:
+        type: string
+      sun.jnu.encoding:
+        type: string
+      sun.arch.data.model:
+        type: string
+      nashorn.args:
+        type: string
+      java.vendor.url:
+        type: string
+      catalina.useNaming:
+        type: string
+      sun.boot.library.path:
+        type: string
+      com.sun.management.jmxremote.ssl:
+        type: string
+      projectDir:
+        type: string
+      sun.java.command:
+        type: string
+      jdk.debug:
+        type: string
+      java.specification.vendor:
+        type: string
+      java.version.date:
+        type: string
+      java.home:
+        type: string
+      file.separator:
+        type: string
+      java.vm.compressedOopsMode:
+        type: string
+      line.separator:
+        type: string
+      java.vm.specification.vendor:
+        type: string
+      java.specification.name:
+        type: string
+      localDeploy:
+        type: string
+      oracle.jdbc.maxCachedBufferSize:
+        type: string
+      com.sun.management.jmxremote.password.file:
+        type: string
+      javax.xml.parsers.DocumentBuilderFactory:
+        type: string
+      sun.net.httpserver.maxReqTime:
+        type: string
+      javax.net.ssl.trustStore:
+        type: string
+      sun.management.compiler:
+        type: string
+      java.runtime.version:
+        type: string
+      user.name:
+        type: string
+      file.encoding:
+        type: string
+      broadwayUI:
+        type: string
+      DynamicJarsDir:
+        type: string
+      java.io.tmpdir:
+        type: string
+      com.sun.management.jmxremote.port:
+        type: string
+      java.version:
+        type: string
+      sun.net.httpserver.maxRspTime:
+        type: string
+      K2_FABRIC_SERVER_HOME:
+        type: string
+      java.vm.specification.name:
+        type: string
+      native.encoding:
+        type: string
+      java.library.path:
+        type: string
+      stderr.encoding:
+        type: string
+      java.vendor:
+        type: string
+      java.rmi.server.randomIDs:
+        type: string
+      sun.io.unicode.encoding:
+        type: string
+      javax.xml.transform.TransformerFactory:
+        type: string
+      java.class.path:
+        type: string
+      com.sun.management.jmxremote.authenticate:
+        type: string
+      java.vm.vendor:
+        type: string
+      oracle.jdbc.implicitStatementCacheSize:
+        type: string
+      user.timezone:
+        type: string
+      java.vm.specification.version:
+        type: string
+      os.name:
+        type: string
+      sun.java.launcher:
+        type: string
+      user.country:
+        type: string
+      sun.cpu.endian:
+        type: string
+      user.home:
+        type: string
+      user.language:
+        type: string
+      compilationDir:
+        type: string
+      javax.net.ssl.keyStorePassword:
+        type: string
+      java.system.class.loader:
+        type: string
+      org.apache.xml.security.ignoreLineBreaks:
+        type: string
+      com.sun.management.jmxremote.access.file:
+        type: string
+      javax.xml.parsers.SAXParserFactory:
+        type: string
+      java.net.preferIPv4Stack:
+        type: string
+      stdout.encoding:
+        type: string
+      path.separator:
+        type: string
+      os.version:
+        type: string
+      java.runtime.name:
+        type: string
+      java.vm.name:
+        type: string
+      PROCID:
+        type: string
+      javax.net.ssl.keyStore:
+        type: string
+      java.vendor.url.bug:
+        type: string
+      app.class.path:
+        type: string
+      catalina.home:
+        type: string
+      oracle.jdbc.ReadTimeout:
+        type: string
+      user.dir:
+        type: string
+      os.arch:
+        type: string
+      catalina.base:
+        type: string
+      java.vm.info:
+        type: string
+      java.vm.version:
+        type: string
+      java.rmi.server.hostname:
+        type: string
+      java.class.version:
+        type: string
+  Tenant ID.out.value:
+    type: object
+    properties:
+      PROJECT_ID:
+        type: string
+      FABRIC_EXT_JARS:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT_FABRIC_PORT:
+        type: string
+      KUBERNETES_SERVICE_PORT:
+        type: string
+      JAVA:
+        type: string
+      PATH:
+        type: string
+      PROJECT_DIR:
+        type: string
+      KUBERNETES_PORT:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PROTO:
+        type: string
+      TENANT_ID:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_ADDR:
+        type: string
+      ADD_CERTS:
+        type: string
+      DEMO_DIR:
+        type: string
+      NVM_DIR:
+        type: string
+      FABRIC_URL_HOST:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_ADDR:
+        type: string
+      POSTGRES_SERVICE_PORT:
+        type: string
+      FABRIC_CONF:
+        type: string
+      JAVA_HOME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PROTO:
+        type: string
+      SPACE_NAME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PORT:
+        type: string
+      POSTGRES_SERVICE_SERVICE_HOST:
+        type: string
+      WEB_STUDIO:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP_ADDR:
+        type: string
+      K2_HOME:
+        type: string
+      TENANT_NAME:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PORT:
+        type: string
+      MONITORING:
+        type: string
+      HOSTNAME:
+        type: string
+      CLUSTER_ID:
+        type: string
+      SHLVL:
+        type: string
+      CODE_GUARD_KEY_FILE:
+        type: string
+      ROOTDIR:
+        type: string
+      CLASSPATH:
+        type: string
+      FABRIC_SERVICE_SERVICE_HOST:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT_POSTGRES_PORT:
+        type: string
+      HOME:
+        type: string
+      FABRIC_URL_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP:
+        type: string
+      SPACE_ID:
+        type: string
+      KUBERNETES_SERVICE_HOST:
+        type: string
+      FABRIC_URL_SCHEMA:
+        type: string
+      FABRIC_HOME:
+        type: string
+      JVM_OPTS:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT:
+        type: string
+      WORKSPACE:
+        type: string
+      CONFIG_UPDATE_FILE:
+        type: string
+      PROJECT_NAME:
+        type: string
+      COPY_FILES:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PROTO:
+        type: string
+      KUBERNETES_SERVICE_PORT_HTTPS:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP:
+        type: string
+      FABRIC_JDBC_PORT:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT:
+        type: string
+      JSTACK:
+        type: string
+      CLOUD_SCRIPTS_DIR:
+        type: string
+      PWD:
+        type: string
+      FABRIC_SERVICE_PORT:
+        type: string
+      com.sun.management.jmxremote.rmi.port:
+        type: string
+      java.specification.version:
+        type: string
+      javax.net.ssl.trustStorePassword:
+        type: string
+      sun.jnu.encoding:
+        type: string
+      sun.arch.data.model:
+        type: string
+      nashorn.args:
+        type: string
+      java.vendor.url:
+        type: string
+      catalina.useNaming:
+        type: string
+      sun.boot.library.path:
+        type: string
+      com.sun.management.jmxremote.ssl:
+        type: string
+      projectDir:
+        type: string
+      sun.java.command:
+        type: string
+      jdk.debug:
+        type: string
+      java.specification.vendor:
+        type: string
+      java.version.date:
+        type: string
+      java.home:
+        type: string
+      file.separator:
+        type: string
+      java.vm.compressedOopsMode:
+        type: string
+      line.separator:
+        type: string
+      java.vm.specification.vendor:
+        type: string
+      java.specification.name:
+        type: string
+      localDeploy:
+        type: string
+      oracle.jdbc.maxCachedBufferSize:
+        type: string
+      com.sun.management.jmxremote.password.file:
+        type: string
+      javax.xml.parsers.DocumentBuilderFactory:
+        type: string
+      sun.net.httpserver.maxReqTime:
+        type: string
+      javax.net.ssl.trustStore:
+        type: string
+      sun.management.compiler:
+        type: string
+      java.runtime.version:
+        type: string
+      user.name:
+        type: string
+      file.encoding:
+        type: string
+      broadwayUI:
+        type: string
+      DynamicJarsDir:
+        type: string
+      java.io.tmpdir:
+        type: string
+      com.sun.management.jmxremote.port:
+        type: string
+      java.version:
+        type: string
+      sun.net.httpserver.maxRspTime:
+        type: string
+      K2_FABRIC_SERVER_HOME:
+        type: string
+      java.vm.specification.name:
+        type: string
+      native.encoding:
+        type: string
+      java.library.path:
+        type: string
+      stderr.encoding:
+        type: string
+      java.vendor:
+        type: string
+      java.rmi.server.randomIDs:
+        type: string
+      sun.io.unicode.encoding:
+        type: string
+      javax.xml.transform.TransformerFactory:
+        type: string
+      java.class.path:
+        type: string
+      com.sun.management.jmxremote.authenticate:
+        type: string
+      java.vm.vendor:
+        type: string
+      oracle.jdbc.implicitStatementCacheSize:
+        type: string
+      user.timezone:
+        type: string
+      java.vm.specification.version:
+        type: string
+      os.name:
+        type: string
+      sun.java.launcher:
+        type: string
+      user.country:
+        type: string
+      sun.cpu.endian:
+        type: string
+      user.home:
+        type: string
+      user.language:
+        type: string
+      compilationDir:
+        type: string
+      javax.net.ssl.keyStorePassword:
+        type: string
+      java.system.class.loader:
+        type: string
+      org.apache.xml.security.ignoreLineBreaks:
+        type: string
+      com.sun.management.jmxremote.access.file:
+        type: string
+      javax.xml.parsers.SAXParserFactory:
+        type: string
+      java.net.preferIPv4Stack:
+        type: string
+      stdout.encoding:
+        type: string
+      path.separator:
+        type: string
+      os.version:
+        type: string
+      java.runtime.name:
+        type: string
+      java.vm.name:
+        type: string
+      PROCID:
+        type: string
+      javax.net.ssl.keyStore:
+        type: string
+      java.vendor.url.bug:
+        type: string
+      app.class.path:
+        type: string
+      catalina.home:
+        type: string
+      oracle.jdbc.ReadTimeout:
+        type: string
+      user.dir:
+        type: string
+      os.arch:
+        type: string
+      catalina.base:
+        type: string
+      java.vm.info:
+        type: string
+      java.vm.version:
+        type: string
+      java.rmi.server.hostname:
+        type: string
+      java.class.version:
+        type: string
+  namespace.in.space_id:
+    type: object
+    properties:
+      PROJECT_ID:
+        type: string
+      FABRIC_EXT_JARS:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT_FABRIC_PORT:
+        type: string
+      KUBERNETES_SERVICE_PORT:
+        type: string
+      JAVA:
+        type: string
+      PATH:
+        type: string
+      PROJECT_DIR:
+        type: string
+      KUBERNETES_PORT:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PROTO:
+        type: string
+      TENANT_ID:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_ADDR:
+        type: string
+      ADD_CERTS:
+        type: string
+      DEMO_DIR:
+        type: string
+      NVM_DIR:
+        type: string
+      FABRIC_URL_HOST:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_ADDR:
+        type: string
+      POSTGRES_SERVICE_PORT:
+        type: string
+      FABRIC_CONF:
+        type: string
+      JAVA_HOME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PROTO:
+        type: string
+      SPACE_NAME:
+        type: string
+      KUBERNETES_PORT_443_TCP_PORT:
+        type: string
+      POSTGRES_SERVICE_SERVICE_HOST:
+        type: string
+      WEB_STUDIO:
+        type: string
+      FABRIC_SERVICE_PORT_3213_TCP_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP_ADDR:
+        type: string
+      K2_HOME:
+        type: string
+      TENANT_NAME:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PORT:
+        type: string
+      MONITORING:
+        type: string
+      HOSTNAME:
+        type: string
+      CLUSTER_ID:
+        type: string
+      SHLVL:
+        type: string
+      CODE_GUARD_KEY_FILE:
+        type: string
+      ROOTDIR:
+        type: string
+      CLASSPATH:
+        type: string
+      FABRIC_SERVICE_SERVICE_HOST:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT_POSTGRES_PORT:
+        type: string
+      HOME:
+        type: string
+      FABRIC_URL_PORT:
+        type: string
+      KUBERNETES_PORT_443_TCP:
+        type: string
+      SPACE_ID:
+        type: string
+      KUBERNETES_SERVICE_HOST:
+        type: string
+      FABRIC_URL_SCHEMA:
+        type: string
+      FABRIC_HOME:
+        type: string
+      JVM_OPTS:
+        type: string
+      POSTGRES_SERVICE_SERVICE_PORT:
+        type: string
+      WORKSPACE:
+        type: string
+      CONFIG_UPDATE_FILE:
+        type: string
+      PROJECT_NAME:
+        type: string
+      COPY_FILES:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP_PROTO:
+        type: string
+      KUBERNETES_SERVICE_PORT_HTTPS:
+        type: string
+      POSTGRES_SERVICE_PORT_5432_TCP:
+        type: string
+      FABRIC_JDBC_PORT:
+        type: string
+      FABRIC_SERVICE_SERVICE_PORT:
+        type: string
+      JSTACK:
+        type: string
+      CLOUD_SCRIPTS_DIR:
+        type: string
+      PWD:
+        type: string
+      FABRIC_SERVICE_PORT:
+        type: string
+      com.sun.management.jmxremote.rmi.port:
+        type: string
+      java.specification.version:
+        type: string
+      javax.net.ssl.trustStorePassword:
+        type: string
+      sun.jnu.encoding:
+        type: string
+      sun.arch.data.model:
+        type: string
+      nashorn.args:
+        type: string
+      java.vendor.url:
+        type: string
+      catalina.useNaming:
+        type: string
+      sun.boot.library.path:
+        type: string
+      com.sun.management.jmxremote.ssl:
+        type: string
+      projectDir:
+        type: string
+      sun.java.command:
+        type: string
+      jdk.debug:
+        type: string
+      java.specification.vendor:
+        type: string
+      java.version.date:
+        type: string
+      java.home:
+        type: string
+      file.separator:
+        type: string
+      java.vm.compressedOopsMode:
+        type: string
+      line.separator:
+        type: string
+      java.vm.specification.vendor:
+        type: string
+      java.specification.name:
+        type: string
+      localDeploy:
+        type: string
+      oracle.jdbc.maxCachedBufferSize:
+        type: string
+      com.sun.management.jmxremote.password.file:
+        type: string
+      javax.xml.parsers.DocumentBuilderFactory:
+        type: string
+      sun.net.httpserver.maxReqTime:
+        type: string
+      javax.net.ssl.trustStore:
+        type: string
+      sun.management.compiler:
+        type: string
+      java.runtime.version:
+        type: string
+      user.name:
+        type: string
+      file.encoding:
+        type: string
+      broadwayUI:
+        type: string
+      DynamicJarsDir:
+        type: string
+      java.io.tmpdir:
+        type: string
+      com.sun.management.jmxremote.port:
+        type: string
+      java.version:
+        type: string
+      sun.net.httpserver.maxRspTime:
+        type: string
+      K2_FABRIC_SERVER_HOME:
+        type: string
+      java.vm.specification.name:
+        type: string
+      native.encoding:
+        type: string
+      java.library.path:
+        type: string
+      stderr.encoding:
+        type: string
+      java.vendor:
+        type: string
+      java.rmi.server.randomIDs:
+        type: string
+      sun.io.unicode.encoding:
+        type: string
+      javax.xml.transform.TransformerFactory:
+        type: string
+      java.class.path:
+        type: string
+      com.sun.management.jmxremote.authenticate:
+        type: string
+      java.vm.vendor:
+        type: string
+      oracle.jdbc.implicitStatementCacheSize:
+        type: string
+      user.timezone:
+        type: string
+      java.vm.specification.version:
+        type: string
+      os.name:
+        type: string
+      sun.java.launcher:
+        type: string
+      user.country:
+        type: string
+      sun.cpu.endian:
+        type: string
+      user.home:
+        type: string
+      user.language:
+        type: string
+      compilationDir:
+        type: string
+      javax.net.ssl.keyStorePassword:
+        type: string
+      java.system.class.loader:
+        type: string
+      org.apache.xml.security.ignoreLineBreaks:
+        type: string
+      com.sun.management.jmxremote.access.file:
+        type: string
+      javax.xml.parsers.SAXParserFactory:
+        type: string
+      java.net.preferIPv4Stack:
+        type: string
+      stdout.encoding:
+        type: string
+      path.separator:
+        type: string
+      os.version:
+        type: string
+      java.runtime.name:
+        type: string
+      java.vm.name:
+        type: string
+      PROCID:
+        type: string
+      javax.net.ssl.keyStore:
+        type: string
+      java.vendor.url.bug:
+        type: string
+      app.class.path:
+        type: string
+      catalina.home:
+        type: string
+      oracle.jdbc.ReadTimeout:
+        type: string
+      user.dir:
+        type: string
+      os.arch:
+        type: string
+      catalina.base:
+        type: string
+      java.vm.info:
+        type: string
+      java.vm.version:
+        type: string
+      java.rmi.server.hostname:
+        type: string
+      java.class.version:
+        type: string
+  Get Interface Details .out.result:
+    type: object
+    properties:
+      Data:
+        type: string
+      Host:
+        type: string
+      ioprovider:
+        type: string
+      Password:
+        type: string
+      Port:
+        type: string
+      TechType:
+        type: string
+      User:
+        type: string

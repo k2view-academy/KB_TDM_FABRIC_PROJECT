@@ -1,0 +1,499 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Run Select",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select * from @TDMDB_SCHEMA@.tdm_generate_task_field_mappings\r\nwhere task_id = ${task_id}\r\norder by param_order"
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "param_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "param_type": {
+                                                        "type": "string"
+                                                    },
+                                                    "param_value": {
+                                                        "type": "string"
+                                                    },
+                                                    "param_order": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "In case of Object",
+                    "dependsOnList": [
+                        "Get Data"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JavaScript1",
+                            "minHeight": 127,
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var res = true;\r\ntry {\r\n    JSON.parse(value);\r\n    } catch (e) {\r\n        res = false;\r\n    }\r\nres;",
+                                            "script": "var res = true;\n\ntry {\n  JSON.parse(value);\n} catch (e) {\n  res = false;\n}\n\nres;"
+                                        }
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "JsonParser1",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "city": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Not Object",
+                    "dependsOnList": [
+                        "Get Data"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Const1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add to Output Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create Map for Value",
+                            "minHeight": 181,
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "value"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "city": {
+                                                    "type": "string"
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "crm_cases_number_of_records": {}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "previous",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "maximum": {
+                                                    "type": "string"
+                                                },
+                                                "distribution": {
+                                                    "type": "string"
+                                                },
+                                                "round": {
+                                                    "type": "boolean"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "minimum": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Create Map for Order",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "order"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "city": {
+                                                    "type": "string"
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "crm_cases_number_of_records": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Maps",
+                            "minHeight": 228,
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "value": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "maximum": {
+                                                            "type": "string"
+                                                        },
+                                                        "distribution": {
+                                                            "type": "string"
+                                                        },
+                                                        "round": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "minimum": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "order": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add to Output",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "city": {
+                                                    "type": "string"
+                                                },
+                                                "contract_ref_id": {
+                                                    "type": "string"
+                                                },
+                                                "crm_cases_number_of_records": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Run Select",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create Map for Order",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "param_order"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Run Select",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "param_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Run Select",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JsonParser1",
+                "name": "stream"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "param_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Run Select",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Add to Output",
+                "name": "key"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "param_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Run Select",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JavaScript1",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "param_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser1",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Create Map for Value",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Create Map for Value",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create Map for Value",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Create Map for Order",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Add to Output",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_id"
+            },
+            "rightPort": {
+                "actor": "Run Select",
+                "name": "task_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add to Output",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

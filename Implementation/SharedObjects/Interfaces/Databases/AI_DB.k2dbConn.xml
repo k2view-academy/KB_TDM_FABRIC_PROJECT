@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="AI_DB" type="genericdb" version="8.0.0">
+    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+    <Active>true</Active>
+    <ConnectionProperties></ConnectionProperties>
+    <ConnectionStringServerSide>jdbc:postgresql://34.159.5.111:5432/postgres?stringtype=unspecified</ConnectionStringServerSide>
+    <PortNum>5432</PortNum>
+    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+    <MinConnectionsNumber>0</MinConnectionsNumber>
+    <MaxConnectionsNumber>60</MaxConnectionsNumber>
+    <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+    <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+    <OfflineMode>true</OfflineMode>
+    <DataSource>34.159.5.111</DataSource>
+    <DataBase>postgres</DataBase>
+    <UserId>postgres</UserId>
+    <Password>~encs2~f4zqqKh3SN1V4P1+wE0eph7GQ1mqbrGHERnGwbFI47IPatCzi+zowA==</Password>
+    <SchemaFilter></SchemaFilter>
+    <CommandList></CommandList>
+</DBConn>

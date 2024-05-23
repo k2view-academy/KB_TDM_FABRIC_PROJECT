@@ -1,0 +1,298 @@
+{
+  "name": "rootNode",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "result",
+      "sessionProvider": "fabric",
+      "children": [
+        {
+          "name": "General Info",
+          "type": "sql",
+          "code": "Select T.TASK_NAME AS task_name,\n  T.TASK_ID AS task_id,\n  T.TASK_EXECUTION_ID AS task_execution_id,\n  T.TASK_CREATED_BY As created_by ,\n  L.TASK_EXECUTED_BY As executed_by ,\n  MIN(L.START_EXECUTION_TIME) AS start_execution ,\n  MAX(L.END_EXECUTION_TIME) AS end_execution,\n  Case When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'failed')) Then 'failed' \n  When (Exists(Select 1 From task_execution_list\n    Where task_execution_id = L.task_execution_id And execution_status =\n      'stopped')) Then 'stopped' \n  Else 'completed' End AS execution_status,\n  T.SOURCE_ENV AS source_env,\n  Case When SELECTION_METHOD = 'TABLES' Then '' Else T.BE_NAME END AS be_name,\n  T.TASK_TYPE AS task_type,\n  T.OPERATION_MODE AS operation_mode,\n  T.VERSION_IND AS version_ind,\n  L.VERSION_TASK_EXECUTION_ID AS version_task_execution_id,\n  L.SUBSET_TASK_EXECUTION_ID AS subset_task_execution_id,\n  T.RETENTION_PERIOD_TYPE AS retention_period_type,\n  T.RETENTION_PERIOD_VALUE AS retention_period_value,\n  O.OVERRIDE_PARAMETERS AS override_parameters,\n  T.RESERVE_IND AS reserve_ind,\n  T.RESERVE_RETENTION_PERIOD_TYPE AS reserve_retention_period_type,\n  T.RESERVE_RETENTION_PERIOD_VALUE AS reserve_retention_period_value\nFrom TDM.TASKS T\n  LEFT JOIN TDM.TASK_EXECUTION_LIST L ON T.TASK_EXECUTION_ID = L.TASK_EXECUTION_ID\n  LEFT JOIN TDM.TASK_EXECUTION_OVERRIDE_ATTRS O ON T.TASK_EXECUTION_ID = O.TASK_EXECUTION_ID"
+        },
+        {
+          "name": "Source Environment",
+          "children": [
+            {
+              "name": "Environment Name",
+              "type": "sql",
+              "code": "select distinct source_env as Name from tasks"
+            },
+            {
+              "name": "Source Environment Products",
+              "type": "sql",
+              "code": "select distinct product_name, source_product_version\nfrom task_execution_list\nWHERE product_name IS NOT NULL AND source_product_version IS NOT NULL;"
+            }
+          ]
+        },
+        {
+          "name": "Task Parameters",
+          "type": "sql",
+          "code": "Select TASKS.SELECTION_METHOD as selection_method\nFrom TDM.TASKS",
+          "sessionProvider": "fabric",
+          "one": true,
+          "collapsed": true,
+          "children": [
+            {
+              "name": "Selection Method",
+              "type": "function",
+              "code": "var sm = selection_method; \nsm;",
+              "children": [
+                {
+                  "name": "Generate Selection Method",
+                  "type": "condition",
+                  "code": "sm == 'GENERATE' ",
+                  "children": [
+                    {
+                      "name": "Generate Params",
+                      "type": "sql",
+                      "code": "select PARAM_NAME,PARAM_VALUE from TDM.TDM_GENERATE_TASK_FIELD_MAPPINGS;",
+                      "sessionProvider": "fabric",
+                      "children": [
+                        {
+                          "name": "param_name",
+                          "type": "variable",
+                          "code": "PARAM_NAME"
+                        },
+                        {
+                          "name": "param_value",
+                          "type": "variable",
+                          "code": "PARAM_VALUE"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Custom Logic Selection Method",
+                  "type": "condition",
+                  "code": "sm == 'C' ",
+                  "children": [
+                    {
+                      "name": "custom logic",
+                      "type": "sql",
+                      "code": "Select parameters as params from TDM.tasks;",
+                      "sessionProvider": "fabric",
+                      "one": true,
+                      "children": [
+                        {
+                          "name": "param_name",
+                          "type": "function",
+                          "code": "var parsedData = JSON.parse(params);\nvar par = parsedData.inputs;\nvar result={};\nfor (var p in par){ \n\tresult[p] = par[p].name;\n}\nresult;",
+                          "one": true
+                        },
+                        {
+                          "name": "param_value",
+                          "type": "function",
+                          "code": "var parsedData = JSON.parse(params);\nvar par = parsedData.inputs;\nvar result={};\nfor (var p in par){ \n\tresult[p] = par[p].value;\n}\nresult;",
+                          "one": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Parameters Selection Method",
+                  "type": "condition",
+                  "code": "sm == 'P' || sm == 'PR'",
+                  "children": [
+                    {
+                      "name": "parameters",
+                      "type": "sql",
+                      "code": "Select selection_param_value as sql_query from TDM.tasks;",
+                      "sessionProvider": "fabric",
+                      "one": true,
+                      "children": [
+                        {
+                          "name": "param_name",
+                          "type": "string",
+                          "code": "sql"
+                        },
+                        {
+                          "name": "param_value",
+                          "type": "variable",
+                          "code": "sql_query"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Task Execution Summary",
+          "type": "sql",
+          "code": "select ifnull(fabric_execution_id, -1) as fabric_execution_id, lu_id, lu_name, process_id, process_name, process_type, num_of_processed_entities from task_execution_list",
+          "children": [
+            {
+              "type": "condition",
+              "code": "process_id == 0",
+              "children": [
+                {
+                  "name": "LUs",
+                  "children": [
+                    {
+                      "name": "LU Extract Summary",
+                      "type": "sql",
+                      "code": "Select LU_NAME,\n  FABRIC_EXECUTION_ID,\n  PARENT_LU_NAME,\n  DATA_CENTER_NAME,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME,\n  NUM_OF_PROCESSED_ENTITIES,\n  NUM_OF_COPIED_ENTITIES,\n  NUM_OF_FAILED_ENTITIES,\n  NUM_OF_PROCESSED_REF_TABLES,\n  NUM_OF_COPIED_REF_TABLES,\n  NUM_OF_FAILED_REF_TABLES\nFrom TDM.TASK_EXECUTION_LIST\nWhere lu_id = ${lu_id} and PROCESS_ID=0"
+                    },
+                    {
+                      "type": "condition",
+                      "code": "fabric_execution_id != \"null\" && num_of_processed_entities > 0",
+                      "children": [
+                        {
+                          "name": "Extract Summary",
+                          "type": "sql",
+                          "code": "batch_summary ${fabric_execution_id}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "condition",
+              "code": "process_id != 0",
+              "children": [
+                {
+                  "name": "Processes",
+                  "children": [
+                    {
+                      "type": "condition",
+                      "code": "process_type == \"pre\"",
+                      "children": [
+                        {
+                          "name": "Pre Execution Processes",
+                          "children": [
+                            {
+                              "name": "Pre Execution Processes Summary",
+                              "type": "sql",
+                              "code": "Select PROCESS_NAME,\n  FABRIC_EXECUTION_ID,\n  DATA_CENTER_NAME,\n  EXECUTION_STATUS,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME\n From TDM.TASK_EXECUTION_LIST\n Where process_id = ${process_id}"
+                            },
+                            {
+                              "type": "condition",
+                              "code": "fabric_execution_id != \"null\" && fabric_execution_id != \"\" && fabric_execution_id != null && FABRIC_EXECUTION_ID !=-1",
+                              "children": [
+                                {
+                                  "name": "Process Summary",
+                                  "type": "sql",
+                                  "code": "batch_summary ${fabric_execution_id}"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "Post Execution Processes",
+                          "children": [
+                            {
+                              "name": "Post Execution Processes Summary",
+                              "type": "sql",
+                              "code": "Select PROCESS_NAME,\n  FABRIC_EXECUTION_ID,\n  DATA_CENTER_NAME,\n  EXECUTION_STATUS,\n  START_EXECUTION_TIME,\n  END_EXECUTION_TIME\n From TDM.TASK_EXECUTION_LIST\n Where process_id = ${process_id}"
+                            },
+                            {
+                              "type": "condition",
+                              "code": "FABRIC_EXECUTION_ID != null && FABRIC_EXECUTION_ID != \"null\" && FABRIC_EXECUTION_ID != \"\" && FABRIC_EXECUTION_ID !=-1",
+                              "children": [
+                                {
+                                  "name": "Process Summary",
+                                  "type": "sql",
+                                  "code": "batch_summary ${FABRIC_EXECUTION_ID}"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "List of Root Entities",
+          "collapsed": true,
+          "children": [
+            {
+              "name": "Number of Copied Entities",
+              "type": "sql",
+              "code": "select count(*) as number_of_copied_root_entities from (Select distinct be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status = 'completed' \nEXCEPT Select be_root_entity_id, TARGET_ROOT_ENTITY_ID from TDM.TASK_EXECUTION_LINK_ENTITIES where root_entity_status <> 'completed')"
+            },
+            {
+              "name": "List of Copied Entities",
+              "type": "sql",
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status = 'completed'\nEXCEPT Select ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id \nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'\nlimit ${i_numOfRecsLimit}"
+            },
+            {
+              "name": "Number of Failed Entities",
+              "type": "sql",
+              "code": "Select count(Distinct ENTITY_ID) as number_of_failed_root_entities\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' and root_entity_status <> 'completed'"
+            },
+            {
+              "name": "List of Failed Entities",
+              "type": "sql",
+              "code": "Select Distinct ENTITY_ID as source_id, TARGET_ENTITY_ID as target_id\nFrom TDM.TASK_EXECUTION_LINK_ENTITIES\nWhere PARENT_ENTITY_ID = '' And root_entity_status <> 'completed'\nlimit ${i_numOfRecsLimit}"
+            }
+          ]
+        },
+        {
+          "name": "List of Tables",
+          "collapsed": true,
+          "children": [
+            {
+              "name": "Number of Copied Tables",
+              "type": "sql",
+              "code": "Select Count(1) as count From task_ref_exe_stats\nWhere execution_status = 'completed'"
+            },
+            {
+              "name": "List of Copied Tables",
+              "type": "sql",
+              "code": "select ref_table_name , number_of_records_to_process as number_of_records , number_of_processed_records,start_time as start_execution_time ,end_time as end_execution_time, table_filter,version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status = 'completed'"
+            },
+            {
+              "name": "Number of Failed Tables",
+              "type": "sql",
+              "code": "Select Count(1) as count\nFrom task_ref_exe_stats where execution_status <> 'completed'"
+            },
+            {
+              "name": "List of Failed Tables",
+              "type": "sql",
+              "code": "select ref_table_name, number_of_records_to_process as number_of_records, number_of_processed_records, \nstart_time as start_execution_time ,end_time as end_execution_time, error_msg, table_filter,version_task_execution_id\nFrom task_ref_exe_stats\nWhere execution_status <> 'completed'"
+            }
+          ]
+        },
+        {
+          "name": "Error Summary",
+          "type": "sql",
+          "code": "Select lu_name, flow_name, stage_name, actor_name, error_category, error_code, error_message, count(distinct nullif(target_entity_id, ' ')) as number_of_entities, count(*) as number_of_records\nFrom task_exe_error_detailed \ngroup by lu_name, flow_name, actor_name, stage_name, error_category, error_code, error_message\norder by error_category, lu_name, entity_id"
+        }
+      ]
+    },
+    {
+      "name": "errorCode",
+      "type": "string",
+      "code": "SUCCESS"
+    },
+    {
+      "name": "message",
+      "type": "string",
+      "code": ""
+    }
+  ],
+  "params": [],
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

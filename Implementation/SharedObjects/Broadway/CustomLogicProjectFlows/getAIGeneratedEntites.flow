@@ -1,0 +1,193 @@
+{
+    "tags": [
+        "TDM",
+        "CustomLogicProjectFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Entity List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get the entity list",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select imported_lui as iid from public.tdm_ai_gen_iid_mapping where lu_name=${lu_name}"
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "iid": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Init Record Count",
+                            "actorType": {
+                                "parentType": "InitRecordCount",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check Reserve And Load To Entity List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "CheckReserveAndLoadToEntityList1 ",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "AICheckReserveAndLoadToEntityList"
+                                    },
+                                    {
+                                        "name": "SOURCE_IID",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "blob"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit",
+                                            "addEmptyEntry": true
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "recordLoaded",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check And Stop Loop",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "CheckAndStopLoop1",
+                            "actorType": {
+                                "parentType": "CheckAndStopLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get the entity list",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "CheckReserveAndLoadToEntityList1 ",
+                "name": "SOURCE_IID"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "iid"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "CheckReserveAndLoadToEntityList1 ",
+                "name": "recordLoaded"
+            },
+            "rightPort": {
+                "actor": "CheckAndStopLoop1",
+                "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Get the entity list",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "CheckReserveAndLoadToEntityList1 ",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "CheckAndStopLoop1",
+                "name": "NUM_OF_ENTITIES"
+            }
+        }
+    ]
+}

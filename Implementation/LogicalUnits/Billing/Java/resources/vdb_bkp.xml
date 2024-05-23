@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
+  <Name>vdb</Name>
+  <RootView>subscriber</RootView>
+  <CacheLocationType>Default</CacheLocationType>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncTimeout="0">
+  	<DecisionFunction></DecisionFunction>
+  </LuLazyDataUpdate>
+  <EventsList>
+  </EventsList>
+  <IidFinderProp enabled="true">
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+  </IidFinderProp>
+  <Tables>
+	 <Table>subscriber</Table>
+	 <Table>balance</Table>
+	 <Table>invoice</Table>
+	 <Table>payment</Table>
+	 <Table>offer</Table>
+  </Tables>
+  <TablesProperties>
+	 <TableProperties name="subscriber">
+      <Populations>
+        <Population name="population.flow" order="1" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="balance">
+      <Populations>
+        <Population name="population.flow" order="2" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="invoice">
+      <Populations>
+        <Population name="population.flow" order="2" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="payment">
+      <Populations>
+        <Population name="population.flow" order="3" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="offer">
+      <Populations>
+        <Population name="population.flow" order="2" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+  </EnrichmentsOrderList>
+  <ReferencesList>
+  </ReferencesList>
+  <Relations />
+  <DatabaseRelations>
+	  <Relation>
+        <From tableType="TableObject" table="subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="balance" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="invoice" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="offer" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="invoice" column="invoice_id" columnId="invoice_id" />
+        <To tableType="TableObject" table="payment" populationObjectName="population.flow" column="invoice_id" columnId="invoice_id" />
+      </Relation>
+  </DatabaseRelations>
+  <DiagramGraph>
+    <Graph name="vdb.k2vdb.xml">
+      <Node name="subscriber" pos="120 306" viewType="Table" />
+      <Node name="balance" pos="505 81" viewType="Table" />
+      <Node name="invoice" pos="505 306" viewType="Table" />
+      <Node name="payment" pos="889 356" viewType="Table" />
+      <Node name="offer" pos="505 531" viewType="Table" />
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

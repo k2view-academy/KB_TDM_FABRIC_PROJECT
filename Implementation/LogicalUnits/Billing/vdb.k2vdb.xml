@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VirtualDB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="">
+  <Name>vdb</Name>
+  <RootView>FABRIC_TDM_ROOT</RootView>
+  <CacheLocationType>Default</CacheLocationType>
+  <LuLazyDataUpdate syncMethod="None" performEvery="1.00:00:00" syncTimeout="0">
+  	<DecisionFunction></DecisionFunction>
+  </LuLazyDataUpdate>
+  <EventsList>
+  </EventsList>
+  <IidFinderProp enabled="true">
+    <NumberOfPartitions>100</NumberOfPartitions>
+    <NumberOfJobs>50</NumberOfJobs>
+  </IidFinderProp>
+  <Tables>
+	 <Table>subscriber</Table>
+	 <Table>balance</Table>
+	 <Table>invoice</Table>
+	 <Table>payment</Table>
+	 <Table>offer</Table>
+	 <Table>TDM_LU_TYPE_RELATION_EID</Table>
+	 <Table>LU_PARAMS</Table>
+	 <Table>FABRIC_TDM_ROOT</Table>
+	 <Table>TDM_LU_TYPE_REL_TAR_EID</Table>
+	 <Table>TAR_subscriber</Table>
+	 <Table>TAR_balance</Table>
+	 <Table>TAR_invoice</Table>
+	 <Table>TAR_offer</Table>
+	 <Table>TAR_payment</Table>
+  </Tables>
+  <TablesProperties>
+	 <TableProperties name="subscriber">
+      <Populations>
+        <Population name="population.flow" order="2" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="balance">
+      <Populations>
+        <Population name="population.flow" order="3" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="invoice">
+      <Populations>
+        <Population name="population.flow" order="3" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="payment">
+      <Populations>
+        <Population name="population.flow" order="4" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="offer">
+      <Populations>
+        <Population name="population.flow" order="3" disabled="false" populationType="FLOW" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="TDM_LU_TYPE_RELATION_EID">
+      <Populations>
+        <Population name="populationTdmLuTypeRealtionEid.flow" order="999" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="LU_PARAMS">
+      <Populations>
+        <Population name="populationLuParams.flow" order="998" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="FABRIC_TDM_ROOT">
+      <Populations>
+        <Population name="populationFabricTdmRoot.flow" order="1" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="TAR_subscriber">
+      <Populations>
+        <Population name="population.flow" order="14" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="TAR_balance">
+      <Populations>
+        <Population name="population.flow" order="15" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="TAR_invoice">
+      <Populations>
+        <Population name="population.flow" order="15" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="TAR_offer">
+      <Populations>
+        <Population name="population.flow" order="15" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+	 <TableProperties name="TAR_payment">
+      <Populations>
+        <Population name="population.flow" order="16" disabled="false" populationType="Flow" />
+      </Populations>
+    </TableProperties>
+  </TablesProperties>
+  <EnrichmentsOrderList>
+  </EnrichmentsOrderList>
+  <ReferencesList>
+  </ReferencesList>
+  <Relations />
+  <DatabaseRelations>
+	  <Relation>
+        <From tableType="TableObject" table="subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="balance" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="invoice" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="offer" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="invoice" column="invoice_id" columnId="invoice_id" />
+        <To tableType="TableObject" table="payment" populationObjectName="population.flow" column="invoice_id" columnId="invoice_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+        <To tableType="TableObject" table="subscriber" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="tblCol_2108d9693f114111ae320111c0d1b1c8" />
+        <To tableType="TableObject" table="TAR_subscriber" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="FABRIC_TDM_ROOT" column="IID" columnId="IID" />
+        <To tableType="TableObject" table="TAR_subscriber" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="TAR_subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="TAR_balance" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="TAR_subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="TAR_invoice" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="TAR_subscriber" column="subscriber_id" columnId="subscriber_id" />
+        <To tableType="TableObject" table="TAR_offer" populationObjectName="population.flow" column="subscriber_id" columnId="subscriber_id" />
+      </Relation>
+	  <Relation>
+        <From tableType="TableObject" table="TAR_invoice" column="invoice_id" columnId="invoice_id" />
+        <To tableType="TableObject" table="TAR_payment" populationObjectName="population.flow" column="invoice_id" columnId="invoice_id" />
+      </Relation>
+  </DatabaseRelations>
+  <DiagramGraph>
+    <Graph name="vdb.k2vdb.xml">
+      <Group name="SOURCE Tables" pos="419 20" expanded="true">
+        <Node name="subscriber" pos="545 351" viewType="Table" />
+        <Node name="balance" pos="830 126" viewType="Table" />
+        <Node name="invoice" pos="830 351" viewType="Table" />
+        <Node name="payment" pos="1115 401" viewType="Table" />
+        <Node name="offer" pos="830 576" viewType="Table" />
+      </Group>
+      <Group name="TDM Tables" pos="7 352" expanded="true">
+        <Node name="TDM_LU_TYPE_RELATION_EID" pos="133 458" viewType="Table" />
+        <Node name="LU_PARAMS" pos="133 683" viewType="Table" />
+        <Node name="FABRIC_TDM_ROOT" pos="133 908" viewType="Table" />
+        <Node name="TDM_LU_TYPE_REL_TAR_EID" pos="133 1108" viewType="Table" />
+      </Group>
+      <Group name="Target Tables For Delete" pos="419 745" expanded="true">
+        <Node name="TAR_subscriber" pos="545 1076" viewType="Table" />
+        <Node name="TAR_balance" pos="830 851" viewType="Table" />
+        <Node name="TAR_invoice" pos="830 1076" viewType="Table" />
+        <Node name="TAR_offer" pos="830 1301" viewType="Table" />
+        <Node name="TAR_payment" pos="1115 1126" viewType="Table" />
+      </Group>
+    </Graph>
+  </DiagramGraph>
+</VirtualDB>

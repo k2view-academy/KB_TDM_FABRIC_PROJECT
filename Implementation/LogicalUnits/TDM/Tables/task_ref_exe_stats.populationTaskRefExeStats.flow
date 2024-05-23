@@ -1,0 +1,350 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "SyncDeleteMode",
+                            "actorType": {
+                                "parentType": "SyncDeleteMode",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Source",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Query",
+                            "actorType": {
+                                "parentType": "SourceDbQuery",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,\r\nexe.number_of_records_to_process, exe.number_of_processed_records, exe.error_msg, ref.lu_name, exe.start_time , exe.end_time, \r\nref.table_filter, ref.filter_type, ref.filter_parameters ,ref.version_task_execution_id\r\nfrom @TDMDB_SCHEMA@.task_ref_exe_stats exe inner join @TDMDB_SCHEMA@.task_ref_tables ref on ref.task_id=exe.task_id\r\nand ref.ref_table_name = exe.ref_table_name "
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "task_execution_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "task_ref_table_id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "execution_status": {
+                                                        "type": "string"
+                                                    },
+                                                    "number_of_records_to_process": {
+                                                        "type": "integer"
+                                                    },
+                                                    "number_of_processed_records": {
+                                                        "type": "integer"
+                                                    },
+                                                    "error_msg": {
+                                                        "type": "string"
+                                                    },
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "start_time": {
+                                                        "type": "date"
+                                                    },
+                                                    "end_time": {
+                                                        "type": "date"
+                                                    },
+                                                    "table_filter": {
+                                                        "type": "string"
+                                                    },
+                                                    "filter_type": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "LU Table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "task_ref_exe_stats",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "task_ref_exe_stats"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "task_execution_id",
+                                            "task_ref_table_id",
+                                            "ref_table_name",
+                                            "execution_status",
+                                            "number_of_records_to_process",
+                                            "number_of_processed_records",
+                                            "error_msg",
+                                            "lu_name",
+                                            "start_time",
+                                            "end_time",
+                                            "table_filter",
+                                            "filter_type",
+                                            "filter_parameters",
+                                            "version_task_execution_id"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "sqlite"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "task_ref_table_id",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "ref_table_name",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "execution_status",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "number_of_records_to_process",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "number_of_processed_records",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "error_msg",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "start_time",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "end_time",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table_filter",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "filter_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "filter_parameters",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "version_task_execution_id",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Post Load",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Query",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "task_ref_exe_stats",
+                "name": "params"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "SyncDeleteMode",
+                "name": "table"
+            }
+        }
+    ]
+}

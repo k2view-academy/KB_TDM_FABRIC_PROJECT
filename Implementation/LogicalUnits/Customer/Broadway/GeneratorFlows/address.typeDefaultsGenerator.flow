@@ -1,0 +1,340 @@
+{
+    "tags": [
+        "Generate Data",
+        "GeneratorFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs Based On Data Type",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+                        {
+                            "name": "zip",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "country",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "city",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "street_address_1",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "street_address_2",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "state",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+						
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Maps",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+                        {
+                            "name": "Build zip Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "zip"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build country Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "country"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build city Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "city"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build street_address_1 Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "street_address_1"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build street_address_2 Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "street_address_2"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build state Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "state"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         } 
+						
+						
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create One Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        
+        {
+            "leftPort": {
+                "actor": "zip",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build zip Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build zip Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "country",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build country Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build country Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "city",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build city Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build city Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "street_address_1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build street_address_1 Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build street_address_1 Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "street_address_2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build street_address_2 Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build street_address_2 Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "state",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build state Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build state Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 5
+        },
+        
+		
+        {
+            "leftPort": {
+                "actor": "Merge Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "value"
+            }
+        }
+    ]
+}

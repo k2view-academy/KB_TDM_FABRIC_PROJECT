@@ -1,0 +1,33 @@
+{
+  "type": "CheckIfSequenceFlowExists",
+  "parentType": "InnerFlow",
+  "actorClass": null,
+  "inputs": [
+    {
+      "name": "FLOW_FILE_NAME",
+      "schema": {
+        "type": "string"
+      }
+    },
+    {
+      "name": "flowName",
+      "schema": {
+        "type": "string"
+      },
+      "const": "CheckIfSequenceFlowExists",
+      "mandatory": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "SKIP_TABLE",
+      "schema": {
+        "type": "bool"
+      },
+      "const": null
+    }
+  ],
+  "tags": [
+    "tdm"
+  ]
+}

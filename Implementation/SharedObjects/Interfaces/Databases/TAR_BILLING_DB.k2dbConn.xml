@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBConn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="DBConnGenericAdoJdbc" name="TAR_BILLING_DB" type="genericdb" version="8.0.0">
+    <JdbcDriverName>PostgreSQL</JdbcDriverName>
+    <Active>true</Active>
+    <DataSource>postgres-service</DataSource>
+    <PortNum>5432</PortNum>
+    <DataBase>TAR_BILLING_DB</DataBase>
+    <UserId>TAR_BILLING_USER</UserId>
+    <Password>~encs0~oP9jOzE7rOHV/J3NZ8PdMxW2dW0zjXP12dQdzt8WnzQ=</Password>
+    <ConnectionStringServerSide>jdbc:postgresql://postgres-service:5432/TAR_BILLING_DB?stringtype=unspecified</ConnectionStringServerSide>
+    <MinConnectionsNumber>0</MinConnectionsNumber>
+    <MaxConnectionsNumber>60</MaxConnectionsNumber>
+    <UseSelectAsteriskInAutoCreatedQueries>true</UseSelectAsteriskInAutoCreatedQueries>
+    <AutomaticMetadataLoading>false</AutomaticMetadataLoading>
+    <OfflineMode>true</OfflineMode>
+    <CommandList></CommandList>
+    <ConnectionProperties></ConnectionProperties>
+    <IsCustomConnectionStringServerSide>false</IsCustomConnectionStringServerSide>
+    <SchemaFilter></SchemaFilter>
+</DBConn>

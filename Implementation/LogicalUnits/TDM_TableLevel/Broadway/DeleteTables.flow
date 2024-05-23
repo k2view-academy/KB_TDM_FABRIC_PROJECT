@@ -1,0 +1,140 @@
+stages:
+  Stage 1:
+    actors:
+      List Of Tables:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tablesForDelete
+            schema: '#ref'
+        out:
+          value:
+            schema: '#ref'
+  Stage 4:
+    actors:
+      GetDeleteOrTruncateIndicator1:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetDeleteOrTruncateIndicator
+          interface:
+            external: interface
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          tableLevelInd:
+            external: tableLevelInd
+            schema: boolean
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          tableName:
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+          schema_name:
+            external: schema
+            schema: string
+            editor:
+              id: com.k2view.mTableKey
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Stage 2:
+    last: 1
+    actors:
+      Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateTableErrorsForTableLevel
+      Set Target Entity ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TARGET_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            default: false
+      Delete Table:
+        parent: InnerFlowAsync
+        in:
+          flowName:
+            const: DeleteOneTable
+          interface:
+            external: interface
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+              - CassandraLoader
+              interfaces:
+              - fabric
+            mandatory: false
+          schema:
+            external: schema
+            schema: string
+            editor:
+              id: com.k2view.dbtable
+            mandatory: false
+          table:
+            link:
+              path: List Of Tables/value
+              iterate: Iterate
+            schema: string
+            editor:
+              id: com.k2view.dbtable
+            mandatory: false
+          DeleteOrTruncate:
+            link: GetDeleteOrTruncateIndicator1/result
+            schema: string
+            mandatory: false
+        out:
+          results:
+            schema: '#ref'
+  Stage 3:
+    actors:
+      Wait for All Tables to be Deleted:
+        parent: InnerFlowJoin
+        in:
+          remaining:
+            link: Delete Table/remaining
+          failures:
+            link: Delete Table/failures
+schemas:
+  List Of Tables.in.value:
+    type: array
+    items:
+      type: string
+  List Of Tables.out.value:
+    type: array
+    items:
+      type: string
+  Delete Table.out.results:
+    type: array
+    items: {
+      }

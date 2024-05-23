@@ -1,0 +1,1009 @@
+{
+    "tags": [
+        "Generate Data",
+        "GeneratorFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get The Parent Record & Eable Masking",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "parent_row",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "subscriber_id": {
+                                                    "type": "any"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Masking Flag To True",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Parent & Sequential Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "SUBSCRIBER_ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "any"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Parent & Sequential Fields Maps",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build SUBSCRIBER_ID Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "SUBSCRIBER_ID"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SUBSCRIBER_ID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge Maps & Call Catalog Generator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Parent & Sequential Felds Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SUBSCRIBER_ID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Catalog Generator Record",
+                            "actorType": {
+                                "parentType": "CatalogGeneratorRecord",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "subscriber"
+                                    },
+                                    {
+                                        "name": "mtable",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If Catalog Returns Nothing",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty Data From Catalog",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Generate Default Values",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "subscriber.typeDefaultsGenerator"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Catalog Returned Data",
+                    "dependsOnList": [
+                        "Merge Maps & Call Catalog Generator"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Catalog Generated Data",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Generated Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Generated Value For Rest Of Fields",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Override catalog values",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "generateFirstAndLastName1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "generateFirstAndLastName"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "first_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "last_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MSISDN",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{10}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "IMSI",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{15}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SIM",
+                            "actorType": {
+                                "parentType": "RandomRegexGenerator",
+                                "inputs": [
+                                    {
+                                        "name": "regex",
+                                        "const": "^[1-9][0-9]{16}$"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "SUBSCRIBER_TYPE",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "1"
+                                                ],
+                                                [
+                                                    40,
+                                                    "2"
+                                                ],
+                                                [
+                                                    50,
+                                                    "3"
+                                                ],
+                                                [
+                                                    40,
+                                                    "4"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "VIP_STATUS",
+                            "actorType": {
+                                "parentType": "RandomDistribution",
+                                "inputs": [
+                                    {
+                                        "name": "distribution",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "distribution": "string",
+                                                "round": "boolean",
+                                                "weights": "array"
+                                            }
+                                        },
+                                        "const": {
+                                            "distribution": "weighted",
+                                            "round": false,
+                                            "type": "string",
+                                            "weights": [
+                                                [
+                                                    30,
+                                                    "Bronze"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Silver"
+                                                ],
+                                                [
+                                                    50,
+                                                    "Platinum"
+                                                ],
+                                                [
+                                                    40,
+                                                    "Gold"
+                                                ]
+                                            ]
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Phone number",
+                            "actorType": {
+                                "parentType": "Masking",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "genPhoneNum"
+                                    },
+                                    {
+                                        "name": "flowName",
+                                        "const": "generatePhoneNumbers"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "onEmpty",
+                                        "const": "MASK_AND_CACHE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Reformat phone number",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "reformatPhoneNumber1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "reformatPhoneNumber"
+                                    },
+                                    {
+                                        "name": "phone_number",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "formatted_phone_number",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "MapCreate1",
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [
+                                    {
+                                        "name": "FIRST_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LAST_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "MSISDN",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "IMSI",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SIM",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SUBSCRIBER_TYPE",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "VIP_STATUS",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "FIRST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "LAST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "IMSI": {
+                                                    "type": "string"
+                                                },
+                                                "SIM": {
+                                                    "type": "string"
+                                                },
+                                                "SUBSCRIBER_TYPE": {
+                                                    "type": "string"
+                                                },
+                                                "VIP_STATUS": {
+                                                    "type": "string"
+                                                },
+                                                "MSISDN": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge All Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Set Masking Flag To False",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "enable_masking",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "false",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Merge Maps of all Fields",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [
+                                    {
+                                        "name": "mapType",
+                                        "const": "TreeMapIgnoreCase"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "FIRST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "IMSI": {
+                                                    "type": "string"
+                                                },
+                                                "LAST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "MSISDN": {
+                                                    "type": "string"
+                                                },
+                                                "SIM": {
+                                                    "type": "string"
+                                                },
+                                                "SUBSCRIBER_ID": {
+                                                    "type": "string"
+                                                },
+                                                "SUBSCRIBER_TYPE": {
+                                                    "type": "string"
+                                                },
+                                                "VIP_STATUS": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "parent_row",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "path": [
+                "subscriber_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Generator Record",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Phone number",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build SUBSCRIBER_ID Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SUBSCRIBER_ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Phone number",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build SUBSCRIBER_ID Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Parent & Sequential Felds Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Empty Data From Catalog",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generator Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generate Default Values",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Catalog Generated Data",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generated Value For Rest Of Fields",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "generateFirstAndLastName1",
+                "name": "first_name"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "FIRST_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "generateFirstAndLastName1",
+                "name": "last_name"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "LAST_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IMSI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "IMSI"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SIM",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "SIM"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SUBSCRIBER_TYPE",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "SUBSCRIBER_TYPE"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "VIP_STATUS",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "VIP_STATUS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Phone number",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "reformatPhoneNumber1",
+                "name": "phone_number"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "reformatPhoneNumber1",
+                "name": "formatted_phone_number"
+            },
+            "rightPort": {
+                "actor": "MapCreate1",
+                "name": "MSISDN"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MapCreate1",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "parent_row"
+            },
+            "rightPort": {
+                "actor": "parent_row",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "subscriber_type"
+            },
+            "rightPort": {
+                "actor": "SUBSCRIBER_TYPE",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "vip_status"
+            },
+            "rightPort": {
+                "actor": "VIP_STATUS",
+                "name": "distribution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Merge Maps of all Fields",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

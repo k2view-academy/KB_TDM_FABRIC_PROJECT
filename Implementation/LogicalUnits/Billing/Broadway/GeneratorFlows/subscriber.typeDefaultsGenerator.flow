@@ -1,0 +1,385 @@
+{
+    "tags": [
+        "Generate Data",
+        "GeneratorFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Set Outputs Based On Data Type",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+                        {
+                            "name": "sim",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "last_name",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "vip_status",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "imsi",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "msisdn",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "first_name",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "subscriber_type",
+                            "actorType": {
+                                "parentType": "RandomStringRegex",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                         } 
+						
+						
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Maps",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        
+                        {
+                            "name": "Build sim Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "sim"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build last_name Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "last_name"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build vip_status Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "vip_status"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build imsi Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "imsi"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build msisdn Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "msisdn"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build first_name Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "first_name"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         }, 
+						{
+                            "name": "Build subscriber_type Map",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "subscriber_type"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                         } 
+						
+						
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create One Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Merge Maps",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        
+        {
+            "leftPort": {
+                "actor": "sim",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build sim Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build sim Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "last_name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build last_name Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build last_name Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "vip_status",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build vip_status Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build vip_status Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "imsi",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build imsi Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build imsi Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "msisdn",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build msisdn Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build msisdn Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "first_name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build first_name Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build first_name Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 5
+        },
+        {
+            "leftPort": {
+                "actor": "subscriber_type",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build subscriber_type Map",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build subscriber_type Map",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Merge Maps",
+                "name": "maps"
+            },
+            "arrayPosition": 6
+        },
+        
+		
+        {
+            "leftPort": {
+                "actor": "Merge Maps",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "value"
+            }
+        }
+    ]
+}

@@ -1,0 +1,217 @@
+{
+    "tags": [
+        "TDM",
+        "TDMTDMDBTables"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Schema",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get TDMDB Schema",
+                            "minHeight": 103,
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load ",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Populate tdm_ai_gen_iid_mapping",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "tdm_ai_gen_iid_mapping"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            " task_execution_id",
+                                            " lu_name",
+                                            " env_name",
+                                            " generated_iid",
+                                            " imported_lui",
+                                            " root_lu_name ",
+                                            " root_generated_iid ",
+                                            " root_imported_lui"
+                                        ]
+                                    },
+                                    {
+                                        "name": "keys",
+                                        "const": [
+                                            " "
+                                        ]
+                                    },
+                                    {
+                                        "name": " task_execution_id",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " lu_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " env_name",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " generated_iid",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " root_lu_name ",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " root_generated_iid ",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " imported_lui",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": " root_imported_lui",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " lu_name"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " env_name"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " env_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " generated_iid"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " generated_iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " root_lu_name "
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " root_lu_name "
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " root_generated_iid "
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " root_generated_iid "
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " imported_lui"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " imported_lui"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": " root_imported_lui"
+            },
+            "rightPort": {
+                "actor": "Populate tdm_ai_gen_iid_mapping",
+                "name": " root_imported_lui"
+            }
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+lu_name,table_name,column_name,indicator,active
+Customer,address,city,FALSE,TRUE
+Customer,address,state,FALSE,TRUE
+Customer,address,zip,FALSE,TRUE
+Customer,customer,first_name,FALSE,TRUE
+Customer,customer,last_name,FALSE,TRUE
+Customer,customer,ssn,FALSE,TRUE

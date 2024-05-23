@@ -1,0 +1,309 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          load_entity:
+            external: load_entity
+            schema: any
+            mandatory: false
+          delete_before_load:
+            external: delete_before_load
+            schema: any
+            mandatory: false
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Check Condition:
+    last: 1
+    actors:
+      load_entity==0:
+        parent: Equals
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link:
+              path: PopulationArgs/parent_rows/load_entity
+              iterate: Iterate
+      delete_before_load == 1:
+        parent: Equals
+        in:
+          b:
+            const: 1
+            schema: integer
+          a:
+            link:
+              path: PopulationArgs/parent_rows/delete_before_load
+              iterate: Iterate
+  '&':
+    dependsOn: Check Condition
+    actors:
+      And1:
+        parent: And
+        condition: result
+        in:
+          a:
+            link: load_entity==0/result
+          b:
+            link: delete_before_load == 1/result
+    split: '--------------------'
+  Stage 3:
+    else: true
+    transactional: false
+    dependsOn: Check Condition
+  Fetch Version Params:
+    dependsOn: '&'
+    actors:
+      DbFetchField1:
+        parent: DbFetchField
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: SELECT selected_version_task_exe_id FROM TDM.TASKS
+        out:
+          result:
+            schema: integer
+    split: '--------------------'
+  Stage 2:
+    transactional: false
+    dependsOn: Stage 3
+  Version Task Execution is 0:
+    dependsOn: Fetch Version Params
+    actors:
+      EqualsIgnoreCase1:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: DbFetchField1/result
+      Fetch data:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |-
+              SELECT rel.* FROM @TDMDB_SCHEMA@.tdm_lu_type_rel_tar_eid rel, @TDMDB_SCHEMA@.task_execution_entities parent,
+              @TDMDB_SCHEMA@.task_execution_entities child, @TDMDB_SCHEMA@.environments e
+              WHERE parent.task_execution_id = ${task_execution_id} AND parent.task_execution_id = child.task_execution_id
+              AND CAST(e.environment_id as text) = parent.env_id AND rel.target_env = e.environment_name
+              AND rel.lu_Type_1 = parent.lu_name
+              AND rel.lu_Type1_eid= parent.target_entity_id AND rel.lu_type_2 = child.lu_name
+              AND rel.lu_type2_eid = child.target_entity_id AND parent.version_task_execution_id = 0
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Else:
+    else: true
+    transactional: false
+    dependsOn: Fetch Version Params
+    actors:
+      Fetch Data if not null:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "SELECT rel.* FROM @TDMDB_SCHEMA@.tdm_lu_type_rel_tar_eid rel,\
+              \ @TDMDB_SCHEMA@.task_Execution_entities parent,\r\n@TDMDB_SCHEMA@.task_Execution_entities\
+              \ child, @TDMDB_SCHEMA@.environments e\r\nWHERE parent.task_Execution_id\
+              \ = ${task_execution_id} AND parent.task_Execution_id = child.task_Execution_id\
+              \ \r\nAND CAST(e.environment_id as text) = parent.env_id AND rel.target_env\
+              \ = e.environment_name \r\nAND rel.lu_Type_1 = parent.lu_name \r\nAND\
+              \ rel.lu_Type1_eid= parent.target_entity_id AND rel.lu_type_2 = child.lu_name\r\
+              \nAND rel.lu_type2_eid = child.target_entity_id AND parent.version_task_execution_id\
+              \ = ${version_task_execution_id};"
+          task_execution_id:
+            link: PopulationArgs/iid
+            schema: string
+            mandatory: false
+          version_task_execution_id:
+            link: DbFetchField1/result
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 4:
+    transactional: false
+    dependsOn: Stage 2
+  Load to Fabric case 1:
+    dependsOn: Version Task Execution is 0
+    actors:
+      TDM_LU_TYPE_REL_TAR_EID:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TDM_LU_TYPE_REL_TAR_EID
+          fields:
+            const:
+            - TARGET_ENV
+            - LU_TYPE_1
+            - LU_TYPE_2
+            - LU_TYPE1_EID
+            - LU_TYPE2_EID
+            - CREATION_DATE
+          keys:
+            const:
+            - TARGET_ENV
+            - LU_TYPE_1
+            - LU_TYPE_2
+            - LU_TYPE1_EID
+            - LU_TYPE2_EID
+          dialect:
+            const: sqlite
+          TARGET_ENV:
+            schema: any
+            mandatory: false
+          LU_TYPE_1:
+            schema: any
+            mandatory: false
+          LU_TYPE_2:
+            schema: any
+            mandatory: false
+          LU_TYPE1_EID:
+            schema: any
+            mandatory: false
+          LU_TYPE2_EID:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: Fetch data/result
+              iterate: Iterate
+    split: '--------------------'
+  Load to Fabric case 2:
+    transactional: false
+    dependsOn: Else
+    actors:
+      TDM_LU_TYPE_REL_TAR_EID2:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TDM_LU_TYPE_REL_TAR_EID
+          fields:
+            const:
+            - TARGET_ENV
+            - LU_TYPE_1
+            - LU_TYPE_2
+            - LU_TYPE1_EID
+            - LU_TYPE2_EID
+            - CREATION_DATE
+          keys:
+            const:
+            - TARGET_ENV
+            - LU_TYPE_1
+            - LU_TYPE_2
+            - LU_TYPE1_EID
+            - LU_TYPE2_EID
+          dialect:
+            const: sqlite
+          TARGET_ENV:
+            schema: any
+            mandatory: false
+          LU_TYPE_1:
+            schema: any
+            mandatory: false
+          LU_TYPE_2:
+            schema: any
+            mandatory: false
+          LU_TYPE1_EID:
+            schema: any
+            mandatory: false
+          LU_TYPE2_EID:
+            schema: any
+            mandatory: false
+          CREATION_DATE:
+            schema: any
+            mandatory: false
+          params:
+            link:
+              path: Fetch Data if not null/result
+              iterate: Iterate
+    split: '--------------------'
+  Stage 8:
+    transactional: false
+    dependsOn: Stage 4
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        load_entity:
+          type: integer
+        task_execution_id:
+          type: string
+        delete_before_load:
+          type: integer
+  Fetch data.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        target_env:
+          type: string
+        lu_type_1:
+          type: string
+        lu_type_2:
+          type: string
+        lu_type1_eid:
+          type: string
+        lu_type2_eid:
+          type: string
+        creation_date:
+          type: date
+  Fetch Data if not null.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        target_env:
+          type: string
+        lu_type_1:
+          type: string
+        lu_type_2:
+          type: string
+        lu_type1_eid:
+          type: string
+        lu_type2_eid:
+          type: string
+        creation_date:
+          type: date

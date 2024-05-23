@@ -1,0 +1,22 @@
+{
+    "type": "ConstDateTime",
+    "badge": "Co",
+    "inputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "date"
+            },
+            "const": "2023-01-01T00:00"
+        }
+    ],
+    "outputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "date"
+            }
+        }
+    ],
+    "parentType": "Const"
+}

@@ -1,0 +1,365 @@
+{
+  "name": "CustomerInfo",
+  "type": "function",
+  "code": "var target_env=null;\nvar target_id=null;\nvar source_env=null;\nvar target_entity_id=null;\nvar from_date_offer=null;\nvar to_date_offer=null;\nvar invoiceID=null;\nvar subscriberID=null;\nvar from_date_invoice=null;\nvar to_date_invoice=null;",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "type": "sql",
+      "code": "select environment_id as target_environment_id,source_env_name from public.task_execution_list where task_execution_id=${TaskExecID} limit 1",
+      "sessionProvider": "TDM",
+      "one": true,
+      "children": [
+        {
+          "type": "function",
+          "code": "target_id=target_environment_id;"
+        }
+      ]
+    },
+    {
+      "name": "TargetInfo",
+      "type": "sql",
+      "code": "select environment_name as target_env_name from public.environments where environments.environment_id=${target_id} ",
+      "sessionProvider": "TDM",
+      "one": true,
+      "children": [
+        {
+          "name": "TargetEnvInfo",
+          "type": "function",
+          "code": "target_env=target_env_name;"
+        },
+        {
+          "type": "sql",
+          "code": "set environemnt ${target_env_name}",
+          "sessionProvider": "fabric"
+        },
+        {
+          "name": "BILLINGInfo",
+          "type": "sql",
+          "code": "select distinct target_entity_id as TargetID from public.task_execution_entities where task_execution_id=${TaskExecID} and lu_name='Customer' and target_entity_id=${TargetID}",
+          "sessionProvider": "TDM",
+          "children": [
+            {
+              "type": "function",
+              "code": "target_entity_id = TargetID"
+            },
+            {
+              "type": "sql",
+              "code": "select contract_id from public.contract where customer_id=${target_entity_id} ;",
+              "sessionProvider": "TAR_CRM_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "type": "function",
+                  "code": "subscriberID = contract_id"
+                },
+                {
+                  "type": "sql",
+                  "code": "CREATE TABLE IF NOT EXISTS public.ids (\n    subscriber_id bigint, \nCONSTRAINT ids_pkey PRIMARY KEY (subscriber_id));",
+                  "sessionProvider": "TAR_BILLING_DB"
+                },
+                {
+                  "type": "sql",
+                  "code": "insert into public.ids (subscriber_id) values (${contract_id}) ON CONFLICT DO NOTHING;",
+                  "sessionProvider": "TAR_BILLING_DB"
+                }
+              ]
+            },
+            {
+              "name": "SubscriberData",
+              "type": "sql",
+              "code": "select contract_id from public.contract where customer_id=${target_entity_id} ;",
+              "sessionProvider": "TAR_CRM_DB",
+              "serializerSettings": [
+                {
+                  "set": "nice",
+                  "value": "true"
+                }
+              ],
+              "children": [
+                {
+                  "type": "function",
+                  "code": "subscriberID = contract_id"
+                },
+                {
+                  "name": "Subscriber ID",
+                  "type": "sql",
+                  "code": "select subscriber_id from public.subscriber Where subscriber_id =${subscriberID};",
+                  "sessionProvider": "TAR_BILLING_DB",
+                  "one": true,
+                  "serializerSettings": [
+                    {
+                      "set": "nice",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "First Name",
+                  "type": "sql",
+                  "code": "select first_name from public.customer Where customer_id=${target_entity_id};",
+                  "sessionProvider": "TAR_CRM_DB",
+                  "one": true
+                },
+                {
+                  "name": "Last Name",
+                  "type": "sql",
+                  "code": "select last_name from public.customer Where customer_id=${target_entity_id};",
+                  "sessionProvider": "TAR_CRM_DB",
+                  "one": true
+                },
+                {
+                  "name": "MSISDN",
+                  "type": "sql",
+                  "code": "select associated_line_fmt from public.contract Where contract_id=${subscriberID};",
+                  "sessionProvider": "TAR_CRM_DB",
+                  "one": true
+                },
+                {
+                  "name": "Type",
+                  "type": "sql",
+                  "code": "select subscriber_type from public.subscriber Where subscriber_id=${subscriberID};",
+                  "sessionProvider": "TAR_BILLING_DB",
+                  "one": true
+                },
+                {
+                  "name": "VIP Status",
+                  "type": "sql",
+                  "code": "select vip_status from public.subscriber Where subscriber_id=${subscriberID};",
+                  "sessionProvider": "TAR_BILLING_DB",
+                  "one": true
+                }
+              ]
+            },
+            {
+              "name": "OfferData",
+              "type": "sql",
+              "code": "select * from public.offer where subscriber_id in (select subscriber_id from public.ids)",
+              "sessionProvider": "TAR_BILLING_DB",
+              "children": [
+                {
+                  "name": "Subscriber ID",
+                  "type": "variable",
+                  "code": "subscriber_id"
+                },
+                {
+                  "name": "Offer ID",
+                  "type": "variable",
+                  "code": "offer_id"
+                },
+                {
+                  "name": "Offer Ref ID",
+                  "type": "variable",
+                  "code": "offer_ref_id"
+                },
+                {
+                  "name": "Offer Description",
+                  "type": "variable",
+                  "code": "offer_description"
+                },
+                {
+                  "type": "variable",
+                  "code": "from_date"
+                },
+                {
+                  "type": "function",
+                  "code": "from_date_offer=from_date"
+                },
+                {
+                  "type": "variable",
+                  "code": "to_date"
+                },
+                {
+                  "type": "function",
+                  "code": "to_date_offer=to_date"
+                },
+                {
+                  "type": "condition",
+                  "code": "from_date_offer>to_date_offer",
+                  "one": true,
+                  "collapsed": true,
+                  "children": [
+                    {
+                      "name": "True",
+                      "children": [
+                        {
+                          "type": "sql",
+                          "code": "update public.offer set to_date=${from_date_offer}, from_date=${to_date_offer} where subscriber_id=${subscriberID} ;",
+                          "one": true
+                        }
+                      ]
+                    },
+                    {
+                      "name": "False",
+                      "children": [
+                        {
+                          "type": "sql",
+                          "code": "update public.offer set to_date=${to_date_offer}, from_date=${from_date_offer} where subscriber_id=${subscriberID} ;"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "From Date",
+                  "type": "variable",
+                  "code": "from_date ",
+                  "one": true
+                },
+                {
+                  "name": "To Date",
+                  "type": "variable",
+                  "code": "to_date ",
+                  "one": true
+                }
+              ]
+            },
+            {
+              "name": "InvoiceData",
+              "type": "sql",
+              "code": "select * from public.invoice where subscriber_id in (select subscriber_id from public.ids) ;",
+              "sessionProvider": "TAR_BILLING_DB",
+              "children": [
+                {
+                  "name": "Subscriber ID",
+                  "type": "variable",
+                  "code": "subscriber_id"
+                },
+                {
+                  "name": "Invoice ID",
+                  "type": "variable",
+                  "code": "invoice_id"
+                },
+                {
+                  "name": "Invoice Status",
+                  "type": "variable",
+                  "code": "status"
+                },
+                {
+                  "name": "Invoice Balance",
+                  "type": "variable",
+                  "code": "balance"
+                },
+                {
+                  "type": "variable",
+                  "code": "issued_date"
+                },
+                {
+                  "type": "function",
+                  "code": "from_date_invoice=issued_date"
+                },
+                {
+                  "type": "variable",
+                  "code": "due_date"
+                },
+                {
+                  "type": "function",
+                  "code": "to_date_invoice=due_date"
+                },
+                {
+                  "type": "condition",
+                  "code": "from_date_invoice>to_date_invoice",
+                  "one": true,
+                  "collapsed": true,
+                  "children": [
+                    {
+                      "name": "True",
+                      "one": true,
+                      "children": [
+                        {
+                          "type": "sql",
+                          "code": "update public.invoice set due_date=${from_date_invoice}, issued_date=${to_date_invoice} where subscriber_id=${subscriberID} ;",
+                          "one": true
+                        }
+                      ]
+                    },
+                    {
+                      "name": "False",
+                      "one": true,
+                      "children": [
+                        {
+                          "type": "sql",
+                          "code": "update public.invoice set due_date=${to_date_invoice}, issued_date=${from_date_invoice} where subscriber_id=${subscriberID} ;",
+                          "one": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Issued Date",
+                  "type": "variable",
+                  "code": "issued_date",
+                  "one": true
+                },
+                {
+                  "name": "Due Date",
+                  "type": "variable",
+                  "code": "due_date",
+                  "one": true
+                }
+              ]
+            },
+            {
+              "name": "Payment Info",
+              "type": "sql",
+              "code": "select * from public.payment where invoice_id in (select invoice_id from public.invoice where subscriber_id in (select subscriber_id from public.ids));",
+              "sessionProvider": "TAR_BILLING_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "name": "Invoice ID",
+                  "type": "variable",
+                  "code": "invoice_id"
+                },
+                {
+                  "name": "Payment ID",
+                  "type": "variable",
+                  "code": "payment_id"
+                },
+                {
+                  "name": "Payment Status",
+                  "type": "variable",
+                  "code": "status"
+                },
+                {
+                  "name": "Amount",
+                  "type": "variable",
+                  "code": "amount"
+                }
+              ]
+            },
+            {
+              "type": "sql",
+              "code": "Drop table public.ids ;",
+              "sessionProvider": "TAR_BILLING_DB"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "TaskExecID",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    },
+    {
+      "name": "TargetID",
+      "dataType": "String",
+      "description": "",
+      "mandatory": false
+    }
+  ],
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

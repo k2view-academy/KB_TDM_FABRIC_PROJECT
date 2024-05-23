@@ -1,0 +1,5 @@
+lu_name,id,reference_table_name,interface_name,schema_name,target_ref_table_name,target_interface_name,target_schema_name,table_pk_list,truncate_indicator,count_indicator,count_flow
+Customer,1,activity,CRM_DB,public,devicestable2017,CRM_DB,public,,TRUE,TRUE,
+Customer,2,address,CRM_DB,public,orders,ORDERS_DB,public,,TRUE,TRUE,
+Billing,3,contract_offer_mapping,BILLING_DB,public,contract_offer_mapping,BILLING_DB,public,,TRUE,TRUE,
+Customer,4,case_note,CRM_DB,public,case_note,CRM_DB,public,,TRUE,TRUE,

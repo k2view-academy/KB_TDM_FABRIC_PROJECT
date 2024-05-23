@@ -1,0 +1,74 @@
+[
+   {
+      "name": "Admin",
+      "appId": "admin",
+      "hidden": false
+   },
+   {
+      "name": "Graphit",
+      "appId": "graphit",
+      "hidden": true
+   },
+   {
+      "name": "Statistics",
+      "appId": "status",
+      "hidden": false
+   },
+   {
+      "name": "API",
+      "appId": "swaggerUI",
+      "hidden": false
+   },
+   {
+      "name": "Trace",
+      "appId": "trace",
+      "hidden": false
+   },
+   {
+      "name": "Data Explorer",
+      "appId": "dataExplorer",
+      "hidden": false
+   },
+   {
+      "name": "Data Catalog",
+      "appId": "dataCatalog",
+      "hidden": true
+	  
+   },
+   {
+      "name": "Documentation",
+      "appId": "doc",
+      "hidden": false
+   },
+   {
+      "name": "Simple History API Route",
+      "appId": "historyApi",
+      "hidden": true
+   },
+   {
+      "name": "Multiple Pages",
+      "appId": "multiPage",
+      "hidden": true,
+      "expand": true
+   },
+   {
+      "name": "Hash Base Route",
+      "appId": "hash",
+      "hidden": true
+   },
+   {
+      "name": "No Routing",
+      "appId": "noRouter",
+      "hidden": true
+   },
+   {
+      "name": "Widgets Example",
+      "appId": "widgetsExample",
+      "hidden": true
+   },
+   {
+      "name": "TDM",
+      "appId": "TDM",
+	  "hidden": false
+   }
+]

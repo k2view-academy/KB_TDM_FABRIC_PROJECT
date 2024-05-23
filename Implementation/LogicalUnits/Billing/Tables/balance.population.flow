@@ -1,0 +1,393 @@
+{
+	"levels": [
+		{
+			"stages": [
+				{
+					"name": "Input",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": [
+						{
+							"name": "PopulationArgs",
+							"actorType": {
+								"parentType": "PopulationArgs",
+								"readOnly": true,
+								"inputs": [
+									{
+										"name": "subscriber_id",
+										"schema": {}
+									},
+									{
+										"name": "balance_id",
+										"schema": {}
+									},
+									{
+										"name": "balance_ref_id",
+										"schema": {}
+									},
+									{
+										"name": "available_amount",
+										"schema": {}
+									},
+									{
+										"name": "reset_amount",
+										"schema": {}
+									},
+									{
+										"name": "reset_date",
+										"schema": {}
+									}
+								],
+								"outputs": []
+							}
+						},
+						{
+							"name": "SyncDeleteMode",
+							"actorType": {
+								"parentType": "SyncDeleteMode",
+								"inputs": [
+									{
+										"name": "table",
+										"const": null
+									}
+								],
+								"outputs": []
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"stages": [
+				{
+					"name": "Source",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": [
+						{
+							"name": "Query",
+							"actorType": {
+								"parentType": "SourceDbQuery",
+								"inputs": [
+									{
+										"name": "interface",
+										"const": "BILLING_DB"
+									},
+									{
+										"name": "sql",
+										"const": "select * from public.balance"
+									}
+								],
+								"outputs": [
+									{
+										"name": "result",
+										"schema": {
+											"type": "object",
+											"properties": {
+												"subscriber_id": {
+													"type": {}
+												},
+"balance_id": {
+													"type": {}
+												},
+"balance_ref_id": {
+													"type": {}
+												},
+"available_amount": {
+													"type": {}
+												},
+"reset_amount": {
+													"type": {}
+												},
+"reset_date": {
+													"type": {}
+												}
+											}
+										}
+									}
+								]
+							}
+                       },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }						  
+					]
+				}
+			]
+		},
+		{
+			"stages": [
+				{
+					"name": "Mask Data Based On Catalog",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": [
+                        {
+                            "name": "Catalog Masking Mapper",
+                            "actorType": {
+                                "parentType": "CatalogMaskingMapper",
+                                "inputs": [
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "balance"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+		},
+		{
+			"stages": [
+				{
+					"name": "LU Table",
+					"dependsOnList": [],
+					"isLast": 1,
+					"actors": [
+						{
+							"name": "balance",
+							"actorType": {
+								"parentType": "DbLoad",
+								"inputs": [
+									{
+										"name": "interface",
+										"const": "fabric"
+									},
+									{
+										"name": "schema",
+										"const": null
+									},
+									{
+										"name": "table",
+										"const": null
+									},
+									{
+										"name": "fields",
+										"const": [
+											"subscriber_id",
+											"balance_id",
+											"balance_ref_id",
+											"available_amount",
+											"reset_amount",
+											"reset_date"
+										]
+									},
+									{
+										"name": "keys",
+										"const": [
+										]
+									},
+									{
+										"name": "dialect",
+										"const": "sqlite"
+									},
+									{
+										"name": "subscriber_id",
+										"schema": {}
+									},
+									{
+										"name": "balance_id",
+										"schema": {}
+									},
+									{
+										"name": "balance_ref_id",
+										"schema": {}
+									},
+									{
+										"name": "available_amount",
+										"schema": {}
+									},
+									{
+										"name": "reset_amount",
+										"schema": {}
+									},
+									{
+										"name": "reset_date",
+										"schema": {}
+									}
+								],
+								"outputs": []
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"stages": [
+				{
+					"name": "Post Load",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": []
+				}
+			]
+		}
+	],
+	"connections": [
+		{
+			"leftPort": {
+				"actor": "PopulationArgs",
+				"name": "parent_rows"
+			},
+			"rightPort": {
+				"actor": "Query",
+				"name": "parent_rows"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "Catalog Masking Mapper",
+				"name": "values"
+			},
+			"rightPort": {
+				"actor": "balance",
+				"name": "params"
+			},
+			"iterate": "Iterate"
+		},
+		{
+			"leftPort": {
+				"actor": "Query",
+				"name": "result"
+			},
+			"rightPort": {
+				"actor": "Catalog Masking Mapper",
+				"name": "values"
+			 
+			}
+		},
+		{
+			"leftPort": {
+              "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Masking Mapper",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {											   
+				"actor": "flowArgs",
+				"name": "schema"
+			},
+			"rightPort": {
+				"actor": "balance",
+				"name": "schema"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "table"
+			},
+			"rightPort": {
+				"actor": "balance",
+				"name": "table"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "table"
+			},
+			"rightPort": {
+				"actor": "SyncDeleteMode",
+				"name": "table"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "subscriber_id"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "subscriber_id"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "balance_id"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "balance_id"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "balance_ref_id"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "balance_ref_id"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "available_amount"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "available_amount"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "reset_amount"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "reset_amount"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "reset_date"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "reset_date"
+			 
+			}
+		}
+	]
+}

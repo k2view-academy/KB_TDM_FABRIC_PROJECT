@@ -1,0 +1,1319 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Path",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Project Folder",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "GetProjectFolder"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "PROJECT_FOLDER",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Max Population Order",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getMaxPopulationOrder"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get LU's Population Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LU's Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}"
+                                    },
+                                    {
+                                        "name": "PROJECT_DIRECTORY",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "List Population Flows",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getPopulationsListForDelete"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "tableOrder": {
+                                                        "type": "integer"
+                                                    },
+                                                    "populationName": {
+                                                        "type": "string"
+                                                    },
+                                                    "tableName": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "MathAdd1",
+                            "actorType": {
+                                "parentType": "MathAdd",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "const": 10
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Filter Out Tables",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "filter Out TDM Tables",
+                            "actorType": {
+                                "parentType": "filterOutTDMTables",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Input Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Calculate Table's Order",
+                            "actorType": {
+                                "parentType": "MathAdd",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Prepare Template Data",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "buildDeleteTablesTemplateData"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schemaName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interfaceName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "tableDefaultMapping",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "TableName": {
+                                                    "type": "string"
+                                                },
+                                                "Columns": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "datatype": {
+                                                                "type": "string"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "PARENT_TABLE_DATA": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "FIELD_TYPE": {
+                                                                "type": "string"
+                                                            },
+                                                            "PARENT_TABLE": {
+                                                                "type": "string"
+                                                            },
+                                                            "PARENT_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FIELD_NAME": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "FullTextSearch": {
+                                                    "type": "string"
+                                                },
+                                                "TARGET_INTERFACE": {
+                                                    "type": "string"
+                                                },
+                                                "TARGET_SCHEMA": {
+                                                    "type": "string"
+                                                },
+                                                "OriginalTableName": {
+                                                    "type": "string"
+                                                },
+                                                "MainTableInd": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Format Additional Striings",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Format TableProperties",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "    <TableProperties name=\"${tableName}\">\r\n      <Populations>\r\n        <Population name=\"population.flow\" order=\"${tableOrder}\" disabled=\"false\" populationType=\"Flow\" />\r\n      </Populations>\r\n    </TableProperties>\r\n"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableOrder",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Table Name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "<Table>${tableName}</Table>\r\n"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Table Relation",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "  <Relation>\r\n    <From tableType=\"TableObject\" table=\"${parentTableName}\" column=\"${parentColumnName}\" columnId=\"${parentColumnName}\" />\r\n    <To tableType=\"TableObject\" table=\"${tableName}\" populationObjectName=\"population.flow\" column=\"${columnName}\" columnId=\"${columnName}\" />\r\n  </Relation>\r\n"
+                                    },
+                                    {
+                                        "name": "columnName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "parentTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "parentColumnName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Table Graph",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "    <Node name=\"${tableName}\" pos=\"0 0\" size=\"257 136\" listGroupSize=\"250 100\" viewType=\"Table\" />\r\n"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Aggregate ",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Aggregate Table's Properties",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Aggregate Table's Names",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Aggregate Table's  Relations",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Aggregate Table's Graph",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Close Inner Loop",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Close Loop",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Concatenate",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Concatenate Table's Properties",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Concatenate Table's Name",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Concatenate Table's Relation",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Concatenate Table's Graph",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Read Schema And Close Tags",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Read Schema File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "vdb.k2vdb.xml"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Close Tables Properties",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${TAR_TablesProperties}\r\n</TablesProperties>"
+                                    },
+                                    {
+                                        "name": "TAR_TablesProperties",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Close Tables List",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${TAR_TablesList}\r\n</Tables>"
+                                    },
+                                    {
+                                        "name": "TAR_TablesList",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Close Relations",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${TAR_Releations}\r\n</DatabaseRelations>"
+                                    },
+                                    {
+                                        "name": "TAR_Releations",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Close Group and Graph",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "  <Group name=\"Target Tables For Delete\" pos=\"0 0\" size=\"1100 1200\" wasexpanded=\"false\" expanded=\"true\">\r\n${TAR_Graph}\r\n</Group>\r\n</Graph>"
+                                    },
+                                    {
+                                        "name": "TAR_Graph",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update Tables Properties",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Properties of New Tables",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "</TablesProperties>"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add Tables List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Names of New Tables",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "</Tables>"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add Tables Relations",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Relations of New Tables",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "</DatabaseRelations>"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Add New Group to Graph",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Add Group of New Tables",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": "</Graph>"
+                                    },
+                                    {
+                                        "name": "replace",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Write Update Schema File",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Write Schema File",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "vdb.k2vdb.xml"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Project Folder",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "LU's Folder",
+                "name": "PROJECT_DIRECTORY"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Max Population Order",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MathAdd1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU's Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Read Schema File",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU's Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Schema File",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "List Population Flows",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "tableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "List Population Flows",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Table's Order",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "tableOrder"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "MathAdd1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Table's Order",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Prepare Template Data",
+                "name": "table"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate Table's Order",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Format TableProperties",
+                "name": "tableOrder"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format TableProperties",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "TableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format Table Name",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "TableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format Table Relation",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "TableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format Table Graph",
+                "name": "tableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "TableName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format Table Relation",
+                "name": "parentTableName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "PARENT_TABLE_DATA",
+                "PARENT_TABLE"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format Table Relation",
+                "name": "parentColumnName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "PARENT_TABLE_DATA",
+                "PARENT_FIELD_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare Template Data",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Format Table Relation",
+                "name": "columnName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "PARENT_TABLE_DATA",
+                "FIELD_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Format TableProperties",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Aggregate Table's Properties",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Format Table Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Aggregate Table's Names",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Format Table Relation",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Aggregate Table's  Relations",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Format Table Graph",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Aggregate Table's Graph",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Aggregate Table's Properties",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Concatenate Table's Properties",
+                "name": "elements"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Aggregate Table's Names",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Concatenate Table's Name",
+                "name": "elements"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Aggregate Table's  Relations",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Concatenate Table's Relation",
+                "name": "elements"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Aggregate Table's Graph",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Concatenate Table's Graph",
+                "name": "elements"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Concatenate Table's Properties",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Close Tables Properties",
+                "name": "TAR_TablesProperties"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Concatenate Table's Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Close Tables List",
+                "name": "TAR_TablesList"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Concatenate Table's Relation",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Close Relations",
+                "name": "TAR_Releations"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Concatenate Table's Graph",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Close Group and Graph",
+                "name": "TAR_Graph"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Schema File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Add Properties of New Tables",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Close Tables Properties",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Properties of New Tables",
+                "name": "replace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Close Tables List",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Names of New Tables",
+                "name": "replace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Close Relations",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Relations of New Tables",
+                "name": "replace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Close Group and Graph",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Group of New Tables",
+                "name": "replace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add Properties of New Tables",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Names of New Tables",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add Names of New Tables",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Relations of New Tables",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add Relations of New Tables",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Add Group of New Tables",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Add Group of New Tables",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Schema File",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Get Max Population Order",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "LU's Folder",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "List Population Flows",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "Prepare Template Data",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schemaName"
+            },
+            "rightPort": {
+                "actor": "Prepare Template Data",
+                "name": "schemaName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interfaceName"
+            },
+            "rightPort": {
+                "actor": "Prepare Template Data",
+                "name": "interfaceName"
+            }
+        }
+    ]
+}

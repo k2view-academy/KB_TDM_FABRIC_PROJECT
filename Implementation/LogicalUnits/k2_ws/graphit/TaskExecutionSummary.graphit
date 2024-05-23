@@ -1,0 +1,59 @@
+{
+  "name": "TaskExecSummary",
+  "type": "string",
+  "code": "",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "children": [
+    {
+      "name": "GetInfo",
+      "type": "sql",
+      "code": "select environment_id as target_environment_id,source_env_name from public.task_execution_list where task_execution_id=${TaskExecID} limit 1",
+      "sessionProvider": "TDM",
+      "children": [
+        {
+          "name": "source_env_name",
+          "type": "variable",
+          "code": "source_env_name",
+          "one": true
+        },
+        {
+          "name": "target_env_name",
+          "type": "sql",
+          "code": "select environment_name as target_env_name from public.environments where environments.environment_id=${target_environment_id} ",
+          "one": true,
+          "sessionProvider": "TDM"
+        }
+      ]
+    },
+    {
+      "name": "entityList",
+      "type": "sql",
+      "code": "select distinct target_entity_id as target_entity_id from public.task_exe_stats_detailed where task_execution_id=${TaskExecID} and lu_name='Customer' order by target_entity_id ",
+      "sessionProvider": "TDM",
+      "children": [
+        {
+          "name": "target_entity_id",
+          "type": "variable",
+          "code": "target_entity_id"
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "TaskExecID",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    }
+  ],
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

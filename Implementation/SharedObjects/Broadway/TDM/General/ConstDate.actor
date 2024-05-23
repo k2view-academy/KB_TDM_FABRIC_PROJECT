@@ -1,0 +1,21 @@
+{
+    "type": "ConstDate",
+    "badge": "Co",
+    "inputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "date"
+            }
+        }
+    ],
+    "outputs": [
+        {
+            "name": "value",
+            "schema": {
+                "type": "date"
+            }
+        }
+    ],
+    "parentType": "Const"
+}

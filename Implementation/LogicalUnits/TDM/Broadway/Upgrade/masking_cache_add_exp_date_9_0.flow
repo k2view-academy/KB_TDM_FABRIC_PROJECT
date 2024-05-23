@@ -1,0 +1,93 @@
+tags: Create,Upgrade
+stages:
+  Get Masking Interface:
+    actors:
+      SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+  SQL dialect:
+    actors:
+      DbSqlDialect1:
+        parent: DbSqlDialect
+        in:
+          interface:
+            const: null
+            link: SEQ_CACHE_INTERFACE/result
+  SQL queries:
+    actors:
+      Prepare Statement to Add Expiration Date to Masking Cache:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var sql = {
+                generic: "ALTER TABLE k2masking.masking_cache ADD expiration_date BIGINT",
+                cassandra: "ALTER TABLE k2masking.masking_cache ADD expiration_date BIGINT",
+                postgres: "ALTER TABLE k2masking.masking_cache ADD COLUMN IF NOT EXISTS expiration_date BIGINT"
+              };
+              if (sql[dialect]) {
+                sql[dialect]
+              } else {
+                sql["generic"]
+              }
+          dialect:
+            link: DbSqlDialect1/dialect
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Prepare Statement to Add Expiration Date to Uniqueness:
+        parent: JavaScript
+        in:
+          script:
+            const: |-
+              var sql = {
+                generic: "ALTER TABLE k2masking.uniqueness ADD expiration_date BIGINT",
+                cassandra: "ALTER TABLE k2masking.uniqueness ADD expiration_date BIGINT",
+                postgres: "ALTER TABLE k2masking.uniqueness ADD COLUMN IF NOT EXISTS expiration_date BIGINT"
+              };
+              if (sql[dialect]) {
+                sql[dialect]
+              } else {
+                sql["generic"]
+              }
+          dialect:
+            link: DbSqlDialect1/dialect
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Create DB schema:
+    remark: |+
+      This flow creates the database keyspace and tables needed for the masking actor cache.
+
+      Run the flow and select the correct Cassandra interface where you want the keyspace to reside.
+
+      Switch truncate to "true" if you want to clean up the table of masking caching in case the table already exists.
+
+    actors:
+      Add Field to masking_cache Table:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: SEQ_CACHE_INTERFACE/result
+          sql:
+            const: null
+            link: Prepare Statement to Add Expiration Date to Masking Cache/result
+      Add Field to masking_cache Table1:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: SEQ_CACHE_INTERFACE/result
+          sql:
+            const: null
+            link: Prepare Statement to Add Expiration Date to Uniqueness/result
+  Stage 1: {
+    }

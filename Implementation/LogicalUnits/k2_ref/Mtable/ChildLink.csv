@@ -1,0 +1,2 @@
+parent_lu,child_lu,child_lu_eid_sql,child_lu_tar_eid_sql
+Customer,Billing,Select contract_id From contract,Select contract_id From TAR_CONTRACT

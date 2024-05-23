@@ -1,0 +1,393 @@
+{
+	"levels": [
+		{
+			"stages": [
+				{
+					"name": "Input",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": [
+						{
+							"name": "PopulationArgs",
+							"actorType": {
+								"parentType": "PopulationArgs",
+								"readOnly": true,
+								"inputs": [
+									{
+										"name": "subscriber_id",
+										"schema": {}
+									},
+									{
+										"name": "offer_id",
+										"schema": {}
+									},
+									{
+										"name": "offer_ref_id",
+										"schema": {}
+									},
+									{
+										"name": "offer_description",
+										"schema": {}
+									},
+									{
+										"name": "from_date",
+										"schema": {}
+									},
+									{
+										"name": "to_date",
+										"schema": {}
+									}
+								],
+								"outputs": []
+							}
+						},
+						{
+							"name": "SyncDeleteMode",
+							"actorType": {
+								"parentType": "SyncDeleteMode",
+								"inputs": [
+									{
+										"name": "table",
+										"const": null
+									}
+								],
+								"outputs": []
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"stages": [
+				{
+					"name": "Source",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": [
+						{
+							"name": "Query",
+							"actorType": {
+								"parentType": "SourceDbQuery",
+								"inputs": [
+									{
+										"name": "interface",
+										"const": "BILLING_DB"
+									},
+									{
+										"name": "sql",
+										"const": "select * from public.offer"
+									}
+								],
+								"outputs": [
+									{
+										"name": "result",
+										"schema": {
+											"type": "object",
+											"properties": {
+												"subscriber_id": {
+													"type": {}
+												},
+"offer_id": {
+													"type": {}
+												},
+"offer_ref_id": {
+													"type": {}
+												},
+"offer_description": {
+													"type": {}
+												},
+"from_date": {
+													"type": {}
+												},
+"to_date": {
+													"type": {}
+												}
+											}
+										}
+									}
+								]
+							}
+                       },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }						  
+					]
+				}
+			]
+		},
+		{
+			"stages": [
+				{
+					"name": "Mask Data Based On Catalog",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": [
+                        {
+                            "name": "Catalog Masking Mapper",
+                            "actorType": {
+                                "parentType": "CatalogMaskingMapper",
+                                "inputs": [
+                                    {
+                                        "name": "dataPlatform",
+                                        "const": "BILLING_DB"
+                                    },
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "dataset",
+                                        "const": "offer"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "public"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+		},
+		{
+			"stages": [
+				{
+					"name": "LU Table",
+					"dependsOnList": [],
+					"isLast": 1,
+					"actors": [
+						{
+							"name": "offer",
+							"actorType": {
+								"parentType": "DbLoad",
+								"inputs": [
+									{
+										"name": "interface",
+										"const": "fabric"
+									},
+									{
+										"name": "schema",
+										"const": null
+									},
+									{
+										"name": "table",
+										"const": null
+									},
+									{
+										"name": "fields",
+										"const": [
+											"subscriber_id",
+											"offer_id",
+											"offer_ref_id",
+											"offer_description",
+											"from_date",
+											"to_date"
+										]
+									},
+									{
+										"name": "keys",
+										"const": [
+										]
+									},
+									{
+										"name": "dialect",
+										"const": "sqlite"
+									},
+									{
+										"name": "subscriber_id",
+										"schema": {}
+									},
+									{
+										"name": "offer_id",
+										"schema": {}
+									},
+									{
+										"name": "offer_ref_id",
+										"schema": {}
+									},
+									{
+										"name": "offer_description",
+										"schema": {}
+									},
+									{
+										"name": "from_date",
+										"schema": {}
+									},
+									{
+										"name": "to_date",
+										"schema": {}
+									}
+								],
+								"outputs": []
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"stages": [
+				{
+					"name": "Post Load",
+					"dependsOnList": [],
+					"isLast": 0,
+					"actors": []
+				}
+			]
+		}
+	],
+	"connections": [
+		{
+			"leftPort": {
+				"actor": "PopulationArgs",
+				"name": "parent_rows"
+			},
+			"rightPort": {
+				"actor": "Query",
+				"name": "parent_rows"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "Catalog Masking Mapper",
+				"name": "values"
+			},
+			"rightPort": {
+				"actor": "offer",
+				"name": "params"
+			},
+			"iterate": "Iterate"
+		},
+		{
+			"leftPort": {
+				"actor": "Query",
+				"name": "result"
+			},
+			"rightPort": {
+				"actor": "Catalog Masking Mapper",
+				"name": "values"
+			 
+			}
+		},
+		{
+			"leftPort": {
+              "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Masking Mapper",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {											   
+				"actor": "flowArgs",
+				"name": "schema"
+			},
+			"rightPort": {
+				"actor": "offer",
+				"name": "schema"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "table"
+			},
+			"rightPort": {
+				"actor": "offer",
+				"name": "table"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "table"
+			},
+			"rightPort": {
+				"actor": "SyncDeleteMode",
+				"name": "table"
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "subscriber_id"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "subscriber_id"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "offer_id"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "offer_id"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "offer_ref_id"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "offer_ref_id"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "offer_description"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "offer_description"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "from_date"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "from_date"
+			 
+			}
+		},
+		{
+			"leftPort": {
+				"actor": "flowArgs",
+				"name": "to_date"
+			},
+			"rightPort": {
+				"actor": "PopulationArgs",
+				"name": "to_date"
+			 
+			}
+		}
+	]
+}

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>TAR_CUSTOMER</Name>
+  <ID>tbl_TAR_CUSTOMER</ID>
+  <EntityId>tblCol_05f128fe77f2421cb9452b50e91d7e6a</EntityId>
+  <Columns>
+    <Column name="customer_id" id="tblCol_05f128fe77f2421cb9452b50e91d7e6a" index="0" datatype="text" mandatory="true" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_05f128fe77f2421cb9452b50e91d7e6a" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
+    <DecisionFunction>fnDecisionDeleteFromTarget</DecisionFunction>
+    <TruncateBeforeSync>true</TruncateBeforeSync>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>

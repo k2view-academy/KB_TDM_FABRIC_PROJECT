@@ -1,0 +1,720 @@
+{
+    "tags": [
+        "Masking",
+        "MaskingFlows"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Input",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Record",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CUSTOMER_ID": {
+                                                    "type": "integer"
+                                                },
+                                                "FIRST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "LAST_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "SOCIAL_NET_FB": {
+                                                    "type": "string"
+                                                },
+                                                "SOCIAL_NET_TW": {
+                                                    "type": "string"
+                                                },
+                                                "EMAIL": {
+                                                    "type": "string"
+                                                },
+                                                "SOCIAL_NET_LNK": {
+                                                    "type": "string"
+                                                },
+                                                "ADDITIONAL_PHONE": {
+                                                    "type": "string"
+                                                },
+                                                "PRIMARY_PHONE": {
+                                                    "type": "string"
+                                                },
+                                                "OCCUPATION": {
+                                                    "type": "string"
+                                                },
+                                                "ID_NUMBER": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get SEQ_CACHE_INTERFACE",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SEQ_CACHE_INTERFACE",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Collection of Names",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FirstNames",
+                            "minHeight": 193,
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "Paula",
+                                            "Beatrice",
+                                            "Aquila",
+                                            "Shannon",
+                                            "Veda",
+                                            "Anthony",
+                                            "Whoopi",
+                                            "Maxwell",
+                                            "Rinah",
+                                            "Amaya",
+                                            "Flavia",
+                                            "Paul",
+                                            "Darryl",
+                                            "Walter",
+                                            "Knox",
+                                            "Willa",
+                                            "Lucian",
+                                            "Lucas",
+                                            "David",
+                                            "Mercedes",
+                                            "Rosalyn",
+                                            "Drake",
+                                            "Harlan",
+                                            "Josephine",
+                                            "Serena",
+                                            "Baker",
+                                            "Deanna",
+                                            "Emma",
+                                            "Salvador",
+                                            "Jolene",
+                                            "Cassandra",
+                                            "Fiona",
+                                            "Daphne",
+                                            "Leilani",
+                                            "Tamara",
+                                            "Martin",
+                                            "Kato",
+                                            "Dara",
+                                            "Stacey",
+                                            "Vance",
+                                            "Branden",
+                                            "Yoshi",
+                                            "Ruth",
+                                            "Stone",
+                                            "Jeremy",
+                                            "Victor",
+                                            "Lana",
+                                            "Carissa",
+                                            "Joy",
+                                            "Charity",
+                                            "Maggie",
+                                            "Alexis",
+                                            "Jesse",
+                                            "Fallon",
+                                            "Cathleen",
+                                            "Patrick",
+                                            "Zenia",
+                                            "Mikayla",
+                                            "Troy",
+                                            "Kiara",
+                                            "Graham",
+                                            "Tatiana",
+                                            "Jasper",
+                                            "Ruby",
+                                            "Ariana",
+                                            "Michael",
+                                            "Irma",
+                                            "Harrison",
+                                            "Melvin",
+                                            "Ferris",
+                                            "Quinn",
+                                            "Allistair",
+                                            "Cara",
+                                            "Emmanuel",
+                                            "Nichole",
+                                            "Belle",
+                                            "Ferris",
+                                            "Dora",
+                                            "Barry",
+                                            "Conan",
+                                            "Mari",
+                                            "Griffith",
+                                            "Jasper",
+                                            "Casey",
+                                            "Mariko",
+                                            "Tallulah",
+                                            "Charles",
+                                            "Mollie",
+                                            "Shay",
+                                            "James",
+                                            "Skyler",
+                                            "Tyrone",
+                                            "Merrill",
+                                            "Denton",
+                                            "Cynthia",
+                                            "Oren",
+                                            "Cora",
+                                            "Kelly",
+                                            "Ursula",
+                                            "Dara"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LastNames",
+                            "minHeight": 93,
+                            "actorType": {
+                                "parentType": "ConstStrings",
+                                "inputs": [
+                                    {
+                                        "name": "strings",
+                                        "const": [
+                                            "Garcia",
+                                            "Mckay",
+                                            "Gilbert",
+                                            "Huber",
+                                            "Bates",
+                                            "Potter",
+                                            "Nielsen",
+                                            "Hess",
+                                            "Tanner",
+                                            "Kramer",
+                                            "Morin",
+                                            "Henry",
+                                            "Emerson",
+                                            "Rasmussen",
+                                            "Daniels",
+                                            "Ramos",
+                                            "Travis",
+                                            "Noel",
+                                            "Herring",
+                                            "Noel",
+                                            "Simpson",
+                                            "Lynn",
+                                            "Reese",
+                                            "Lester",
+                                            "Malone",
+                                            "Emerson",
+                                            "Olson",
+                                            "Schmidt",
+                                            "Hayes",
+                                            "Petersen",
+                                            "Ingram",
+                                            "Newton",
+                                            "Forbes",
+                                            "Melendez",
+                                            "Cooley",
+                                            "Sherman",
+                                            "Singleton",
+                                            "Dotson",
+                                            "Wilcox",
+                                            "Arnold",
+                                            "Lyons",
+                                            "Sellers",
+                                            "Mann",
+                                            "David",
+                                            "Taylor",
+                                            "Freeman",
+                                            "Curry",
+                                            "Pace",
+                                            "Keith",
+                                            "Maynard",
+                                            "Randall",
+                                            "Gibson",
+                                            "Woodard",
+                                            "Blankenship",
+                                            "Holland",
+                                            "Dillard",
+                                            "Duncan",
+                                            "Holder",
+                                            "Anthony",
+                                            "Justice",
+                                            "Rivas",
+                                            "Murphy",
+                                            "Strong",
+                                            "Hamilton",
+                                            "Benson",
+                                            "Hardin",
+                                            "Navarro",
+                                            "Mendoza",
+                                            "Cruz",
+                                            "Owen",
+                                            "Mcfadden",
+                                            "Frank",
+                                            "Villarreal",
+                                            "Dale",
+                                            "Tate",
+                                            "French",
+                                            "Miller",
+                                            "Mcknight",
+                                            "Stone",
+                                            "Barlow",
+                                            "Whitley",
+                                            "Sanchez",
+                                            "Andrews",
+                                            "Ingram",
+                                            "Cooley",
+                                            "Olsen",
+                                            "Frank",
+                                            "Merrill",
+                                            "Rojas",
+                                            "Dorsey",
+                                            "Alvarado",
+                                            "Vang",
+                                            "Rosa",
+                                            "Fuentes",
+                                            "Anderson",
+                                            "Baker",
+                                            "Bryan",
+                                            "Larson",
+                                            "Floyd",
+                                            "Velasquez"
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Masking",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Masking First Name",
+                            "minHeight": 146,
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskFirstName"
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Masking Last Name",
+                            "actorType": {
+                                "parentType": "MaskingWithCollection",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskLastName"
+                                    },
+                                    {
+                                        "name": "collection",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Masking SSN",
+                            "actorType": {
+                                "parentType": "MaskingSSN",
+                                "inputs": [
+                                    {
+                                        "name": "maskingId",
+                                        "const": "maskSSN"
+                                    },
+                                    {
+                                        "name": "useEnvironment",
+                                        "const": true
+                                    },
+                                    {
+                                        "name": "useInstanceId",
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Name Concat",
+                            "minHeight": 170,
+                            "actorType": {
+                                "parentType": "MapCreate",
+                                "inputs": [
+                                    {
+                                        "name": "first_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "last_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "id_number",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Build Record",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Final Record",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer_id": {
+                                                    "type": "integer"
+                                                },
+                                                "id_number": {
+                                                    "type": "string"
+                                                },
+                                                "first_name": {
+                                                    "type": "string"
+                                                },
+                                                "last_name": {
+                                                    "type": "string"
+                                                },
+                                                "email": {
+                                                    "type": "string"
+                                                },
+                                                "primary_phone": {
+                                                    "type": "string"
+                                                },
+                                                "additional_phone": {
+                                                    "type": "string"
+                                                },
+                                                "social_net_fb": {
+                                                    "type": "string"
+                                                },
+                                                "social_net_tw": {
+                                                    "type": "string"
+                                                },
+                                                "social_net_lnk": {
+                                                    "type": "string"
+                                                },
+                                                "occupation": {
+                                                    "type": "string"
+                                                },
+                                                "picture": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Final Record",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Masking First Name",
+                "name": "value"
+            },
+            "path": [
+                "FIRST_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Masking Last Name",
+                "name": "value"
+            },
+            "path": [
+                "LAST_NAME"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Record",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Masking SSN",
+                "name": "value"
+            },
+            "path": [
+                "ID_NUMBER"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Masking First Name",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Masking Last Name",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get SEQ_CACHE_INTERFACE",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Masking SSN",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FirstNames",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Masking First Name",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LastNames",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Masking Last Name",
+                "name": "collection"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Masking First Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Name Concat",
+                "name": "first_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Masking Last Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Name Concat",
+                "name": "last_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Masking SSN",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Name Concat",
+                "name": "id_number"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Name Concat",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Final Record",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "row"
+            },
+            "rightPort": {
+                "actor": "Record",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Final Record",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "newRow"
+            }
+        }
+    ]
+}

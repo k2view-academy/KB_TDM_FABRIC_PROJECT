@@ -1,0 +1,181 @@
+tags: Create
+stages:
+  Check TDM Interface connectivity:
+    actors:
+      Error Handler For Test Connection:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Check TDM Interface Connection:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: test_connection interface=${TDMDB}
+          TDMDB:
+            const: TDM
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check if TDM DB is Disabled:
+    actors:
+      Check If TDM Interface is Active:
+        parent: assertTrue
+        height: 145
+        in:
+          message:
+            const: The TDM interface is not active, cannot build the TDM DB
+          condition:
+            link:
+              path: Check TDM Interface Connection/result/active
+              iterate: First
+  Check if TDM DB Already Exists:
+    actors:
+      TDM DB Failed Test Connection:
+        parent: Not
+        condition: result
+        in:
+          value:
+            link:
+              path: Check TDM Interface Connection/result/passed
+              iterate: First
+  Create Role and Db:
+    actors:
+      Error Handler For Create Role & DB:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+      Create tdm role and TDMDB DB:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBCreateRoleAndDB
+  Report Errors If Cannot Connect:
+    actors:
+      Get TDMDB Schema:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  Get SQL to create Sequences:
+    actors:
+      Get  SQL Resource File To Clear TDMDB And Create Sequences:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm2.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Create TDMDB Sequences:
+    actors:
+      Clear And Sequence Creation Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Clear TDMDB and Create Sequences:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Clear TDMDB And Create Sequences/result
+          schema:
+            link: Get TDMDB Schema/result
+            schema: string
+            mandatory: false
+      Get  SQL Resource File To Create TDMDB Tables and Functions:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm3.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Create TDMDB Tables:
+    actors:
+      Create TDMDB Tables Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Create TDMDB Tables and Functions:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Create TDMDB Tables and Functions/result
+          schema:
+            link: Get TDMDB Schema/result
+            schema: string
+            mandatory: false
+schemas:
+  Check TDM Interface Connection.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface:
+          type: string
+        type:
+          type: string
+        environment:
+          type: string
+        active:
+          type: boolean
+        passed:
+          type: boolean
+        error_message:
+          type: string

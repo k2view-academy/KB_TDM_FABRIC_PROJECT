@@ -1,0 +1,173 @@
+{
+    "type": "SourceDbQuery",
+    "actorClass": "com.k2view.cdbms.usercode.common.TDM.TDMSourceDbQuery",
+    "badge": "TQ",
+    "doc": [
+        "To improve performance with less calls to source, data from parent table is aggregated to groups",
+        "This actor create a query and generate the where clause and run it against the source",
+        "The query is generated dynamically according to the input parameters.",
+        "Generated data:",
+        "In case the fabric session has ROWS_GENERATOR set to true, the actor will generate data by using the rowsGeneratorDistribution",
+        "and a flow with the convention ${POPULATION}.population.generator Internally the RowsGenerator actor is used. For more information on how to use generated data, see the RowsGenerator actor documentation."
+    ],
+    "addInput": true,
+    "tags": [
+        "TDM"
+    ],
+    "inputs": [
+        {
+            "const": "",
+            "name": "interface",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.interface",
+                "interfaceType": [
+                    "database",
+                    "CassandraLoader"
+                ],
+                "interfaces": [
+                    "fabric"
+                ]
+            },
+            "mandatory": true,
+            "doc": [
+                "The interface to use.",
+                "This can be a jdbc URL or a reference to an interface defined in the container."
+            ]
+        },
+        {
+            "const": "",
+            "name": "sql",
+            "schema": {
+                "type": "string"
+            },
+            "editor": {
+                "id": "com.k2view.code",
+                "language": "sql",
+                "template": true
+            },
+            "mandatory": true,
+            "doc": [
+                "The SQL statement to perform.",
+                "Can contain either ordered params using ? or named params using ${} notation."
+            ]
+        },
+        {
+            "name": "params",
+            "schema": {},
+            "doc": [
+                "Optional parameters to the query.",
+                "Can be a map for named parameters or an array for multiple ordered params using ?.",
+                "A single primitive can be passed to replace a single ?."
+            ]
+        },
+        {
+            "name": "parent_rows",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            },
+            "doc": [
+                "Map to use for statement where case, the map keys are the column names and the values are the column values.",
+                "The map can contain multiple keys, in this case the where clause will be a conjunction of all the keys.",
+                "The map can contain a single key, in this case the where clause will be a single condition.",
+                "The map can contain no keys, in this case the statement will not be executed."
+            ]
+        },
+        {
+            "name": "batch",
+            "schema": {},
+            "hidden": true
+        },
+        {
+            "const": 100,
+            "name": "size",
+            "schema": {
+                "type": "integer"
+            },
+            "doc": [
+                "A numeric value. This value will be used as the group size of rows from parent_rows.",
+                "each group will be used to generate the where clause.",
+                "The default value is 100.",
+                "The value must be greater than 0."
+            ]
+        },
+        {
+            "const": false,
+            "name": "use_mbd_finder",
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": [
+                "A boolean value. Set true for using Mdb Finder on this population. Arguments below are relevant when Mdb Finder is set to true."
+            ]
+        },
+        {
+            "const": "",
+            "name": "luid_column_name",
+            "schema": {
+                "type": "string"
+            },
+            "doc": [
+                "A String value. This value should be a column name in the source, which has the instance ID value. Empty string is a default, which is valid for tables with parents."
+            ]
+        },
+        {
+            "const": false,
+            "name": "is_cross_iid",
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": [
+                "A Boolean value, default false. This value should be true if row can move between instances."
+            ]
+        },
+        {
+            "const": true,
+            "name": "stored",
+            "schema": {
+                "type": "boolean"
+            },
+            "doc": [
+                "A Boolean value, default true. This value should be a false if no need to store the table row in the lookup tables."
+            ]
+        },
+        {
+            "const": -1,
+            "name": "rowsGeneratorDistribution",
+            "schema": {
+                "type": "integer"
+            },
+            "editor": {
+                "id": "com.k2view.distribution"
+            },
+            "doc": "In case the ROWS_GENERATOR option is set, this distribution will be used to randomize the number of rows per parent row. See the RowsGenerator actor documentation for more."
+        }
+    ],
+    "outputs": [
+        {
+            "name": "result",
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            },
+            "doc": [
+                "A result set (virtual array) containing the rows. Each row contains a Map with the results.",
+                "You can access the map using the column name or the column index, with 0 being the first column."
+            ]
+        },
+        {
+            "name": "affected",
+            "schema": {
+                "type": "integer"
+            },
+            "doc": "In case of a data change query (i.e. insert/update/delete/...), this value represents the number of rows changed. Otherwise, the value will be -1."
+        }
+    ]
+}

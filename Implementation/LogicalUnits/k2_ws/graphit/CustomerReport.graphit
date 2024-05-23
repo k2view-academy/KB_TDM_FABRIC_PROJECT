@@ -1,0 +1,336 @@
+{
+  "name": "CustomerInfo",
+  "type": "function",
+  "code": "var target_env=null;\nvar target_id=null;\nvar source_env=null;\nvar target_entity_id=null;\nvar from_date_contract=null;\nvar to_date_contract=null;\nvar contractID=null;\nvar activityID=null;\nvar caseID=null;",
+  "serializerSettings": [
+    {
+      "set": "nice",
+      "value": "true"
+    }
+  ],
+  "collapsed": true,
+  "children": [
+    {
+      "type": "sql",
+      "code": "select environment_id as target_environment_id,source_env_name from public.task_execution_list where task_execution_id=${TaskExecID} limit 1",
+      "sessionProvider": "TDM",
+      "one": true,
+      "collapsed": true,
+      "children": [
+        {
+          "type": "function",
+          "code": "target_id=target_environment_id;"
+        }
+      ]
+    },
+    {
+      "name": "TargetInfo",
+      "type": "sql",
+      "code": "select environment_name as target_env_name from public.environments where environments.environment_id=${target_id} ",
+      "sessionProvider": "TDM",
+      "one": true,
+      "collapsed": true,
+      "children": [
+        {
+          "name": "TargetEnvInfo",
+          "type": "function",
+          "code": "target_env=target_env_name;"
+        },
+        {
+          "type": "sql",
+          "code": "set environemnt ${target_env_name}",
+          "sessionProvider": "fabric"
+        },
+        {
+          "name": "CRMinfo",
+          "type": "sql",
+          "code": "select distinct target_entity_id as TargetID from public.task_execution_entities where task_execution_id=${TaskExecID} and lu_name='Customer' and target_entity_id=${TargetID}",
+          "sessionProvider": "TDM",
+          "serializerSettings": [
+            {
+              "set": "nice",
+              "value": "true"
+            }
+          ],
+          "collapsed": true,
+          "children": [
+            {
+              "type": "function",
+              "code": "target_entity_id = TargetID"
+            },
+            {
+              "name": "CustomerData",
+              "type": "sql",
+              "code": "select * from public.customer Where customer_id=${target_entity_id};",
+              "sessionProvider": "TAR_CRM_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "name": "Customer ID",
+                  "type": "variable",
+                  "code": "customer_id"
+                },
+                {
+                  "name": "SSN",
+                  "type": "variable",
+                  "code": "ssn"
+                },
+                {
+                  "name": "First Name",
+                  "type": "variable",
+                  "code": "first_name"
+                },
+                {
+                  "name": "Last Name",
+                  "type": "variable",
+                  "code": "last_name"
+                },
+                {
+                  "name": "City",
+                  "type": "sql",
+                  "code": "select city from public.address where customer_id= ${target_entity_id};",
+                  "one": true,
+                  "sessionProvider": "TAR_CRM_DB"
+                },
+                {
+                  "name": "Zip",
+                  "type": "sql",
+                  "code": "select zip from public.address where customer_id= ${target_entity_id};",
+                  "one": true,
+                  "sessionProvider": "TAR_CRM_DB"
+                },
+                {
+                  "name": "State",
+                  "type": "sql",
+                  "code": "select state from public.address where customer_id= ${target_entity_id};",
+                  "one": true,
+                  "sessionProvider": "TAR_CRM_DB"
+                }
+              ]
+            },
+            {
+              "name": "ContractsData",
+              "type": "sql",
+              "code": "select * from public.contract where customer_id=${target_entity_id} ;",
+              "sessionProvider": "TAR_CRM_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "name": "Contract ID",
+                  "type": "variable",
+                  "code": "contract_id"
+                },
+                {
+                  "name": "Contarct Ref ID",
+                  "type": "variable",
+                  "code": "contract_ref_id"
+                },
+                {
+                  "type": "function",
+                  "code": "contractID=contract_id"
+                },
+                {
+                  "name": "Contract Description",
+                  "type": "variable",
+                  "code": "contract_description"
+                },
+                {
+                  "name": "Associated Line Format",
+                  "type": "variable",
+                  "code": "associated_line_fmt"
+                },
+                {
+                  "type": "variable",
+                  "code": "from_date"
+                },
+                {
+                  "type": "function",
+                  "code": "from_date_contract=from_date"
+                },
+                {
+                  "type": "variable",
+                  "code": "to_date"
+                },
+                {
+                  "type": "function",
+                  "code": "to_date_contract=to_date"
+                },
+                {
+                  "type": "condition",
+                  "code": "from_date_contract>to_date_contract",
+                  "serializerSettings": [
+                    {
+                      "set": "nice",
+                      "value": "true"
+                    }
+                  ],
+                  "collapsed": true,
+                  "children": [
+                    {
+                      "name": "True",
+                      "one": true,
+                      "children": [
+                        {
+                          "type": "sql",
+                          "code": "update public.contract set to_date=${from_date_contract}, from_date=${to_date_contract} where contract_id=${contractID} ;",
+                          "sessionProvider": "TAR_CRM_DB",
+                          "one": true
+                        }
+                      ]
+                    },
+                    {
+                      "name": "False",
+                      "one": true,
+                      "children": [
+                        {
+                          "type": "sql",
+                          "code": "update public.contract set to_date=${to_date_contract}, from_date=${from_date_contract} where contract_id=${contractID} ;"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "From Date",
+                  "type": "sql",
+                  "code": "select from_date from public.contract where customer_id=${target_entity_id} ;",
+                  "sessionProvider": "TAR_CRM_DB",
+                  "one": true
+                },
+                {
+                  "name": "To Date",
+                  "type": "sql",
+                  "code": "select to_date from public.contract where customer_id=${target_entity_id} ;",
+                  "sessionProvider": "TAR_CRM_DB",
+                  "one": true
+                }
+              ]
+            },
+            {
+              "name": "ActivitiesData ",
+              "type": "sql",
+              "code": "select * from public.activity where customer_id=${target_entity_id} ;",
+              "sessionProvider": "TAR_CRM_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "name": "Activity ID",
+                  "type": "variable",
+                  "code": "activity_id"
+                },
+                {
+                  "type": "function",
+                  "code": "activityID=activity_id"
+                },
+                {
+                  "name": "Activity Date",
+                  "type": "variable",
+                  "code": "activity_date",
+                  "serializerSettings": [
+                    {
+                      "set": "nice",
+                      "value": "true"
+                    }
+                  ]
+                },
+                {
+                  "name": "Activity Note",
+                  "type": "variable",
+                  "code": "activity_note"
+                }
+              ]
+            },
+            {
+              "name": "CasesInfo",
+              "type": "sql",
+              "code": "select * from public.cases where activity_id in (select activity_id from public.activity where customer_id=${target_entity_id});",
+              "serializerSettings": [
+                {
+                  "set": "nice",
+                  "value": "true"
+                }
+              ],
+              "sessionProvider": "TAR_CRM_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "name": "Activity ID",
+                  "type": "variable",
+                  "code": "activity_id"
+                },
+                {
+                  "name": "Case ID",
+                  "type": "variable",
+                  "code": "case_id"
+                },
+                {
+                  "name": "Case Type",
+                  "type": "variable",
+                  "code": "case_type"
+                },
+                {
+                  "name": "Case Status",
+                  "type": "variable",
+                  "code": "status"
+                }
+              ]
+            },
+            {
+              "name": "NotesInfo",
+              "type": "sql",
+              "code": "select * from public.case_note where case_id in (select case_id from public.cases where activity_id in (select activity_id from public.activity \n                                                                                                        where customer_id=${target_entity_id}));",
+              "serializerSettings": [
+                {
+                  "set": "nice",
+                  "value": "true"
+                }
+              ],
+              "sessionProvider": "TAR_CRM_DB",
+              "collapsed": true,
+              "children": [
+                {
+                  "name": "Case ID",
+                  "type": "variable",
+                  "code": "case_id"
+                },
+                {
+                  "name": "Note ID",
+                  "type": "variable",
+                  "code": "note_id"
+                },
+                {
+                  "name": "Note Date",
+                  "type": "variable",
+                  "code": "note_date"
+                },
+                {
+                  "name": "Note Text",
+                  "type": "variable",
+                  "code": "note_text"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "name": "TaskExecID",
+      "dataType": "String",
+      "description": "",
+      "mandatory": true
+    },
+    {
+      "name": "TargetID",
+      "dataType": "String",
+      "description": "",
+      "mandatory": false
+    }
+  ],
+  "exposeAsEndpoint": true,
+  "path": "",
+  "requireAuth": true,
+  "additionalPermissions": []
+}

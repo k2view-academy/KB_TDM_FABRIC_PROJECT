@@ -1,0 +1,1409 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "LU Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${LU_PATH}Tables/"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "StringFormat1",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${LU_NAME}.ROOT_TABLE_NAME"
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Ls LU tables",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "."
+                                    },
+                                    {
+                                        "name": "pattern",
+                                        "const": "*.k2table.xml"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    },
+                                                    "createTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastModifiedTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastAccessTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "directory": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Tables LU Links",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTableLinks"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.interface",
+                                            "interfaceType": [
+                                                "LOCAL",
+                                                "SFTP",
+                                                "filesystem"
+                                            ],
+                                            "interfaces": [
+                                                "file://"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "activity": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "address": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "contract": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "cases": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "case_note": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "TAR_customer": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "TAR_activity": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "TAR_address": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "TAR_contract": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "TAR_cases": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "TAR_case_note": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "FABRIC_TDM_ROOT": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Population Template",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "{\n    \"levels\": [\n\t\t{\n            \"stages\": [\n                {\n                    \"name\": \"Input\",\n                    \"dependsOnList\": [],\n                    \"isLast\": 0,\n                    \"actors\": [\n                        {\n                            \"name\": \"PopulationArgs\",\n                            \"actorType\": {\n                                \"parentType\": \"PopulationArgs\",\n\t\t\t\t\t\t\t\t\"readOnly\": true,\n                                \"inputs\": [\n\t\t\t\t\t\t\t\t\t{{#each COLUMN_LIST~}}\n\t\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\t\"name\": \"{{COLUMN_NAME}}\",\n\t\t\t\t\t\t\t\t\t\t\"schema\": {}\n\t\t\t\t\t\t\t\t\t{{#if @last}} } {{else}} }, {{/if}}\n\t\t\t\t\t\t\t\t\t{{/each}}\n                                ],\n                                \"outputs\": []\n                            }\n                        },\n\t\t\t\t\t\t{\n                            \"name\": \"SyncDeleteMode\",\n                            \"actorType\": {\n                                \"parentType\": \"SyncDeleteMode\",\n                                \"inputs\": [\n                                    {\n                                        \"name\": \"table\",\n                                        \"const\": null\n                                    }\n                                ],\n                                \"outputs\": []\n                            }\n                        }\n{{#if IS_ROOT_TABLE}}\n                        ,\n                        {\n                            \"name\": \"setTargetEnv_Actor1\",\n                            \"actorType\": {\n                                \"parentType\": \"setTargetEnv_Actor\",\n                                \"inputs\": [],\n                                \"outputs\": []\n                            }\n                        }\n{{/if}}\n                    ]\n                }\n            ]\n        },\n        {\n            \"stages\": [\n                {\n                    \"name\": \"Source\",\n                    \"dependsOnList\": [],\n                    \"isLast\": 0,\n                    \"actors\": [\n                        {\n                            \"name\": \"Query\",\n                            \"actorType\": {\n                                \"parentType\": \"SourceDbQuery\",\n                                \"inputs\": [\n                                    {\n                                        \"name\": \"interface\",\n                                        \"const\": \"{{INTERFACE_NAME}}\"\n                                    },\n                                    {\n                                        \"name\": \"sql\",\n                                        \"const\": \"SELECT {{QUERY_COLUMN_LIST}} FROM {{TARGET_SCHEMA}}.{{TARGET_TABLE}}\"\n                                    }\n                                ],\n                                \"outputs\": [\n\t\t\t\t\t\t\t\t\t{\n                                        \"name\": \"result\",\n                                        \"schema\": {\n                                            \"type\": \"object\",\n                                            \"properties\": {\n\t\t\t\t\t\t\t\t\t\t\t\t{{#each COLUMN_LIST~}}\n\t\t\t\t\t\t\t\t\t\t\t\t\"{{COLUMN_NAME}}\": {\n\t\t\t\t\t\t\t\t\t\t\t\t\t\"type\": {}\n\t\t\t\t\t\t\t\t\t\t\t\t{{#if @last}} } {{else}} }, {{/if}}\n\t\t\t\t\t\t\t\t\t\t\t\t{{/each}}\n                                            }\n                                        }\n                                    }\n\t\t\t\t\t\t\t\t]\n                            }\n                        }\n                    ]\n                }\n            ]\n        },\n        {\n            \"stages\": [\n                {\n                    \"name\": \"Stage 1\",\n                    \"dependsOnList\": [],\n                    \"isLast\": 0,\n                    \"actors\": []\n                }\n            ]\n        },\n        {\n            \"stages\": [\n                {\n                    \"name\": \"LU Table\",\n                    \"dependsOnList\": [],\n                    \"isLast\": 1,\n                    \"actors\": [\n                        {\n                            \"name\": \"TAR_{{TARGET_TABLE}}\",\n                            \"actorType\": {\n                                \"parentType\": \"DbLoad\",\n                                \"inputs\": [\n                                    {\n                                        \"name\": \"interface\",\n                                        \"const\": \"fabric\"\n                                    },\n\t\t\t\t\t\t\t\t\t{\n                                        \"name\": \"schema\",\n                                        \"const\": null\n                                    },\n                                    {\n                                        \"name\": \"table\",\n                                        \"const\": null\n                                    },\n                                    {\n                                        \"name\": \"fields\",\n                                        \"const\": [\n\t\t\t\t\t\t\t\t\t\t\t{{#each COLUMN_LIST~}}\n\t\t\t\t\t\t\t\t\t\t\t\"{{COLUMN_NAME}}\" {{#if @last}}  {{else}} , {{/if}}\n\t\t\t\t\t\t\t\t\t\t\t{{/each}}\n                                        ]\n                                    },\n\t\t\t\t\t\t\t\t\t{\n                                        \"name\": \"keys\",\n                                        \"const\": [\n                                            \"{{TABLE_KEYS}}\"\n                                        ]\n                                    },\n                                    {\n                                        \"name\": \"dialect\",\n                                        \"const\": \"sqlite\"\n                                    },\n\t\t\t\t\t\t\t\t\t{{#each COLUMN_LIST~}}\n\t\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\t\"name\": \"{{COLUMN_NAME}}\",\n\t\t\t\t\t\t\t\t\t\t\"schema\": {}\n\t\t\t\t\t\t\t\t\t{{#if @last}} } {{else}} }, {{/if}}\n\t\t\t\t\t\t\t\t\t{{/each}}\n                                ],\n                                \"outputs\": []\n                            }\n                        }\n                    ]\n                }\n            ]\n        },\n\t\t{\n            \"stages\": [\n                {\n                    \"name\": \"Post Load\",\n                    \"dependsOnList\": [],\n                    \"isLast\": 0,\n                    \"actors\": []\n                }\n            ]\n        }\n    ],\n    \"connections\": [\n        {\n            \"leftPort\": {\n                \"actor\": \"PopulationArgs\",\n                \"name\": \"parent_rows\"\n            },\n            \"rightPort\": {\n                \"actor\": \"Query\",\n                \"name\": \"parent_rows\"\n            }\n        },\n        {\n            \"leftPort\": {\n                \"actor\": \"Query\",\n                \"name\": \"result\"\n            },\n            \"rightPort\": {\n                \"actor\": \"TAR_{{TARGET_TABLE}}\",\n                \"name\": \"params\"\n            },\n            \"iterate\": \"Iterate\"\n        },\n\t\t{\n            \"leftPort\": {\n                \"actor\": \"flowArgs\",\n                \"name\": \"schema\"\n            },\n            \"rightPort\": {\n                \"actor\": \"TAR_{{TARGET_TABLE}}\",\n                \"name\": \"schema\"\n            }\n        },\n        {\n            \"leftPort\": {\n                \"actor\": \"flowArgs\",\n                \"name\": \"table\"\n            },\n            \"rightPort\": {\n                \"actor\": \"TAR_{{TARGET_TABLE}}\",\n                \"name\": \"table\"\n            }\n        },\n        {\n            \"leftPort\": {\n                \"actor\": \"flowArgs\",\n                \"name\": \"table\"\n            },\n            \"rightPort\": {\n                \"actor\": \"SyncDeleteMode\",\n                \"name\": \"table\"\n            }\n        },\n\t\t{{#each COLUMN_LIST~}}\n\t\t{\n\t\t\t\"leftPort\": {\n\t\t\t\t\"actor\": \"flowArgs\",\n\t\t\t\t\"name\": \"{{COLUMN_NAME}}\"\n\t\t\t},\n\t\t\t\"rightPort\": {\n\t\t\t\t\"actor\": \"PopulationArgs\",\n\t\t\t\t\"name\": \"{{COLUMN_NAME}}\"\n\t\t\t}\n\t\t{{#if @last}} } {{else}} }, {{/if}}\n\t\t{{/each}}\n    ]\n}\n"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "ROOT_TABLE_NAME",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Replace3",
+                            "actorType": {
+                                "parentType": "Replace",
+                                "inputs": [
+                                    {
+                                        "name": "search",
+                                        "const": ".k2table.xml"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "filter Out TDM Tables",
+                            "actorType": {
+                                "parentType": "filterOutTDMTables",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "File Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Not Null",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Table Keys",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "getTableKeys"
+                                    },
+                                    {
+                                        "name": "LU_PATH",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TABLE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "TABLE_KEYS",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "FileRead1",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "New Population file",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "TAR_${tableName}.population.flow"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "New Table name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "TAR_${tableName}"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 6",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Prepare table params",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var arrIn = [...objIn];\r\nvar objTmp = {};\r\nvar columnArr = [...objIn[tableName]];\r\nvar qryColumnList = \"\";\r\nvar is_root_table = null;\r\nobjTmp.COLUMN_LIST = [];\r\nobjTmp.TARGET_TABLE = tableName;\r\n\r\nif(ROOT_TABLE_NAME==tableName) {\r\n    is_root_table=true;\r\n}\r\n\r\nif(!(objIn[tableName].indexOf(tableKeys)>-1) ) {\r\n    columnArr.push(tableKeys);\r\n}\r\nfor (var i=0; i<columnArr.length; i++) {\r\n    objTmp.COLUMN_LIST.push({\"COLUMN_NAME\": columnArr[i]});\r\n    //qryColumnList += objIn[tableName][i]+\",\";\r\n    qryColumnList += columnArr[i]+\",\";\r\n}\r\n\r\nqryColumnList = qryColumnList.substring(0, qryColumnList.length-1);\r\n\r\nobjTmp.TABLE_KEYS = tableKeys;\r\nobjTmp.QUERY_COLUMN_LIST = qryColumnList;\r\nobjTmp.INTERFACE_NAME = targetDB;\r\nobjTmp.TARGET_SCHEMA = targetSchema;\r\nobjTmp.IS_ROOT_TABLE = is_root_table;\r\n//objIn[tableName];\r\nobjTmp;",
+                                            "script": "var arrIn = [].concat(objIn);\nvar objTmp = {};\nvar columnArr = [].concat(objIn[tableName]);\nvar qryColumnList = \"\";\nvar is_root_table = null;\nobjTmp.COLUMN_LIST = [];\nobjTmp.TARGET_TABLE = tableName;\n\nif (ROOT_TABLE_NAME == tableName) {\n  is_root_table = true;\n}\n\nif (!(objIn[tableName].indexOf(tableKeys) > -1)) {\n  columnArr.push(tableKeys);\n}\n\nfor (var i = 0; i < columnArr.length; i++) {\n  objTmp.COLUMN_LIST.push({\n    \"COLUMN_NAME\": columnArr[i]\n  }); //qryColumnList += objIn[tableName][i]+\",\";\n\n  qryColumnList += columnArr[i] + \",\";\n}\n\nqryColumnList = qryColumnList.substring(0, qryColumnList.length - 1);\nobjTmp.TABLE_KEYS = tableKeys;\nobjTmp.QUERY_COLUMN_LIST = qryColumnList;\nobjTmp.INTERFACE_NAME = targetDB;\nobjTmp.TARGET_SCHEMA = targetSchema;\nobjTmp.IS_ROOT_TABLE = is_root_table; //objIn[tableName];\n\nobjTmp;"
+                                        }
+                                    },
+                                    {
+                                        "name": "objIn",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "customer": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "activity": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "address": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "contract": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "cases": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "case_note": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableKeys",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "targetSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "targetDB",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ROOT_TABLE_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "COLUMN_LIST": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "COLUMN_NAME": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "TARGET_TABLE": {
+                                                    "type": "string"
+                                                },
+                                                "TABLE_KEYS": {
+                                                    "type": "string"
+                                                },
+                                                "QUERY_COLUMN_LIST": {
+                                                    "type": "string"
+                                                },
+                                                "INTERFACE_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "TARGET_SCHEMA": {
+                                                    "type": "string"
+                                                },
+                                                "IS_ROOT_TABLE": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "XmlParser1",
+                            "actorType": {
+                                "parentType": "XmlParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "TableObject": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "_value": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Name": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "ID": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "EntityId": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "Columns": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "Column": {
+                                                                                    "type": "array",
+                                                                                    "items": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "_attributes": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "name": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "id": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "index": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "datatype": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "mandatory": {
+                                                                                                        "type": "string"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "IndexesList": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "Index": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "_attributes": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "pk": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "unique": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "instanceOnly": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "columnsIdsList": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "EnrichmentList": {
+                                                                    "type": "object",
+                                                                    "properties": {}
+                                                                },
+                                                                "LazyDataUpdate": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_attributes": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "syncMethod": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "performEvery": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "TriggersList": {
+                                                                    "type": "object",
+                                                                    "properties": {}
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "info",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "version": {
+                                                    "type": "string"
+                                                },
+                                                "standalone": {
+                                                    "type": "boolean"
+                                                },
+                                                "header": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ApplyTemplate",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "transform"
+                                    },
+                                    {
+                                        "name": "templateContent",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "data",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Construct Table",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var objTmp = {};\r\nvar arrTmp = [...objIn.TableObject._value.Columns._value.Column];\r\nvar columnListArr = columnsList.split(\",\");\r\nvar delColumn = \"\";\r\nobjTmp.DecisionFunction={\"_value\": \"fnDecisionDeleteFromTarget\"};\r\n\r\n\r\nobjIn.TableObject._value.Name._value=prefix+\"\"+table_name;\r\nobjIn.TableObject._value.ID._value='tbl_'+prefix+\"\"+table_name;\r\n\r\nobjIn.TableObject._value.LazyDataUpdate._value=objTmp;\r\nobjIn.TableObject._value.LazyDataUpdate._attributes.syncMethod=\"DecisionFunction\";\r\n\r\nfor (var i=0; i<arrTmp.length; i++) {\r\n    if(columnListArr.indexOf(arrTmp[i]._attributes.name)==-1) {\r\n        delColumn += i+\",\";\r\n    }\r\n}\r\n\r\ndelColumn = delColumn.substring(0,(delColumn.length-1));\r\nvar arrTmp2 = delColumn.split(\",\");\r\narrTmp2.sort().reverse();\r\nfor(var y=0; y<arrTmp2.length; y++) {\r\n    delete objIn.TableObject._value.Columns._value.Column[(arrTmp2[y])];\r\n}\r\n\r\n\r\nobjIn;",
+                                            "script": "var objTmp = {};\nvar arrTmp = [].concat(objIn.TableObject._value.Columns._value.Column);\nvar columnListArr = columnsList.split(\",\");\nvar delColumn = \"\";\nobjTmp.DecisionFunction = {\n  \"_value\": \"fnDecisionDeleteFromTarget\"\n};\nobjIn.TableObject._value.Name._value = prefix + \"\" + table_name;\nobjIn.TableObject._value.ID._value = 'tbl_' + prefix + \"\" + table_name;\nobjIn.TableObject._value.LazyDataUpdate._value = objTmp;\nobjIn.TableObject._value.LazyDataUpdate._attributes.syncMethod = \"DecisionFunction\";\n\nfor (var i = 0; i < arrTmp.length; i++) {\n  if (columnListArr.indexOf(arrTmp[i]._attributes.name) == -1) {\n    delColumn += i + \",\";\n  }\n}\n\ndelColumn = delColumn.substring(0, delColumn.length - 1);\nvar arrTmp2 = delColumn.split(\",\");\narrTmp2.sort().reverse();\n\nfor (var y = 0; y < arrTmp2.length; y++) {\n  delete objIn.TableObject._value.Columns._value.Column[arrTmp2[y]];\n}\n\nobjIn;"
+                                        }
+                                    },
+                                    {
+                                        "name": "objIn",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "TableObject": {
+                                                    "type": "object",
+                                                    "properties": {}
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "TAR_",
+                                        "name": "prefix",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "columnsList",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "TableObject": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "_value": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "Name": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "ID": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "EntityId": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "Columns": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "Column": {
+                                                                                    "type": "array",
+                                                                                    "items": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "_attributes": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "name": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "id": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "index": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "datatype": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "mandatory": {
+                                                                                                        "type": "string"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "IndexesList": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "Index": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "_attributes": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "id": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "pk": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "unique": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "instanceOnly": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "columnsIdsList": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "EnrichmentList": {
+                                                                    "type": "object",
+                                                                    "properties": {}
+                                                                },
+                                                                "LazyDataUpdate": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "_attributes": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "syncMethod": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "performEvery": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "_value": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "DecisionFunction": {
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "_value": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "TriggersList": {
+                                                                    "type": "object",
+                                                                    "properties": {}
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileWrite1",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "XmlStringify1",
+                            "actorType": {
+                                "parentType": "XmlStringify",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 9",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FileWrite2",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Ls LU tables",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LU Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite2",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "ROOT_TABLE_NAME",
+                "name": "key"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Ls LU tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Replace3",
+                "name": "string"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Ls LU tables",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Tables LU Links",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Prepare table params",
+                "name": "objIn"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Population Template",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ApplyTemplate",
+                "name": "templateContent"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ROOT_TABLE_NAME",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Prepare table params",
+                "name": "ROOT_TABLE_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Replace3",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Get Table Keys",
+                "name": "TABLE_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Not Null",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Prepare table params",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "New Population file",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "tableNameOut"
+            },
+            "rightPort": {
+                "actor": "Construct Table",
+                "name": "table_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "FileRead1",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "New Table name",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Keys",
+                "name": "TABLE_KEYS"
+            },
+            "rightPort": {
+                "actor": "Prepare table params",
+                "name": "tableKeys"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "FileRead1",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "XmlParser1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "New Population file",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "New Table name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "FileWrite2",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare table params",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ApplyTemplate",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare table params",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Construct Table",
+                "name": "columnsList"
+            },
+            "path": [
+                "QUERY_COLUMN_LIST"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "XmlParser1",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Construct Table",
+                "name": "objIn"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ApplyTemplate",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FileWrite1",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Construct Table",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "XmlStringify1",
+                "name": "object"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "XmlStringify1",
+                "name": "xmlString"
+            },
+            "rightPort": {
+                "actor": "FileWrite2",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "LU Folder",
+                "name": "LU_PATH"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "Get Tables LU Links",
+                "name": "LU_PATH"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "filter Out TDM Tables",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_PATH"
+            },
+            "rightPort": {
+                "actor": "Get Table Keys",
+                "name": "LU_PATH"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetSchema"
+            },
+            "rightPort": {
+                "actor": "Prepare table params",
+                "name": "targetSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "targetDB"
+            },
+            "rightPort": {
+                "actor": "Prepare table params",
+                "name": "targetDB"
+            }
+        }
+    ]
+}

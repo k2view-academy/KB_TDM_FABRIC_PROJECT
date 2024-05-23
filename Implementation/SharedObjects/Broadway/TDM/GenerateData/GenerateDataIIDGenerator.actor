@@ -1,0 +1,29 @@
+{
+    "type": "GenerateIIDGenerator",
+    "badge": "gd",
+    "tags": [
+        "gd"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "const": [],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "Lu_name": {
+                            "type": "string"
+                        },
+                        "Generator_actor": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

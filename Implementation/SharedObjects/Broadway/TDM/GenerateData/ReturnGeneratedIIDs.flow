@@ -1,0 +1,708 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "This flow will create a new IID for the synthetic instance.\n1.Get Data from GenerateIIDGenerator Actor based on Input LU name.\n2.Loop from 1 to Number of IIDs\n  a. If the Generator actor is populated, then call it\n  b.Else,\n    i.Call UUID function to create a unique ID\n    ii.Add entry for each number to Cassandra table \n       <LU_NAME>_entity_list where:\n    iii.task_execution_id, lu_name and source_env_name fields \n    are set to the input values\n    iv.source_iid is set to the generated unique ID\n    v.tdm_eid is set to <Synthetic Environment \n    Name>_<Sequence value>\n  c.Return of entity list table.\n\n",
+                    "actors": [
+                        {
+                            "name": "Task Execution ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDM Keyspace",
+                            "actorType": {
+                                "parentType": "LuKeyspace",
+                                "inputs": [
+                                    {
+                                        "name": "luType",
+                                        "const": "TDM"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Name of Entity List Table",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${lu_name}_entity_list"
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "remark": "The Name of Logical Unit."
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Entity_List Table If Not Exits",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create Entity_List Table",
+                            "actorType": {
+                                "parentType": "createLuExternalEntityListTable",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Data from GenerateDataIIDGenerator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Generate Data IID Generator",
+                            "actorType": {
+                                "parentType": "GenerateDataIIDGenerator",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Lookup Lu",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Lookup",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "Lu_name"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        },
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "Lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Gen_Actor ",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Generator Actor",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "self.result = '';\r\nif(input != null) {\r\n    self.result=input.Generator_actor;\r\n}\r\nself.result;",
+                                            "script": "self.result = '';\n\nif (input != null) {\n  self.result = input.Generator_actor;\n}\n\nself.result;"
+                                        }
+                                    },
+                                    {
+                                        "name": "input",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Lu_name": {
+                                                    "type": "string"
+                                                },
+                                                "Generator_actor": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "if Generator Is Empty ",
+                    "dependsOnList": [
+                        "Get Gen_Actor "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Is Empty",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Generator Exists",
+                    "dependsOnList": [
+                        "Get Gen_Actor "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Call UUID Function ",
+                    "dependsOnList": [
+                        "if Generator Is Empty "
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Num of ids case 1",
+                            "actorType": {
+                                "parentType": "ForLoop",
+                                "inputs": [
+                                    {
+                                        "name": "from",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "GetIIDSequence",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "GetIIDSequence"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Call Gen Actor",
+                    "dependsOnList": [
+                        "Generator Exists"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Num of ids case 2",
+                            "actorType": {
+                                "parentType": "ForLoop",
+                                "inputs": [
+                                    {
+                                        "name": "from",
+                                        "const": 0
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Call Inner Flow For UUID",
+                    "dependsOnList": [
+                        "Call UUID Function "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Get IID Sequence ",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "index",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Call Inner Flow for Gen Actor",
+                    "dependsOnList": [
+                        "Call Gen Actor"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "GEN actor InnerFlow",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "index",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check UUID",
+                    "dependsOnList": [
+                        "Call Inner Flow For UUID"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "IID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Check Output ID",
+                    "dependsOnList": [
+                        "Call Inner Flow for Gen Actor"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Output ID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert UUID To Array",
+                    "dependsOnList": [
+                        "Check UUID"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilderCase1",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Insert IID To Array",
+                    "dependsOnList": [
+                        "Check Output ID"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilderCase2",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Generate Data IID Generator",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Lookup",
+                "name": "lookupData"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Lookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Generator Actor",
+                "name": "input"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generator Actor",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Is Empty",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Generator Actor",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "GEN actor InnerFlow",
+                "name": "flowName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Num of ids case 1",
+                "name": "i"
+            },
+            "rightPort": {
+                "actor": "Get IID Sequence ",
+                "name": "index"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "GetIIDSequence",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Get IID Sequence ",
+                "name": "flowName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Num of ids case 2",
+                "name": "i"
+            },
+            "rightPort": {
+                "actor": "GEN actor InnerFlow",
+                "name": "index"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Get IID Sequence ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "GEN actor InnerFlow",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Output ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilderCase1",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Output ID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilderCase2",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "task_execution_id"
+            },
+            "rightPort": {
+                "actor": "Task Execution ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "Set Name of Entity List Table",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "Create Entity_List Table",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "lu_name"
+            },
+            "rightPort": {
+                "actor": "Lookup",
+                "name": "Lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "num_iids"
+            },
+            "rightPort": {
+                "actor": "Num of ids case 1",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "num_iids"
+            },
+            "rightPort": {
+                "actor": "Num of ids case 2",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilderCase1",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "array"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilderCase2",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "array"
+            }
+        }
+    ]
+}

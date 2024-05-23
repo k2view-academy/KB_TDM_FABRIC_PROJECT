@@ -1,0 +1,208 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Build Table Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format the Table Name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "entity_list_${task_execution_id}"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Table If Does Not Exists",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create Entity List Table",
+                            "actorType": {
+                                "parentType": "DbCreateTable",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            {
+                                                "name": "task_execution_id",
+                                                "type": "bigint",
+                                                "pk": false,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "lu_name",
+                                                "type": "text",
+                                                "pk": false,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "tdm_eid",
+                                                "type": "text",
+                                                "pk": false,
+                                                "mandatory": true
+                                            },
+                                            {
+                                                "name": "source_env_name",
+                                                "type": "text",
+                                                "pk": false,
+                                                "mandatory": false
+                                            },
+                                            {
+                                                "name": "source_iid",
+                                                "type": "text",
+                                                "pk": false,
+                                                "mandatory": false
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set The Output Table Name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${schema}.${tableName}"
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set The Output Table Name",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create Entity List Table",
+                "name": "schema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format the Table Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Set The Output Table Name",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format the Table Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Create Entity List Table",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionId"
+            },
+            "rightPort": {
+                "actor": "Format the Table Name",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set The Output Table Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "ENTITY_LIST_TABLE"
+            }
+        }
+    ]
+}

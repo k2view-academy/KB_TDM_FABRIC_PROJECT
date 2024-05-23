@@ -1,0 +1,813 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Env Name",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "AI_ENVIRONMENT",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "AI_ENVIRONMENT"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Env",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FabricSetEnv",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Interfaces",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "AI_DB_ENTITIES",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "AI_DB_INTERFACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "AI_DB_K2SYSTEM",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "AI_DB_INTERFACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "AI_Execution",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "AI_Execution"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check TDM Interface Connection",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "test_connection interface=${AI_DB}"
+                                    },
+                                    {
+                                        "name": "AI_DB",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "interface": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "environment": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "passed": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "error_message": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Check TDM Interface Connection2",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "test_connection interface=${AI_K2SYSTEM}"
+                                    },
+                                    {
+                                        "name": "AI_K2SYSTEM",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "interface": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "environment": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "passed": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "error_message": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Check TDM Interface Connection1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "test_connection interface=${AI_Execution}"
+                                    },
+                                    {
+                                        "name": "AI_Execution",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "interface": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "environment": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "passed": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "error_message": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Active AI_DB_ENTITIES",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Active AI_DB_K2SYSTEM",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Active AI_Execution",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Passed AI_DB_ENTITIES",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Passed AI_DB_K2SYSTEM",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Passed AI_Execution",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Active",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check If ALL Active",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function checkInterfaces(interface1, interface2, interface3) {\r\n    return (interface1 && interface2 && interface3);\r\n}\r\n\r\nvar result = checkInterfaces(interface1, interface2, interface3);\r\nresult;\r\n//checkInterfaces(Entites_interface, K2system_interface, Execution_interface);",
+                                            "script": "function checkInterfaces(interface1, interface2, interface3) {\n  return interface1 && interface2 && interface3;\n}\n\nvar result = checkInterfaces(interface1, interface2, interface3);\nresult; //checkInterfaces(Entites_interface, K2system_interface, Execution_interface);"
+                                        }
+                                    },
+                                    {
+                                        "name": "interface1",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface2",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface3",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Check If ALL Passed",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "function checkInterfaces(interface1, interface2, interface3) {\r\n    return (interface1 && interface2 && interface3);\r\n}\r\n\r\nvar result = checkInterfaces(interface1, interface2, interface3);\r\nresult;\r\n//checkInterfaces(Entites_interface, K2system_interface, Execution_interface);",
+                                            "script": "function checkInterfaces(interface1, interface2, interface3) {\n  return interface1 && interface2 && interface3;\n}\n\nvar result = checkInterfaces(interface1, interface2, interface3);\nresult; //checkInterfaces(Entites_interface, K2system_interface, Execution_interface);"
+                                        }
+                                    },
+                                    {
+                                        "name": "interface1",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface2",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface3",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "True",
+                    "dependsOnList": [
+                        "Active"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Active Status",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Empty",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "False",
+                    "dependsOnList": [
+                        "Active"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Output",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "The AI-based synthetic data generation is currently unavailable."
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "AI_ENVIRONMENT",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FabricSetEnv",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_DB_ENTITIES",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check TDM Interface Connection",
+                "name": "AI_DB"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_DB_K2SYSTEM",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check TDM Interface Connection2",
+                "name": "AI_K2SYSTEM"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_Execution",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check TDM Interface Connection1",
+                "name": "AI_Execution"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check TDM Interface Connection",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Active AI_DB_ENTITIES",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Check TDM Interface Connection",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Passed AI_DB_ENTITIES",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "passed"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Check TDM Interface Connection2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Active AI_DB_K2SYSTEM",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Check TDM Interface Connection2",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Passed AI_DB_K2SYSTEM",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "passed"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Check TDM Interface Connection1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Active AI_Execution",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Check TDM Interface Connection1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Passed AI_Execution",
+                "name": "value"
+            },
+            "iterate": "First",
+            "path": [
+                "passed"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Active AI_DB_ENTITIES",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check If ALL Active",
+                "name": "interface1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Active AI_DB_K2SYSTEM",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check If ALL Active",
+                "name": "interface2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Active AI_Execution",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check If ALL Active",
+                "name": "interface3"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Passed AI_DB_ENTITIES",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check If ALL Passed",
+                "name": "interface1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Passed AI_DB_K2SYSTEM",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check If ALL Passed",
+                "name": "interface2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Passed AI_Execution",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check If ALL Passed",
+                "name": "interface3"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check If ALL Active",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Active Status",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Empty",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "message"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Output",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "message"
+            }
+        }
+    ]
+}

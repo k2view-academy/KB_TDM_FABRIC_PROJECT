@@ -1,0 +1,618 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "luName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "LuID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "LU_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "taskExecutionID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "rootLuName",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "root_lu_name",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "rootIID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "root_iid",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "sourceEnvironment",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get TDMDB Schema",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Target Entity ID",
+                            "minHeight": 99,
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check If Root is Null",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IsNull Root Name",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "IsNull Root IID",
+                            "actorType": {
+                                "parentType": "IsNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Entity Root Info ",
+                    "dependsOnList": [
+                        "Check If Root is Null"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Or",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Or",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "fnGetRootEntityId",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnGetRootEntityId"
+                                    },
+                                    {
+                                        "name": "luId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "taskExecId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceEnv",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "rootLuName": {
+                                                    "type": "string"
+                                                },
+                                                "rootEntityId": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Else",
+                    "dependsOnList": [
+                        "Check If Root is Null"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Extract IID",
+                    "dependsOnList": [
+                        "Get Entity Root Info "
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Regex",
+                            "actorType": {
+                                "parentType": "Regex",
+                                "inputs": [
+                                    {
+                                        "name": "pattern",
+                                        "const": "(?<=_)(\\d+)"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "Else"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update Root Info",
+                    "dependsOnList": [
+                        "Extract IID"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Update Task Execution Entittes",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update ${@TDMDB_SCHEMA}.task_execution_entities\r\n set root_entity_id=${root_iid}, root_lu_name=${root_name}\r\n where task_execution_id=${task_execution_id} and lu_name=${lu_name} and entity_id=${entity_id} and target_entity_id=${target_entity_id}"
+                                    },
+                                    {
+                                        "name": "root_iid",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "root_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "target_entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing  ",
+                    "dependsOnList": [
+                        "Do Nothing"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "IID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "luId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "taskExecId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "rootLuName",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull Root Name",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "rootIID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "IsNull Root IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "sourceEnvironment",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get TDMDB Schema",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Target Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "target_entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IsNull Root Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Or",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IsNull Root IID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Or",
+                "name": "b"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Regex",
+                "name": "input"
+            },
+            "path": [
+                "rootEntityId"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "fnGetRootEntityId",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "root_name"
+            },
+            "iterate": "First",
+            "path": [
+                "rootLuName"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Regex",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Update Task Execution Entittes",
+                "name": "root_iid"
+            },
+            "iterate": "First"
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "IID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "luName",
+                "name": "value"
+            }
+        }
+    ]
+}

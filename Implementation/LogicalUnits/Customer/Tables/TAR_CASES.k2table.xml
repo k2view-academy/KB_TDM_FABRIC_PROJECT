@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>TAR_CASES</Name>
+  <ID>tbl_TAR_CASES</ID>
+  <Columns>
+    <Column name="activity_id" id="tblCol_daa1771ac711418c831f703d1ef5775f" index="0" datatype="text" />
+    <Column name="case_id" id="tblCol_716636d23e2945169513b5b2c3d5dd0f" index="1" datatype="text" mandatory="true" />
+  </Columns>
+  <IndexesList>
+    <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_716636d23e2945169513b5b2c3d5dd0f" />
+  </IndexesList>
+  <EnrichmentList />
+  <LazyDataUpdate syncMethod="DecisionFunction" performEvery="1.00:00:00">
+    <DecisionFunction>fnDecisionDeleteFromTarget</DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList />
+</TableObject>

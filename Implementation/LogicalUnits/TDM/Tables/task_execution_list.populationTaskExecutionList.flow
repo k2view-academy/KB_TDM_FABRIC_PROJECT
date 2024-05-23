@@ -1,0 +1,574 @@
+stages:
+  Input:
+    actors:
+      PopulationArgs:
+        parent: PopulationArgs
+        readonly: true
+        in:
+          task_execution_id:
+            external: task_execution_id
+            schema: any
+            mandatory: false
+        out:
+          parent_rows:
+            schema: '#ref'
+      SyncDeleteMode:
+        parent: SyncDeleteMode
+        in:
+          interface:
+            schema: any
+          table:
+            const: null
+            external: table
+  Source:
+    actors:
+      Query:
+        parent: SourceDbQuery
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT * FROM @TDMDB_SCHEMA@.task_execution_list
+          parent_rows:
+            link: PopulationArgs/parent_rows
+        out:
+          result:
+            schema: '#ref'
+  Stage 2:
+    actors:
+      Integer lu_id:
+        parent: ToNumber
+        in:
+          value:
+            link:
+              path: Query/result/lu_id
+              iterate: Iterate
+      Integer process_id:
+        parent: ToNumber
+        in:
+          value:
+            link:
+              path: Query/result/process_id
+              iterate: Iterate
+  check condition:
+    else: true
+    dependsOn: Stage 2
+    split: '--------------------'
+  lu_id is zero:
+    else: false
+    transactional: false
+    dependsOn: Stage 2
+    actors:
+      process_id not zero:
+        parent: NotEquals
+        condition: result
+        in:
+          b:
+            const: 0
+            schema: integer
+          a:
+            link: Integer process_id/number
+      Integer task_id:
+        parent: ToNumber
+        in:
+          value:
+            link:
+              path: Query/result/task_id
+              iterate: Iterate
+  luNames:
+    dependsOn: check condition
+    actors:
+      product_logical_units:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT lu_name, lu_parent_name, product_name from @TDMDB_SCHEMA@.product_logical_units
+              where lu_id = ${lu_id}
+          lu_id:
+            link: Integer lu_id/number
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  processName:
+    transactional: false
+    dependsOn: lu_id is zero
+    actors:
+      tasks_exe_process:
+        parent: DbFetchFirstRow
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT process_name, process_type from @TDMDB_SCHEMA@.tasks_exe_process
+              where task_id =${task_id} and process_id = ${process_id}
+          task_id:
+            link: Integer task_id/number
+            schema: integer
+            mandatory: false
+          process_id:
+            link: Integer process_id/number
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Task Type:
+    actors:
+      task_type:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+              path: Query/result/task_type
+              iterate: Iterate
+        out:
+          value:
+            schema: string
+  Reserve or Load:
+    actors:
+      'Load  ':
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: LOAD
+            schema: string
+          a:
+            link: task_type/value
+      Reserve:
+        parent: EqualsIgnoreCase
+        in:
+          b:
+            const: RESERVE
+            schema: string
+          a:
+            link: task_type/value
+  Target Product Version:
+    dependsOn: Reserve or Load
+    actors:
+      Reserve or Load Task:
+        parent: Or
+        condition: result
+        in:
+          a:
+            link: Load  /result
+          b:
+            link: Reserve/result
+      target_product_version:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
+              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
+              \ = ${environment_id}"
+          product_id:
+            link:
+              path: Query/result/product_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          environment_id:
+            link:
+              path: Query/result/environment_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+      source_product_version For Load Task:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
+              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
+              \ = ${environment_id}"
+          product_id:
+            link:
+              path: Query/result/product_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          environment_id:
+            link:
+              path: Query/result/source_environment_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+    split: '--------------------'
+  Source Product Version:
+    else: true
+    transactional: false
+    dependsOn: Reserve or Load
+    actors:
+      source_product_version:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "select product_version from @TDMDB_SCHEMA@.environment_products\r\
+              \nwhere status = 'Active' and product_id = ${product_id} and environment_id\
+              \ = ${environment_id}"
+          product_id:
+            link:
+              path: Query/result/product_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          environment_id:
+            link:
+              path: Query/result/source_environment_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: string
+  userData:
+    transactional: false
+    actors:
+      ToString:
+        parent: ToString
+        in:
+          value:
+            link:
+              path: Query/result/task_executed_by
+              iterate: Iterate
+  Split:
+    transactional: false
+    actors:
+      '##':
+        parent: Split
+        in:
+          delimiter:
+            const: '##'
+          string:
+            link: ToString/string
+  User Name:
+    transactional: false
+    actors:
+      task_executed_by:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "var result = input[0];\r\nresult;"
+              script: |-
+                var result = input[0];
+                result;
+          input:
+            link: '##/strings'
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+  Load to Fabric:
+    transactional: false
+    actors:
+      task_execution_list:
+        parent: DbLoad
+        in:
+          interface:
+            const: fabric
+          schema:
+            const: TDM
+          table:
+            const: TASK_EXECUTION_LIST
+          fields:
+            const:
+            - TASK_EXECUTION_ID
+            - TASK_ID
+            - LU_ID
+            - LU_NAME
+            - PARENT_LU_ID
+            - PARENT_LU_NAME
+            - VERSION_IND
+            - VERSION_TASK_EXECUTION_ID
+            - EXPIRATION_DATE
+            - EXECUTION_STATUS
+            - START_EXECUTION_TIME
+            - END_EXECUTION_TIME
+            - NUM_OF_PROCESSED_ENTITIES
+            - NUM_OF_COPIED_ENTITIES
+            - NUM_OF_FAILED_ENTITIES
+            - DATA_CENTER_NAME
+            - NUM_OF_PROCESSED_REF_TABLES
+            - NUM_OF_COPIED_REF_TABLES
+            - NUM_OF_FAILED_REF_TABLES
+            - FABRIC_EXECUTION_ID
+            - TASK_EXECUTED_BY
+            - PROCESS_ID
+            - PROCESS_NAME
+            - PROCESS_TYPE
+            - PRODUCT_NAME
+            - SOURCE_PRODUCT_VERSION
+            - TARGET_PRODUCT_VERSION
+            - SUBSET_TASK_EXECUTION_ID
+          keys:
+            const:
+            - TASK_EXECUTION_ID
+            - TASK_ID
+            - LU_ID
+            - PROCESS_ID
+          dialect:
+            const: sqlite
+          TASK_EXECUTION_ID:
+            link:
+              path: Query/result/task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          TASK_ID:
+            link:
+              path: Query/result/task_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          LU_ID:
+            link:
+              path: Query/result/lu_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          LU_NAME:
+            link: product_logical_units/result/lu_name
+            schema: string
+            mandatory: false
+          PARENT_LU_ID:
+            link:
+              path: Query/result/parent_lu_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          PARENT_LU_NAME:
+            link: product_logical_units/result/lu_parent_name
+            schema: string
+            mandatory: false
+          VERSION_IND:
+            schema: boolean
+            mandatory: false
+          EXECUTION_STATUS:
+            link:
+              path: Query/result/execution_status
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          START_EXECUTION_TIME:
+            link:
+              path: Query/result/start_execution_time
+              iterate: Iterate
+            schema: date
+            mandatory: false
+          END_EXECUTION_TIME:
+            link:
+              path: Query/result/end_execution_time
+              iterate: Iterate
+            schema: date
+            mandatory: false
+          NUM_OF_PROCESSED_ENTITIES:
+            link:
+              path: Query/result/num_of_processed_entities
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_COPIED_ENTITIES:
+            link:
+              path: Query/result/num_of_copied_entities
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_FAILED_ENTITIES:
+            link:
+              path: Query/result/num_of_failed_entities
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          DATA_CENTER_NAME:
+            link:
+              path: Query/result/data_center_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          NUM_OF_PROCESSED_REF_TABLES:
+            link:
+              path: Query/result/num_of_processed_ref_tables
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_COPIED_REF_TABLES:
+            link:
+              path: Query/result/num_of_copied_ref_tables
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          NUM_OF_FAILED_REF_TABLES:
+            link:
+              path: Query/result/num_of_failed_ref_tables
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          FABRIC_EXECUTION_ID:
+            link:
+              path: Query/result/fabric_execution_id
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          TASK_EXECUTED_BY:
+            link: task_executed_by/result
+            schema: string
+            mandatory: false
+          PROCESS_ID:
+            link:
+              path: Query/result/process_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          PROCESS_NAME:
+            link: tasks_exe_process/result/process_name
+            schema: '#ref'
+            mandatory: false
+          PRODUCT_NAME:
+            link: product_logical_units/result/product_name
+            schema: string
+            mandatory: false
+          SOURCE_PRODUCT_VERSION:
+            link:
+            - source_product_version For Load Task/result
+            - source_product_version/result
+            schema: string
+            mandatory: false
+          TARGET_PRODUCT_VERSION:
+            link: target_product_version/result
+            schema: string
+            mandatory: false
+          VERSION_TASK_EXECUTION_ID:
+            link:
+              path: Query/result/version_task_execution_id
+              iterate: Iterate
+            schema: integer
+            mandatory: false
+          EXPIRATION_DATE:
+            link: Query/result/expiration_date
+            schema: date
+            mandatory: false
+          SUBSET_TASK_EXECUTION_ID:
+            link: Query/result/subset_task_execution_id
+            schema: integer
+            mandatory: false
+          PROCESS_TYPE:
+            link: tasks_exe_process/result/process_type
+            schema: string
+            mandatory: false
+  Stage 1:
+    transactional: false
+schemas:
+  PopulationArgs.out.parent_rows:
+    type: array
+    items:
+      type: object
+      properties:
+        task_execution_id:
+          type: string
+  Query.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        task_id:
+          type: integer
+        task_type:
+          type: string
+        task_execution_id:
+          type: integer
+        creation_date:
+          type: date
+        be_id:
+          type: integer
+        environment_id:
+          type: integer
+        product_id:
+          type: integer
+        product_version:
+          type: string
+        execution_status:
+          type: string
+        start_execution_time:
+          type: date
+        end_execution_time:
+          type: date
+        num_of_processed_entities:
+          type: integer
+        num_of_copied_entities:
+          type: integer
+        num_of_failed_entities:
+          type: integer
+        data_center_name:
+          type: string
+        lu_id:
+          type: integer
+        num_of_processed_ref_tables:
+          type: integer
+        num_of_copied_ref_tables:
+          type: integer
+        num_of_failed_ref_tables:
+          type: integer
+        parent_lu_id:
+          type: integer
+        source_env_name:
+          type: string
+        source_environment_id:
+          type: integer
+        task_executed_by:
+          type: string
+        fabric_execution_id:
+          type: string
+        subset_task_execution_id:
+          type: integer
+        version_task_execution_id:
+          type: integer
+        expiration_date:
+          type: date
+        synced_to_fabric:
+          type: boolean
+        updated_by:
+          type: string
+        clean_redis:
+          type: boolean
+        process_id:
+          type: integer
+        execution_note:
+          type: string
+        source_product_version:
+          type: string
+  product_logical_units.out.result:
+    type: object
+    properties:
+      lu_name:
+        type: string
+      lu_parent_name: {
+        }
+      product_name:
+        type: string
+  tasks_exe_process.out.result:
+    type: object
+    properties: {
+      }
+  task_execution_list.in.PROCESS_NAME:
+    type: object
+    properties:
+      process_name:
+        type: string

@@ -1,0 +1,2005 @@
+{
+    "Name": "Report",
+    "Width": "8.8in",
+    "ReportParameters": [
+        {
+            "DataType": "String",
+            "Name": "TaskExecID",
+            "Prompt": "Task Execution ID"
+        },
+        {
+            "DataType": "String",
+            "Name": "TargetID",
+            "Prompt": "Enter Customer ID"
+        }
+    ],
+    "Layers": [
+        {
+            "Name": "default"
+        }
+    ],
+    "CustomProperties": [
+        {
+            "Name": "DisplayType",
+            "Value": "Page"
+        },
+        {
+            "Name": "SizeType",
+            "Value": "Default"
+        },
+        {
+            "Name": "PaperOrientation",
+            "Value": "Landscape"
+        }
+    ],
+    "Page": {
+        "PageWidth": "11in",
+        "PageHeight": "8.5in",
+        "RightMargin": "0.5in",
+        "LeftMargin": "0.5in",
+        "TopMargin": "0.5in",
+        "BottomMargin": "0.5in",
+        "Columns": 1,
+        "ColumnSpacing": "0.5in"
+    },
+    "DataSources": [
+        {
+            "Name": "fabricApi",
+            "ConnectionProperties": {
+                "DataProvider": "JSON",
+                "ConnectString": "endpoint=/api/"
+            }
+        }
+    ],
+    "Body": {
+        "Height": "5.9in",
+        "ReportItems": [
+            {
+                "Type": "textbox",
+                "Name": "MainTitle",
+                "ZIndex": 2,
+                "CanGrow": true,
+                "KeepTogether": true,
+                "Value": "Customer Data Report",
+                "Style": {
+                    "FontSize": "20pt",
+                    "FontWeight": "Bold",
+                    "PaddingLeft": "2pt",
+                    "PaddingRight": "2pt",
+                    "PaddingTop": "2pt",
+                    "PaddingBottom": "2pt",
+                    "Color": "#114b7a",
+                    "TextAlign": "Left",
+                    "VerticalAlign": "Middle"
+                },
+                "Left": "0.3in",
+                "Top": "0.3in",
+                "Width": "3.9792in",
+                "Height": "0.4062in"
+            },
+            {
+                "Type": "textbox",
+                "Name": "TextBox34",
+                "ZIndex": 4,
+                "CanGrow": true,
+                "KeepTogether": true,
+                "Value": "Customer Info",
+                "Style": {
+                    "FontSize": "14pt",
+                    "FontWeight": "SemiBold",
+                    "PaddingLeft": "2pt",
+                    "PaddingRight": "2pt",
+                    "PaddingTop": "2pt",
+                    "PaddingBottom": "2pt",
+                    "Color": "#1971b6",
+                    "TextAlign": "Left"
+                },
+                "Left": "0.3in",
+                "Top": "1in",
+                "Width": "5.2in",
+                "Height": "0.25in"
+            },
+            {
+                "Type": "table",
+                "Name": "Table3",
+                "ZIndex": 17,
+                "DataSetName": "CustomerData",
+                "Style": {
+                    "Border": {
+                        "Color": "#1971b6",
+                        "Style": "Solid",
+                        "Width": "0.5pt"
+                    }
+                },
+                "TableColumns": [
+                    {
+                        "Width": "1.1in"
+                    },
+                    {
+                        "Width": "1.1in"
+                    },
+                    {
+                        "Width": "1.5in"
+                    },
+                    {
+                        "Width": "1.5in"
+                    },
+                    {
+                        "Width": "1.1in"
+                    },
+                    {
+                        "Width": "1.1in"
+                    },
+                    {
+                        "Width": "1.1in"
+                    }
+                ],
+                "Header": {
+                    "TableRows": [
+                        {
+                            "Height": "0.25in",
+                            "TableCells": [
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox1",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Customer ID",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox2",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "SSN",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox3",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "First Name",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.5in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox4",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Last Name",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.5in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox5",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "City",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox6",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "Zip",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox8",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "State",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "FontSize": "9pt",
+                                            "FontWeight": "SemiBold",
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "Color": "#114b7a",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle",
+                                            "BackgroundColor": "#90cbf9"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "RepeatOnNewPage": true
+                },
+                "Details": {
+                    "TableRows": [
+                        {
+                            "Height": "0.25in",
+                            "TableCells": [
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox9",
+                                        "DataElementName": "Customer ID",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields.Item(\"Customer ID\").Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox10",
+                                        "DataElementName": "SSN",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields!SSN.Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox11",
+                                        "DataElementName": "First Name",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields.Item(\"First Name\").Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.5in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox12",
+                                        "DataElementName": "Last Name",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields.Item(\"Last Name\").Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.5in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox13",
+                                        "DataElementName": "City",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields!City.Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox14",
+                                        "DataElementName": "Zip",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields!Zip.Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                },
+                                {
+                                    "Item": {
+                                        "Type": "textbox",
+                                        "Name": "TextBox16",
+                                        "DataElementName": "State",
+                                        "CanGrow": true,
+                                        "KeepTogether": true,
+                                        "Value": "=Fields!State.Value",
+                                        "Style": {
+                                            "Border": {
+                                                "Color": "#1971b6",
+                                                "Style": "Solid",
+                                                "Width": "0.5pt"
+                                            },
+                                            "PaddingLeft": "2pt",
+                                            "PaddingRight": "2pt",
+                                            "PaddingTop": "2pt",
+                                            "PaddingBottom": "2pt",
+                                            "TextAlign": "Left",
+                                            "VerticalAlign": "Middle"
+                                        },
+                                        "Width": "1.1in",
+                                        "Height": "0.25in"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "SortExpressions": [
+                        {
+                            "Value": "=Fields.Item(\"Customer ID\").Value"
+                        }
+                    ]
+                },
+                "Left": "0.3in",
+                "Top": "1.3in",
+                "Width": "8.5in",
+                "Height": "0.5in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "ContractsContainer",
+                "ZIndex": 35,
+                "KeepTogether": true,
+                "ReportItems": [
+                    {
+                        "Type": "table",
+                        "Name": "Table4",
+                        "ZIndex": 1,
+                        "DataSetName": "ContractsData",
+                        "Style": {
+                            "Border": {
+                                "Color": "#3da7a8",
+                                "Style": "Solid",
+                                "Width": "0.5pt"
+                            }
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.5in"
+                            },
+                            {
+                                "Width": "1.5in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            }
+                        ],
+                        "Header": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox25",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Contract ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox26",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Contarct Ref ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox27",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Contract Description",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.5in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox28",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Associated Line Format",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.5in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox7",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "From Date",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox17",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "To Date",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "RepeatOnNewPage": true
+                        },
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox29",
+                                                "DataElementName": "Contract ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Contract ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox30",
+                                                "DataElementName": "Contarct Ref ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Contarct Ref ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox31",
+                                                "DataElementName": "Contract Description",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Contract Description\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.5in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox32",
+                                                "DataElementName": "Associated Line Format",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Associated Line Format\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.5in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox15",
+                                                "DataElementName": "From Date",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"From Date\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox18",
+                                                "DataElementName": "To Date",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"To Date\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "SortExpressions": [
+                                {
+                                    "Value": "=Fields.Item(\"Contract ID\").Value"
+                                }
+                            ]
+                        },
+                        "Top": "0.3in",
+                        "Width": "7.4in",
+                        "Height": "0.5in"
+                    },
+                    {
+                        "Type": "textbox",
+                        "Name": "ContractsDataTitle",
+                        "ZIndex": 2,
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Contracts Data",
+                        "Style": {
+                            "FontSize": "14pt",
+                            "FontWeight": "SemiBold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#367070",
+                            "TextAlign": "Left"
+                        },
+                        "Width": "2.7292in",
+                        "Height": "0.25in"
+                    }
+                ],
+                "Left": "0.3in",
+                "Top": "2in",
+                "Width": "7.7in",
+                "Height": "1in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "CasesContainer",
+                "ZIndex": 36,
+                "KeepTogether": true,
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "CasesDataTitle",
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Cases Data",
+                        "Style": {
+                            "FontSize": "14pt",
+                            "FontWeight": "SemiBold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#367070"
+                        },
+                        "Width": "2.7187in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table1",
+                        "ZIndex": 1,
+                        "DataSetName": "CasesInfo",
+                        "Style": {
+                            "Border": {
+                                "Color": "#3da7a8",
+                                "Style": "Solid",
+                                "Width": "0.5pt"
+                            }
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            }
+                        ],
+                        "Header": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox19",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Activity ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox20",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Case ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox21",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Case Type",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox22",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Case Status",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "RepeatOnNewPage": true
+                        },
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox37",
+                                                "DataElementName": "Activity ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Activity ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox23",
+                                                "DataElementName": "Case ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Case ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox24",
+                                                "DataElementName": "Case Type",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Case Type\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox33",
+                                                "DataElementName": "Case Status",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Case Status\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "SortExpressions": [
+                                {
+                                    "Value": "=Fields.Item(\"Activity ID\").Value"
+                                },
+                                {
+                                    "Value": "=Fields.Item(\"Case ID\").Value"
+                                }
+                            ]
+                        },
+                        "Top": "0.3in",
+                        "Width": "4.4in",
+                        "Height": "0.5in"
+                    }
+                ],
+                "Left": "0.3in",
+                "Top": "4in",
+                "Width": "7.7in",
+                "Height": "0.9in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "ActivityContainer",
+                "ZIndex": 37,
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "ActivityDataTitle",
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Activity Data",
+                        "Style": {
+                            "FontSize": "14pt",
+                            "FontWeight": "SemiBold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#367070"
+                        },
+                        "Width": "2.7187in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table2",
+                        "ZIndex": 1,
+                        "DataSetName": "ActivitiesData",
+                        "Style": {
+                            "Border": {
+                                "Color": "#3da7a8",
+                                "Style": "Solid",
+                                "Width": "0.5pt"
+                            }
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "4.1in"
+                            },
+                            {
+                                "Width": "2.2in"
+                            }
+                        ],
+                        "Header": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox38",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Activity ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox39",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Activity Note",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "4.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox40",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Activity Date",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "2.2in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "RepeatOnNewPage": true
+                        },
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox42",
+                                                "DataElementName": "Activity ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Activity ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox43",
+                                                "DataElementName": "Activity Note",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Activity Note\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "4.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox45",
+                                                "DataElementName": "Activity Date",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Activity Date\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "2.2in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "SortExpressions": [
+                                {
+                                    "Value": "=Fields.Item(\"Activity ID\").Value"
+                                }
+                            ]
+                        },
+                        "Top": "0.3in",
+                        "Width": "7.4in",
+                        "Height": "0.5in"
+                    }
+                ],
+                "Left": "0.3in",
+                "Top": "3in",
+                "Width": "7.7in",
+                "Height": "1in"
+            },
+            {
+                "Type": "rectangle",
+                "Name": "CaseNotesContainer",
+                "ZIndex": 38,
+                "KeepTogether": true,
+                "ReportItems": [
+                    {
+                        "Type": "textbox",
+                        "Name": "TextBox35",
+                        "CanGrow": true,
+                        "KeepTogether": true,
+                        "Value": "Case Notes",
+                        "Style": {
+                            "FontSize": "14pt",
+                            "FontWeight": "SemiBold",
+                            "PaddingLeft": "2pt",
+                            "PaddingRight": "2pt",
+                            "PaddingTop": "2pt",
+                            "PaddingBottom": "2pt",
+                            "Color": "#367070"
+                        },
+                        "Width": "2.7187in",
+                        "Height": "0.25in"
+                    },
+                    {
+                        "Type": "table",
+                        "Name": "Table5",
+                        "ZIndex": 1,
+                        "DataSetName": "NotesInfo",
+                        "Style": {
+                            "Border": {
+                                "Color": "#3da7a8",
+                                "Style": "Solid",
+                                "Width": "0.5pt"
+                            }
+                        },
+                        "TableColumns": [
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            },
+                            {
+                                "Width": "3in"
+                            },
+                            {
+                                "Width": "1.1in"
+                            }
+                        ],
+                        "Header": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox44",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Case ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox36",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Note ID",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox41",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Note Text",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "3in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox46",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "Note Date",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "FontSize": "9pt",
+                                                    "FontWeight": "SemiBold",
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Color": "#367070",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle",
+                                                    "BackgroundColor": "#abe0e1"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "RepeatOnNewPage": true
+                        },
+                        "Details": {
+                            "TableRows": [
+                                {
+                                    "Height": "0.25in",
+                                    "TableCells": [
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox50",
+                                                "DataElementName": "Case ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Case ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox47",
+                                                "DataElementName": "Note ID",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Note ID\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox48",
+                                                "DataElementName": "Note Text",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Note Text\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "3in",
+                                                "Height": "0.25in"
+                                            }
+                                        },
+                                        {
+                                            "Item": {
+                                                "Type": "textbox",
+                                                "Name": "TextBox49",
+                                                "DataElementName": "Note Date",
+                                                "CanGrow": true,
+                                                "KeepTogether": true,
+                                                "Value": "=Fields.Item(\"Note Date\").Value",
+                                                "Style": {
+                                                    "Border": {
+                                                        "Color": "#3da7a8",
+                                                        "Style": "Solid",
+                                                        "Width": "0.5pt"
+                                                    },
+                                                    "PaddingLeft": "2pt",
+                                                    "PaddingRight": "2pt",
+                                                    "PaddingTop": "2pt",
+                                                    "PaddingBottom": "2pt",
+                                                    "Format": "d",
+                                                    "TextAlign": "Left",
+                                                    "VerticalAlign": "Middle"
+                                                },
+                                                "Width": "1.1in",
+                                                "Height": "0.25in"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],
+                            "SortExpressions": [
+                                {
+                                    "Value": "=Fields.Item(\"Case ID\").Value"
+                                },
+                                {
+                                    "Value": "=Fields.Item(\"Note ID\").Value"
+                                }
+                            ]
+                        },
+                        "Left": "0.0313in",
+                        "Top": "0.3in",
+                        "Width": "6.3in",
+                        "Height": "0.5in"
+                    }
+                ],
+                "Left": "0.3in",
+                "Top": "5in",
+                "Width": "7.7in",
+                "Height": "0.9in"
+            }
+        ]
+    },
+    "DataSets": [
+        {
+            "Name": "CRMDataSet",
+            "Fields": [
+                {
+                    "Name": "TargetInfo.TargetEnvInfo",
+                    "DataField": "TargetInfo.TargetEnvInfo"
+                },
+                {
+                    "Name": "TargetInfo.CRMinfo",
+                    "DataField": "TargetInfo.CRMinfo"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "fabricApi",
+                "CommandText": "=\"uri=CustomerReport?TargetID=\" & Parameters!TargetID.Value & \"&TaskExecID=\" & Parameters!TaskExecID.Value & \";jpath=$\""
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "TargetInfo.CRMinfo",
+            "Fields": [
+                {
+                    "Name": "CustomerData",
+                    "DataField": "CustomerData"
+                },
+                {
+                    "Name": "ContractsData",
+                    "DataField": "ContractsData"
+                },
+                {
+                    "Name": "ActivitiesData",
+                    "DataField": "ActivitiesData"
+                },
+                {
+                    "Name": "CasesInfo",
+                    "DataField": "CasesInfo"
+                },
+                {
+                    "Name": "NotesInfo",
+                    "DataField": "NotesInfo"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:CRMDataSet/TargetInfo.CRMinfo"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "CustomerData",
+            "Fields": [
+                {
+                    "Name": "Customer ID",
+                    "DataField": "Customer ID"
+                },
+                {
+                    "Name": "SSN",
+                    "DataField": "SSN"
+                },
+                {
+                    "Name": "First Name",
+                    "DataField": "First Name"
+                },
+                {
+                    "Name": "Last Name",
+                    "DataField": "Last Name"
+                },
+                {
+                    "Name": "City",
+                    "DataField": "City"
+                },
+                {
+                    "Name": "Zip",
+                    "DataField": "Zip"
+                },
+                {
+                    "Name": "State",
+                    "DataField": "State"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TargetInfo.CRMinfo/CustomerData"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "ContractsData",
+            "Fields": [
+                {
+                    "Name": "Contract ID",
+                    "DataField": "Contract ID"
+                },
+                {
+                    "Name": "Contarct Ref ID",
+                    "DataField": "Contarct Ref ID"
+                },
+                {
+                    "Name": "Contract Description",
+                    "DataField": "Contract Description"
+                },
+                {
+                    "Name": "Associated Line Format",
+                    "DataField": "Associated Line Format"
+                },
+                {
+                    "Name": "From Date",
+                    "DataField": "From Date"
+                },
+                {
+                    "Name": "To Date",
+                    "DataField": "To Date"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TargetInfo.CRMinfo/ContractsData"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "ActivitiesData",
+            "Fields": [
+                {
+                    "Name": "Activity ID",
+                    "DataField": "Activity ID"
+                },
+                {
+                    "Name": "Activity Date",
+                    "DataField": "Activity Date"
+                },
+                {
+                    "Name": "Activity Note",
+                    "DataField": "Activity Note"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TargetInfo.CRMinfo/ActivitiesData"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "CasesInfo",
+            "Fields": [
+                {
+                    "Name": "Activity ID",
+                    "DataField": "Activity ID"
+                },
+                {
+                    "Name": "Case ID",
+                    "DataField": "Case ID"
+                },
+                {
+                    "Name": "Case Type",
+                    "DataField": "Case Type"
+                },
+                {
+                    "Name": "Case Status",
+                    "DataField": "Case Status"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TargetInfo.CRMinfo/CasesInfo"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        },
+        {
+            "Name": "NotesInfo",
+            "Fields": [
+                {
+                    "Name": "Case ID",
+                    "DataField": "Case ID"
+                },
+                {
+                    "Name": "Note ID",
+                    "DataField": "Note ID"
+                },
+                {
+                    "Name": "Note Date",
+                    "DataField": "Note Date"
+                },
+                {
+                    "Name": "Note Text",
+                    "DataField": "Note Text"
+                }
+            ],
+            "Query": {
+                "DataSourceName": "$dataset:TargetInfo.CRMinfo/NotesInfo"
+            },
+            "CaseSensitivity": "Auto",
+            "KanatypeSensitivity": "Auto",
+            "AccentSensitivity": "Auto",
+            "WidthSensitivity": "Auto"
+        }
+    ]
+}

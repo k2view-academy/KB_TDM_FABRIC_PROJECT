@@ -1,0 +1,530 @@
+{
+    "tags": [
+        "TDM",
+        "TDMCustomLogic"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Init",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Session Globals",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "TDMSetSessionGlobals"
+                                    },
+                                    {
+                                        "name": "SESSION_GLOBALS",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Input SQL params",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "remark": "Optional parameters for the select query. You can set multiple input parameters separated by a comma.",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if SQL Got Parameters",
+                    "dependsOnList": [
+                        "Init"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Parameters Equals \"null\"?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "null"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set to Empty String",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Keep As is",
+                    "dependsOnList": [
+                        "Init"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "SQLParams",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Join Stages",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If Params Are Given",
+                    "dependsOnList": [
+                        "Join Stages"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Params Is Not Empty?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Trim Params",
+                            "actorType": {
+                                "parentType": "Trim",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "No Parameters are Given",
+                    "dependsOnList": [
+                        "Join Stages"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare The Params",
+                    "dependsOnList": [
+                        "If Params Are Given"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Split The Params",
+                            "actorType": {
+                                "parentType": "Split",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing",
+                    "dependsOnList": [
+                        "No Parameters are Given"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Run SQL",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get the entity list",
+                            "remark": "It is better to use the NoOfEntities limit in the flow that retrieves the list of entities from performance POV.",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "CRM_DB"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "customer_id": {
+                                                        "type": "integer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Init Record Count",
+                            "actorType": {
+                                "parentType": "InitRecordCount",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set the IID to a String",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "ToString",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if the instance is not reserved and load it",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Check Reserve And Load To Entity List Table",
+                            "actorType": {
+                                "parentType": "CheckReserveAndLoadToEntityList",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check if enough Entities were loaded",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": true,
+                    "actors": [
+                        {
+                            "name": "Check And Stop Loop If enough records were added",
+                            "actorType": {
+                                "parentType": "CheckAndStopLoop",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Input SQL params",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Input SQL params",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Parameters Equals \"null\"?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set to Empty String",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Params Is Not Empty?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Set to Empty String",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Trim Params",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Trim Params",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SQLParams",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Params Is Not Empty?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Trim Params",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Split The Params",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Split The Params",
+                "name": "strings"
+            },
+            "rightPort": {
+                "actor": "Get the entity list",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the entity list",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "ToString",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "customer_id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "ToString",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Check Reserve And Load To Entity List Table",
+                "name": "SOURCE_IID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check Reserve And Load To Entity List Table",
+                "name": "recordLoaded"
+            },
+            "rightPort": {
+                "actor": "Check And Stop Loop If enough records were added",
+                "name": "RECORD_LOADED"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SESSION_GLOBALS"
+            },
+            "rightPort": {
+                "actor": "Set Session Globals",
+                "name": "SESSION_GLOBALS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "SQLParams"
+            },
+            "rightPort": {
+                "actor": "Input SQL params",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sql"
+            },
+            "rightPort": {
+                "actor": "Get the entity list",
+                "name": "sql"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LU_NAME"
+            },
+            "rightPort": {
+                "actor": "Check Reserve And Load To Entity List Table",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "NUM_OF_ENTITIES"
+            },
+            "rightPort": {
+                "actor": "Check And Stop Loop If enough records were added",
+                "name": "NUM_OF_ENTITIES"
+            }
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+Process_name,Lu_name,Process_type
+preTaskExePrintToLog,Customer,pre
+preTaskExePrintToLog2,Customer,pre
+postTaskExePrintToLog,Customer,post
+postTaskExePrintToLog2,Customer,post

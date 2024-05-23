@@ -1,0 +1,600 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Project Directory and Create Template Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Project Directory",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "GetProjectFolder"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "PROJECT_FOLDER",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Create Template Inputs",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "createGenerateDataTablePopulation"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "luType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.logicalUnit"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceInterface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceSchema",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "sourceTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "tableDefaultMapping",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "NAME": {
+                                                    "type": "string"
+                                                },
+                                                "TABLE_FIELDS": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "TYPE": {
+                                                                "type": "string"
+                                                            },
+                                                            "ACTOR": {
+                                                                "type": "string"
+                                                            },
+                                                            "PARAMETERS": {
+                                                                "type": "string"
+                                                            },
+                                                            "TABLE": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "TABLE_SEQ_DATA": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "LU_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "TARGET_TABLE_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "TARGET_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FABRIC_TABLE_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FABRIC_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "SEQUENCE_NAME": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Template for Generators",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Read Template of Generators",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "SharedObjects/Templates/TDM/tdmCreateGenerateDataPop.pop.flow.template"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Indicator For Generate Flow",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "GENERATE_FLOW",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Read Template of Default Generators",
+                            "minHeight": 189,
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "SharedObjects/Templates/TDM/tdmTypeDefaultsGenerator.flow.template"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Flow",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "flow folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${PROJECT_DIRECTORY}/LogicalUnits/${LU_NAME}/Broadway/GeneratorFlows"
+                                    },
+                                    {
+                                        "name": "PROJECT_DIRECTORY",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "LU_NAME",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Apply Template",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "transform"
+                                    },
+                                    {
+                                        "name": "templateContent",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "data",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Format Default Generatror Name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${sourceTable}.typeDefaultsGenerator.flow"
+                                    },
+                                    {
+                                        "name": "sourceTable",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Apply Template For Default Generators",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "transform"
+                                    },
+                                    {
+                                        "name": "templateContent",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "data",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Write Flow",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "remark": "Only Populations based on Broadway Flows will have equivalent Generator flow",
+                    "actors": [
+                        {
+                            "name": "Check if Table has BF Population",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "generatorFlowName"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Write Flow to Folder",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Write Default Genertor Flow to Folder",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Project Directory",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "Read Template of Generators",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Project Directory",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "flow folder",
+                "name": "PROJECT_DIRECTORY"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Project Directory",
+                "name": "PROJECT_FOLDER"
+            },
+            "rightPort": {
+                "actor": "Read Template of Default Generators",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create Template Inputs",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Apply Template",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create Template Inputs",
+                "name": "tableDefaultMapping"
+            },
+            "rightPort": {
+                "actor": "Apply Template For Default Generators",
+                "name": "data"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Template of Generators",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Apply Template",
+                "name": "templateContent"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Template of Default Generators",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Apply Template For Default Generators",
+                "name": "templateContent"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flow folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Flow to Folder",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flow folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Default Genertor Flow to Folder",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Apply Template",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Write Flow to Folder",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format Default Generatror Name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Write Default Genertor Flow to Folder",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Apply Template For Default Generators",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Write Default Genertor Flow to Folder",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "luType"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceInterface"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "sourceInterface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceSchema"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "sourceSchema"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceTable"
+            },
+            "rightPort": {
+                "actor": "Create Template Inputs",
+                "name": "sourceTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luType"
+            },
+            "rightPort": {
+                "actor": "flow folder",
+                "name": "LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "params"
+            },
+            "rightPort": {
+                "actor": "Format Default Generatror Name",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "sourceTable"
+            },
+            "rightPort": {
+                "actor": "Format Default Generatror Name",
+                "name": "sourceTable"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "generatorFlowName"
+            },
+            "rightPort": {
+                "actor": "Write Flow to Folder",
+                "name": "path"
+            }
+        }
+    ]
+}
