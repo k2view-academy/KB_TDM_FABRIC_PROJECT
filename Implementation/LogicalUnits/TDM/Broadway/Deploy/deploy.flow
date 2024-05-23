@@ -154,17 +154,6 @@ stages:
             external: is_first_deploy
             schema: boolean
             mandatory: false
-  'Set Execution ID ':
-    actors:
-      setExecutionID:
-        parent: InnerFlow
-        in:
-          flowName:
-            const: setExecutionID
-          is_first_deploy:
-            external: is_first_deploy
-            schema: boolean
-            mandatory: false
   Get Globals For k2masking:
     actors:
       SEQ_CACHE_INTERFACE:

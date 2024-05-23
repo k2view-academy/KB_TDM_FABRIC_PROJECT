@@ -71,13 +71,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
-          <dbHost>34.159.5.111</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~A+ObVPLhRB5nFEtdnlf4dAXyJs6PpATUZYMA8wuFkzB2uY09Pa20+Q&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://34.159.5.111:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -366,14 +366,14 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="true" version="">
+        <GenericInterface type="HTTP" enabled="false" version="">
           <Name>AI_Execution</Name>
           <Properties>
             <Property name="ProtocolType">
               <Value>HTTPS</Value>
             </Property>
             <Property name="HOST">
-              <Value>34.90.75.220</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="PORT">
               <Value>443</Value>
@@ -391,7 +391,7 @@
               <Value></Value>
             </Property>
             <Property name="Token">
-              <Value>eyJhbGciOiJSUzI1NiIsImtpZCI6Iks1ODFhdmRMLUItLU51bXJ5Tl9DYXl4NWNULUt2VVhwZXFlNnZ3MnMxeUUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
+              <Value></Value>
             </Property>
             <Property name="AccessTokenUrl">
               <Value></Value>
@@ -416,20 +416,20 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="true" version="">
+        <GenericInterface type="CUSTOM" enabled="false" version="">
           <Name>AI_DB_External</Name>
           <Properties>
             <Property name="Host">
-              <Value>34.159.5.111</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="Port">
               <Value>5432</Value>
             </Property>
             <Property name="User">
-              <Value>postgres</Value>
+              <Value></Value>
             </Property>
             <Property name="Password">
-              <Value>~encs2~Gki9uBLYeubfQHhB5o73moMeX+hcJ0oCEKUi0biUP9myS87NgLxsyQ&#x3D;&#x3D;</Value>
+              <Value></Value>
             </Property>
             <Property name="Data">
               <Value>postgres</Value>
@@ -513,13 +513,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
-          <dbHost>34.159.5.111</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~ppLpU1R4ftwhl+Wia0j1sYGB0UE5F9u+wiBEI9iWu/wDTgAFvNb5/g&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://34.159.5.111:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -815,7 +815,7 @@
               <Value>HTTPS</Value>
             </Property>
             <Property name="HOST">
-              <Value>34.90.75.220</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="PORT">
               <Value>443</Value>
@@ -833,7 +833,7 @@
               <Value></Value>
             </Property>
             <Property name="Token">
-              <Value>eyJhbGciOiJSUzI1NiIsImtpZCI6Iks1ODFhdmRMLUItLU51bXJ5Tl9DYXl4NWNULUt2VVhwZXFlNnZ3MnMxeUUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
+              <Value>.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
             </Property>
             <Property name="AccessTokenUrl">
               <Value></Value>
@@ -858,20 +858,20 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="true" version="">
+        <GenericInterface type="CUSTOM" enabled="false" version="">
           <Name>AI_DB_External</Name>
           <Properties>
             <Property name="Host">
-              <Value>34.159.5.111</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="Port">
               <Value>5432</Value>
             </Property>
             <Property name="User">
-              <Value>postgres</Value>
+              <Value></Value>
             </Property>
             <Property name="Password">
-              <Value>~encs2~Gki9uBLYeubfQHhB5o73moMeX+hcJ0oCEKUi0biUP9myS87NgLxsyQ&#x3D;&#x3D;</Value>
+              <Value></Value>
             </Property>
             <Property name="Data">
               <Value>postgres</Value>
@@ -955,13 +955,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
-          <dbHost>34.159.5.111</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~ftZXuIvru4RDXb9FNp5ZLELIbe7ucxgIaiHHnBtRx2LpBU0l2NKoDA&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://34.159.5.111:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1250,14 +1250,14 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="true" version="">
+        <GenericInterface type="HTTP" enabled="false" version="">
           <Name>AI_Execution</Name>
           <Properties>
             <Property name="ProtocolType">
               <Value>HTTPS</Value>
             </Property>
             <Property name="HOST">
-              <Value>34.90.75.220</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="PORT">
               <Value>443</Value>
@@ -1275,7 +1275,7 @@
               <Value></Value>
             </Property>
             <Property name="Token">
-              <Value>eyJhbGciOiJSUzI1NiIsImtpZCI6Iks1ODFhdmRMLUItLU51bXJ5Tl9DYXl4NWNULUt2VVhwZXFlNnZ3MnMxeUUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
+              <Value></Value>
             </Property>
             <Property name="AccessTokenUrl">
               <Value></Value>
@@ -1300,20 +1300,20 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="true" version="">
+        <GenericInterface type="CUSTOM" enabled="false" version="">
           <Name>AI_DB_External</Name>
           <Properties>
             <Property name="Host">
-              <Value>34.159.5.111</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="Port">
               <Value>5432</Value>
             </Property>
             <Property name="User">
-              <Value>postgres</Value>
+              <Value></Value>
             </Property>
             <Property name="Password">
-              <Value>~encs2~Gki9uBLYeubfQHhB5o73moMeX+hcJ0oCEKUi0biUP9myS87NgLxsyQ&#x3D;&#x3D;</Value>
+              <Value></Value>
             </Property>
             <Property name="Data">
               <Value>postgres</Value>
@@ -1328,7 +1328,7 @@
         </GenericInterface>
       </GenericInterfacesList>
     </Environment>
-    <Environment enabled="true" name="AI">
+    <Environment enabled="false" name="AI">
       <Comments></Comments>
       <DbInterfacesList>
         <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="BILLING_DB" dbType="genericdb" active="true">
@@ -1397,13 +1397,13 @@
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
         </DbInterface>
-        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="true">
-          <dbHost>34.159.5.111</dbHost>
+        <DbInterface xsi:type="DBSourceGenericDb" k2StudioObjectName="AI_DB" dbType="genericdb" active="false">
+          <dbHost>localhost</dbHost>
           <dbPort>5432</dbPort>
           <dbScheme>postgres</dbScheme>
-          <dbUser>postgres</dbUser>
-          <dbPasswordEncrypted>~encs2~l1l9MfVBEw6vQfZSovA1vFKCso7LnWanqYmZWMq0nwW/6Y5857p2ag&#x3D;&#x3D;</dbPasswordEncrypted>
-          <connString>jdbc:postgresql://34.159.5.111:5432/postgres?stringtype&#x3D;unspecified</connString>
+          <dbUser></dbUser>
+          <dbPasswordEncrypted></dbPasswordEncrypted>
+          <connString>jdbc:postgresql://localhost:5432/postgres?stringtype&#x3D;unspecified</connString>
           <minConnectionsNumber>0</minConnectionsNumber>
           <maxConnectionsNumber>60</maxConnectionsNumber>
           <JdbcDriverName>PostgreSQL</JdbcDriverName>
@@ -1664,14 +1664,14 @@
         </Global>
       </GlobalsList>
       <GenericInterfacesList>
-        <GenericInterface type="HTTP" enabled="true" version="">
+        <GenericInterface type="HTTP" enabled="false" version="">
           <Name>AI_Execution</Name>
           <Properties>
             <Property name="ProtocolType">
               <Value>HTTPS</Value>
             </Property>
             <Property name="HOST">
-              <Value>34.90.75.220</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="PORT">
               <Value>443</Value>
@@ -1689,7 +1689,7 @@
               <Value></Value>
             </Property>
             <Property name="Token">
-              <Value>eyJhbGciOiJSUzI1NiIsImtpZCI6Iks1ODFhdmRMLUItLU51bXJ5Tl9DYXl4NWNULUt2VVhwZXFlNnZ3MnMxeUUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
+              <Value></Value>
             </Property>
             <Property name="AccessTokenUrl">
               <Value></Value>
@@ -1714,20 +1714,20 @@
             </Property>
           </Properties>
         </GenericInterface>
-        <GenericInterface type="CUSTOM" enabled="true" version="">
+        <GenericInterface type="CUSTOM" enabled="false" version="">
           <Name>AI_DB_External</Name>
           <Properties>
             <Property name="Host">
-              <Value>34.159.5.111</Value>
+              <Value>localhost</Value>
             </Property>
             <Property name="Port">
               <Value>5432</Value>
             </Property>
             <Property name="User">
-              <Value>postgres</Value>
+              <Value></Value>
             </Property>
             <Property name="Password">
-              <Value>~encs2~Gki9uBLYeubfQHhB5o73moMeX+hcJ0oCEKUi0biUP9myS87NgLxsyQ&#x3D;&#x3D;</Value>
+              <Value></Value>
             </Property>
             <Property name="Data">
               <Value>postgres</Value>

@@ -1,5 +1,5 @@
 --BE
-INSERT INTO public.business_entities (be_name, be_description, be_id, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) SELECT 'Customer', 'This is a Business Entity created for the TDM GUI for AI/ML Demo.', nextval('business_entities_be_id_seq'::regclass), 'admin', now(), now(), 'admin', 'Active' where not exists (select 1 from public.business_entities where be_name='Customer');
+INSERT INTO public.business_entities (be_name, be_description, be_id, be_created_by, be_creation_date, be_last_updated_date, be_last_updated_by, be_status) SELECT 'Customer', 'This is a Business Entity that manages customer data.', nextval('business_entities_be_id_seq'::regclass), 'admin', now(), now(), 'admin', 'Active' where not exists (select 1 from public.business_entities where be_name='Customer');
 -- Source Env
 INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status, data_center_name) SELECT nextval('environment_product_id_seq'::regclass), 1, 1, '1', 'admin', now(), now(), 'admin', 'Active', ''  where not exists (select 1 from public.environment_products where environment_id=1 and product_id=1);
 INSERT INTO public.environment_products (environment_product_id, environment_id, product_id, product_version, created_by, creation_date, last_updated_date, last_updated_by, status, data_center_name) SELECT nextval('environment_product_id_seq'::regclass), 1, 2, 'PROD', 'admin', now(), now(), 'admin', 'Active', ''  where not exists (select 1 from public.environment_products where environment_id=1 and product_id=2);
@@ -25,3 +25,21 @@ INSERT INTO public.products (product_name, product_description,  product_version
 INSERT INTO public.tdm_be_exe_process (process_id, process_name, process_description, be_id, execution_order,process_type) SELECT nextval('exe_process_id_seq'::regclass), 'postTaskExePrintToLog', 'This is a Post Execution Process Flow.', 1, 1,'post' where not exists (select 1 from public.tdm_be_exe_process where process_name='postTaskExePrintToLog');
 INSERT INTO public.tdm_be_exe_process (process_id, process_name, process_description, be_id, execution_order,process_type) SELECT nextval('exe_process_id_seq'::regclass), 'preTaskExePrintToLog', 'This is a Pre Execution Process Flow.', 1, 1,'pre' where not exists (select 1 from public.tdm_be_exe_process where process_name='preTaskExePrintToLog');
 
+INSERT INTO public.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (1, 1, 'ID', 'ALL', '1') ON CONFLICT DO NOTHING;
+INSERT INTO public.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (2, 2, 'ID', 'ALL', '1') ON CONFLICT DO NOTHING;
+
+INSERT INTO public.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
+	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
+	allowed_task_scheduling,allowed_number_of_entities_to_copy, role_id, role_created_by, role_creation_date, 
+	role_last_updated_date,role_last_updated_by,role_status,allowed_refresh_reference_data, allowed_replace_sequences, 
+	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
+	allowed_number_of_reserved_entities) VALUES(1,'Testers','Permission set used by testers',false,false,false,true,true,0,1,
+	'admin',NOW(),NOW(),'admin','Active',true,false,true,false,100,true,true,100) ON CONFLICT DO NOTHING;
+INSERT INTO public.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
+	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
+	allowed_task_scheduling,allowed_number_of_entities_to_copy, role_id, role_created_by, role_creation_date, 
+	role_last_updated_date,role_last_updated_by,role_status,allowed_refresh_reference_data, allowed_replace_sequences, 
+	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
+	allowed_number_of_reserved_entities) VALUES(2,'Testers','Permission set for UAT',true,true,true,true,true,10000,2,
+	'admin',NOW(),NOW(),'admin','Active',true,true,true,true,10000,true,true,100) ON CONFLICT DO NOTHING;
+SELECT pg_catalog.setval('public.environment_roles_role_id_seq', 4, true);

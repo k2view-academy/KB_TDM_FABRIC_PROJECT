@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="HTTP" displayName="" enabled="true" version="1.4">
-  <Name>AI_Execution</Name>
+<GenericInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="HTTP" displayName="" enabled="false" version="1.4">
+    <Name>AI_Execution</Name>
     <Properties>
         <Property name="ProtocolType">
             <Value>HTTPS</Value>
         </Property>
         <Property name="HOST">
-            <Value>34.90.75.220</Value>
+            <Value>localhost</Value>
         </Property>
         <Property name="PORT">
             <Value>443</Value>
@@ -24,9 +24,12 @@
             <Value></Value>
         </Property>
         <Property name="Token">
-            <Value>eyJhbGciOiJSUzI1NiIsImtpZCI6Iks1ODFhdmRMLUItLU51bXJ5Tl9DYXl4NWNULUt2VVhwZXFlNnZ3MnMxeUUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJmdWxsLWFkbWluLXVzZXItc2VjcmV0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImZ1bGwtYWRtaW4tdXNlciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImRmMmVlMGNjLTZkYjUtNGMzZC1hZDNiLTBhNGNiMzk0MjYwZSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTpmdWxsLWFkbWluLXVzZXIifQ.lMypK4RwQwsTtQgxd7co08XQqJ4Vap6-Gjey9W-VAnmTVQtEvYqlvbFxk6UPb9evZ38J5wa9VhOw9YknCZAdJHcOooFWtTVPJrv6YiB6OwlFMD5A0dCaJQQ3vJpUzf-YykuKEonuDpKJg-WbWh6KKJZ7qCLIOcniF3DNMk4yVJpNq04y1AnXOAYpEluDtuglCgqy2aftj5JVOsgF1u49ptSkRlzg7Y6TO8Tfgd_DHDyPYL1hePRQ-mnHwu5w6Z-9LRp5k9Px781NI0dUfM0gqIphbOaIQBNZqKwxxXfBly1tPjV5fT4fbHrXC6mTu8kQ6RkKpXfI2o_qBfGhNj-5Vg</Value>
+            <Value></Value>
         </Property>
         <Property name="AccessTokenUrl">
+            <Value></Value>
+        </Property>
+        <Property name="AccessTokenBodyParams">
             <Value></Value>
         </Property>
         <Property name="ClientId">

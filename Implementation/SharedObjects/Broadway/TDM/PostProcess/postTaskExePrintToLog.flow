@@ -8,7 +8,6 @@
                 {
                     "name": "Get Task Settings",
                     "dependsOnList": [],
-                    "isLast": 0,
                     "actors": [
                         {
                             "name": "Get Task Exe ID",
@@ -48,20 +47,6 @@
                                 ],
                                 "outputs": []
                             }
-                        },
-                        {
-                            "name": "Sleep1-test",
-                            "isDisabled": true,
-                            "actorType": {
-                                "parentType": "Sleep",
-                                "inputs": [
-                                    {
-                                        "name": "millis",
-                                        "const": 60000
-                                    }
-                                ],
-                                "outputs": []
-                            }
                         }
                     ]
                 }
@@ -72,7 +57,6 @@
                 {
                     "name": "Get Root LU Record from the TDM DB",
                     "dependsOnList": [],
-                    "isLast": 0,
                     "actors": [
                         {
                             "name": "DbFetchFirstRow1",
@@ -124,7 +108,6 @@
                 {
                     "name": "Print to Log",
                     "dependsOnList": [],
-                    "isLast": 0,
                     "actors": [
                         {
                             "name": "Logger1",
@@ -134,6 +117,10 @@
                                     {
                                         "name": "message",
                                         "const": "The task execution ended. Task ID: ${1}, task execution id: ${0}, task execution status: ${2}, \r\nnumber of processed entities: ${3}, \r\nnumber of successful entities: ${4},\r\nnumber of failed entities: ${5}"
+                                    },
+                                    {
+                                        "name": "level",
+                                        "const": "info"
                                     }
                                 ],
                                 "outputs": []
@@ -148,7 +135,6 @@
                 {
                     "name": "Stage 1",
                     "dependsOnList": [],
-                    "isLast": 0,
                     "actors": []
                 }
             ]
