@@ -1,1 +1,0 @@
-function reservedEntitiesCtrl($scope,BreadCrumbsService){BreadCrumbsService.breadCrumbChange(0),BreadCrumbsService.push({},"Reserved Entities",(function(){}))}angular.module("TDM-FE").controller("reservedEntitiesCtrl",reservedEntitiesCtrl);

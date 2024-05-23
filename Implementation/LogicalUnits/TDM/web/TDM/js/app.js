@@ -1,1 +1,0 @@
-angular.module("TDM-FE",["ui.router","oc.lazyLoad","ui.bootstrap","restangular","ngStorage","pascalprecht.translate","toastr","oitozero.ngSweetAlert","ng-ip-address","mwl.confirm","ngSanitize","angular-cron-gen","offClick","ngTouch"]);
