@@ -957,7 +957,6 @@ function FabricWidget(props) {
       saveRef(data);
       // save it in task Data
     };
-
     var disposeWidget = function disposeWidget(ref) {
       if (!ref) {
         return;
@@ -8653,7 +8652,6 @@ var usePeriods_usePeriods = function usePeriods(saveForm, version_ind, dataSourc
 
   // need to add code for tester
 };
-
 /* harmony default export */ var Main_usePeriods = (usePeriods_usePeriods);
 // CONCATENATED MODULE: ./src/components/Periods/index.tsx
 
@@ -10777,7 +10775,6 @@ function SchedulerForm(props) {
           hideSeconds: false // Whether to show/hide the seconds time picker
         }
       },
-
       'cron-format': {
         name: 'format',
         value: "quartz (Currently only compatible with 'quartz' and defaults to 'quartz')"
@@ -12977,7 +12974,6 @@ var useGenerationParams_useGenerationParams = function useGenerationParams(saveF
 
   // need to add code for tester
 };
-
 /* harmony default export */ var Main_useGenerationParams = (useGenerationParams_useGenerationParams);
 // CONCATENATED MODULE: ./src/containers/Task/Main/index.tsx
 
