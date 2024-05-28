@@ -1,0 +1,892 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "path",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "/apis/batch/v1/namespaces/${namespace}/jobs/${jobName}/"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "const": ""
+                                    },
+                                    {
+                                        "name": "jobName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "HttpJson1",
+                            "actorType": {
+                                "parentType": "HttpJson",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "AI_Execution"
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "method",
+                                        "const": "GET"
+                                    },
+                                    {
+                                        "name": "noCertificateCheck",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "header",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "audit-id": {
+                                                    "type": "string"
+                                                },
+                                                "cache-control": {
+                                                    "type": "string"
+                                                },
+                                                "content-type": {
+                                                    "type": "string"
+                                                },
+                                                "Date": {
+                                                    "type": "date"
+                                                },
+                                                "transfer-encoding": {
+                                                    "type": "string"
+                                                },
+                                                "x-kubernetes-pf-flowschema-uid": {
+                                                    "type": "string"
+                                                },
+                                                "x-kubernetes-pf-prioritylevel-uid": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "kind": {
+                                                    "type": "string"
+                                                },
+                                                "apiVersion": {
+                                                    "type": "string"
+                                                },
+                                                "metadata": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "namespace": {
+                                                            "type": "string"
+                                                        },
+                                                        "uid": {
+                                                            "type": "string"
+                                                        },
+                                                        "resourceVersion": {
+                                                            "type": "string"
+                                                        },
+                                                        "generation": {
+                                                            "type": "integer"
+                                                        },
+                                                        "creationTimestamp": {
+                                                            "type": "string"
+                                                        },
+                                                        "labels": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "controller-uid": {
+                                                                    "type": "string"
+                                                                },
+                                                                "job-name": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "annotations": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "batch.kubernetes.io/job-tracking": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "managedFields": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "manager": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "operation": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "apiVersion": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "time": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "fieldsType": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "fieldsV1": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "f:spec": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "f:backoffLimit": {
+                                                                                        "type": "object",
+                                                                                        "properties": {}
+                                                                                    },
+                                                                                    "f:completionMode": {
+                                                                                        "type": "object",
+                                                                                        "properties": {}
+                                                                                    },
+                                                                                    "f:completions": {
+                                                                                        "type": "object",
+                                                                                        "properties": {}
+                                                                                    },
+                                                                                    "f:parallelism": {
+                                                                                        "type": "object",
+                                                                                        "properties": {}
+                                                                                    },
+                                                                                    "f:suspend": {
+                                                                                        "type": "object",
+                                                                                        "properties": {}
+                                                                                    },
+                                                                                    "f:template": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "f:spec": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "f:containers": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            "k:{\"name\":\"training\"}": {
+                                                                                                                "type": "object",
+                                                                                                                "properties": {
+                                                                                                                    ".": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:args": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:command": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:env": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {
+                                                                                                                            ".": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {}
+                                                                                                                            },
+                                                                                                                            "k:{\"name\":\"POSTGRES_DB\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:valueFrom": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            ".": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            },
+                                                                                                                                            "f:secretKeyRef": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "k:{\"name\":\"POSTGRES_HOST\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:valueFrom": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            ".": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            },
+                                                                                                                                            "f:secretKeyRef": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "k:{\"name\":\"POSTGRES_PASSWORD\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:valueFrom": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            ".": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            },
+                                                                                                                                            "f:secretKeyRef": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "k:{\"name\":\"POSTGRES_PORT\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:valueFrom": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            ".": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            },
+                                                                                                                                            "f:secretKeyRef": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "k:{\"name\":\"POSTGRES_USER\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:valueFrom": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {
+                                                                                                                                            ".": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            },
+                                                                                                                                            "f:secretKeyRef": {
+                                                                                                                                                "type": "object",
+                                                                                                                                                "properties": {}
+                                                                                                                                            }
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            },
+                                                                                                                            "k:{\"name\":\"SQLALCHEMY_DATABASE_URI\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:value": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "f:image": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:imagePullPolicy": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:name": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:resources": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {
+                                                                                                                            ".": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {}
+                                                                                                                            },
+                                                                                                                            "f:limits": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:nvidia.com/gpu": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    },
+                                                                                                                    "f:terminationMessagePath": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:terminationMessagePolicy": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:volumeMounts": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {
+                                                                                                                            ".": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {}
+                                                                                                                            },
+                                                                                                                            "k:{\"mountPath\":\"/app/artifacts\"}": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {
+                                                                                                                                    ".": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:mountPath": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    },
+                                                                                                                                    "f:name": {
+                                                                                                                                        "type": "object",
+                                                                                                                                        "properties": {}
+                                                                                                                                    }
+                                                                                                                                }
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    },
+                                                                                                    "f:dnsPolicy": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {}
+                                                                                                    },
+                                                                                                    "f:restartPolicy": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {}
+                                                                                                    },
+                                                                                                    "f:schedulerName": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {}
+                                                                                                    },
+                                                                                                    "f:securityContext": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {}
+                                                                                                    },
+                                                                                                    "f:terminationGracePeriodSeconds": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {}
+                                                                                                    },
+                                                                                                    "f:volumes": {
+                                                                                                        "type": "object",
+                                                                                                        "properties": {
+                                                                                                            ".": {
+                                                                                                                "type": "object",
+                                                                                                                "properties": {}
+                                                                                                            },
+                                                                                                            "k:{\"name\":\"shared-storage\"}": {
+                                                                                                                "type": "object",
+                                                                                                                "properties": {
+                                                                                                                    ".": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:name": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {}
+                                                                                                                    },
+                                                                                                                    "f:persistentVolumeClaim": {
+                                                                                                                        "type": "object",
+                                                                                                                        "properties": {
+                                                                                                                            ".": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {}
+                                                                                                                            },
+                                                                                                                            "f:claimName": {
+                                                                                                                                "type": "object",
+                                                                                                                                "properties": {}
+                                                                                                                            }
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "spec": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "parallelism": {
+                                                            "type": "integer"
+                                                        },
+                                                        "completions": {
+                                                            "type": "integer"
+                                                        },
+                                                        "backoffLimit": {
+                                                            "type": "integer"
+                                                        },
+                                                        "selector": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "matchLabels": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "controller-uid": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "template": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "metadata": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "creationTimestamp": {},
+                                                                        "labels": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "controller-uid": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "job-name": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "spec": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "volumes": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "persistentVolumeClaim": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "claimName": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "containers": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "image": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "command": {
+                                                                                        "type": "array",
+                                                                                        "items": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "args": {
+                                                                                        "type": "array",
+                                                                                        "items": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "env": {
+                                                                                        "type": "array",
+                                                                                        "items": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "name": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "valueFrom": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "secretKeyRef": {
+                                                                                                            "type": "object",
+                                                                                                            "properties": {
+                                                                                                                "name": {
+                                                                                                                    "type": "string"
+                                                                                                                },
+                                                                                                                "key": {
+                                                                                                                    "type": "string"
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "resources": {
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "limits": {
+                                                                                                "type": "object",
+                                                                                                "properties": {
+                                                                                                    "nvidia.com/gpu": {
+                                                                                                        "type": "string"
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "volumeMounts": {
+                                                                                        "type": "array",
+                                                                                        "items": {
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "name": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "mountPath": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "terminationMessagePath": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "terminationMessagePolicy": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "imagePullPolicy": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "restartPolicy": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "terminationGracePeriodSeconds": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "dnsPolicy": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "securityContext": {
+                                                                            "type": "object",
+                                                                            "properties": {}
+                                                                        },
+                                                                        "schedulerName": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "completionMode": {
+                                                            "type": "string"
+                                                        },
+                                                        "suspend": {
+                                                            "type": "boolean"
+                                                        }
+                                                    }
+                                                },
+                                                "status": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "conditions": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "type": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "status": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "lastProbeTime": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "lastTransitionTime": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "startTime": {
+                                                            "type": "string"
+                                                        },
+                                                        "completionTime": {
+                                                            "type": "string"
+                                                        },
+                                                        "succeeded": {
+                                                            "type": "integer"
+                                                        },
+                                                        "uncountedTerminatedPods": {
+                                                            "type": "object",
+                                                            "properties": {}
+                                                        },
+                                                        "ready": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "JsonParser1",
+                            "actorType": {
+                                "parentType": "JsonParser",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "object",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "lastProbeTime": {
+                                                    "type": "string"
+                                                },
+                                                "lastTransitionTime": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Status",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "path",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "HttpJson1",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "HttpJson1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "JsonParser1",
+                "name": "stream"
+            },
+            "path": [
+                "status"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "JsonParser1",
+                "name": "object"
+            },
+            "rightPort": {
+                "actor": "Status",
+                "name": "value"
+            },
+            "path": [
+                "type"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "jobName"
+            },
+            "rightPort": {
+                "actor": "path",
+                "name": "jobName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "path",
+                "name": "namespace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Status",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "value"
+            }
+        }
+    ]
+}

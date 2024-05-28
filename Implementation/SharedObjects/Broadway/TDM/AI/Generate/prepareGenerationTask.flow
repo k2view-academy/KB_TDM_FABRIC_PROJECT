@@ -1,0 +1,838 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Source Env",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "AI",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "AI"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Pre Execution",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Source Environment",
+                            "minHeight": 106,
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TDM_SOURCE_ENVIRONMENT_NAME",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "trainingTaskId",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "numOfEntities",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "AI_K2SYSTEM_INTERFACE1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "AI_K2SYSTEM_INTERFACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "taskExecutionID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDMDB_SCHEMA",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LuID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDM_LU_NAME",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_LU_NAME",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert new Generate task",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler 1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "addNewGenerateTask1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "addNewGenerateTask"
+                                    },
+                                    {
+                                        "name": "trainingTaskId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_exe_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "numOfEntities",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "StringFormat1",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "tdmml${trainingTaskId}"
+                                    },
+                                    {
+                                        "name": "trainingTaskId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_execution_list1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set execution_status='running' where\r\ntask_execution_id =${task_execution_id} and lu_id=${lu_id} and process_id=-2"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Execute Generate Task",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "kubeCreateGenerationTaskGPU1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "kubeCreateGenerationTaskGPU"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-generation-task:1.0.5",
+                                        "name": "generation_image",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check Medoid task status",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler 2",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Check task status",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnCheckMedoidTaskStatus"
+                                    },
+                                    {
+                                        "name": "interface_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "taskStatus",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "If status Failed",
+                    "dependsOnList": [
+                        "Check Medoid task status"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Failed",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "FAILED"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Update Num Of Entites",
+                    "dependsOnList": [
+                        "Check Medoid task status"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "DbCommand1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE ${@TDMDB_SCHEMA}.task_execution_list SET  num_of_processed_entities=${total}, num_of_copied_entities=${copied},\r\nnum_of_failed_entities=${failed} where task_execution_id=${execution_id} and process_id=-2;"
+                                    },
+                                    {
+                                        "name": "total",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "copied",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "0",
+                                        "name": "failed",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "AI Task Failed",
+                    "dependsOnList": [
+                        "If status Failed"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "PopulateAITablesWithFailed",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "PopulateAITablesWithFailed"
+                                    },
+                                    {
+                                        "name": "error",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Throw Exception",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": "throw \"The AI Task Failed\""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do nothing   ",
+                    "dependsOnList": [
+                        "Update Num Of Entites"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "AI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Set Source Environment",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "TDM_SOURCE_ENVIRONMENT_NAME",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "trainingTaskId",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "trainingTaskId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "trainingTaskId",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "addNewGenerateTask1",
+                "name": "trainingTaskId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "numOfEntities",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "addNewGenerateTask1",
+                "name": "numOfEntities"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "numOfEntities",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "total"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "numOfEntities",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "copied"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_K2SYSTEM_INTERFACE1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check task status",
+                "name": "interface_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check task status",
+                "name": "task_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list1",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list1",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "DbCommand1",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list1",
+                "name": "lu_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "kubeCreateGenerationTaskGPU1",
+                "name": "namespace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Check task status",
+                "name": "taskStatus"
+            },
+            "rightPort": {
+                "actor": "Failed",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "trainingTaskId"
+            },
+            "rightPort": {
+                "actor": "trainingTaskId",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "numOfEntities"
+            },
+            "rightPort": {
+                "actor": "numOfEntities",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LuID"
+            },
+            "rightPort": {
+                "actor": "LuID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "TDM_LU_NAME",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "addNewGenerateTask1",
+                "name": "task_exe_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "kubeCreateGenerationTaskGPU1",
+                "name": "id"
+            }
+        }
+    ]
+}

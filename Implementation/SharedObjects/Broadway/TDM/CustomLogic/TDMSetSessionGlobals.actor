@@ -14,5 +14,5 @@
     "tags": [
         "TDM"
     ],
-    "actorClass": "com.k2view.cdbms.usercode.common.TDMSetSessionGlobals"
+    "actorClass": "com.k2view.cdbms.usercode.common.TDM.TDMSetSessionGlobals"
 }

@@ -452,7 +452,7 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDMDB_SCHEMA"
+                                        "const": "TDM.TDMDB_SCHEMA"
                                     }
                                 ],
                                 "outputs": []

@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Name>TASK_EXECUTION_LINK_ENTITIES</Name>
   <ID>tbl_TASK_EXECUTION_LINK_ENTITIES</ID>
-  <ColumnsCollation>BINARY</ColumnsCollation>
-  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="LU_NAME" id="tblCol_96d37bfc6cf44834b400791ed4a05534" index="0" datatype="text" />
     <Column name="PARENT_LU_NAME" id="tblCol_8d95a0a3bb604a07a0e2f986e35fe70c" index="1" datatype="text" />
@@ -16,26 +14,25 @@
     <Column name="TARGET_PARENT_ID" id="tblCol_7dbd97d5d7d942599f73afd86ae6bcd1" index="8" datatype="text" />
     <Column name="ROOT_LU_NAME" id="tblCol_9eceaf1ab10d419e916fc914451cf8bc" index="9" datatype="text" />
     <Column name="ROOT_ENTITY_STATUS" id="tblCol_55d7ad1e7152404591f7f901daa1690c" index="10" datatype="text" />
-    <Column name="VERSION_NAME" id="tblCol_e178d8e18cdf4215a8366b3436f2d094" index="11" datatype="text" />
-    <Column name="VERSION_DATETIME" id="tblCol_17da9e4827a644d5a858935a71466327" index="12" datatype="text" />
-    <Column name="IID" id="tblCol_e5889c497c164e3f980ec53dc05869e5" index="13" datatype="text" />
+    <Column name="IID" id="tblCol_e5889c497c164e3f980ec53dc05869e5" index="11" datatype="text" />
+    <Column name="VERSION_TASK_EXECUTION_ID" id="tblCol_e178d8e18cdf4215a8366b3436f2d094" index="12" datatype="integer" />
+    <Column name="SUBSET_TASK_EXECUTION_ID" id="SUBSET_TASK_EXECUTION_ID" index="13" datatype="integer" />
   </Columns>
   <IndexesList>
     <Index id="1" pk="true" unique="true" instanceOnly="true" columnsIdsList="tblCol_96d37bfc6cf44834b400791ed4a05534,tblCol_a7a1ed70bd89456e851baec2a638ce3e" />
   </IndexesList>
   <EnrichmentList>
     <Enrichment>
-      <Name>fnEnrSetRootEntSts</Name>
+      <Name>fnEncTaskExecutionLinkEntities</Name>
       <Type>Function</Type>
     </Enrichment>
     <Enrichment>
-      <Name>fnEncTaskExecutionLinkEntities</Name>
+      <Name>fnEnrSetRootEntSts</Name>
       <Type>Function</Type>
     </Enrichment>
   </EnrichmentList>
   <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
-    <DecisionFunction></DecisionFunction>
+    <DecisionFunction />
   </LazyDataUpdate>
-  <TriggersList>
-  </TriggersList>
+  <TriggersList />
 </TableObject>

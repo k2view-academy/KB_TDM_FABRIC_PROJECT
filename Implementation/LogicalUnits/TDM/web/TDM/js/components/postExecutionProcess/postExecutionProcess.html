@@ -2,7 +2,7 @@
     <div class="k2-header">
         <button id="be_post_execution_process_close_button" type="button" ng-click="data.close();" class="close" data-dismiss="modal"><span
             aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-    <div class="k2-card-title">Post Execution Process</div>
+    <div class="k2-card-title">{{mode === 'post' ? 'Post' : 'Pre'}} Execution Process</div>
     </div>
 </div>
 <hr>
@@ -47,10 +47,10 @@
                         <button id="be_post_execution_process_add_button"
                             class="k2-card-ok-cancel-btn custom-hover" type="submit">
                             <span ng-show="!postExecutionProcess">
-                                Add Post Execution Process
+                                Add {{mode === 'post' ? 'Post' : 'Pre'}} Execution Process
                             </span>
                             <span ng-show="postExecutionProcess">
-                                Update Post Execution Process
+                                Update {{mode === 'post' ? 'Post' : 'Pre'}} Execution Process
                             </span>
                         </button>
                     </div>

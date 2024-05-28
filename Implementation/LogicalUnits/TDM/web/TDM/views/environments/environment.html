@@ -100,6 +100,7 @@
                                     required
                                     ng-model="environmentCtrl.envType"
                                     ng-change="environmentCtrl.envTypeChanged()"
+                                    ng-disabled="environmentCtrl.disableChange"
                                     ng-options="env as env for env in environmentCtrl.envTypes">
                                     <option value=""></option>
                             </select>
@@ -107,6 +108,7 @@
                         <div class="form-group col-lg-12" ng-if="['Source','Both'].indexOf(environmentCtrl.envType) >= 0">
                             <label>Override Sync Mode</label>
                             <select id="environment_override_sync_mode" width="'100%'" class="form-control1"
+                                    ng-disabled="environmentCtrl.disableChange"
                                     ng-model="environmentCtrl.environmentData.sync_mode"
                                     ng-options="env.value as env.text for env in environmentCtrl.syncModes">
                                     <option value=""></option>
@@ -114,6 +116,7 @@
                         </div>
                         <div style="display: flex;align-items: flex-end;" class="form-group col-lg-12" ng-if="['Source','Both'].indexOf(environmentCtrl.envType) >= 0">
                             <input id="environment_mask_sensitive_data" type="checkbox"
+                                ng-disabled="environmentCtrl.disableChange"
                                 ng-model="environmentCtrl.environmentData.mask_sensitive_data"/>
                             <label style="margin-top: 5px;margin-left: 6px;position: relative;">
                                     Mask Sensitive Data</label>

@@ -82,6 +82,14 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "const": "LOAD",
+                                        "name": "flowType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -189,7 +197,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/tdmLoadTable.flow.template"
+                                        "const": "SharedObjects/Templates/TDM/tdmLoadTable.flow.template"
                                     }
                                 ],
                                 "outputs": []

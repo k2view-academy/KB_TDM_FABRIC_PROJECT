@@ -31,7 +31,7 @@
                             }
                         },
                         {
-                            "name": "LuFunction2",
+                            "name": "buildTemplateData",
                             "actorType": {
                                 "parentType": "LuFunction",
                                 "inputs": [
@@ -85,6 +85,14 @@
                                             "type": "string"
                                         },
                                         "mandatory": false
+                                    },
+                                    {
+                                        "const": "DELETE",
+                                        "name": "flowType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": [
@@ -93,10 +101,56 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
+                                                "DELETE_TABLE": {
+                                                    "type": "string"
+                                                },
+                                                "LU_NAME": {
+                                                    "type": "string"
+                                                },
                                                 "LU_TABLE": {
                                                     "type": "string"
                                                 },
-                                                "LU_TABLE_COLUMNS": {},
+                                                "LU_TABLE_COLUMNS": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "MAIN_TABLE_IND": {
+                                                    "type": "string"
+                                                },
+                                                "MAIN_TABLE_SEQ_ID": {
+                                                    "type": "string"
+                                                },
+                                                "MAIN_TABLE_SEQ_NAME": {
+                                                    "type": "string"
+                                                },
+                                                "TABLE_SEQ_DATA": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "LU_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "TARGET_TABLE_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "TARGET_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FABRIC_TABLE_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "FABRIC_FIELD_NAME": {
+                                                                "type": "string"
+                                                            },
+                                                            "SEQUENCE_NAME": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                },
                                                 "TARGET_INTERFACE": {
                                                     "type": "string"
                                                 },
@@ -147,7 +201,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/tdmDeleteTable.flow.template"
+                                        "const": "SharedObjects/Templates/TDM/tdmDeleteTable.flow.template"
                                     }
                                 ],
                                 "outputs": []
@@ -198,10 +252,6 @@
                                     {
                                         "name": "functionName",
                                         "const": "transform"
-                                    },
-                                    {
-                                        "name": "luType",
-                                        "schema": {}
                                     },
                                     {
                                         "name": "templateContent",
@@ -278,7 +328,7 @@
         },
         {
             "leftPort": {
-                "actor": "LuFunction2",
+                "actor": "buildTemplateData",
                 "name": "res"
             },
             "rightPort": {
@@ -322,7 +372,7 @@
                 "name": "LU_TABLE"
             },
             "rightPort": {
-                "actor": "LuFunction2",
+                "actor": "buildTemplateData",
                 "name": "luTable"
             }
         },
@@ -332,7 +382,7 @@
                 "name": "TARGET_INTERFACE"
             },
             "rightPort": {
-                "actor": "LuFunction2",
+                "actor": "buildTemplateData",
                 "name": "targetDbInterface"
             }
         },
@@ -342,7 +392,7 @@
                 "name": "TARGET_SCHEMA"
             },
             "rightPort": {
-                "actor": "LuFunction2",
+                "actor": "buildTemplateData",
                 "name": "targetDbSchema"
             }
         },
@@ -352,7 +402,7 @@
                 "name": "TARGET_TABLE"
             },
             "rightPort": {
-                "actor": "LuFunction2",
+                "actor": "buildTemplateData",
                 "name": "targetDbTable"
             }
         },
@@ -362,7 +412,7 @@
                 "name": "luType"
             },
             "rightPort": {
-                "actor": "LuFunction2",
+                "actor": "buildTemplateData",
                 "name": "luName"
             }
         },
@@ -374,16 +424,6 @@
             "rightPort": {
                 "actor": "flow folder",
                 "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "luType"
-            },
-            "rightPort": {
-                "actor": "ApplyTemplate",
-                "name": "luType"
             }
         },
         {

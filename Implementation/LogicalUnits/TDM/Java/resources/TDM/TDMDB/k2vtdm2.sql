@@ -90,8 +90,8 @@ CREATE SEQUENCE IF NOT EXISTS ${@schema}.tasks_task_execution_id_seq
     CACHE 1;
 
   -- TDM 7.0.1
-  -- DROP SEQUENCE IF EXISTS ${@schema}.post_exe_process_id_seq;
-  CREATE SEQUENCE IF NOT EXISTS ${@schema}.post_exe_process_id_seq
+  -- DROP SEQUENCE IF EXISTS ${@schema}.exe_process_id_seq;
+  CREATE SEQUENCE IF NOT EXISTS ${@schema}.exe_process_id_seq
     INCREMENT 1
     START 1
     MINVALUE 1

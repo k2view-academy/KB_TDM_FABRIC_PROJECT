@@ -37,22 +37,14 @@
             }
         },
         {
-            "name": "versionName",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
-            "name": "versiionDateTime",
-            "schema": {
-                "type": "string"
-            }
-        },
-        {
             "name": "UID",
             "schema": {
                 "type": "Any"
             }
+        },
+        {
+            "name": "versionExeID",
+            "schema": {}
         }
     ],
     "tags": [

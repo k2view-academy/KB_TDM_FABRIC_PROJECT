@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -19,14 +22,17 @@
                                     {
                                         "name": "value",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "array",
+                                            "items": {
+                                                "type": "blob"
+                                            }
                                         },
                                         "mandatory": false
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "name": "result",
+                                        "name": "value",
                                         "schema": {
                                             "type": "boolean"
                                         }
@@ -150,7 +156,7 @@
         {
             "leftPort": {
                 "actor": "Check If Reserved",
-                "name": "result"
+                "name": "value"
             },
             "rightPort": {
                 "actor": "Already Reserved?",

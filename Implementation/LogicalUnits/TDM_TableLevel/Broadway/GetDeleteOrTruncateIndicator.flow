@@ -1,0 +1,351 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "true"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MTableLookup1",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "TableLevelInterfaces"
+                                    },
+                                    {
+                                        "name": "interface_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "suppress_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "truncate_indicator",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [
+                        "Stage 1"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "MTableLookup2",
+                            "actorType": {
+                                "parentType": "MTableLookup",
+                                "inputs": [
+                                    {
+                                        "name": "mtable",
+                                        "const": "RefList"
+                                    },
+                                    {
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "reference_table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.mTableKey"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "lu_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "reference_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_ref_table_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_interface_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "target_schema_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "table_pk_list": {},
+                                                    "truncate_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_indicator": {
+                                                        "type": "string"
+                                                    },
+                                                    "count_flow": {}
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "name": "truncate_indicator",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "IfElse1",
+                            "actorType": {
+                                "parentType": "IfElse",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "TRUNCATE"
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DELETE"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "MTableLookup1",
+                "name": "truncate_indicator"
+            },
+            "rightPort": {
+                "actor": "IfElse1",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "MTableLookup2",
+                "name": "truncate_indicator"
+            },
+            "rightPort": {
+                "actor": "IfElse1",
+                "name": "test"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableLevelInd"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "MTableLookup1",
+                "name": "interface_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "MTableLookup2",
+                "name": "lu_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "tableName"
+            },
+            "rightPort": {
+                "actor": "MTableLookup2",
+                "name": "reference_table_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "interface"
+            },
+            "rightPort": {
+                "actor": "MTableLookup2",
+                "name": "interface_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "schema_name"
+            },
+            "rightPort": {
+                "actor": "MTableLookup2",
+                "name": "schema_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IfElse1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

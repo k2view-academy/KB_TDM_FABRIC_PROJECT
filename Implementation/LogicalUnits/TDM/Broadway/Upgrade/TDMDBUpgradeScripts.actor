@@ -115,6 +115,12 @@
                     "script_id": 18,
                     "script_name": "update_tdmdb_from_v8.0_to_v8.1.sql",
                     "flow_name": "Upgrade80_to_81"
+                },
+                {
+                    "version_name": "9.0",
+                    "script_id": 19,
+                    "script_name": "update_tdmdb_from_v8.1_to_v9.0.sql",
+                    "flow_name": "Upgrade81_to_90"
                 }
             ],
             "final": true,

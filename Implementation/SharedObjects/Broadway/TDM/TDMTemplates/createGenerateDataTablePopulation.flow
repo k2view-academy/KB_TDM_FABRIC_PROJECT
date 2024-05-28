@@ -218,51 +218,18 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "IsNull1",
-                            "actorType": {
-                                "parentType": "IsNull",
-                                "inputs": [],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
                     "name": "Sequential Field?",
                     "dependsOnList": [
-                        "Stage 1"
+                        "Input Argument?"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "Not Input Argument",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
+                                "parentType": "IsNull",
+                                "inputs": [],
                                 "outputs": []
                             }
                         },
@@ -321,7 +288,7 @@
                 {
                     "name": "Stage 13",
                     "dependsOnList": [
-                        "Stage 1"
+                        "Input Argument?"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -1271,18 +1238,8 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "IsNull1",
+                "actor": "Not Input Argument",
                 "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "IsNull1",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
             }
         },
         {

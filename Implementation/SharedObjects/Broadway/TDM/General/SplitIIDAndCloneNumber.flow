@@ -152,13 +152,7 @@
                                         }
                                     },
                                     {
-                                        "name": "versionName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "versiionDateTime",
+                                        "name": "versionExeID",
                                         "schema": {
                                             "type": "string"
                                         }
@@ -401,21 +395,11 @@
         {
             "leftPort": {
                 "actor": "Split UID",
-                "name": "versionName"
+                "name": "versionExeID"
             },
             "rightPort": {
                 "actor": "flowArgs",
-                "name": "versionName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Split UID",
-                "name": "versiionDateTime"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "versiionDateTime"
+                "name": "versionExeID"
             }
         },
         {

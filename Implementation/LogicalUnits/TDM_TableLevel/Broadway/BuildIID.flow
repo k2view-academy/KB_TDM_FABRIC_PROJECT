@@ -1,0 +1,114 @@
+stages:
+  Stage 1:
+    actors:
+      SOURCE Env:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: sourceEnv
+            schema: string
+        out:
+          value:
+            schema: string
+      Interface Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: interfaceName
+            schema: string
+        out:
+          value:
+            schema: string
+      Schema Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: schemaName
+            schema: string
+        out:
+          value:
+            schema: string
+      Table Name:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: tableName
+            schema: string
+        out:
+          value:
+            schema: string
+      Task Execution ID:
+        parent: DbFetchField
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: |
+              select case when t.task_type = 'LOAD' and t.version_ind = true and t.sync_mode = 'OFF' then rt.version_task_execution_id else ${taskExecutionId} end as version_task_execution_id
+              from @TDMDB_SCHEMA@.task_execution_list l, @TDMDB_SCHEMA@.task_ref_tables rt, @TDMDB_SCHEMA@.tasks t
+              where l.task_execution_id = ${taskExecutionId} and l.task_id = rt.task_id and l.task_id = t.task_id
+              and rt.ref_table_name = ${tableName}
+          taskExecutionId:
+            external: taskExecutionId
+            schema: string
+            mandatory: false
+          tableName:
+            external: tableName
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: integer
+      Get IID Separator:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TABLE_LEVEL_SEPARATOR
+            default: false
+  Stage 2:
+    actors:
+      Concat2:
+        parent: Concat
+        in:
+          delimiter:
+            const: null
+            link: Get IID Separator/result
+          elements:
+            link:
+            - path: SOURCE Env/value
+              pos: 0
+            - path: Interface Name/value
+              pos: 1
+            - path: Schema Name/value
+              pos: 2
+            - path: Table Name/value
+              pos: 3
+            - path: Task Execution ID/result
+              pos: 4
+  Stage 3:
+    actors:
+      Set Source Entity ID:
+        parent: FabricSet
+        in:
+          key:
+            const: SOURCE_ENTITY_ID
+            default: false
+          value:
+            const: null
+            link: Concat2/string
+            default: false
+      iid:
+        parent: Const
+        in:
+          value:
+            const: null
+            link: Concat2/string
+            schema: string
+        out:
+          value:
+            external: iid
+            schema: string

@@ -7,13 +7,13 @@
                     <span style="font-size: 15px;" ng-if="$last == true">{{ breadCrumb.name | translate:breadCrumb.translationData }}</span>
             </li>
         </ul>
-        <div style="margin-top: 15px;margin-bottom: 13px;" ng-if="main.BreadCrumbs.length == 4 && main.BreadCrumbs[3].name == 'TASK_EXECUTION_HISTORY'">
+        <!-- <div style="margin-top: 15px;margin-bottom: 13px;" ng-if="main.BreadCrumbs.length == 4 && main.BreadCrumbs[3].name == 'TASK_EXECUTION_HISTORY'">
             <div>
                 <a ng-click="main.refreshPage()">
                     <img src="icons/refresh.svg"/>
                 </a>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="col-lg-6" ng-if="main.BreadCrumbs.length == 1">
         <div ng-if="false" class="pull-right" style="margin-top: 10px;">

@@ -32,29 +32,6 @@
                             }
                         },
                         {
-                            "name": "Synthetic Environment Name",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "Synthetic"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
                             "name": "TDM Keyspace",
                             "actorType": {
                                 "parentType": "LuKeyspace",

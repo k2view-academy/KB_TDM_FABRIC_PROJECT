@@ -271,16 +271,15 @@
                             </label>
                         </div>
                     </div>
-                    <div ng-show="additionalExecutionParametersCtrl.taskData.mask_sensitive_data" ng-if="!(additionalExecutionParametersCtrl.taskData.task_type === 'RESERVE' || 
+                    <div ng-if="!(additionalExecutionParametersCtrl.taskData.task_type === 'RESERVE' || 
                         (additionalExecutionParametersCtrl.taskData.delete_before_load && !additionalExecutionParametersCtrl.taskData.load_entity) || 
                         (additionalExecutionParametersCtrl.taskData.task_type === 'LOAD' && additionalExecutionParametersCtrl.taskData.sync_mode === 'OFF'))">
-                        <div style="display: flex; align-items: center;position: relative;margin: 5px 0px;">
-                            <!-- <input type="checkbox"
+                        <div style="display: flex; align-items: center;">
+                            <input type="checkbox"
                                 ng-disabled="additionalExecutionParametersCtrl.taskData.env_mask_data"
-                                ng-model="additionalExecutionParametersCtrl.taskData.mask_sensitive_data" /> -->
-                            <img style="padding-left: 2px;" src="img/pii-icon.svg"/>
-                            <label style="margin-top: 5px;margin-left: 6px;position: relative;position: absolute;;left: 24px;">
-                                Sensitive Data is Masked
+                                ng-model="additionalExecutionParametersCtrl.taskData.mask_sensitive_data" />
+                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
+                                    Mask Sensitive Data
                             </label>
                         </div>
                     </div>

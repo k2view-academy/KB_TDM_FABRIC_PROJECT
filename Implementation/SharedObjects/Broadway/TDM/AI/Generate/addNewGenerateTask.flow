@@ -1,0 +1,142 @@
+tags: TDM,TDMAI MLGenerate
+stages:
+  Get Params:
+    actors:
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      Now:
+        parent: Now
+      trainingTaskId:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: trainingTaskId
+        out:
+          value:
+            schema: string
+      numOfEntities:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: numOfEntities
+        out:
+          value:
+            schema: string
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  k2system.entity_list:
+    actors:
+      'k2systementity_list    ':
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: select distinct schema from ${@k2systemName}.entity_list where
+              task_execution_id=${task_execution_id}
+          task_execution_id:
+            link: trainingTaskId/value
+            schema: string
+            mandatory: false
+          k2systemName:
+            link: Get k2system Schema Name/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  YAML:
+    actors:
+      'Format the current date to load it ':
+        parent: DateFormat
+        in:
+          date:
+            link: Now/date
+      'StringFormat ':
+        parent: StringFormat
+        in:
+          format:
+            const: "{\r\n  \"training_task_execution_id\": ${trainingTaskID},\r\n\
+              \  \"table_generation\": {\r\n    \"batch_size\": 256,\r\n    \"main_entity_table_n_samples\"\
+              : ${numOfEntities}\r\n  },\r\n  \"special_column_generation\": {\r\n\
+              \    \"batch_size\": 256,\r\n    \"temperature\": 0.8\r\n  },\r\n  \"\
+              schemas\": [\"${schema}\"]\r\n}"
+          trainingTaskID:
+            link: trainingTaskId/value
+            schema: string
+            mandatory: false
+          schema:
+            link:
+              path: k2systementity_list    /result/schema
+              iterate: First
+            schema: '#ref'
+            mandatory: false
+          numOfEntities:
+            link: numOfEntities/value
+            schema: string
+            mandatory: false
+  'ADD New Task ':
+    actors:
+      ErrorHandler 1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      NewTask:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: "INSERT INTO ${@k2systemName}.task_executions(\n\tid,status, execution_params,result\
+              \ ,creation_time, last_update_time,task_type)\n\tVALUES (${task_exe_id},\
+              \ 'NEW',${execution_params}::json,'{}'::json ,${creation_time},NOW(),'GENERATE')"
+          task_exe_id:
+            external: task_exe_id
+            schema: string
+            mandatory: false
+          creation_time:
+            link: Format the current date to load it /string
+            schema: string
+            mandatory: false
+          execution_params:
+            link: StringFormat /string
+            schema: string
+            mandatory: false
+          k2systemName:
+            link: Get k2system Schema Name/result
+            schema: string
+            mandatory: false
+schemas:
+  k2systementity_list    .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        schema:
+          type: string
+  StringFormat .in.schema:
+    type: array
+    items:
+      type: string

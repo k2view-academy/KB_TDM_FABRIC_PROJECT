@@ -11,20 +11,6 @@
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Get Version Indicator",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_DATAFLUX_TASK",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
                             "name": "Get Source Environment",
                             "actorType": {
                                 "parentType": "FabricSetRead",
@@ -53,58 +39,63 @@
         {
             "stages": [
                 {
+                    "name": "Check Version Indicator",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Version Indicator",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_DATAFLUX_TASK",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Check if Data Flux",
                     "dependsOnList": [
-                        "Get Inputs"
+                        "Check Version Indicator"
                     ],
                     "isLast": 0,
                     "actors": [
                         {
-                            "name": "Equals1",
+                            "name": "Indicator is True",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "Equals",
+                                "parentType": "EqualsIgnoreCase",
                                 "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
                                     {
                                         "name": "b",
                                         "schema": {
-                                            "type": "string"
+                                            "type": "boolean"
                                         },
-                                        "const": "true"
+                                        "const": true
                                     }
                                 ],
                                 "outputs": []
                             }
                         },
                         {
-                            "name": "Get Version Name",
+                            "name": "TDM_TASK_EXE_ID",
                             "minHeight": 234,
                             "actorType": {
                                 "parentType": "FabricSetRead",
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_VERSION_NAME",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Version DateTime",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDM_VERSION_DATETIME",
+                                        "const": "TDM_TASK_EXE_ID",
                                         "isDefault": false
                                     }
                                 ],
@@ -116,7 +107,7 @@
                 {
                     "name": "Build Simple TDM_EID",
                     "dependsOnList": [
-                        "Get Inputs"
+                        "Check Version Indicator"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -185,7 +176,7 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${sourceEnv}${iidSeparator}${iidOpenSeparator}${sourceIID}${iidCloseSeparator}${iidSeparator}${versionName}${iidSeparator}${versionDateTime}"
+                                        "const": "${sourceEnv}${iidSeparator}${iidOpenSeparator}${sourceIID}${iidCloseSeparator}${iidSeparator}${taskExeID}"
                                     },
                                     {
                                         "name": "sourceEnv",
@@ -218,16 +209,9 @@
                                         }
                                     },
                                     {
-                                        "name": "versionName",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    {
-                                        "name": "versionDateTime",
-                                        "schema": {
-                                            "type": "string"
-                                        }
+                                        "name": "taskExeID",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -250,112 +234,102 @@
     "connections": [
         {
             "leftPort": {
+                "actor": "Get Source Environment",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Format Simple EID",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Environment",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Format DataFlux EID",
+                "name": "sourceEnv"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Separators",
+                "name": "IID_CLOSE_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Format Simple EID",
+                "name": "iidCloseSeparator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Separators",
+                "name": "IID_OPEN_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Format Simple EID",
+                "name": "iidOpenSeparator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Separators",
+                "name": "IID_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Format Simple EID",
+                "name": "iidSeparator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Separators",
+                "name": "IID_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Format DataFlux EID",
+                "name": "iidSeparator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Separators",
+                "name": "IID_OPEN_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Format DataFlux EID",
+                "name": "iidOpenSeparator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM Separators",
+                "name": "IID_CLOSE_SEPARATOR"
+            },
+            "rightPort": {
+                "actor": "Format DataFlux EID",
+                "name": "iidCloseSeparator"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Get Version Indicator",
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Equals1",
+                "actor": "Indicator is True",
                 "name": "a"
             }
         },
         {
             "leftPort": {
-                "actor": "Get Source Environment",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Source Environment",
+                "actor": "TDM_TASK_EXE_ID",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "Format DataFlux EID",
-                "name": "sourceEnv"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_CLOSE_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_OPEN_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidOpenSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format Simple EID",
-                "name": "iidSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format DataFlux EID",
-                "name": "iidSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_OPEN_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format DataFlux EID",
-                "name": "iidOpenSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "get TDM Separators",
-                "name": "IID_CLOSE_SEPARATOR"
-            },
-            "rightPort": {
-                "actor": "Format DataFlux EID",
-                "name": "iidCloseSeparator"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Version Name",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Format DataFlux EID",
-                "name": "versionName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Version DateTime",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Format DataFlux EID",
-                "name": "versionDateTime"
+                "name": "taskExeID"
             }
         },
         {

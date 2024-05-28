@@ -209,8 +209,8 @@
                                     {
                                         "name": "script",
                                         "const": {
-                                            "userCode": "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n    case \"TDM\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_LIBRARY\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_Reference\" :\r\n        output = \"true\"\r\n        break;\r\n    default :\r\n        output=\"false\";\r\n        break;\r\n}\r\noutput;",
-                                            "script": "var name = input;\nvar output;\n\nswitch (name) {\n  case \"TDM\":\n    output = \"true\";\n    break;\n\n  case \"TDM_LIBRARY\":\n    output = \"true\";\n    break;\n\n  case \"TDM_Reference\":\n    output = \"true\";\n    break;\n\n  default:\n    output = \"false\";\n    break;\n}\n\noutput;"
+                                            "userCode": "let name = input ;\r\nvar output ;\r\nswitch (name) {\r\n    case \"TDM\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_LIBRARY\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_Reference\" :\r\n        output = \"true\"\r\n        break;\r\n    case \"TDM_TableLevel\" :\r\n        output = \"true\"\r\n        break;\r\n    default :\r\n        output=\"false\";\r\n        break;\r\n}\r\noutput;",
+                                            "script": "var name = input;\nvar output;\n\nswitch (name) {\n  case \"TDM\":\n    output = \"true\";\n    break;\n\n  case \"TDM_LIBRARY\":\n    output = \"true\";\n    break;\n\n  case \"TDM_Reference\":\n    output = \"true\";\n    break;\n\n  case \"TDM_TableLevel\":\n    output = \"true\";\n    break;\n\n  default:\n    output = \"false\";\n    break;\n}\n\noutput;"
                                         }
                                     },
                                     {

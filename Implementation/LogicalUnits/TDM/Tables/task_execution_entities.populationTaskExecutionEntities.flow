@@ -202,11 +202,13 @@
                                             "FABRIC_EXECUTION_ID",
                                             "IID",
                                             "SOURCE_ENV",
-                                            "VERSION_NAME",
-                                            "VERSION_DATETIME",
+                                            "VERSION_TASK_EXECUTION_ID",
+                                            "SUBSET_TASK_EXECUTION_ID",
                                             "FABRIC_GET_TIME",
                                             "TOTAL_PROCESSING_TIME",
-                                            "CLONE_NO"
+                                            "CLONE_NO",
+                                            "ROOT_ENTITY_ID",
+                                            "ROOT_LU_NAME"
                                         ]
                                     },
                                     {
@@ -288,16 +290,6 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "VERSION_NAME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "VERSION_DATETIME",
-                                        "schema": {},
-                                        "mandatory": false
-                                    },
-                                    {
                                         "name": "FABRIC_GET_TIME",
                                         "schema": {},
                                         "mandatory": false
@@ -309,6 +301,26 @@
                                     },
                                     {
                                         "name": "CLONE_NO",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "VERSION_TASK_EXECUTION_ID",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ROOT_ENTITY_ID",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ROOT_LU_NAME",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "SUBSET_TASK_EXECUTION_ID",
                                         "schema": {},
                                         "mandatory": false
                                     }

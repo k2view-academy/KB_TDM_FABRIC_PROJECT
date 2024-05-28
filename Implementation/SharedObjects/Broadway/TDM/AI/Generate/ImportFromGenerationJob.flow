@@ -1,0 +1,471 @@
+tags: TDM,TDMGenerateData
+stages:
+  Get Globals:
+    actors:
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      TDM_TASK_EXE_ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+  'Build IIDS ':
+    actors:
+      Build IID:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "const parsedObject = JSON.parse(input);\r\n\r\nconst keyName\
+                \ = Object.keys(parsedObject.iid)[0];\r\n\r\nconst env = parsedObject.env;\r\
+                \nconst iid = parsedObject.iid[keyName];//.iid;\r\nconst execId =\
+                \ parsedObject.exec_id;\r\n\r\n\r\n//const resultString = `${env}_${iid}_${execId}`;\r\
+                \nconst resultString = `${envName}_${iid}_${execId}`;\r\nresultString;"
+              script: |-
+                var parsedObject = JSON.parse(input);
+                var keyName = Object.keys(parsedObject.iid)[0];
+                var env = parsedObject.env;
+                var iid = parsedObject.iid[keyName]; //.iid;
+
+                var execId = parsedObject.exec_id; //const resultString = `${env}_${iid}_${execId}`;
+
+                var resultString = envName + "_" + iid + "_" + execId;
+                resultString;
+          input:
+            external: IID
+            schema: string
+            mandatory: false
+          envName:
+            link: AI_ENVIRONMENT/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      Build TDM IID:
+        parent: JavaScript
+        in:
+          script:
+            const:
+              userCode: "const parsedObject = JSON.parse(input);\r\nconst keyName\
+                \ = Object.keys(parsedObject.iid)[0];\r\nconst iid = parsedObject.iid[keyName];//.iid;\r\
+                \n\r\nconst resultString = iid;\r\nresultString;"
+              script: |-
+                var parsedObject = JSON.parse(input);
+                var keyName = Object.keys(parsedObject.iid)[0];
+                var iid = parsedObject.iid[keyName]; //.iid;
+
+                var resultString = iid;
+                resultString;
+          input:
+            external: IID
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: string
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+      GenerateIIDs_Actor1:
+        parent: GenerateIIDs_Actor
+        in:
+          num_of_entities:
+            const: 1
+            schema: integer
+          source_env_name:
+            link: AI_ENVIRONMENT/result
+        out:
+          result:
+            schema: '#ref'
+  Split IID:
+    actors:
+      fnSplitUID2:
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnSplitUID2
+          uid:
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+            schema: string
+            mandatory: false
+        out:
+          instanceID:
+            schema: string
+          envName:
+            schema: string
+          versionExeID:
+            schema: string
+  'initaite Task Execution Entities   ':
+    actors:
+      'initaiteTaskExecutionEntities  ':
+        parent: InnerFlow
+        in:
+          flowName:
+            const: initaiteTaskExecutionEntities
+          IID:
+            link: fnSplitUID2/instanceID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          Status:
+            const: completed
+            schema: string
+            default: true
+            mandatory: false
+          SourceIID:
+            const: ''
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+            schema: string
+            default: true
+            mandatory: false
+          TargetIID:
+            const: ''
+            link: fnSplitUID2/instanceID
+            schema: string
+            default: true
+            mandatory: false
+  Import to Fabric:
+    transactional: false
+    actors:
+      Initation Error Handle1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      'Import ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: MDB_IMPORT ${@luName}.${@IID} WITH INTERFACE_NAME=${@INTERFACE}
+              EXCLUDED_TABLES=${@excludedTables} REMOTE_IID='${@REMOTE}'
+          IID:
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+            schema: string
+            mandatory: false
+          REMOTE:
+            external: IID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          excludedTables:
+            link: trainingExcludedTables/tables
+            schema: string
+            mandatory: false
+          INTERFACE:
+            link: AI_DB_K2SYSTEM1/result
+            schema: string
+            mandatory: false
+  Mapping:
+    transactional: true
+    actors:
+      PopulateTDMAIGenIIDMapping_Actor2:
+        parent: PopulateTDMAIGenIIDMapping_Actor
+        in:
+          ' env_name':
+            link: AI_ENVIRONMENT/result
+          ' task_execution_id':
+            link: TDM_TASK_EXE_ID/result
+          ' imported_lui':
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+          ' root_imported_lui':
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+          ' root_lu_name ':
+            external: luName
+          ' lu_name':
+            external: luName
+          ' root_generated_iid ':
+            external: IID
+          ' generated_iid':
+            external: IID
+  Get Sync Off:
+    transactional: true
+    actors:
+      'FabricGet ':
+        parent: FabricGet
+        in:
+          luType:
+            const: Customer
+          iid:
+            const: null
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+              pos: 0
+            default: false
+          syncMode:
+            const: 'OFF'
+  Update Lu Params:
+    transactional: true
+    actors:
+      Initation Error Handle11:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      'Enrichemnt Lu Params ':
+        parent: LuFunction
+        in:
+          functionName:
+            const: fnGenerationLuParams
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+          iid:
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+            schema: string
+            mandatory: false
+  Inset into FABRIC_TDM_ROOT:
+    transactional: true
+    actors:
+      FABRIC_TDM_ROOT:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: insert into ${@luName}.fabric_tdm_root (K2_TDM_EID,SOURCE_ENV,IID)
+              values (${tdm_eid}, 'AI', ${iid})
+          tdm_eid:
+            link:
+              path: GenerateIIDs_Actor1/result/tdm_eid
+              iterate: First
+            schema: string
+            mandatory: false
+          iid:
+            link: fnSplitUID2/instanceID
+            schema: string
+            mandatory: false
+          luName:
+            external: luName
+            schema: string
+            mandatory: false
+  To Lower Case:
+    transactional: false
+    actors:
+      'schema name ':
+        parent: Lowercase
+        in:
+          string:
+            external: luName
+  Get Root Table:
+    transactional: false
+    actors:
+      Get Root Table Name:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_ENTITIES/result
+          sql:
+            const: |-
+              SELECT DISTINCT
+                  relname AS root_table
+              FROM
+                  pg_class
+              WHERE
+                  oid NOT IN (
+                      SELECT
+                          conrelid
+                      FROM
+                          pg_constraint
+                      WHERE
+                          contype = 'f'
+                      AND
+                          connamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${@schemaName}')  -- Replace 'your_schema_name' with your schema name
+                  )
+              AND
+                  relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${@schemaName}')  -- Replace 'your_schema_name' with your schema name
+              AND
+                  oid NOT IN (
+                      SELECT DISTINCT
+                          conrelid
+                      FROM
+                          pg_constraint
+                      WHERE
+                          contype = 'f'
+                      AND
+                          connamespace = (SELECT oid FROM pg_namespace WHERE nspname = '${@schemaName}')  -- Replace 'your_schema_name' with your schema name
+                  )
+              AND
+                  relkind = 'r'
+                  AND relname NOT LIKE '_k2\_%'   -- Excluding specific k2 tables
+              ORDER BY
+                  relname;
+          schemaName:
+            link: schema name /string
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Delete Cascade from Entities DB:
+    last: 1
+    transactional: false
+    actors:
+      Initation Error Handle111:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      Delete Imported From DB:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_ENTITIES/result
+          sql:
+            const: 'delete from ${@schemaName}.${@tableName} where __iid=${imported_iid} '
+          schemaName:
+            external: luName
+            schema: string
+            mandatory: false
+          tableName:
+            link:
+              path: Get Root Table Name/result/root_table
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          imported_iid:
+            external: IID
+            schema: string
+            mandatory: false
+  check if load:
+    transactional: false
+    actors:
+      loadIndicator:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: loadIndicator
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+  'false':
+    transactional: false
+    dependsOn: check if load
+    actors:
+      'EqualsIgnoreCase false ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'false'
+            schema: string
+          a:
+            link: loadIndicator/value
+    split: '--------------------'
+  'true':
+    else: true
+    transactional: false
+    dependsOn: check if load
+  'Populate task execution entities ':
+    transactional: false
+    dependsOn: 'false'
+    actors:
+      Initation Error Handle:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateTableErrorsWithFailed
+      PopulateTaskExecutionEntities_Actor1:
+        parent: PopulateTaskExecutionEntities_Actor
+        in:
+          idType:
+            const: ENTITY
+    split: '--------------------'
+  Do nothing:
+    transactional: false
+    dependsOn: 'true'
+schemas:
+  GenerateIIDs_Actor1.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        tdm_eid:
+          type: string
+  Get Root Table Name.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        root_table:
+          type: string

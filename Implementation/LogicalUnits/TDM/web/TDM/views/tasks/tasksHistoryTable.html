@@ -3,14 +3,14 @@
         <div class="ibox float-e-margins k2-card"
         ng-show="taskHistoryTableCtrl.executionIds.length > 0 &&
             taskHistoryTableCtrl.executionData &&
-            taskHistoryTableCtrl.taskData.selection_method != 'REF'">
+            taskHistoryTableCtrl.taskData.selection_method != 'TABLES'">
             <div class="k2-header">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="col-lg-6">
                             <div class="k2-card-title">{{'RUNNING_EXECUTION' | translate}}</div>
                         </div>
-                        <div class="col-lg-6" style="display:flex;justify-content: flex-end" ng-if="taskHistoryTableCtrl.executionData.length && taskHistoryTableCtrl.enableStopExecution == true">
+                        <div class="col-lg-6" style="display:flex;justify-content: flex-end" ng-if="taskHistoryTableCtrl.executionData.length > 0 && taskHistoryTableCtrl.enableStopExecution == true">
                             <!-- <div style="display:flex; justify-content: space-around;width: 150px;">
                                 <div class="k2-secondary-icon-btn button-disabled" style="border: 1px solid;"
                                     ng-click="taskHistoryTableCtrl.openBatchMonitor()">і</div> -->
@@ -41,10 +41,10 @@
                                                     <span ng-click="taskHistoryTableCtrl.openBatchMonitor(luExecution.migrateID)">
                                                             <i style="font-size: 17px; cursor: pointer;
                                                             color: #1483f3;" title="Open batch monitor" class="fa fa-info-circle"></i>
-                                                     </span> {{luExecution.name}} 
+                                                     </span> {{luExecution.post_process_name || luExecution.pre_process_name|| luExecution.name}} 
                                                 </div>
 
-                                        <div style="margin-top: 25px;">
+                                        <div style="margin-top: 25px;" ng-show="luExecution.added > 0 || luExecution.failed > 0 || luExecution.processed > 0">
                                             <div style="display: flex; flex-direction: column;">
                                                 <div class="running-execution-row"  ng-show="taskHistoryTableCtrl.taskType === 'EXTRACT'">
                                                     Updated : {{luExecution.Updated}} 
@@ -59,7 +59,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-11"  style="height: 250px; display: flex; flex-direction: column; justify-content:center" >
+                                    <div class="col-lg-11"  
+                                        ng-show="luExecution.added > 0 || luExecution.failed > 0 || luExecution.processed > 0"
+                                        style="height: 250px; display: flex; flex-direction: column; justify-content:center" >
                                         <uib-progressbar class="progress-striped active"
                                         value="luExecution.percentageOfCompleted || 0" type="success">
                                             ({{luExecution.percentageOfCompleted || 0}}%)
@@ -74,12 +76,12 @@
             </div>
         </div>
         <div class="ibox float-e-margins k2-card" ng-if="taskHistoryTableCtrl.executionIds.length > 0 && 
-            (taskHistoryTableCtrl.taskData.selection_method == 'REF'  || taskHistoryTableCtrl.taskData.refcount > 0)">
+            (taskHistoryTableCtrl.taskData.selection_method == 'TABLES'  || taskHistoryTableCtrl.taskData.refcount > 0)">
             <div class="k2-header">
                 <div class="row">
                     <div class="col-lg-12">
-                        <div class="col-lg-6 k2-card-title">Reference Tables Process</div>
-                    <div class="col-lg-6" style="display:flex;justify-content: flex-end">
+                        <div class="col-lg-6 k2-card-title">Tables Process</div>
+                    <div class="col-lg-6" style="display:flex;justify-content: flex-end" ng-if="taskHistoryTableCtrl.taskData.selection_method === 'TABLES'">
                         <span style="cursor: pointer;" ng-click="taskHistoryTableCtrl.stopExecution()" title="Stop execution">
                             <img src="icons/stop-circle.svg" 
                                 style="width:25px; height:25px"
@@ -143,7 +145,7 @@
             <div class="k2-header">
                 <div class="row">
                     <div class="col-lg-12" style="display: flex;justify-content: space-between">
-                        <div class="k2-card-title">Execution ID {{content.exec_id}} - Logical Units Execution Summary</div>
+                        <div class="k2-card-title">Execution ID {{content.exec_id}} - Execution Summary</div>
                         <div ng-show="!taskHistoryTableCtrl.adi_only">
                             <a style="margin-left: 3px;border-color: transparent;background-color: transparent; color: black;"
                                 type="button" title="List of entities"
@@ -183,7 +185,7 @@
             <div class="k2-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <table ng-if="taskHistoryTableCtrl.loadingTable === false" style="display: table; width: 100%"
+                        <table style="display: table; width: 100%"
                             datatable="" dt-options="taskHistoryTableCtrl.dtOptions"
                             dt-column-defs="taskHistoryTableCtrl.dtColumnDefs"
                             dt-columns="taskHistoryTableCtrl.dtColumns"

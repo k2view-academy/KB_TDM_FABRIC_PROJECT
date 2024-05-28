@@ -263,7 +263,7 @@
                                     {
                                         "name": "interface",
                                         "remark": "Set the DB interface for the select query.",
-                                        "const": "TDM"
+                                        "const": null
                                     },
                                     {
                                         "name": "sql",
@@ -434,7 +434,7 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "sql"
+                "name": "SQL"
             },
             "rightPort": {
                 "actor": "Run Input SQL",

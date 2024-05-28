@@ -1,0 +1,537 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Instance Fields",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Table Instance Fields",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "GetTableInstanceFields"
+                                    },
+                                    {
+                                        "name": "ref_instance_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "source_env": {
+                                                    "type": "string"
+                                                },
+                                                "interface_name": {
+                                                    "type": "string"
+                                                },
+                                                "schema_name": {
+                                                    "type": "string"
+                                                },
+                                                "table_name": {
+                                                    "type": "string"
+                                                },
+                                                "task_execution_id": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Task Execution ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Details",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Table Details",
+                            "actorType": {
+                                "parentType": "DbFetchFirstRow",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "select rt.task_ref_table_id as ref_table_id, rt.ref_table_name, ${source_env} as source_env, t.task_type,\r\n    rt.interface_name, rt.schema_name, es.task_execution_id, rt.task_id, rt.filter_type, COALESCE(rt.table_filter, '') as table_filter, \r\n    COALESCE(rt.filter_parameters, '') as filter_parameters, t.retention_period_type, t.retention_period_value, \r\n    rt.interface_name as target_interface,\r\n    rt.schema_name as target_schema, \r\n    coalesce(rt.target_table_prefix,'')|| rt.ref_table_name || coalesce(rt.target_table_suffix,'') as target_table_name,\r\n    coalesce(es.number_of_records_to_process, -1) as number_of_records_to_process\r\nfrom @TDMDB_SCHEMA@.task_ref_tables rt, @TDMDB_SCHEMA@.task_ref_exe_stats es, @TDMDB_SCHEMA@.tasks t\r\nwhere es.task_execution_id = ${task_execution_id}\r\nand es.task_id = rt.task_id\r\nand es.task_ref_table_id = rt.task_ref_table_id\r\nand rt.ref_table_name = ${ref_table_name}\r\nand rt.interface_name = ${interface_name}\r\nand rt.schema_name = ${schema_name}\r\nand rt.task_id = t.task_id\r\n"
+                                    },
+                                    {
+                                        "name": "source_env",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ref_table_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "interface_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "schema_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "ref_table_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ref_table_name": {
+                                                    "type": "string"
+                                                },
+                                                "source_env": {
+                                                    "type": "string"
+                                                },
+                                                "task_type": {
+                                                    "type": "string"
+                                                },
+                                                "interface_name": {
+                                                    "type": "string"
+                                                },
+                                                "schema_name": {
+                                                    "type": "string"
+                                                },
+                                                "task_execution_id": {
+                                                    "type": "integer"
+                                                },
+                                                "task_id": {
+                                                    "type": "integer"
+                                                },
+                                                "filter_type": {
+                                                    "type": "string"
+                                                },
+                                                "table_filter": {
+                                                    "type": "string"
+                                                },
+                                                "filter_parameters": {
+                                                    "type": "string"
+                                                },
+                                                "retention_period_type": {
+                                                    "type": "string"
+                                                },
+                                                "retention_period_value": {
+                                                    "type": "integer"
+                                                },
+                                                "target_interface": {
+                                                    "type": "string"
+                                                },
+                                                "target_schema": {
+                                                    "type": "string"
+                                                },
+                                                "target_table_name": {
+                                                    "type": "string"
+                                                },
+                                                "number_of_records_to_process": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Retention",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Calculate Retention",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "getRetention"
+                                    },
+                                    {
+                                        "name": "retentionPeriodType",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "retentionPeriodValue",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Set TARGET_ENTITY_ID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Create Map",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create Map for Retention",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "retention"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "retention": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Marge Retention to Output",
+                            "actorType": {
+                                "parentType": "MapMerge",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "ref_table_id": {
+                                                    "type": "integer"
+                                                },
+                                                "ref_table_name": {
+                                                    "type": "string"
+                                                },
+                                                "source_env": {
+                                                    "type": "string"
+                                                },
+                                                "task_type": {
+                                                    "type": "string"
+                                                },
+                                                "interface_name": {
+                                                    "type": "string"
+                                                },
+                                                "schema_name": {
+                                                    "type": "string"
+                                                },
+                                                "task_execution_id": {
+                                                    "type": "integer"
+                                                },
+                                                "task_id": {
+                                                    "type": "integer"
+                                                },
+                                                "filter_type": {
+                                                    "type": "string"
+                                                },
+                                                "table_filter": {
+                                                    "type": "string"
+                                                },
+                                                "filter_parameters": {
+                                                    "type": "string"
+                                                },
+                                                "retention_period_type": {
+                                                    "type": "string"
+                                                },
+                                                "retention_period_value": {
+                                                    "type": "integer"
+                                                },
+                                                "target_interface": {
+                                                    "type": "string"
+                                                },
+                                                "target_schema": {
+                                                    "type": "string"
+                                                },
+                                                "target_table_name": {
+                                                    "type": "string"
+                                                },
+                                                "number_of_records_to_process": {
+                                                    "type": "integer"
+                                                },
+                                                "retention": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Table Instance Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Details",
+                "name": "source_env"
+            },
+            "path": [
+                "source_env"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Instance Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Details",
+                "name": "ref_table_name"
+            },
+            "path": [
+                "table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Instance Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Details",
+                "name": "interface_name"
+            },
+            "path": [
+                "interface_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Instance Fields",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Details",
+                "name": "schema_name"
+            },
+            "path": [
+                "schema_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Execution ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Get Table Details",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Details",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Marge Retention to Output",
+                "name": "maps"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Details",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Retention",
+                "name": "retentionPeriodType"
+            },
+            "path": [
+                "retention_period_type"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Details",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Calculate Retention",
+                "name": "retentionPeriodValue"
+            },
+            "path": [
+                "retention_period_value"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Details",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Set TARGET_ENTITY_ID",
+                "name": "value"
+            },
+            "path": [
+                "target_table_name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Calculate Retention",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create Map for Retention",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create Map for Retention",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "Marge Retention to Output",
+                "name": "maps"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ref_instance_id"
+            },
+            "rightPort": {
+                "actor": "Get Table Instance Fields",
+                "name": "ref_instance_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Marge Retention to Output",
+                "name": "map"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "result"
+            }
+        }
+    ]
+}

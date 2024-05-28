@@ -33,10 +33,11 @@
 
 <div ng-controller="MainCtrl as main" ng-if="allowed">
     <!-- {{main.stateRef.current.name}} -->
-    <div ng-include="'views/common/breadcrumbs.html'">
+    <div ng-show="main.BreadCrumbs[main.BreadCrumbs.length -1].name !== 'TASK_BREADCRUMB'"
+        ng-include="'views/common/breadcrumbs.html'">
     </div>
-    <div ng-show="
-    main.BreadCrumbs[main.BreadCrumbs.length -1].name !== 'TASK_BREADCRUMB'" ng-include="'views/common/footer.html'"></div>
+    <div ng-show="main.BreadCrumbs[main.BreadCrumbs.length -1].name !== 'TASK_BREADCRUMB'"
+        ng-include="'views/common/footer.html'"></div>
 
 </div>
 

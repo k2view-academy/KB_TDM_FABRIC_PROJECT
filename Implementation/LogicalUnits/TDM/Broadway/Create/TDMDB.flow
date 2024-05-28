@@ -1,568 +1,180 @@
-{
-    "tags": [
-        "Create"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Start",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "is_first_deploy",
-                            "remark": "A boolean representing if this is the first deploy",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check if first deploy",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Equals1",
-                            "condition": "result",
-                            "actorType": {
-                                "parentType": "Equals",
-                                "inputs": [
-                                    {
-                                        "name": "a",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    },
-                                    {
-                                        "name": "b",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "const": true
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get Flag Of Creating TDMDB",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "BUILD_TDMDB",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create TDM Role and Database",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check If TDMDB To Be Created",
-                            "condition": "value",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": null
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "ErrorHandler1",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "java.lang.Exception",
-                                                "conditions": {
-                                                    "message": ""
-                                                },
-                                                "actions": {
-                                                    "suppress": true,
-                                                    "log": false,
-                                                    "flowName": ""
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create tdm role and TDMDB DB",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "TDMDBCreateRoleAndDB"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Check TDM Interface connectivity",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check TDM Interface Connection",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "fabric"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": "test_connection interface=${TDMDB}"
-                                    },
-                                    {
-                                        "const": "TDM",
-                                        "name": "TDMDB",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "interface": {
-                                                        "type": "string"
-                                                    },
-                                                    "type": {
-                                                        "type": "string"
-                                                    },
-                                                    "environment": {
-                                                        "type": "string"
-                                                    },
-                                                    "active": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "passed": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "error_message": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Report Errors If Cannot Connect",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check If TDM Interface is Active",
-                            "actorType": {
-                                "parentType": "assertTrue",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "The TDM interface is not active, cannot build the TDM DB"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Check If Admin Interface Is Valid",
-                            "actorType": {
-                                "parentType": "assertTrue",
-                                "inputs": [
-                                    {
-                                        "name": "message",
-                                        "const": "The TDM interface is not valid, cannot build the TDM DB"
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get TDMDB Schema",
-                            "actorType": {
-                                "parentType": "FabricSetRead",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "TDMDB_SCHEMA",
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Get SQL to create Sequences",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get  SQL Resource File To Clear TDMDB And Create Sequences",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TDMDB/k2vtdm2.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create TDMDB Sequences",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Clear And Sequence Creation Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
-                                                "conditions": {
-                                                    "standardType": "UNIQUE_CONSTRAINT"
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": ""
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Clear TDMDB and Create Sequences",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Get  SQL Resource File To Create TDMDB Tables and Functions",
-                            "actorType": {
-                                "parentType": "LuFunction",
-                                "inputs": [
-                                    {
-                                        "name": "functionName",
-                                        "const": "loadFromLUResource"
-                                    },
-                                    {
-                                        "const": "TDM/TDMDB/k2vtdm3.sql",
-                                        "name": "path",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "blob"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Create TDMDB Tables",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Create TDMDB Tables Error Handler",
-                            "onError": "result",
-                            "actorType": {
-                                "parentType": "ErrorHandler",
-                                "inputs": [
-                                    {
-                                        "name": "config",
-                                        "const": [
-                                            {
-                                                "exceptionKey": "com.k2view.fabric.common.io.basic.exception.StandardSqlException",
-                                                "conditions": {
-                                                    "standardType": "UNIQUE_CONSTRAINT"
-                                                },
-                                                "actions": {
-                                                    "suppress": false,
-                                                    "log": true,
-                                                    "flowName": ""
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Create TDMDB Tables and Functions",
-                            "actorType": {
-                                "parentType": "DbCommand",
-                                "inputs": [
-                                    {
-                                        "name": "interface",
-                                        "const": "TDM"
-                                    },
-                                    {
-                                        "name": "sql",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "schema",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "is_first_deploy",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "Equals1",
-                "name": "a"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Flag Of Creating TDMDB",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If TDMDB To Be Created",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Check TDM Interface Connection",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If Admin Interface Is Valid",
-                "name": "condition"
-            },
-            "path": [
-                "passed"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Check TDM Interface Connection",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Check If TDM Interface is Active",
-                "name": "condition"
-            },
-            "path": [
-                "active"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Clear TDMDB and Create Sequences",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get TDMDB Schema",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Create TDMDB Tables and Functions",
-                "name": "schema"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To Clear TDMDB And Create Sequences",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Clear TDMDB and Create Sequences",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get  SQL Resource File To Create TDMDB Tables and Functions",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Create TDMDB Tables and Functions",
-                "name": "sql"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "is_first_deploy"
-            },
-            "rightPort": {
-                "actor": "is_first_deploy",
-                "name": "value"
-            }
-        }
-    ]
-}
+tags: Create
+stages:
+  Check TDM Interface connectivity:
+    actors:
+      Error Handler For Test Connection:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+                number_of_retries: ''
+                retry_interval: ''
+      Check TDM Interface Connection:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: test_connection interface=${TDMDB}
+          TDMDB:
+            const: TDM
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+  Check if TDM DB is Disabled:
+    actors:
+      Check If TDM Interface is Active:
+        parent: assertTrue
+        in:
+          message:
+            const: The TDM interface is not active, cannot build the TDM DB
+          condition:
+            link:
+              path: Check TDM Interface Connection/result/active
+              iterate: First
+  Check if TDM DB Already Exists:
+    actors:
+      TDM DB Failed Test Connection:
+        parent: Not
+        condition: result
+        in:
+          value:
+            link:
+              path: Check TDM Interface Connection/result/passed
+              iterate: First
+  Create Role and Db:
+    actors:
+      Error Handler For Create Role & DB:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: true
+                log: false
+                flowName: ''
+      Create tdm role and TDMDB DB:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: TDMDBCreateRoleAndDB
+  Report Errors If Cannot Connect:
+    actors:
+      Get TDMDB Schema:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+  Get SQL to create Sequences:
+    actors:
+      Get  SQL Resource File To Clear TDMDB And Create Sequences:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm2.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Create TDMDB Sequences:
+    actors:
+      Clear And Sequence Creation Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Clear TDMDB and Create Sequences:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Clear TDMDB And Create Sequences/result
+          schema:
+            link: Get TDMDB Schema/result
+            schema: string
+            mandatory: false
+      Get  SQL Resource File To Create TDMDB Tables and Functions:
+        parent: LuFunction
+        in:
+          functionName:
+            const: loadFromLUResource
+          path:
+            const: TDM/TDMDB/k2vtdm3.sql
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: blob
+  Create TDMDB Tables:
+    actors:
+      Create TDMDB Tables Error Handler:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: com.k2view.fabric.common.io.basic.exception.StandardSqlException
+              conditions:
+                standardType: UNIQUE_CONSTRAINT
+              actions:
+                suppress: false
+                log: true
+                flowName: ''
+      Create TDMDB Tables and Functions:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: Get  SQL Resource File To Create TDMDB Tables and Functions/result
+          schema:
+            link: Get TDMDB Schema/result
+            schema: string
+            mandatory: false
+schemas:
+  Check TDM Interface Connection.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        interface:
+          type: string
+        type:
+          type: string
+        environment:
+          type: string
+        active:
+          type: boolean
+        passed:
+          type: boolean
+        error_message:
+          type: string

@@ -9,12 +9,47 @@ SELECT DISTINCT
   , tt.lu_id
   , tt.task_execution_id
   , tt.execution_status parent_lu_status
+  , 0 as product_id
+  , null as tdm_target_product_version
+  , tt.num_of_processed_entities
+  , tt.process_id
+  , null as tdm_source_product_version
+  , tt.version_task_execution_id
+  , tt.subset_task_execution_id
+  , e.environment_name  as source_environment_name
+  , e2.environment_name as target_environment_name
+  , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
+  , SPLIT_PART(tt.task_executed_by, '##', 2) as user_roles
+FROM
+    @TDMDB_SCHEMA@.TASK_EXECUTION_LIST tt
+  , @TDMDB_SCHEMA@.environments         e
+  , @TDMDB_SCHEMA@.environments         e2
+  , @TDMDB_SCHEMA@.tasks ts
+WHERE
+    UPPER(tt.execution_status)   = 'PENDING'
+    AND ts.task_id = tt.task_id
+    and ts.selection_method = 'TABLES'
+    AND tt.source_environment_id = e.environment_id
+	AND tt.environment_id        = e2.environment_id
+UNION
+SELECT DISTINCT
+    tt.task_id
+  , tt.be_id
+  , tt.task_type
+  , tt.creation_date
+  , tt.data_center_name
+  , tt.environment_id
+  , 0 AS parent_lu_id
+  , tt.lu_id
+  , tt.task_execution_id
+  , tt.execution_status parent_lu_status
   , tt.product_id
   , tt.product_version tdm_target_product_version
   , tt.num_of_processed_entities
   , tt.process_id
   , ep.product_version tdm_source_product_version
-  , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
+  , tt.version_task_execution_id
+  , tt.subset_task_execution_id
   , e.environment_name  as source_environment_name
   , e2.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
@@ -31,8 +66,6 @@ WHERE
         tt.parent_lu_id is null
         or not exists(
             select 1 from @TDMDB_SCHEMA@.TASK_EXECUTION_LIST par where par.task_execution_id = tt.task_execution_id and par.lu_id = tt.parent_lu_id
-        ) or exists(
-            select 1 from @TDMDB_SCHEMA@.TASKS t where tt.task_id = t.task_id and t.selection_method = 'REF'
         )
     )
     AND tt.source_environment_id = e.environment_id
@@ -57,7 +90,8 @@ SELECT DISTINCT
   , tt.num_of_processed_entities
   , tt.process_id
   , ep.product_version tdm_source_product_version
-  , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
+  , tt.version_task_execution_id
+  , tt.subset_task_execution_id
   , e.environment_name as source_environment_name
   , e2.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
@@ -96,7 +130,8 @@ SELECT DISTINCT
   , tt.num_of_processed_entities
   , tt.process_id
   , '' tdm_source_product_version
-  , to_char(tt.version_datetime, 'yyyyMMddHH24miss') as version_datetime
+  , tt.version_task_execution_id
+  , tt.subset_task_execution_id
   , tt.source_env_name as source_environment_name
   , e.environment_name as target_environment_name
   , SPLIT_PART(tt.task_executed_by, '##', 1) as task_executed_by
@@ -107,4 +142,4 @@ FROM
 WHERE
     UPPER(tt.execution_status)   = 'PENDING'
     AND tt.environment_id            = e.environment_id
-    AND tt.process_id > 0
+    AND ((tt.process_id !=0))

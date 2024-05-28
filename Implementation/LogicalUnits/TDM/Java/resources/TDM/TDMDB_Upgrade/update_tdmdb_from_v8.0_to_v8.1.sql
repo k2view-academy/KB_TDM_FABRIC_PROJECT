@@ -1,9 +1,6 @@
 -- Update TDM version
 update ${@schema}.tdm_general_parameters set param_value = '8.1' where param_name = 'TDM_VERSION' ;
 
-ALTER TABLE ${@schema}.task_execution_list ALTER COLUMN task_executed_by TYPE text;
-ALTER TABLE ${@schema}.task_execution_summary ALTER COLUMN task_executed_by TYPE text;
-
 ALTER TABLE ${@schema}.product_logical_units
 DROP COLUMN IF EXISTS lu_dc_name;
 
@@ -56,7 +53,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values
     CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
 );
 
-CREATE OR REPLACE PROCEDURE ${@schema}.update_params_tables(schemaName text)
+CREATE OR REPLACE PROCEDURE ${@schema}.update_params_columns(schemaName text)
 LANGUAGE 'plpgsql'
 AS $BODY$
 DECLARE
@@ -76,21 +73,50 @@ BEGIN
 		exit when not found;
 		
 		tableFullName := schemaName || '.' || rec.table_name;
-		
-		if currTableName != rec.table_name THEN
-			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_lu_name text');
-			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_iid text');
-			currTableName := rec.table_name;
-		END IF;
-								
+										
 		EXECUTE format('ALTER TABLE ' || tableFullName || ' ALTER COLUMN "'|| rec.column_name || '" TYPE TEXT[] USING "' || rec.column_name||'"::TEXT[]');
 	END LOOP;
 	CLOSE curs;
 END;
 $BODY$;
 
-ALTER PROCEDURE ${@schema}.update_params_tables(IN TEXT)
+ALTER PROCEDURE ${@schema}.update_params_columns(IN TEXT)
     OWNER TO tdm;
+
+call ${@schema}.update_params_columns('${@schema}');
+drop procedure ${@schema}.update_params_columns(IN TEXT);
+
+CREATE OR REPLACE PROCEDURE ${@schema}.update_params_tables(schemaName text)
+LANGUAGE 'plpgsql'
+AS $BODY$
+DECLARE
+	rec record;
+	curs cursor for select table_name from  information_schema.columns 
+			where table_schema = '${@schema}' 
+			and table_name like '%_params'
+			order by table_name;
+	currTableName text = '';
+	tableFullName text;
+
+BEGIN
+
+	open curs;
+	LOOP
+		fetch from curs into rec;
+		exit when not found;
+		
+		tableFullName := schemaName || '.' || rec.table_name;
+		
+		if currTableName != rec.table_name THEN
+			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_lu_name text');
+			EXECUTE format('ALTER TABLE ' || tableFullName || ' ADD COLUMN IF NOT EXISTS root_iid text');
+			currTableName := rec.table_name;
+		END IF;
+
+	END LOOP;
+	CLOSE curs;
+END;
+$BODY$;
 
 call ${@schema}.update_params_tables('${@schema}');
 drop procedure ${@schema}.update_params_tables(IN TEXT);
@@ -196,13 +222,7 @@ BEGIN
 		END IF;
 	END LOOP;
 	CLOSE curr_cursor;
-    --insert into ${@schema}.activities (date, entity, description) values(now(), 'update_root_info', 'end updating root info');
-    --commit;
-END;
 $BODY$;
-
-ALTER PROCEDURE ${@schema}.update_root_info(IN TEXT)
-    OWNER TO tdm;
 
 call ${@schema}.update_root_info('${@schema}');
 drop procedure ${@schema}.update_root_info(IN TEXT);
@@ -214,7 +234,7 @@ DECLARE
 	rec record;
 	curs cursor for select distinct table_name from  information_schema.columns 
 			where table_schema = '${@schema}' 
-			and table_name like '%_params' and column_name like '%.%'
+			and table_name like '%_params'
 			order by table_name;
 	tableFullName text;
 	pkName text;
@@ -234,9 +254,6 @@ BEGIN
 	CLOSE curs;
 END;
 $BODY$;
-
-ALTER PROCEDURE ${@schema}.modify_param_tables_pk(IN TEXT)
-    OWNER TO tdm;
 
 call ${@schema}.modify_param_tables_pk('${@schema}');
 drop procedure ${@schema}.modify_param_tables_pk(IN TEXT);

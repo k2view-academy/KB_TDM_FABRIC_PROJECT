@@ -161,7 +161,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/tdmCreateGenerateDataPop.pop.flow.template"
+                                        "const": "SharedObjects/Templates/TDM/tdmCreateGenerateDataPop.pop.flow.template"
                                     }
                                 ],
                                 "outputs": []
@@ -197,7 +197,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/tdmTypeDefaultsGenerator.flow.template"
+                                        "const": "SharedObjects/Templates/TDM/tdmTypeDefaultsGenerator.flow.template"
                                     }
                                 ],
                                 "outputs": []

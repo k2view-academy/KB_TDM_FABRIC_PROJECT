@@ -76,7 +76,7 @@
                                     },
                                     {
                                         "name": "sql",
-                                        "const": "select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,\r\nexe.number_of_records_to_process, exe.number_of_processed_records, exe.error_msg, ref.lu_name, exe.start_time , exe.end_time\r\nfrom @TDMDB_SCHEMA@.task_ref_exe_stats exe inner join @TDMDB_SCHEMA@.task_ref_tables ref on ref.task_id=exe.task_id\r\nand ref.ref_table_name = exe.ref_table_name "
+                                        "const": "select exe.task_execution_id, exe.task_ref_table_id, exe.ref_table_name, exe.execution_status,\r\nexe.number_of_records_to_process, exe.number_of_processed_records, exe.error_msg, ref.lu_name, exe.start_time , exe.end_time, \r\nref.table_filter, ref.filter_type, ref.filter_parameters ,ref.version_task_execution_id\r\nfrom @TDMDB_SCHEMA@.task_ref_exe_stats exe inner join @TDMDB_SCHEMA@.task_ref_tables ref on ref.task_id=exe.task_id\r\nand ref.ref_table_name = exe.ref_table_name "
                                     }
                                 ],
                                 "outputs": [
@@ -116,6 +116,12 @@
                                                     },
                                                     "end_time": {
                                                         "type": "date"
+                                                    },
+                                                    "table_filter": {
+                                                        "type": "string"
+                                                    },
+                                                    "filter_type": {
+                                                        "type": "string"
                                                     }
                                                 }
                                             }
@@ -174,7 +180,11 @@
                                             "error_msg",
                                             "lu_name",
                                             "start_time",
-                                            "end_time"
+                                            "end_time",
+                                            "table_filter",
+                                            "filter_type",
+                                            "filter_parameters",
+                                            "version_task_execution_id"
                                         ]
                                     },
                                     {
@@ -258,6 +268,22 @@
                                         "name": "end_time",
                                         "schema": {},
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "table_filter",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "filter_type",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "filter_parameters",
+                                        "schema": {}
+                                    },
+                                    {
+                                        "name": "version_task_execution_id",
+                                        "schema": {}
                                     }
                                 ],
                                 "outputs": []
@@ -296,136 +322,9 @@
             },
             "rightPort": {
                 "actor": "task_ref_exe_stats",
-                "name": "task_execution_id"
+                "name": "params"
             },
-            "iterate": "Iterate",
-            "path": [
-                "task_execution_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "task_ref_table_id"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "task_ref_table_id"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "ref_table_name"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "ref_table_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "execution_status"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "execution_status"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "number_of_records_to_process"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "number_of_records_to_process"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "number_of_processed_records"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "number_of_processed_records"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "error_msg"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "error_msg"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "lu_name"
-            },
-            "iterate": "Iterate",
-            "path": [
-                "lu_name"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "start_time"
-            },
-            "path": [
-                "start_time"
-            ]
-        },
-        {
-            "leftPort": {
-                "actor": "Query",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "task_ref_exe_stats",
-                "name": "end_time"
-            },
-            "path": [
-                "end_time"
-            ]
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

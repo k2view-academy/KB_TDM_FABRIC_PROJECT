@@ -77,54 +77,60 @@
                                         "schema": {
                                             "type": "object",
                                             "properties": {
-                                                "NAME": {
+                                                "LU_NAME": {
                                                     "type": "string"
                                                 },
-                                                "TABLE_FIELDS": {
+                                                "TableName": {
+                                                    "type": "string"
+                                                },
+                                                "Columns": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object",
                                                         "properties": {
-                                                            "TYPE": {
+                                                            "datatype": {
                                                                 "type": "string"
                                                             },
-                                                            "ACTOR": {
-                                                                "type": "string"
-                                                            },
-                                                            "PARAMETERS": {
-                                                                "type": "string"
-                                                            },
-                                                            "TABLE": {
+                                                            "name": {
                                                                 "type": "string"
                                                             }
                                                         }
                                                     }
                                                 },
-                                                "TABLE_SEQ_DATA": {
+                                                "PARENT_TABLE_DATA": {
                                                     "type": "array",
                                                     "items": {
                                                         "type": "object",
                                                         "properties": {
-                                                            "LU_NAME": {
+                                                            "FIELD_TYPE": {
                                                                 "type": "string"
                                                             },
-                                                            "TARGET_TABLE_NAME": {
+                                                            "PARENT_TABLE": {
                                                                 "type": "string"
                                                             },
-                                                            "TARGET_FIELD_NAME": {
+                                                            "PARENT_FIELD_NAME": {
                                                                 "type": "string"
                                                             },
-                                                            "FABRIC_TABLE_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "FABRIC_FIELD_NAME": {
-                                                                "type": "string"
-                                                            },
-                                                            "SEQUENCE_NAME": {
+                                                            "FIELD_NAME": {
                                                                 "type": "string"
                                                             }
                                                         }
                                                     }
+                                                },
+                                                "FullTextSearch": {
+                                                    "type": "string"
+                                                },
+                                                "TARGET_INTERFACE": {
+                                                    "type": "string"
+                                                },
+                                                "TARGET_SCHEMA": {
+                                                    "type": "string"
+                                                },
+                                                "OriginalTableName": {
+                                                    "type": "string"
+                                                },
+                                                "MainTableInd": {
+                                                    "type": "boolean"
                                                 }
                                             }
                                         }
@@ -154,7 +160,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/deleteTable.k2table.xml.template"
+                                        "const": "SharedObjects/Templates/TDM/deleteTable.k2table.xml.template"
                                     }
                                 ],
                                 "outputs": []
@@ -171,7 +177,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/deleteTablePopulation.flow.template"
+                                        "const": "SharedObjects/Templates/TDM/deleteTablePopulation.flow.template"
                                     }
                                 ],
                                 "outputs": []

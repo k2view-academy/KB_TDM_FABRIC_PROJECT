@@ -4,7 +4,7 @@
 
 package com.k2view.cdbms.usercode.lu.TDM;
 
-import com.k2view.cdbms.usercode.common.SharedGlobals;
+import com.k2view.cdbms.usercode.common.TDM.SharedGlobals;
 import com.k2view.cdbms.shared.utils.UserCodeDescribe.*;
 
 public class Globals extends SharedGlobals {
@@ -19,15 +19,15 @@ public class Globals extends SharedGlobals {
 	public static String INSTANCES_RANDOM_MAX = "10";
 	@category("GENERATE_DATA")
 	public static String SYNTHETIC_INDICATOR = "false";
-	@category("GENERATE_DATA")
-	public static String SYNTHETIC_ENVIRONMENT = "Synthetic";
 
 	@category("TDM")
 	public static final String TDM_SUMMARY_REPORT_LIMIT = "10000";
 
-
 	@category("TDM")
-	public static String TDM_DEPLOY_ENVIRONMENTS = "false";
+	public static String TDM_DEPLOY_ENVIRONMENTS = "true";
 
+    @desc("This flag is used to enble running sync in Studio")
+	@category("TDM")
+	public static String TDM_DEBUG_MODE = "true";
 
 }

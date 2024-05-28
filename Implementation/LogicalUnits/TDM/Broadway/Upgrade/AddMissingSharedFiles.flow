@@ -1,0 +1,188 @@
+tags: Upgrade
+stages:
+  Stage 1:
+    actors:
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+  Stage 2:
+    actors:
+      Set Source Files Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/LogicalUnits/TDM/Java/resources/TDM/TDMSharedFiles/
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      Set Main Files location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/LogicalUnits/TDM/Java/resources/TDM/
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+  Stage 3:
+    actors:
+      Read CSV of Files:
+        parent: FileRead
+        in:
+          interface:
+            const: null
+            link: Set Source Files Location/string
+          path:
+            const: TDMSharedFiles.csv
+  Stage 4:
+    actors:
+      CsvParser1:
+        parent: CsvParser
+        in:
+          stream:
+            link: Read CSV of Files/stream
+        out:
+          object:
+            schema: '#ref'
+  Stage 5:
+    actors:
+      Target File Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projDir}/${fileLocation}/${fileName}
+          projDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          fileLocation:
+            link:
+              path: CsvParser1/object/target_location
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          fileName:
+            const: ''
+            schema: string
+            mandatory: false
+  Stage 6:
+    actors:
+      Check If File Exists:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: CheckIfFileExists
+          interface:
+            link: Target File Location/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file:///
+            mandatory: false
+          pattern:
+            link:
+              path: CsvParser1/object/target_file_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+        out:
+          FILE_FOUND:
+            schema: boolean
+      Target File:
+        parent: StringFormat
+        in:
+          format:
+            const: ${fileDir}/${fileName}
+          fileDir:
+            link: Target File Location/string
+            schema: string
+            mandatory: false
+          fileName:
+            link:
+              path: CsvParser1/object/target_file_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+      Source File Location:
+        parent: StringFormat
+        in:
+          format:
+            const: ${fileLocation}/${sourceLocation}/${fileName}
+          fileLocation:
+            link: Set Main Files location/string
+            schema: string
+            mandatory: false
+          fileName:
+            link:
+              path: CsvParser1/object/source_file_name
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          sourceLocation:
+            link:
+              path: CsvParser1/object/source_directory
+              iterate: Iterate
+            schema: string
+            mandatory: false
+  Stage 7:
+    actors:
+      File is Not Found:
+        parent: Equals
+        condition: result
+        in:
+          a:
+            link: Check If File Exists/FILE_FOUND
+            schema: boolean
+          b:
+            const: false
+            schema: boolean
+      Remove file://  From Source:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: Source File Location/string
+      Remove file://  From Target:
+        parent: Replace
+        in:
+          search:
+            const: file://
+          string:
+            link: Target File/string
+  Stage 8:
+    actors:
+      Copy File:
+        parent: cp
+        in:
+          interface:
+            const: file://
+          from:
+            link: Remove file:%2F%2F  From Source/string
+          to:
+            link: Remove file:%2F%2F  From Target/string
+schemas:
+  CsvParser1.out.object:
+    type: array
+    items:
+      type: object
+      properties:
+        source_file_name:
+          type: string
+        source_directory:
+          type: string
+        target_location:
+          type: string
+        target_file_name:
+          type: string

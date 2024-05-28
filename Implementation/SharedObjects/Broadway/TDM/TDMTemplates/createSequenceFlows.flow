@@ -49,7 +49,7 @@
                                 "inputs": [
                                     {
                                         "name": "format",
-                                        "const": "${PROJECT_DIRECTORY}/SharedObjects/Templates"
+                                        "const": "${PROJECT_DIRECTORY}/SharedObjects/Templates/TDM"
                                     },
                                     {
                                         "name": "PROJECT_DIRECTORY",
@@ -364,7 +364,9 @@
                                     {
                                         "const": "TDM",
                                         "name": "luType",
-                                        "schema": {}
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     },
                                     {
                                         "name": "templateContent",

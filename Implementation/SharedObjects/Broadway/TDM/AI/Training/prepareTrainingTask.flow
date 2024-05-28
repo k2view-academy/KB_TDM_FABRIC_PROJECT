@@ -1,0 +1,385 @@
+tags: TDM
+stages:
+  Get Inputs:
+    actors:
+      luName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+        out:
+          value:
+            schema: string
+      dcName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: dcName
+        out:
+          value:
+            schema: string
+      taskExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionID
+        out:
+          value:
+            schema: string
+      LuID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: LuID
+            schema: string
+        out:
+          value:
+            schema: string
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+  Lu External List Table:
+    actors:
+      createLuExternalEntityListTable:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createLuExternalEntityListTable
+          taskExecutionId:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+        out:
+          ENTITY_LIST_TABLE:
+            schema: string
+  'Start Execution By Request ':
+    actors:
+      AI_DB_ENTITIES:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+  Check If schema Exists In TDMDB:
+    actors:
+      trainingExcludedTables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: trainingExcludedTables
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+        out:
+          tables:
+            schema: string
+  Get Entity Inclusion Command:
+    actors:
+      EntityInclusion Command:
+        parent: StringFormat
+        in:
+          format:
+            const: select entity_id as IID from ${TDMDB_SCHEMA}.task_execution_entities
+              where task_execution_id='${task_execution_id}' and execution_status='completed'
+              and id_type='ENTITY'
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+      Broadway Command Sync And Export:
+        parent: StringFormat
+        in:
+          format:
+            const: broadway ${luName}.exportToTrainingJob IID=?,luName=${luName}
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+  MDB EXPORT Schema:
+    actors:
+      createMDBExportSchema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createMDBExportSchema
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+      Getk2SystemSchemaName:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  k2system.task_executions:
+    actors:
+      ErrorHandler 1:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      New Task task_executions1:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_DB_K2SYSTEM1/result
+          sql:
+            const: "INSERT INTO ${@K2SCHEMA_NAME}.task_executions(\n\tid, status,execution_params,result,\
+              \ creation_time, last_update_time,task_type)\n\tVALUES (${task_exe_id},\
+              \ 'IN_PROCESS',${execution_params}::json,'{}'::json,${creation_time},NOW(),'TRAINING')"
+          task_exe_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          creation_time:
+            external: creation_time
+            schema: string
+            mandatory: false
+          execution_params:
+            external: execution_params
+            schema: string
+            mandatory: false
+          K2SCHEMA_NAME:
+            link: Getk2SystemSchemaName/result
+            schema: any
+            mandatory: false
+  DC Name Is Empty:
+    dependsOn: k2system.task_executions
+    actors:
+      'Empty  ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+      'ErrorHandler 2   ':
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Batch and Sync:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch ${@luName} from TDM using(?) FABRIC_COMMAND='${@command}'
+              WITH ASYNC='true';
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+          command:
+            link: Broadway Command Sync And Export/string
+            schema: string
+            mandatory: false
+          params:
+            link: EntityInclusion Command/string
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Affinity:
+    else: true
+    transactional: false
+    dependsOn: k2system.task_executions
+    actors:
+      Batch and Sync With Affinity:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch ${@luName} from TDM using(?) FABRIC_COMMAND='${@command}'
+              WITH AFFINITY=${dcName} ASYNC='true';
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+          command:
+            link: Broadway Command Sync And Export/string
+            schema: string
+            mandatory: false
+          dcName:
+            link: dcName/value
+            schema: string
+            mandatory: false
+          params:
+            link: EntityInclusion Command/string
+        out:
+          result:
+            schema: '#ref'
+  Update tdmdb tables:
+    actors:
+      Update task_execution_list:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set execution_status\
+              \ = 'running' , fabric_execution_id =${fabric_execution_id}, start_execution_time\
+              \ =NOW() where \r\ntask_execution_id =${task_execution_id} and lu_id=${lu_id}\
+              \ and process_id=-2 ;"
+          fabric_execution_id:
+            link:
+            - path: Batch and Sync/result/Batch id
+              iterate: First
+            - path: Batch and Sync With Affinity/result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+          lu_id:
+            link: LuID/value
+            schema: string
+            mandatory: false
+  Batch ID:
+    actors:
+      Const:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: Batch and Sync/result/Batch id
+              iterate: First
+            - path: Batch and Sync With Affinity/result/Batch id
+              iterate: First
+        out:
+          value:
+            external: batchID
+            schema: string
+  Get The EIDs:
+    actors:
+      ErrorHandler 4:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      Get the TDM_EID'S:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: null
+            link: EntityInclusion Command/string
+        out:
+          result:
+            schema: '#ref'
+  Get the IID:
+    actors:
+      IID Format:
+        parent: StringFormat
+        in:
+          format:
+            const: ${IID}_${executionID}
+          IID:
+            link:
+              path: Get the TDM_EID'S/result/iid
+              iterate: Iterate
+            schema: string
+            mandatory: false
+          executionID:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+  Entity List:
+    actors:
+      List:
+        parent: ArrayBuilder
+        in:
+          input:
+            link:
+              path: IID Format/string
+              pos: 0
+        out:
+          array:
+            external: entityList
+            schema: '#ref'
+schemas:
+  Batch and Sync.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string
+  Batch and Sync With Affinity.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string
+  Get the TDM_EID'S.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        iid:
+          type: string
+  List.out.array:
+    type: array
+    items:
+      type: string

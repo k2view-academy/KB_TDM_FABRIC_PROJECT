@@ -1,0 +1,298 @@
+{
+    "tags": [
+        "Medoid",
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Params",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "namespace",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "generation_image",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "id",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "YAML",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "StringFormat",
+                            "minHeight": 121,
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "apiVersion: batch/v1\r\nkind: Job\r\nmetadata:\r\n  name: generation-job${id}\r\nspec:\r\n  backoffLimit: 0\r\n  template:\r\n    spec:\r\n      containers:\r\n      - name: generation\r\n        image: ${generation_image}\r\n        command: [\"python\", \"main.py\"]\r\n        args: [\"--task_execution_id\", \"${id}\"]\r\n        resources:\r\n          limits:\r\n            nvidia.com/gpu: 1\r\n        volumeMounts:\r\n        - name: shared-storage\r\n          mountPath: /app/artifacts\r\n        env:\r\n        - name: POSTGRES_USER\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-user\r\n        - name: POSTGRES_PASSWORD\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-password\r\n        - name: POSTGRES_DB\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-db\r\n        - name: POSTGRES_HOST\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-host\r\n        - name: POSTGRES_PORT\r\n          valueFrom:\r\n            secretKeyRef:\r\n              name: medoid-secrets\r\n              key: pg-port\r\n        - name: SQLALCHEMY_DATABASE_URI\r\n          value: \"postgresql+psycopg2://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)\"\r\n      restartPolicy: OnFailure\r\n      volumes:\r\n      - name: shared-storage\r\n        persistentVolumeClaim:\r\n          claimName: shared-artifacts-pvc\r\n"
+                                    },
+                                    {
+                                        "name": "generation_image",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "k8 Apply",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler 1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "kubeApply  ",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "kubeApply"
+                                    },
+                                    {
+                                        "const": "POST",
+                                        "name": "method",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "editor": {
+                                            "id": "com.k2view.dropdown",
+                                            "options": [
+                                                "",
+                                                "GET",
+                                                "POST",
+                                                "PUT",
+                                                "DELETE",
+                                                "PATCH"
+                                            ]
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "jobs",
+                                        "name": "kind",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "const": "apis/batch/v1",
+                                        "name": "api",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "payload",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "generation_image",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "StringFormat",
+                "name": "generation_image"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "id",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "StringFormat",
+                "name": "id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "kubeApply  ",
+                "name": "payload"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "namespace",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "generation_image"
+            },
+            "rightPort": {
+                "actor": "generation_image",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "id"
+            },
+            "rightPort": {
+                "actor": "id",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "kubeApply  ",
+                "name": "namespace"
+            }
+        }
+    ]
+}

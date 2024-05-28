@@ -1,0 +1,345 @@
+{
+    "tags": [
+        "TDM",
+        "TDMAI ML"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "AI_DB_ENTITIES",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "AI_DB_INTERFACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "trainingExcludedTables",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "trainingExcludedTables"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "tables",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDM_TASK_EXE_ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Start Time",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Remote IID ",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Target IID",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${IID}_${executionID}"
+                                    },
+                                    {
+                                        "name": "IID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "executionID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format Start Time",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Set Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Start Processing Time",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "IID_START_DATETIME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Export",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": false,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "MDB_EXPORT luNameIID",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "MDB_EXPORT ${@luName}.${@IID} WITH INTERFACE_NAME='${@name}' EXCLUDED_TABLES=${@excludedTables} FK='true' REMOTE_IID='${@remoteIID}'"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "IID",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "excludedTables",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "remoteIID",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "AI_DB_ENTITIES",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "MDB_EXPORT luNameIID",
+                "name": "name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "trainingExcludedTables",
+                "name": "tables"
+            },
+            "rightPort": {
+                "actor": "MDB_EXPORT luNameIID",
+                "name": "excludedTables"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDM_TASK_EXE_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Target IID",
+                "name": "executionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Start Time",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format Start Time",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Target IID",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "MDB_EXPORT luNameIID",
+                "name": "remoteIID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format Start Time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Set Start Processing Time",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "trainingExcludedTables",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "IID"
+            },
+            "rightPort": {
+                "actor": "Target IID",
+                "name": "IID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "MDB_EXPORT luNameIID",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "IID"
+            },
+            "rightPort": {
+                "actor": "MDB_EXPORT luNameIID",
+                "name": "IID"
+            }
+        }
+    ]
+}

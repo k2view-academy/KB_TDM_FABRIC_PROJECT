@@ -85,12 +85,6 @@
                                         "schema": {
                                             "type": "string"
                                         }
-                                    },
-                                    {
-                                        "name": "rootEntityId",
-                                        "schema": {
-                                            "type": "string"
-                                        }
                                     }
                                 ]
                             }
@@ -157,8 +151,7 @@
                                             "K2_TDM_EID",
                                             "SOURCE_ENV",
                                             "IID",
-                                            "TASK_NAME",
-                                            "TIMESTAMP"
+                                            "TASK_EXECUTION_ID"
                                         ]
                                     },
                                     {
@@ -183,17 +176,8 @@
                                         "mandatory": false
                                     },
                                     {
-                                        "name": "TASK_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TIMESTAMP",
-                                        "schema": {
-                                            "type": "string"
-                                        },
+                                        "name": "TASK_EXECUTION_ID",
+                                        "schema": {},
                                         "mandatory": false
                                     }
                                 ],
@@ -433,26 +417,6 @@
         {
             "leftPort": {
                 "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "versionName"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "TASK_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
-                "name": "versiionDateTime"
-            },
-            "rightPort": {
-                "actor": "FABRIC_TDM_ROOT",
-                "name": "TIMESTAMP"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "SplitIIDAndCloneNumber_Actor1",
                 "name": "cloneNo"
             },
             "rightPort": {
@@ -498,6 +462,16 @@
             "rightPort": {
                 "actor": "Get Root Entity Id",
                 "name": "taskExecId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "get TDM_TASK_EXE_ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FABRIC_TDM_ROOT",
+                "name": "TASK_EXECUTION_ID"
             }
         },
         {

@@ -3,7 +3,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 1",
+                    "name": "Get Target Environment",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -14,7 +14,8 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "TDM_TAR_ENV_NAME"
+                                        "const": "TDM_TAR_ENV_NAME",
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
@@ -27,7 +28,7 @@
         {
             "stages": [
                 {
-                    "name": "Stage 2",
+                    "name": "Get Environment to Target",
                     "dependsOnList": [],
                     "isLast": 0,
                     "actors": [
@@ -38,23 +39,19 @@
                                 "inputs": [
                                     {
                                         "name": "key",
-                                        "const": "environment"
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
                                     }
                                 ],
                                 "outputs": []
                             }
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
                 }
             ]
         }

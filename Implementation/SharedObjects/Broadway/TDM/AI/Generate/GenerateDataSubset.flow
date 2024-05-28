@@ -1,0 +1,1436 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Get Source Env",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "AI",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "AI"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Pre Execution",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Set Source Environment",
+                            "minHeight": 106,
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "environment",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TDM_SOURCE_ENVIRONMENT_NAME",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_SOURCE_ENVIRONMENT_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "trainingTaskId",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "numOfEntities",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "AI_K2SYSTEM_INTERFACE1",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "AI_K2SYSTEM_INTERFACE"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "taskExecutionID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "TDMDB_SCHEMA",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDMDB_SCHEMA",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "LuID",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Insert new Generate task",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler 1",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "addNewGenerateTask1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "addNewGenerateTask"
+                                    },
+                                    {
+                                        "name": "trainingTaskId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_exe_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "numOfEntities",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "StringFormat1",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "tdmml${trainingTaskId}"
+                                    },
+                                    {
+                                        "name": "trainingTaskId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_execution_list1",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set execution_status='running' where\r\ntask_execution_id =${task_execution_id} and lu_id=${lu_id}"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Execute Generate Task",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "kubeCreateGenerationTaskGPU1",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "kubeCreateGenerationTaskGPU"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "generation_image",
+                                        "const": "europe-west3-docker.pkg.dev/k2view-medoid/medoid/k2view-sdg-generation-task:latest",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false,
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TDM_TASK_EXE_ID",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": null,
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Check Medoid task status",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler 2",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Check task status",
+                            "actorType": {
+                                "parentType": "LuFunction",
+                                "inputs": [
+                                    {
+                                        "name": "functionName",
+                                        "const": "fnCheckMedoidTaskStatus"
+                                    },
+                                    {
+                                        "name": "interface_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "taskStatus",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Inputs",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "luName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "dcName",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "loadIndicator   ",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Get Time",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "postgres schema name",
+                            "actorType": {
+                                "parentType": "Lowercase",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Entity List",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "EntityInclusion Command",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "select iid as IID from k2system.entity_list where task_execution_id=${task_execution_id}"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Broadway Command Sync And Export",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "broadway ${luName}.ImportFromGenerationJob IID=?,luName=${luName},loadIndicator=${loadIndicator}"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "loadIndicator",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Batch",
+                    "dependsOnList": [
+                        "Entity List"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Empty  ",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": ""
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ErrorHandler 3",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Batch and Sync   ",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "batch ${@luName} from ${@ai_k2system_interface} using (?) FABRIC_COMMAND='${@command}' WITH ASYNC='true';"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "command",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ai_k2system_interface",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Batch id": {
+                                                        "type": "string"
+                                                    },
+                                                    "Execution id": {
+                                                        "type": "string"
+                                                    },
+                                                    "Notes": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Batch with Affinity",
+                    "dependsOnList": [
+                        "Entity List"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Batch and Sync With Affinity",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "fabric"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "batch ${@luName} from ${@ai_k2system_interface} using (?) FABRIC_COMMAND='${@command}' WITH AFFINITY=${dcName} ASYNC='true';"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "command",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "dcName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ai_k2system_interface",
+                                        "schema": {},
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Batch id": {
+                                                        "type": "string"
+                                                    },
+                                                    "Execution id": {
+                                                        "type": "string"
+                                                    },
+                                                    "Notes": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Merge Stages",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Generate without Load Task",
+                    "dependsOnList": [
+                        "Merge Stages"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "EqualsIgnoreCase1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "EqualsIgnoreCase",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "false"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Generate With Load",
+                    "dependsOnList": [
+                        "Merge Stages"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update execution list ",
+                    "dependsOnList": [
+                        "Generate without Load Task"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "Error Handle 4",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": false,
+                                                    "flowName": "PopulateTableErrorsWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update task_execution_list",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set fabric_execution_id =${fabric_execution_id} where \r\ntask_execution_id =${task_execution_id} and lu_id=${lu_id}"
+                                    },
+                                    {
+                                        "name": "fabric_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "lu_id",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "TDMDB_SCHEMA",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Do Nothing ",
+                    "dependsOnList": [
+                        "Generate With Load"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Wait For Batch",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": [
+                        {
+                            "name": "ErrorHandler 5",
+                            "onError": "result",
+                            "actorType": {
+                                "parentType": "ErrorHandler",
+                                "inputs": [
+                                    {
+                                        "name": "config",
+                                        "const": [
+                                            {
+                                                "exceptionKey": "java.lang.Exception",
+                                                "conditions": {
+                                                    "message": ""
+                                                },
+                                                "actions": {
+                                                    "suppress": false,
+                                                    "log": true,
+                                                    "flowName": "PopulateAITablesWithFailed"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "BatchWait",
+                            "actorType": {
+                                "parentType": "BatchWait",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "End",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "AI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Set Source Environment",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "TDM_SOURCE_ENVIRONMENT_NAME",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "trainingTaskId",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "addNewGenerateTask1",
+                "name": "trainingTaskId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "trainingTaskId",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "StringFormat1",
+                "name": "trainingTaskId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "numOfEntities",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "addNewGenerateTask1",
+                "name": "numOfEntities"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_K2SYSTEM_INTERFACE1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check task status",
+                "name": "interface_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_K2SYSTEM_INTERFACE1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "ai_k2system_interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "AI_K2SYSTEM_INTERFACE1",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync   ",
+                "name": "ai_k2system_interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check task status",
+                "name": "task_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "EntityInclusion Command",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list1",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "TDM_TASK_EXE_ID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDMDB_SCHEMA",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list1",
+                "name": "TDMDB_SCHEMA"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list",
+                "name": "lu_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "LuID",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list1",
+                "name": "lu_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "StringFormat1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "kubeCreateGenerationTaskGPU1",
+                "name": "namespace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "postgres schema name",
+                "name": "string"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Broadway Command Sync And Export",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync   ",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "luName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "dcName",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "dcName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "loadIndicator   ",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Broadway Command Sync And Export",
+                "name": "loadIndicator"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "loadIndicator   ",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "EqualsIgnoreCase1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "EntityInclusion Command",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync   ",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "EntityInclusion Command",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Broadway Command Sync And Export",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync   ",
+                "name": "command"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Broadway Command Sync And Export",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "command"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Batch and Sync   ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list",
+                "name": "fabric_execution_id"
+            },
+            "iterate": "First",
+            "path": [
+                "Batch id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Batch and Sync   ",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "BatchWait",
+                "name": "batchId"
+            },
+            "iterate": "First",
+            "path": [
+                "Batch id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update task_execution_list",
+                "name": "fabric_execution_id"
+            },
+            "iterate": "First",
+            "path": [
+                "Batch id"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Batch and Sync With Affinity",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "BatchWait",
+                "name": "batchId"
+            },
+            "iterate": "First"
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "trainingTaskId"
+            },
+            "rightPort": {
+                "actor": "trainingTaskId",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "numOfEntities"
+            },
+            "rightPort": {
+                "actor": "numOfEntities",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "taskExecutionID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "LuID"
+            },
+            "rightPort": {
+                "actor": "LuID",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "addNewGenerateTask1",
+                "name": "task_exe_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "taskExecutionID"
+            },
+            "rightPort": {
+                "actor": "kubeCreateGenerationTaskGPU1",
+                "name": "id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "luName"
+            },
+            "rightPort": {
+                "actor": "luName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "dcName"
+            },
+            "rightPort": {
+                "actor": "dcName",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "loadIndicator"
+            },
+            "rightPort": {
+                "actor": "loadIndicator   ",
+                "name": "value"
+            }
+        }
+    ]
+}

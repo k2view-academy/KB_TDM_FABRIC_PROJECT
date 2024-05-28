@@ -528,7 +528,155 @@
                     "name": "Stage 14",
                     "dependsOnList": [],
                     "isLast": 0,
-                    "actors": []
+                    "actors": [
+                        {
+                            "name": "Const2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "FIELD_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_TABLE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_FIELD_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FIELD_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 15",
+                    "dependsOnList": [
+                        "Stage 14"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "NotEquals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ArrayBuilder1",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "FIELD_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_TABLE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_FIELD_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FIELD_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 16",
+                    "dependsOnList": [
+                        "Stage 14"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "ArrayBuilder2",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "FIELD_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_TABLE": {
+                                                        "type": "string"
+                                                    },
+                                                    "PARENT_FIELD_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "FIELD_NAME": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -537,7 +685,7 @@
                 {
                     "name": "Stage 12",
                     "dependsOnList": [
-                        "Stage 14"
+                        "Stage 15"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -586,7 +734,7 @@
                 {
                     "name": "Stage 13",
                     "dependsOnList": [
-                        "Stage 14"
+                        "Stage 15"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -663,6 +811,15 @@
                             }
                         }
                     ]
+                },
+                {
+                    "name": "Stage 17",
+                    "dependsOnList": [
+                        "Stage 16"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
                 }
             ]
         },
@@ -976,6 +1133,40 @@
                                             "type": "string"
                                         },
                                         "const": "PARENT_TABLE_DATA"
+                                    },
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "NAME": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Child Table Data",
+                            "actorType": {
+                                "parentType": "MapBuild",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "CHILD"
                                     },
                                     {
                                         "name": "value",
@@ -1478,7 +1669,7 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "Parent Table Data",
+                "actor": "Const2",
                 "name": "value"
             }
         },
@@ -1658,6 +1849,62 @@
             "rightPort": {
                 "actor": "JavaScript1",
                 "name": "array2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "PARENT_TABLE"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder1",
+                "name": "input"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Const2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "ArrayBuilder2",
+                "name": "input"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder1",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Parent Table Data",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ArrayBuilder2",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Child Table Data",
+                "name": "value"
             }
         },
         {
@@ -1888,6 +2135,16 @@
             "rightPort": {
                 "actor": "get Lu Table Columns And Types",
                 "name": "table"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "NotEquals1",
+                "name": "b"
             }
         },
         {

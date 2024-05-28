@@ -180,6 +180,14 @@
                     "isLast": 0,
                     "actors": [
                         {
+                            "name": "Calculate Table's Order",
+                            "actorType": {
+                                "parentType": "MathAdd",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
                             "name": "Prepare Template Data",
                             "actorType": {
                                 "parentType": "InnerFlow",
@@ -282,14 +290,6 @@
                                         }
                                     }
                                 ]
-                            }
-                        },
-                        {
-                            "name": "Calculate Table's Order",
-                            "actorType": {
-                                "parentType": "MathAdd",
-                                "inputs": [],
-                                "outputs": []
                             }
                         }
                     ]
@@ -495,6 +495,16 @@
                             }
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Close Inner Loop",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
                 }
             ]
         },
@@ -912,6 +922,16 @@
         },
         {
             "leftPort": {
+                "actor": "Calculate Table's Order",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Format TableProperties",
+                "name": "tableOrder"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Prepare Template Data",
                 "name": "tableDefaultMapping"
             },
@@ -919,6 +939,7 @@
                 "actor": "Format TableProperties",
                 "name": "tableName"
             },
+            "iterate": "Iterate",
             "path": [
                 "TableName"
             ]
@@ -932,6 +953,7 @@
                 "actor": "Format Table Name",
                 "name": "tableName"
             },
+            "iterate": "Iterate",
             "path": [
                 "TableName"
             ]
@@ -945,6 +967,7 @@
                 "actor": "Format Table Relation",
                 "name": "tableName"
             },
+            "iterate": "Iterate",
             "path": [
                 "TableName"
             ]
@@ -958,6 +981,7 @@
                 "actor": "Format Table Graph",
                 "name": "tableName"
             },
+            "iterate": "Iterate",
             "path": [
                 "TableName"
             ]
@@ -971,6 +995,7 @@
                 "actor": "Format Table Relation",
                 "name": "parentTableName"
             },
+            "iterate": "Iterate",
             "path": [
                 "PARENT_TABLE_DATA",
                 "PARENT_TABLE"
@@ -985,6 +1010,7 @@
                 "actor": "Format Table Relation",
                 "name": "parentColumnName"
             },
+            "iterate": "Iterate",
             "path": [
                 "PARENT_TABLE_DATA",
                 "PARENT_FIELD_NAME"
@@ -999,20 +1025,11 @@
                 "actor": "Format Table Relation",
                 "name": "columnName"
             },
+            "iterate": "Iterate",
             "path": [
                 "PARENT_TABLE_DATA",
                 "FIELD_NAME"
             ]
-        },
-        {
-            "leftPort": {
-                "actor": "Calculate Table's Order",
-                "name": "result"
-            },
-            "rightPort": {
-                "actor": "Format TableProperties",
-                "name": "tableOrder"
-            }
         },
         {
             "leftPort": {

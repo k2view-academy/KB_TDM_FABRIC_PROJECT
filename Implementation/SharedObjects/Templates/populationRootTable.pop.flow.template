@@ -3,25 +3,11 @@
         {
             "stages": [
                 {
-                    "name": "Input",
+                    "name": "Get TDM_SYNC_SOURCE_DATA",
                     "dependsOnList": [],
                     "isLast": 0,
                     "isTransactional": false,
                     "actors": [
-                        {
-                            "name": "PopulationArgs",
-                            "actorType": {
-                                "parentType": "PopulationArgs",
-                                "readOnly": true,
-                                "inputs": [
-                                    {
-                                        "name": "{{KEY}}",
-                                        "schema": {}
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
                         {
                             "name": "Get Variable TDM_SYNC_SOURCE_DATA",
                             "actorType": {
@@ -87,7 +73,7 @@
                 {
                     "name": "Check Variable And Delete Root Table",
                     "dependsOnList": [
-                        "Input"
+                        "Get TDM_SYNC_SOURCE_DATA"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -117,25 +103,21 @@
                         {
                             "name": "Delete Root Table",
                             "actorType": {
-                                "parentType": "DbDelete",
+                                "parentType": "DbCommand",
                                 "inputs": [
                                     {
                                         "name": "interface",
                                         "const": "fabric"
                                     },
                                     {
-                                        "name": "schema",
-                                        "const": null
+                                        "name": "sql",
+                                        "const":  "delete from {{__LU_NAME}}.{{SOURCE_TABLE}}"
                                     },
                                     {
                                         "name": "table",
-                                        "const": null
-                                    },
-                                    {
-                                        "name": "keys",
-                                        "const": [
-                                            "{{KEY}}"
-                                        ]
+                                        "schema": {
+                                            "type": "string"
+                                        }
                                     }
                                 ],
                                 "outputs": []
@@ -146,13 +128,13 @@
                 {
                     "name": "Instance should not be synced",
                     "dependsOnList": [
-                        "Input"
+                        "Get TDM_SYNC_SOURCE_DATA"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
-                        {
+                         {
                             "name": "Check if first Sync",
                             "actorType": {
                                 "parentType": "LuFunction",
@@ -194,12 +176,26 @@
         {
             "stages": [
                 {
-                    "name": "Init Indicator",
+                    "name": "Input",
                     "dependsOnList": [
                         "Check Variable And Delete Root Table"
                     ],
                     "isLast": 0,
                     "actors": [
+                        {
+                            "name": "PopulationArgs",
+                            "actorType": {
+                                "parentType": "PopulationArgs",
+                                "readOnly": true,
+                                "inputs": [
+                                    {
+                                        "name": "{{KEY}}",
+                                        "schema": {}
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
                         {
                             "name": "Init Instance As Not Found",
                             "actorType": {
@@ -261,7 +257,7 @@
                 {
                     "name": "Source",
                     "dependsOnList": [
-                        "Init Indicator"
+                        "Input"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -296,17 +292,16 @@
                                 "inputs": [
                                     {
                                         "name": "luName",
-                                        "const": null
+                                        "const": "{{__LU_NAME}}"
                                     },
                                     {
                                         "name": "functionName",
-                                        "const": "getLuTableColumns"
-													
+                                        "const": "getLuTableColumns"				
                                     },
                                     {
                                         "name": "table",
-                                        "const": null
-                                    }
+                                        "const": "{{SOURCE_TABLE}}"
+                                    }   
                                 ],
                                 "outputs": [
                                     {
@@ -350,6 +345,20 @@
                                 ],
                                 "outputs": []
                             }
+						},
+                        {
+                            "name": "Get MASKING_CACHE_TTL",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "MASKING_CACHE_TTL",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
                         }
                     ]
                 },
@@ -367,7 +376,7 @@
         {
             "stages": [
                 {
-                    "name": "Mask Data Based On Catalog",
+                    "name": "Catalog masking",
                     "dependsOnList": [
                         "Source"
                     ],
@@ -379,20 +388,31 @@
                                 "parentType": "CatalogMaskingMapper",
                                 "inputs": [
                                     {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "mtable",
+                                        "schema": {}
+                                    },
+                                    {
                                         "name": "dataPlatform",
                                         "const": "{{SOURCE_INTERFACE}}"
                                     },
                                     {
-                                        "name": "interface",
-                                        "const": null
+                                        "name": "schema",
+                                        "const": "{{SOURCE_SCHEMA}}"
                                     },
                                     {
                                         "name": "dataset",
                                         "const": "{{SOURCE_TABLE}}"
                                     },
                                     {
-                                        "name": "schema",
-                                        "const": "{{SOURCE_SCHEMA}}"
+                                        "name": "ttl",
+                                        "schema": {
+                                            "type": "number"
+                                        },
+                                        "mandatory": false
                                     }
                                 ],
                                 "outputs": []
@@ -401,7 +421,7 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 1",
+                    "name": "Stage 2",
                     "dependsOnList": [
                         "Do Nothing"
                     ],
@@ -416,7 +436,7 @@
                 {
                     "name": "Set instance As Found",
                     "dependsOnList": [
-                        "Mask Data Based On Catalog"
+                        "Catalog masking"
                     ],
                     "isLast": 0,
                     "actors": [
@@ -443,9 +463,9 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 2",
+                    "name": "Do Nothing 1",
                     "dependsOnList": [
-                        "Do Nothing 1"
+                        "Stage 2"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -504,9 +524,9 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 3",
+                    "name": "Do Nothing 2",
                     "dependsOnList": [
-                        "Do Nothing 2"
+                        "Do Nothing 1"
                     ],
                     "isLast": 1,
                     "isTransactional": false,
@@ -562,9 +582,9 @@
                     ]
                 },
                 {
-                    "name": "Do Nothing 4",
+                    "name": "Do Nothing 3",
                     "dependsOnList": [
-                        "Do Nothing 3"
+                        "Do Nothing 2"
                     ],
                     "isLast": 0,
                     "isTransactional": false,
@@ -574,37 +594,6 @@
         }
     ],
     "connections": [
-        {
-			"leftPort": {
-				"actor": "flowArgs",
-				"name": "{{KEY}}"
-			},
-			"rightPort": {
-				"actor": "PopulationArgs",
-				"name": "{{KEY}}"
-			 
-			}
-		},
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "iid"
-            },
-            "rightPort": {
-                "actor": "Check if Instance Was Not Found In Source",
-                "name": "iid"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "PopulationArgs",
-                "name": "parent_rows"
-            },
-            "rightPort": {
-                "actor": "Query",
-                "name": "parent_rows"
-            }
-        },
         {
             "leftPort": {
                 "actor": "Get Variable TDM_SYNC_SOURCE_DATA",
@@ -667,32 +656,32 @@
         },
         {
             "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "iid"
+            },
+            "rightPort": {
+                "actor": "Check if Instance Was Not Found In Source",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PopulationArgs",
+                "name": "parent_rows"
+            },
+            "rightPort": {
+                "actor": "Query",
+                "name": "parent_rows"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Query",
                 "name": "result"
             },
             "rightPort": {
                 "actor": "Catalog Masking Mapper",
                 "name": "values"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "schema"
-            },
-            "rightPort": {
-                "actor": "Get Tables Fields",
-                "name": "luName"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "table"
-            },
-            "rightPort": {
-                "actor": "Get Tables Fields",
-                "name": "table"
             }
         },
         {
@@ -737,6 +726,16 @@
         },
         {
             "leftPort": {
+                "actor": "Get MASKING_CACHE_TTL",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Catalog Masking Mapper",
+                "name": "ttl"
+            }
+        },
+        {
+            "leftPort": {
                 "actor": "Catalog Masking Mapper",
                 "name": "values"
             },
@@ -759,11 +758,11 @@
         {
             "leftPort": {
                 "actor": "flowArgs",
-                "name": "schema"
+                "name": "{{KEY}}"
             },
             "rightPort": {
-                "actor": "Delete Root Table",
-                "name": "schema"
+                "actor": "PopulationArgs",
+                "name": "{{KEY}}"
             }
         },
         {

@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TableObject xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<TableObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>task_ref_exe_stats</Name>
   <ID>tbl_task_ref_exe_stats</ID>
+  <ColumnsCollation>BINARY</ColumnsCollation>
+  <FullTextSearch>false</FullTextSearch>
   <Columns>
     <Column name="task_execution_id" id="task_execution_id" index="0" datatype="integer" mandatory="true" />
     <Column name="task_ref_table_id" id="task_ref_table_id" index="1" datatype="integer" />
@@ -13,9 +15,18 @@
     <Column name="lu_name" id="lu_name" index="7" datatype="text" />
     <Column name="start_time" id="start_time" index="8" datatype="text" />
     <Column name="end_time" id="end_time" index="9" datatype="text" />
+    <Column name="table_filter" id="table_filter" index="10" datatype="Text" />
+    <Column name="filter_type" id="filter_type" index="11" datatype="Text" />
+    <Column name="filter_parameters" id="filter_parameters" index="12" datatype="Text" />
+    <Column name="version_task_execution_id" id="version_task_execution_id" index="13" datatype="Text" />
   </Columns>
-  <IndexesList />
-  <EnrichmentList />
-  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00" />
-  <TriggersList />
+  <IndexesList>
+  </IndexesList>
+  <EnrichmentList>
+  </EnrichmentList>
+  <LazyDataUpdate syncMethod="Inherited" performEvery="1.00:00:00">
+    <DecisionFunction></DecisionFunction>
+  </LazyDataUpdate>
+  <TriggersList>
+  </TriggersList>
 </TableObject>

@@ -1,0 +1,257 @@
+{
+    "tags": [
+        "Medoid",
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "kubeCreateNamespace",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "kubeCreateNamespace"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "kubeCreateSecret",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "kubeCreateSecret"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "pg-pass",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "pg-host",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "pg-db",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "pg-port",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "pg-user",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "kubeCreatePVC",
+                            "minHeight": 110,
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "kubeCreatePVC"
+                                    },
+                                    {
+                                        "name": "namespace",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "storage-size",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "kubeCreateNamespace",
+                "name": "namespace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "kubeCreateSecret",
+                "name": "namespace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "pg-pass"
+            },
+            "rightPort": {
+                "actor": "kubeCreateSecret",
+                "name": "pg-pass"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "pg-host"
+            },
+            "rightPort": {
+                "actor": "kubeCreateSecret",
+                "name": "pg-host"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "pg-db"
+            },
+            "rightPort": {
+                "actor": "kubeCreateSecret",
+                "name": "pg-db"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "pg-port"
+            },
+            "rightPort": {
+                "actor": "kubeCreateSecret",
+                "name": "pg-port"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "pg-user"
+            },
+            "rightPort": {
+                "actor": "kubeCreateSecret",
+                "name": "pg-user"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "namespace"
+            },
+            "rightPort": {
+                "actor": "kubeCreatePVC",
+                "name": "namespace"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "storage-size"
+            },
+            "rightPort": {
+                "actor": "kubeCreatePVC",
+                "name": "storage-size"
+            }
+        }
+    ]
+}

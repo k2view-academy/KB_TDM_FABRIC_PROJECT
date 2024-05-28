@@ -1,0 +1,3338 @@
+{
+    "tags": [
+        "TDM"
+    ],
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "START: Backup Project",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PROJECT_DIR",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_DIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Get Current time",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 12",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Backup Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${projDir}\\.."
+                                    },
+                                    {
+                                        "name": "projDir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "PROJECT_FOLDER_NAME",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_FOLDER_NAME"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Format date and time",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "yyyyMMdd_HH'h'mm"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 14",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Compress Param",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "-cvzf"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Bkp folder and file name",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${bkp_path}\\${proj_name}_bkp_${date}.tar.gz"
+                                    },
+                                    {
+                                        "name": "bkp_path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "proj_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "date",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "-C Param",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "-C"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Implementation Folder1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "Implementation"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 8",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Prepare bkp command",
+                            "minHeight": 239,
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 16",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Execute BKP command",
+                            "actorType": {
+                                "parentType": "Exec",
+                                "inputs": [
+                                    {
+                                        "name": "command",
+                                        "const": "tar"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Output bkp location",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "BACKUP SAVED ON ${bkp_file_name}"
+                                    },
+                                    {
+                                        "name": "bkp_file_name",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "DONE: Backup Project",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Done Phase 1",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DONE BACKUP"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "START: Delete files",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Delete file ignore list",
+                            "actorType": {
+                                "parentType": "ConstTable",
+                                "inputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "filename": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "is_file": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "excluded_files": {
+                                                        "type": "string"
+                                                    },
+                                                    "included_files": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "filename": "TaskExecutionUtils",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TaskValidationsUtils",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDMRef",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TdmSharedUtils",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TemplateUtils",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "StatsLoader.java",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": true,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDMPopulationArgs.java",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": true,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDMSourceDbQuery.java",
+                                                "type": "SharedJava",
+                                                "active": true,
+                                                "is_file": true,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "custom_TDM_Tasks",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_BusinessEntities",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_DataCenters",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_Environments",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_Permissions",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_Products",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_ReserveEntities",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_Tasks",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_utils",
+                                                "type": "Webservices",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\TDMTemplates",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "\"TDMSeqList.actor\",\"TDMSeqSrc2TrgMapping.actor\",\"TDMFilterOutTargetTables.actor\",\"TDMTargetTablesNames.actor\"",
+                                                "included_files": "\"*.flow\",\"*.actor\""
+                                            },
+                                            {
+                                                "filename": "TDM\\CustomLogic",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "\"CustomLogicFlows.actor\"",
+                                                "included_files": "\"*.flow\",\"*.actor\""
+                                            },
+                                            {
+                                                "filename": "TDM\\General",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\GenerateData",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\Init",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\Mtables",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\Reserve",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\TDMDBTables",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\TDMLUInit",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM\\TDMOrchestrator.flow",
+                                                "type": "Shared_Broadway",
+                                                "active": true,
+                                                "is_file": true,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM",
+                                                "type": "LogicalUnit",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            },
+                                            {
+                                                "filename": "TDM_LIBRARY",
+                                                "type": "LogicalUnit",
+                                                "active": true,
+                                                "is_file": false,
+                                                "excluded_files": "",
+                                                "included_files": ""
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "filename": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "is_file": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "excluded_files": {
+                                                        "type": "string"
+                                                    },
+                                                    "included_files": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 44",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Filetype Location Lookup",
+                            "actorType": {
+                                "parentType": "Lookup",
+                                "inputs": [
+                                    {
+                                        "name": "lookupKeys",
+                                        "const": [
+                                            "type"
+                                        ]
+                                    },
+                                    {
+                                        "name": "lookupData",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "path": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "type": "SharedJava",
+                                                "path": "\\Implementation\\SharedObjects\\Java\\src\\com\\k2view\\cdbms\\usercode\\common"
+                                            },
+                                            {
+                                                "type": "Shared_Broadway",
+                                                "path": "\\Implementation\\SharedObjects\\Broadway"
+                                            },
+                                            {
+                                                "type": "Webservices",
+                                                "path": "\\Implementation\\LogicalUnits\\k2_ws\\Java\\src\\com\\k2view\\cdbms\\usercode\\lu\\k2_ws"
+                                            },
+                                            {
+                                                "type": "LogicalUnit",
+                                                "path": "\\Implementation\\LogicalUnits"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "type",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "path": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Create Include List if supplied",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var included = \"\";\r\nif(included_files != \"\") {\r\n    included = \" -Include \" + included_files;\r\n}\r\nincluded",
+                                            "script": "var included = \"\";\n\nif (included_files != \"\") {\n  included = \" -Include \" + included_files;\n}\n\nincluded;"
+                                        }
+                                    },
+                                    {
+                                        "name": "included_files",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Create Exclude List if supplied",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var execluded = \"\";\r\nif(execluded_files != \"\") {\r\n    execluded = \" -Exclude \" + execluded_files;\r\n}\r\nexecluded",
+                                            "script": "var execluded = \"\";\n\nif (execluded_files != \"\") {\n  execluded = \" -Exclude \" + execluded_files;\n}\n\nexecluded;"
+                                        }
+                                    },
+                                    {
+                                        "name": "execluded_files",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 45",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Prepare delete command",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "Remove-Item -Path '${projdir}${path}\\${file}' ${include} ${exclude} -Recurse"
+                                    },
+                                    {
+                                        "name": "projdir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "file",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "include",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "exclude",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 46",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Delete files",
+                            "actorType": {
+                                "parentType": "Exec",
+                                "inputs": [
+                                    {
+                                        "name": "command",
+                                        "const": "powershell"
+                                    },
+                                    {
+                                        "name": "params",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 47",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "END: Delete Files",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Done Phase 2",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DONE DELETE OLD OBJECTS"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "START: Extract Library",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Extract Ignore List",
+                            "actorType": {
+                                "parentType": "ConstTable",
+                                "inputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "file": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "file": "CustomLogicFlows.actor",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "TDMSeqList.actor",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "TDMSeqSrc2TrgMapping.actor",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "TDMFilterOutTargetTables.actor",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "TDMTargetTablesNames.actor",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "FABRIC_TDM_LIBRARY.k2proj",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "ItemsProperties.k2projItems.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "POSTGRESQL_ADMIN.k2dbConn.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "TDM.k2dbConn.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "DB_CASSANDRA.k2dbConn.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "CASSANDRA_LD.k2interface.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "FabricRedis.k2interface.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "SharedGlobals.java",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "common/SharedLogic.java",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "Environments.k2fabEnv.xml",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "ChildLink.csv",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "LuParams.csv",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "MigrateList.csv",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "MigrateListQueryFormats.csv",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "PostProcessList.csv",
+                                                "active": true
+                                            },
+                                            {
+                                                "file": "RefList.csv",
+                                                "active": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "file": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Prepare Ignore List",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Check ignore active",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Build Ignore Array",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 53",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "K2export location",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://${library_file_location}"
+                                    },
+                                    {
+                                        "name": "library_file_location",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get K2Exprot filename",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Temp Folder",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 7",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "K2Export File!!!",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "PROJ_DIR Interface",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://${proj_dir}"
+                                    },
+                                    {
+                                        "name": "proj_dir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 19",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Extract TDM Library",
+                            "actorType": {
+                                "parentType": "Unzip",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 4",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check Not Null",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotNull",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Split and build folder list",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var pathArr = path.split(\"/\");\r\nvar outArr = [];\r\n\r\nfor(var i=0; i<pathArr.length; i++) {\r\n    if(i==0) {\r\n        outArr.push(pathArr[i]);\r\n    } else {\r\n        outArr.push( (outArr[i-1] + \"/\" + pathArr[i]) );\r\n    }\r\n}\r\n\r\noutArr;",
+                                            "script": "var pathArr = path.split(\"/\");\nvar outArr = [];\n\nfor (var i = 0; i < pathArr.length; i++) {\n  if (i == 0) {\n    outArr.push(pathArr[i]);\n  } else {\n    outArr.push(outArr[i - 1] + \"/\" + pathArr[i]);\n  }\n}\n\noutArr;"
+                                        }
+                                    },
+                                    {
+                                        "name": "path",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 11",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Create folder if not exists",
+                            "actorType": {
+                                "parentType": "md",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 13",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Equals1",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "integer"
+                                        },
+                                        "const": 1
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 3",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "File Name",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 15",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check if not in ignore",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "if(ignoreList.indexOf(fileName)>-1) {\r\n    false;\r\n} else {\r\n    true;\r\n}",
+                                            "script": "if (ignoreList.indexOf(fileName) > -1) {\n  false;\n} else {\n  true;\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "fileName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ignoreList",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 18",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build path and filename",
+                            "actorType": {
+                                "parentType": "Concat",
+                                "inputs": [
+                                    {
+                                        "name": "delimiter",
+                                        "const": "/"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 5",
+                    "dependsOnList": [],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Save file from Library",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "DONE: Extract Library",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Done Phase 3",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DONE EXTRACT K2EXPORT"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "START: Update Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "SharedGlobals Path",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "SharedObjects/Java/src/com/k2view/cdbms/usercode/common"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 2",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Implementation Folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://${ProjDir}/Implementation/${globalsPath}"
+                                    },
+                                    {
+                                        "name": "ProjDir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "globalsPath",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 17",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Read Globals File",
+                            "actorType": {
+                                "parentType": "FileRead",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "SharedGlobals.java"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 21",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Convert to String",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "New Globals List",
+                            "actorType": {
+                                "parentType": "ConstTable",
+                                "inputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "global_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    },
+                                                    "final": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "global_name": "TDM_DELETE_TABLES_PREFIX",
+                                                "description": "TDM added an automatic generation of the target LU table to support the deletion of an entity by a TDM task. This Global defines the prefix for the generated target LU tables.",
+                                                "value": "_TAR",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "TDM_BATCH_LIMIT",
+                                                "description": "Limit the number of entities to be populated into the TDM execution tables for a task execution. By default, the number of entities for a task execution is unlimited (-1)",
+                                                "value": "-1",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "TDM_SEQ_REPORT",
+                                                "description": "When set to true (the default value), the task execution populates the TDM_SEQ_MAPPING ta ble and generates the Replace Sequence Summary Report tab in the task execution report. This Global can be set to false to avoid the population of TDM_SEQ_MAPPING and the generation of the Replace Sequence Summary Report for a better performance.",
+                                                "value": "true",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "TDM_POPULATE_JMX_STATS",
+                                                "description": "Set this Global to true to enable the execution of populationJMX populatio n flow on TASK_EXECUTION TDM LU table.",
+                                                "value": "false",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "SEQ_CACHE_INTERFACE",
+                                                "description": "Starting from Fabric V7.2, SQLite and PostgreSQL are also supported as Fabric operational DBs in addition to Cassandra. If you use the TDM PG DB as the operational (system) DB, update this Global accordingly and set it to TDM.",
+                                                "value": "DB_CASSANDRA",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "TDM_PARAMETERS_SEPARATOR",
+                                                "description": "The separator to be used for parsing the values of Parameters",
+                                                "value": "<#>",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "SEQ_DROP_KEYSPACE",
+                                                "description": "Indication whether to drop existing Masking Keyspace when deploying TDM LU",
+                                                "value": "false",
+                                                "final": true
+                                            },
+                                            {
+                                                "global_name": "SEQ_DO_TRUNCATE",
+                                                "description": "Indication whether to truncate the Masking Keyspace when deploying TDM LU",
+                                                "value": "false",
+                                                "final": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "global_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 22",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Prepare new Globals file",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var foundEOF = false;\r\nvar inc = 0;\r\nvar streamLen = stream.length;\r\nvar ident = '\t';\r\n\r\nwhile(!foundEOF) {\r\n    if( stream.substring( streamLen-inc, streamLen-(inc+1) ) ==\"}\") {\r\n        foundEOF = true;\r\n    }\r\n    inc++;\r\n\r\n    if(inc==1000) { break; }\r\n}\r\n\r\nvar newFileContent = stream.substring(0, stream.length-inc);\r\n\r\nfor(var i=0; i<newGlobals.length; i++) {\r\n\r\n    if(newFileContent.indexOf(newGlobals[i].global_name)==-1) {\r\n        newFileContent += ident+\"@desc(\\\"\"+newGlobals[i].description+\"\\\")\"+\"\\r\\n\";\r\n        newFileContent += ident+\"@category(\\\"TDM\\\")\"+\"\\r\\n\";\r\n        if (newGlobals[i].final == true) {\r\n            newFileContent += ident+\"public static final String \"+newGlobals[i].global_name+\" = \\\"\"+newGlobals[i].value+\"\\\";\\r\\n\";\r\n        } else {\r\n            newFileContent += ident+\"public static String \"+newGlobals[i].global_name+\" = \\\"\"+newGlobals[i].value+\"\\\";\\r\\n\";\r\n        }\r\n    }\r\n}\r\n\r\nnewFileContent += \"\\r\\n\\r\\n\\r\\n}\\r\\n\";\r\n\r\nnewFileContent;",
+                                            "script": "var foundEOF = false;\nvar inc = 0;\nvar streamLen = stream.length;\nvar ident = '\t';\n\nwhile (!foundEOF) {\n  if (stream.substring(streamLen - inc, streamLen - (inc + 1)) == \"}\") {\n    foundEOF = true;\n  }\n\n  inc++;\n\n  if (inc == 1000) {\n    break;\n  }\n}\n\nvar newFileContent = stream.substring(0, stream.length - inc);\n\nfor (var i = 0; i < newGlobals.length; i++) {\n  if (newFileContent.indexOf(newGlobals[i].global_name) == -1) {\n    newFileContent += ident + \"@desc(\\\"\" + newGlobals[i].description + \"\\\")\" + \"\\r\\n\";\n    newFileContent += ident + \"@category(\\\"TDM\\\")\" + \"\\r\\n\";\n\n    if (newGlobals[i].final == true) {\n      newFileContent += ident + \"public static final String \" + newGlobals[i].global_name + \" = \\\"\" + newGlobals[i].value + \"\\\";\\r\\n\";\n    } else {\n      newFileContent += ident + \"public static String \" + newGlobals[i].global_name + \" = \\\"\" + newGlobals[i].value + \"\\\";\\r\\n\";\n    }\n  }\n}\n\nnewFileContent += \"\\r\\n\\r\\n\\r\\n}\\r\\n\";\nnewFileContent;"
+                                        }
+                                    },
+                                    {
+                                        "name": "stream",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "newGlobals",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "global_name": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 23",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Save new globals file",
+                            "actorType": {
+                                "parentType": "FileWrite",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "SharedGlobals.java"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "DONE: Update Globals",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Done Phase 4",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DONE COPYING NEW GLOBALS"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "START: Override Implementation",
+                    "dependsOnList": [
+                        "DONE: Update Globals"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check override Implementation",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true,
+                                        "isDefault": true
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "IgnoreLUs",
+                            "actorType": {
+                                "parentType": "ConstTable",
+                                "inputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "luname": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "const": [
+                                            {
+                                                "luname": "k2_ref",
+                                                "active": true
+                                            },
+                                            {
+                                                "luname": "k2_ws",
+                                                "active": true
+                                            },
+                                            {
+                                                "luname": "TDM",
+                                                "active": true
+                                            },
+                                            {
+                                                "luname": "TDM_LIBRARY",
+                                                "active": true
+                                            },
+                                            {
+                                                "luname": "TDM_Reference",
+                                                "active": true
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "table",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "luname": {
+                                                        "type": "string"
+                                                    },
+                                                    "active": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 34",
+                    "dependsOnList": [
+                        "DONE: Update Globals"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 25",
+                    "dependsOnList": [
+                        "START: Override Implementation"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Check Active",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "Equals",
+                                "inputs": [
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "boolean"
+                                        },
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Build LU array list",
+                            "actorType": {
+                                "parentType": "ArrayBuilder",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "array",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 35",
+                    "dependsOnList": [
+                        "Stage 34"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 26",
+                    "dependsOnList": [
+                        "Stage 25"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "PROJECT_DIR1",
+                            "actorType": {
+                                "parentType": "SysEnv",
+                                "inputs": [
+                                    {
+                                        "name": "name",
+                                        "const": "PROJECT_DIR"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 36",
+                    "dependsOnList": [
+                        "Stage 35"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 27",
+                    "dependsOnList": [
+                        "Stage 26"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build LU location folder",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://${ProjDir}/Implementation/LogicalUnits/"
+                                    },
+                                    {
+                                        "name": "ProjDir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TDM_LIBRARY Tables",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "file://${ProjDir}/Implementation/LogicalUnits/TDM_LIBRARY/Tables/"
+                                    },
+                                    {
+                                        "name": "ProjDir",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 37",
+                    "dependsOnList": [
+                        "Stage 36"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 28",
+                    "dependsOnList": [
+                        "Stage 27"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "List LU Folders",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "."
+                                    },
+                                    {
+                                        "name": "directories",
+                                        "const": true
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    },
+                                                    "createTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastModifiedTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastAccessTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "directory": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 38",
+                    "dependsOnList": [
+                        "Stage 37"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 29",
+                    "dependsOnList": [
+                        "Stage 28"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Check ignore LU list",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "JavaScript",
+                                "inputs": [
+                                    {
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "if(ignoreList.indexOf(fileName)>-1) {\r\n    false;\r\n} else {\r\n    true;\r\n}",
+                                            "script": "if (ignoreList.indexOf(fileName) > -1) {\n  false;\n} else {\n  true;\n}"
+                                        }
+                                    },
+                                    {
+                                        "name": "fileName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ignoreList",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "List Library Folder files",
+                            "actorType": {
+                                "parentType": "ls",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    },
+                                    {
+                                        "name": "path",
+                                        "const": "."
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "size": {
+                                                        "type": "integer"
+                                                    },
+                                                    "createTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastModifiedTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "lastAccessTime": {
+                                                        "type": "integer"
+                                                    },
+                                                    "directory": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 39",
+                    "dependsOnList": [
+                        "Stage 38"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 30",
+                    "dependsOnList": [
+                        "Stage 29"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "FROM",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "TDM_LIBRARY/Tables/${filename}"
+                                    },
+                                    {
+                                        "name": "filename",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "TO",
+                            "actorType": {
+                                "parentType": "StringFormat",
+                                "inputs": [
+                                    {
+                                        "name": "format",
+                                        "const": "${luname}/Tables/${filename}"
+                                    },
+                                    {
+                                        "name": "luname",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "filename",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 40",
+                    "dependsOnList": [
+                        "Stage 39"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 31",
+                    "dependsOnList": [
+                        "Stage 30"
+                    ],
+                    "isLast": 1,
+                    "actors": [
+                        {
+                            "name": "Copy from TDM_LIBRARY to LU",
+                            "actorType": {
+                                "parentType": "cp",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": null
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Stage 41",
+                    "dependsOnList": [
+                        "Stage 40"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Stage 32",
+                    "dependsOnList": [
+                        "Stage 31"
+                    ],
+                    "isLast": 1,
+                    "actors": []
+                },
+                {
+                    "name": "Stage 42",
+                    "dependsOnList": [
+                        "Stage 41"
+                    ],
+                    "isLast": 1,
+                    "isTransactional": false,
+                    "actors": []
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "DONE: Override Implementation",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Done Phase 5",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "DONE UPDATING USER IMPLEMENTATION"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "COMPLETE UPGRADE",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Process Complete",
+                            "actorType": {
+                                "parentType": "Const",
+                                "inputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "UPGRADE PROCESS COMPLETED"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "name": "value",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Implementation Folder",
+                "name": "ProjDir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Backup Folder",
+                "name": "projDir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Prepare bkp command",
+                "name": "input"
+            },
+            "arrayPosition": 3
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Prepare delete command",
+                "name": "projdir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "PROJ_DIR Interface",
+                "name": "proj_dir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Current time",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format date and time",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Backup Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Bkp folder and file name",
+                "name": "bkp_path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_FOLDER_NAME",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Bkp folder and file name",
+                "name": "proj_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format date and time",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Bkp folder and file name",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Compress Param",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Prepare bkp command",
+                "name": "input"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Bkp folder and file name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Prepare bkp command",
+                "name": "input"
+            },
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Bkp folder and file name",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Output bkp location",
+                "name": "bkp_file_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "-C Param",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Prepare bkp command",
+                "name": "input"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "Implementation Folder1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Prepare bkp command",
+                "name": "input"
+            },
+            "arrayPosition": 4
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare bkp command",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Execute BKP command",
+                "name": "params"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Delete file ignore list",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Filetype Location Lookup",
+                "name": "type"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "type"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Delete file ignore list",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Prepare delete command",
+                "name": "file"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "filename"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Delete file ignore list",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Create Exclude List if supplied",
+                "name": "execluded_files"
+            },
+            "path": [
+                "excluded_files"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Delete file ignore list",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Create Include List if supplied",
+                "name": "included_files"
+            },
+            "path": [
+                "included_files"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Filetype Location Lookup",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Prepare delete command",
+                "name": "path"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "path"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Create Include List if supplied",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Prepare delete command",
+                "name": "include"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Create Exclude List if supplied",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Prepare delete command",
+                "name": "exclude"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare delete command",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Delete files",
+                "name": "in"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Extract Ignore List",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Check ignore active",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Extract Ignore List",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Build Ignore Array",
+                "name": "input"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "file"
+            ],
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Build Ignore Array",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Check if not in ignore",
+                "name": "ignoreList"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "K2export location",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "K2Export File!!!",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get K2Exprot filename",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "K2Export File!!!",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Temp Folder",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build path and filename",
+                "name": "elements"
+            },
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "K2Export File!!!",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Extract TDM Library",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJ_DIR Interface",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Create folder if not exists",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJ_DIR Interface",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Save file from Library",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Extract TDM Library",
+                "name": "files"
+            },
+            "rightPort": {
+                "actor": "Save file from Library",
+                "name": "stream"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "stream"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Extract TDM Library",
+                "name": "files"
+            },
+            "rightPort": {
+                "actor": "Check Not Null",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "path"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Extract TDM Library",
+                "name": "files"
+            },
+            "rightPort": {
+                "actor": "Split and build folder list",
+                "name": "path"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "path"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Extract TDM Library",
+                "name": "files"
+            },
+            "rightPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "Extract TDM Library",
+                "name": "files"
+            },
+            "rightPort": {
+                "actor": "Build path and filename",
+                "name": "elements"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "path"
+            ],
+            "arrayPosition": 1
+        },
+        {
+            "leftPort": {
+                "actor": "Split and build folder list",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Create folder if not exists",
+                "name": "path"
+            },
+            "iterate": "Iterate"
+        },
+        {
+            "leftPort": {
+                "actor": "Create folder if not exists",
+                "name": "affected"
+            },
+            "rightPort": {
+                "actor": "Equals1",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build path and filename",
+                "name": "elements"
+            },
+            "arrayPosition": 2
+        },
+        {
+            "leftPort": {
+                "actor": "File Name",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Check if not in ignore",
+                "name": "fileName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build path and filename",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Save file from Library",
+                "name": "path"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "SharedGlobals Path",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Implementation Folder",
+                "name": "globalsPath"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Implementation Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Read Globals File",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Implementation Folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Save new globals file",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Read Globals File",
+                "name": "stream"
+            },
+            "rightPort": {
+                "actor": "Convert to String",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Convert to String",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Prepare new Globals file",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "New Globals List",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Prepare new Globals file",
+                "name": "newGlobals"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Prepare new Globals file",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Save new globals file",
+                "name": "stream"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "IgnoreLUs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Check Active",
+                "name": "a"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "active"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "IgnoreLUs",
+                "name": "table"
+            },
+            "rightPort": {
+                "actor": "Build LU array list",
+                "name": "input"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "luname"
+            ],
+            "arrayPosition": 0
+        },
+        {
+            "leftPort": {
+                "actor": "Build LU array list",
+                "name": "array"
+            },
+            "rightPort": {
+                "actor": "Check ignore LU list",
+                "name": "ignoreList"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "Build LU location folder",
+                "name": "ProjDir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "PROJECT_DIR1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "TDM_LIBRARY Tables",
+                "name": "ProjDir"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build LU location folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "List LU Folders",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build LU location folder",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Copy from TDM_LIBRARY to LU",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TDM_LIBRARY Tables",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "List Library Folder files",
+                "name": "interface"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "List LU Folders",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Check ignore LU list",
+                "name": "fileName"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "List LU Folders",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TO",
+                "name": "luname"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "List Library Folder files",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "FROM",
+                "name": "filename"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "List Library Folder files",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "TO",
+                "name": "filename"
+            },
+            "iterate": "Iterate",
+            "path": [
+                "name"
+            ]
+        },
+        {
+            "leftPort": {
+                "actor": "FROM",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Copy from TDM_LIBRARY to LU",
+                "name": "from"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "TO",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Copy from TDM_LIBRARY to LU",
+                "name": "to"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Output bkp location",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Pre-Process"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Done Phase 1",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Phase1"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Done Phase 2",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Phase2"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "library_file_location"
+            },
+            "rightPort": {
+                "actor": "K2export location",
+                "name": "library_file_location"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "library_file_name"
+            },
+            "rightPort": {
+                "actor": "Get K2Exprot filename",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Done Phase 3",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Phase3"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Done Phase 4",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Phase4"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "override_user_implementation"
+            },
+            "rightPort": {
+                "actor": "Check override Implementation",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Done Phase 5",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Phase5"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Process Complete",
+                "name": "value"
+            },
+            "rightPort": {
+                "actor": "flowArgs",
+                "name": "Process"
+            }
+        }
+    ]
+}

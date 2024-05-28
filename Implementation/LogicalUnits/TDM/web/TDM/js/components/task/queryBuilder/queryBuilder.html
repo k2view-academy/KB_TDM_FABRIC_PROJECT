@@ -79,7 +79,7 @@
                 required
                 ng-disabled="disablechange"
                 ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
-                ng-if="rule.type === 'number'"
+                ng-if="!rule.validValues || rule.validValues.length <=0 || rule.validValues == '\\N'"
                 ng-init="condition = rule.condition"
                 style="margin-left: 5px;width: auto;"
                 ng-options="c.id as c.name for c in conditions"
@@ -92,7 +92,7 @@
                 required
                 ng-disabled="disablechange"
                 ng-change="disableIfNull(rule, condition); changeData(rule,rule.data); changeCondition(rule,condition)"
-                ng-if="rule.type !== 'number'"
+                ng-if="rule.validValues != '\\N' && rule.validValues.length > 0"
                 ng-init="condition = rule.condition"
                 style="margin-left: 5px;width: auto;"
                 ng-options="c.name as c.name for c in comboConditions"

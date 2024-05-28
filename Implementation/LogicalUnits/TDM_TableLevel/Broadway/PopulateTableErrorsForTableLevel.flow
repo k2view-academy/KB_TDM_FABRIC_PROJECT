@@ -1,0 +1,785 @@
+{
+    "levels": [
+        {
+            "stages": [
+                {
+                    "name": "Prepare the Data",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Get Current Time",
+                            "actorType": {
+                                "parentType": "Now",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get the Error Fields",
+                            "actorType": {
+                                "parentType": "ErrorFields",
+                                "inputs": [],
+                                "outputs": [
+                                    {
+                                        "name": "inputs",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "interface": {
+                                                    "type": "string"
+                                                },
+                                                "luType": {
+                                                    "type": "string"
+                                                },
+                                                "parallel": {
+                                                    "type": "boolean"
+                                                },
+                                                "stop_on_error": {
+                                                    "type": "boolean"
+                                                },
+                                                "syncMode": {
+                                                    "type": "string"
+                                                },
+                                                "iid": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Format the actor's parameters",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Build string from input parameters",
+                            "minHeight": 79,
+                            "actorType": {
+                                "parentType": "CsvBuilder",
+                                "inputs": [
+                                    {
+                                        "name": "header",
+                                        "const": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Format the current date",
+                            "actorType": {
+                                "parentType": "DateFormat",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Task Exec ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TDM_TASK_EXE_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Executor Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "USER_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Table Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TARGET_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get Source Entity ID",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "SOURCE_ENTITY_ID",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Entity Status to Failure",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "failed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Load Data to Detailed Error table",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Load Data To Error Table",
+                            "actorType": {
+                                "parentType": "DbLoad",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "schema",
+                                        "const": "@TDMDB_SCHEMA@"
+                                    },
+                                    {
+                                        "name": "table",
+                                        "const": "task_exe_error_detailed"
+                                    },
+                                    {
+                                        "name": "fields",
+                                        "const": [
+                                            "task_execution_id",
+                                            "lu_name",
+                                            "entity_id",
+                                            "iid",
+                                            "target_entity_id",
+                                            "error_category",
+                                            "error_code",
+                                            "error_message",
+                                            "creation_date",
+                                            "flow_name",
+                                            "stage_name",
+                                            "actor_name",
+                                            "actor_parameters"
+                                        ]
+                                    },
+                                    {
+                                        "name": "dialect",
+                                        "const": "postgres"
+                                    },
+                                    {
+                                        "name": "task_execution_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "const": "TDM_TableLevel",
+                                        "name": "lu_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "iid",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "target_entity_id",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "const": "Rejected Table",
+                                        "name": "error_category",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "error_code",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "error_message",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "creation_date",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "flow_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "stage_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "actor_name",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "actor_parameters",
+                                        "const": "",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "isDefault": true
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update TDMDB table for Reference Table",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "UPDATE @TDMDB_SCHEMA@.TASK_REF_EXE_STATS \r\nSET execution_status = 'failed', \r\nerror_msg = ${errorMsg},\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC', \r\nupdated_by = ${userName}\r\nWHERE task_execution_id = ${taskExecutionID} \r\nand trim(lower(ref_table_name))= lower(${refTableName})"
+                                    },
+                                    {
+                                        "name": "taskExecutionID",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "refTableName",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "errorMsg",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "userName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Entity Status to Failed",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "ENTITY_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "failed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Populate Task Execution Entities",
+                            "actorType": {
+                                "parentType": "PopulateTaskExecutionEntities_Actor",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "PopulateTaskExecutionEntitiesForTables"
+                                    },
+                                    {
+                                        "name": "idType",
+                                        "const": "REFERENCE"
+                                    },
+                                    {
+                                        "const": "TDM_TableLevel",
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Set Record Status to Failed",
+                            "actorType": {
+                                "parentType": "FabricSet",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "RECORD_STATUS",
+                                        "isDefault": false
+                                    },
+                                    {
+                                        "name": "value",
+                                        "const": "failed",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Get LU Name",
+                            "actorType": {
+                                "parentType": "FabricSetRead",
+                                "inputs": [
+                                    {
+                                        "name": "key",
+                                        "const": "TABLES_LU_NAME",
+                                        "isDefault": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "Update Table Entity",
+                    "dependsOnList": [
+                        "Load Data to Detailed Error table"
+                    ],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "Table Started?",
+                            "condition": "result",
+                            "actorType": {
+                                "parentType": "NotEquals",
+                                "inputs": [
+                                    {
+                                        "name": "a",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    {
+                                        "name": "b",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "const": "ALL_TABLES"
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Populate Task Execution Entities For Tables",
+                            "actorType": {
+                                "parentType": "InnerFlow",
+                                "inputs": [
+                                    {
+                                        "name": "flowName",
+                                        "const": "PopulateTaskExecutionEntitiesForTables"
+                                    },
+                                    {
+                                        "name": "luName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "Update Table Status to Failed",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset execution_status = 'failed',\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'\r\nwhere task_execution_id = ${taskExeId} \r\nand ref_table_name = ${tableName}"
+                                    },
+                                    {
+                                        "name": "taskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "tableName",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Update All Entities",
+                    "dependsOnList": [
+                        "Load Data to Detailed Error table"
+                    ],
+                    "isLast": 0,
+                    "isTransactional": false,
+                    "hasElse": true,
+                    "actors": [
+                        {
+                            "name": "Update ALL Tables Status to Failed",
+                            "actorType": {
+                                "parentType": "DbCommand",
+                                "inputs": [
+                                    {
+                                        "name": "interface",
+                                        "const": "TDM"
+                                    },
+                                    {
+                                        "name": "sql",
+                                        "const": "update @TDMDB_SCHEMA@.task_ref_exe_stats\r\nset execution_status = 'failed',\r\nend_time = CURRENT_TIMESTAMP AT TIME ZONE 'UTC'\r\nwhere task_execution_id = ${taskExeId}"
+                                    },
+                                    {
+                                        "name": "taskExeId",
+                                        "schema": {
+                                            "type": "string"
+                                        },
+                                        "mandatory": false
+                                    }
+                                ],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
+                    "name": "1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": []
+                }
+            ]
+        }
+    ],
+    "connections": [
+        {
+            "leftPort": {
+                "actor": "Get Current Time",
+                "name": "date"
+            },
+            "rightPort": {
+                "actor": "Format the current date",
+                "name": "date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "inputs"
+            },
+            "rightPort": {
+                "actor": "Build string from input parameters",
+                "name": "maps"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "actor"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "actor_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "stage"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "stage_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "flow"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "flow_name"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "errorCode"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "error_code"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "message"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "error_message"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
+                "name": "message"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "errorMsg"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Build string from input parameters",
+                "name": "csv"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "actor_parameters"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Format the current date",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "creation_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "taskExecutionID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Table Status to Failed",
+                "name": "taskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Task Exec ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update ALL Tables Status to Failed",
+                "name": "taskExeId"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Executor Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "userName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "iid"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update TDMDB table for Reference Table",
+                "name": "refTableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Update Table Status to Failed",
+                "name": "tableName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Table Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "target_entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "entity_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get Source Entity ID",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Table Started?",
+                "name": "a"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get LU Name",
+                "name": "result"
+            },
+            "rightPort": {
+                "actor": "Populate Task Execution Entities For Tables",
+                "name": "luName"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "error"
+            },
+            "rightPort": {
+                "actor": "Get the Error Fields",
+                "name": "error"
+            }
+        }
+    ]
+}

@@ -11,7 +11,6 @@
             <div class="fields-row" style="position: relative">
                 <div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && 
-                        !requestedEntitiesCtrl.taskData.delete_before_load &&
                         (!requestedEntitiesCtrl.taskData.version_ind || 
                         (requestedEntitiesCtrl.taskData.sync_mode === 'FORCE' || !requestedEntitiesCtrl.taskData.sync_mode))">
                         <div style="display: flex; align-items: center;">
@@ -94,20 +93,10 @@
                         </div>
                     </div>
                     <div ng-if="requestedEntitiesCtrl.taskData.task_type === 'LOAD' && requestedEntitiesCtrl.taskData.load_entity && !requestedEntitiesCtrl.taskData.version_ind">
-                        <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'entity_id'">
+                        <div style="display: flex; align-items: center;">
                             <input type="radio"
                                 ng-value="'CLONE'" name="requestedEntitiesRadio"
-                                ng-disabled="userRole.allowed_creation_of_synthetic_data !== true"
-                                ng-model="requestedEntitiesCtrl.taskData.selection_method" />
-                            <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
-                                Entity Clone
-                            </label>
-                            <small ng-show="!userRole.allowed_creation_of_synthetic_data">(Not Allowed)</small>
-                        </div>
-                        <div style="display: flex; align-items: center;" ng-if="requestedEntitiesCtrl.entity_clone_selection_method === 'parameters'">
-                            <input type="radio"
-                                ng-value="'CLONE_PARAM'" name="requestedEntitiesRadio"
-                                ng-disabled="userRole.allowed_creation_of_synthetic_data !== true"
+                                ng-disbaled="userRole.allowed_creation_of_synthetic_data !== true"
                                 ng-model="requestedEntitiesCtrl.taskData.selection_method" />
                             <label style="margin-top: 5px;margin-left: 6px;margin-right: 5px;position: relative;">
                                 Entity Clone
@@ -180,38 +169,6 @@
                 </div>
             </div>
         </div>
-        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM'">
-            <div class="fields-row" style="position: relative">
-                <div style="margin-bottom: 15px;">
-                    <div class="m-t-xs">
-                        <label>Entity Clone Type
-                        </label>
-                    </div>
-                    <div >
-                        <div style="display: flex; align-items: center;">
-                            <input type="radio"
-                                ng-value="'entity_id'" name="requestedEntitiesRadioEntityClone"
-                                ng-change="requestedEntitiesCtrl.entityCloneChange()"
-                                ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
-                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
-                                Provide an Entity Id
-                            </label>
-                        </div>
-                    </div>
-                    <div >
-                        <div style="display: flex; align-items: center;">
-                            <input type="radio"
-                                ng-value="'parameters'" name="requestedEntitiesRadioEntityClone"
-                                ng-change="requestedEntitiesCtrl.entityCloneChange()"
-                                ng-model="requestedEntitiesCtrl.entity_clone_selection_method" />
-                            <label style="margin-top: 5px;margin-left: 6px;position: relative;">
-                                Parameters Based Selection
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'CLONE'">
             <div class="fields-row" style="position: relative"  >
                 <div style="margin-bottom: 15px;">
@@ -242,7 +199,7 @@
                         </label>
                     </div>
                     <select name="custom_logic" required
-                            style="width:500px"
+                            style="width:535px"
                             ng-change="requestedEntitiesCtrl.customLogicChange()"
                             ng-model="requestedEntitiesCtrl.taskData.selection_param_value"
                             ng-options="option.newFlowName as option.flowName for option in requestedEntitiesCtrl.customLogicFlows | orderBy:'flowName'">
@@ -256,18 +213,18 @@
                     <div class="custom-param-hint" ng-if="requestedEntitiesCtrl.flowDesc">
                         <ul >
                             <li>
-                                {{requestedEntitiesCtrl.flowDesc}}
+                                Description: {{requestedEntitiesCtrl.flowDesc}}
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>    
         </div>
-        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'P' || requestedEntitiesCtrl.taskData.selection_method === 'PR' ||  requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM'">
+        <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'P' || requestedEntitiesCtrl.taskData.selection_method === 'PR'">
             <div class="fields-row" style="position: relative" >
-                <div ng-init="requestedEntitiesCtrl.prepareParametersData()">
-                    <div style="display: flex;gap: 30px;" ng-if="requestedEntitiesCtrl.taskData.selection_method !== 'CLONE_PARAM'">
-                        <div>
+                <div>
+                    <div style="display: flex;gap: 30px;">
+                        <div ng-init="requestedEntitiesCtrl.prepareParametersData()">
                             <div style="padding: 0px;">
                             <label class="option-button">
                                 <input id="checkbox2" type="checkbox" ng-change="requestedEntitiesCtrl.parametersRandomChange()" 
@@ -323,11 +280,10 @@
             requestedEntitiesCtrl.taskData.selection_method === 'PR' || 
             requestedEntitiesCtrl.taskData.selection_method === 'R' ||
             requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || 
-            requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM' || 
             requestedEntitiesCtrl.taskData.selection_method === 'C' ">
             <div class="fields-row" style="position: relative">
                 <div>
-                    <div class="form-group" ng-style="requestedEntitiesCtrl.taskData.selection_method === 'C' && {'width':'500px'}" >
+                    <div class="form-group" ng-style="requestedEntitiesCtrl.taskData.selection_method === 'C' && {'width':'535px'}" >
                         <div ng-if="requestedEntitiesCtrl.taskData.selection_method === 'R' || 
                             requestedEntitiesCtrl.taskData.selection_method === 'C'"
                             ng-show="!requestedEntitiesCtrl.taskData.replace_sequences && requestedEntitiesCtrl.taskData.task_type !== 'EXTRACT'">
@@ -342,8 +298,7 @@
                             </div>
                         </div>
                         <label>
-                            <span>{{(requestedEntitiesCtrl.taskData.selection_method === 'CLONE' || requestedEntitiesCtrl.taskData.selection_method === 'CLONE_PARAM' ? 
-                                    "Number of Clones" : "NUMBER_OF_ENTITIES") |  translate}} <span style="color: red">*</span></span>
+                            <span>{{(requestedEntitiesCtrl.taskData.selection_method === 'CLONE' ? "Number of Clones" : "NUMBER_OF_ENTITIES") |  translate}} <span style="color: red">*</span></span>
                         </label>
                         <input min="1"  max="{{maxToCopy}}" tabindex="2" name="numberOfEntities"  
                             required type="number" class="form-control1" 
@@ -408,7 +363,7 @@
             </div>
         </div>
         <div class="fields-container" ng-if="requestedEntitiesCtrl.taskData.selection_method === 'C'">
-            <div class="fields-row" style="margin-top: 0px;" ng-init="requestedEntitiesCtrl.desc_toggle = -1">
+            <div class="fields-row" style="margin-top: 0px;">
                 <div 
                     style="margin-bottom: 30px;position: relative" ng-repeat="customLogicParam in requestedEntitiesCtrl.taskData.CustomLogicParams">
                     <div class="m-t-xs" ng-if="!customLogicParam.editor">
@@ -417,12 +372,12 @@
                     </div>
                     <input  ng-if="!customLogicParam.editor"
                             ng-step="{{customLogicParam.type === 'integer' ? '1' : '0.00000000001'}}"
-                            style="width: 500px;" 
+                            style="width: 535px;" 
                             type="{{customLogicParam.type === 'integer' || customLogicParam.type === 'real' ? 'number' : 'text'}}" 
                             name="custom_logic_{{customLogicParam.name}}" 
                             ng-required="customLogicParam.mandatory"
                             ng-model="customLogicParam.value" />
-                    <div style="width: 538px;position: relative;"
+                    <div style="width: 535px;z-index: 0;position: relative;"
                          ng-if="customLogicParam.editor"
                          data="customLogicParam"
                          editor="customLogicParam.editor" 
@@ -446,12 +401,10 @@
                             Please fill in correct type.
                         </small>
                     </div>
-                    <div class="custom-param-hint"
-                        style="cursor: pointer;" 
-                        ng-click="requestedEntitiesCtrl.openDecPopup(customLogicParam.description)">
-                        <ul style="overflow: hidden; height: 100%;">
+                    <div class="custom-param-hint">
+                        <ul >
                             <li ng-show="customLogicParam.description">
-                                {{customLogicParam.description}}
+                                Description: {{customLogicParam.description}}
                             </li>
                         </ul>
                     </div>

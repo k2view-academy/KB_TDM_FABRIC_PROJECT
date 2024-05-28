@@ -53,7 +53,7 @@
                                     },
                                     {
                                         "name": "path",
-                                        "const": "SharedObjects/Templates/tdmLoadAllTables.flow.template"
+                                        "const": "SharedObjects/Templates/TDM/tdmLoadAllTables.flow.template"
                                     }
                                 ],
                                 "outputs": []

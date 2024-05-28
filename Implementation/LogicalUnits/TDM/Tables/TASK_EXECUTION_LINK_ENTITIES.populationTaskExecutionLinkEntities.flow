@@ -37,9 +37,60 @@
                                         "name": "EXECUTION_STATUS",
                                         "schema": {},
                                         "mandatory": false
+                                    },
+                                    {
+                                        "name": "ROOT_ENTITY_ID",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "ROOT_LU_NAME",
+                                        "schema": {},
+                                        "mandatory": false
+                                    },
+                                    {
+                                        "name": "VERSION_TASK_EXECUTION_ID",
+                                        "schema": {},
+                                        "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "parent_rows",
+                                        "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "VERSION_TASK_EXECUTION_ID": {
+                                                        "type": "integer"
+                                                    },
+                                                    "ROOT_ENTITY_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "ENTITY_ID": {
+                                                        "type": "string"
+                                                    },
+                                                    "LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "EXECUTION_STATUS": {
+                                                        "type": "string"
+                                                    },
+                                                    "ROOT_LU_NAME": {
+                                                        "type": "string"
+                                                    },
+                                                    "ID_TYPE": {
+                                                        "type": "string"
+                                                    },
+                                                    "TARGET_ENTITY_ID": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -60,16 +111,6 @@
                             }
                         }
                     ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Post Load",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": []
                 }
             ]
         }
@@ -123,6 +164,36 @@
             "rightPort": {
                 "actor": "PopulationArgs",
                 "name": "EXECUTION_STATUS"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ROOT_ENTITY_ID"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "ROOT_ENTITY_ID"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "ROOT_LU_NAME"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "ROOT_LU_NAME"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "flowArgs",
+                "name": "VERSION_TASK_EXECUTION_ID"
+            },
+            "rightPort": {
+                "actor": "PopulationArgs",
+                "name": "VERSION_TASK_EXECUTION_ID"
             }
         },
         {

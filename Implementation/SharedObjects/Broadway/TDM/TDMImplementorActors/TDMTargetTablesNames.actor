@@ -1,0 +1,32 @@
+{
+    "type": "TDMTargetTablesNames",
+    "badge": "TD",
+    "tags": [
+        "basic"
+    ],
+    "inputs": [
+        {
+            "name": "table",
+            "const": [],
+            "schema": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "LU_NAME": {
+                            "type": "string"
+                        },
+                        "FABRIC_TABLE_NAME": {
+                            "type": "string"
+                        },
+                        "TARGET_TABLE_NAME": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": [],
+    "parentType": "ConstTable"
+}

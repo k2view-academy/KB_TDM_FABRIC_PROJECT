@@ -1,777 +1,250 @@
-{
-    "tags": [
-        "TDM"
-    ],
-    "levels": [
-        {
-            "stages": [
-                {
-                    "name": "Stage 1",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Check LU and Envs Deploy",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "checkPreRequisite"
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "result",
-                                        "schema": {
-                                            "type": "boolean"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Get Project Folder",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "GetProjectFolder"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "PROJECT_FOLDER",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Set Main Table Of LU",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ROOT_TABLE_NAME",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "Set Key OF Main Table",
-                            "actorType": {
-                                "parentType": "FabricSet",
-                                "inputs": [
-                                    {
-                                        "name": "key",
-                                        "const": "ROOT_COLUMN_NAME",
-                                        "isDefault": false
-                                    },
-                                    {
-                                        "name": "value",
-                                        "const": null,
-                                        "isDefault": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 2",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "TDM_LIBRARY folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${projectDir}/LogicalUnits/TDM_LIBRARY/"
-                                    },
-                                    {
-                                        "name": "projectDir",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        },
-                        {
-                            "name": "LU folder",
-                            "actorType": {
-                                "parentType": "StringFormat",
-                                "inputs": [
-                                    {
-                                        "name": "format",
-                                        "const": "${projectDir}/LogicalUnits/${LU_NAME}/"
-                                    },
-                                    {
-                                        "name": "projectDir",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 3",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Copy TDM Tables",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "copyTDMTables"
-                                    },
-                                    {
-                                        "name": "LU_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TDM_LIBRARY_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "table_id",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 4",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Get Tables Info",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "getLUTableCoulumnID"
-                                    },
-                                    {
-                                        "name": "TABLE_LIST",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "blob"
-                                            }
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "LOCAL",
-                                                "SFTP",
-                                                "filesystem"
-                                            ],
-                                            "interfaces": [
-                                                "file://"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "tables",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 5",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "Update LU Schema",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "updateLUSchema"
-                                    },
-                                    {
-                                        "name": "LU_PATH",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "LOCAL",
-                                                "SFTP",
-                                                "filesystem"
-                                            ],
-                                            "interfaces": [
-                                                "file://"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "tables_to_add",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TDM_LIBRARY_PAHT",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_TABLE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "rootInfo",
-                                        "schema": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "properties": {
-                                                    "table_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "column_name": {
-                                                        "type": "string"
-                                                    },
-                                                    "active": {
-                                                        "type": "boolean"
-                                                    },
-                                                    "population": {}
-                                                }
-                                            }
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 6",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "create All Flows FromTemplates",
-                            "actorType": {
-                                "parentType": "InnerFlow",
-                                "inputs": [
-                                    {
-                                        "name": "flowName",
-                                        "const": "createAllFromTemplates"
-                                    },
-                                    {
-                                        "name": "CREATE_DELETE_TABLES",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "LU_NAME",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.logicalUnit",
-                                            "addEmptyEntry": true
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "const": false,
-                                        "name": "OVERRIDE_EXISTING_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "TARGET_ENVIRONMENT",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "CREATE_GENERATE_FLOWS",
-                                        "schema": {
-                                            "type": "boolean"
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_INTERFACE",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "editor": {
-                                            "id": "com.k2view.interface",
-                                            "interfaceType": [
-                                                "database"
-                                            ]
-                                        },
-                                        "mandatory": false
-                                    },
-                                    {
-                                        "name": "SOURCE_SCHEMA",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "mandatory": false
-                                    }
-                                ],
-                                "outputs": []
-                            }
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "stages": [
-                {
-                    "name": "Stage 7",
-                    "dependsOnList": [],
-                    "isLast": 0,
-                    "actors": [
-                        {
-                            "name": "End",
-                            "actorType": {
-                                "parentType": "Const",
-                                "inputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        },
-                                        "const": "TDM Implementation is created!"
-                                    }
-                                ],
-                                "outputs": [
-                                    {
-                                        "name": "value",
-                                        "schema": {
-                                            "type": "string"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "connections": [
-        {
-            "leftPort": {
-                "actor": "Get Project Folder",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "LU folder",
-                "name": "projectDir"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Project Folder",
-                "name": "PROJECT_FOLDER"
-            },
-            "rightPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "projectDir"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "TDM_LIBRARY_PAHT"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "TDM_LIBRARY folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Copy TDM Tables",
-                "name": "TDM_LIBRARY_PATH"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LU folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Copy TDM Tables",
-                "name": "LU_PATH"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LU folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "LU_PATH"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "LU folder",
-                "name": "string"
-            },
-            "rightPort": {
-                "actor": "Get Tables Info",
-                "name": "LU_PATH"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Copy TDM Tables",
-                "name": "table_id"
-            },
-            "rightPort": {
-                "actor": "Get Tables Info",
-                "name": "TABLE_LIST"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get Tables Info",
-                "name": "tables"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "tables_to_add"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "Check LU and Envs Deploy",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "ROOT_TABLE_NAME"
-            },
-            "rightPort": {
-                "actor": "Set Main Table Of LU",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "ROOT_COLUMN_NAME"
-            },
-            "rightPort": {
-                "actor": "Set Key OF Main Table",
-                "name": "value"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "LU folder",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "SOURCE_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "SOURCE_SCHEMA"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "ROOT_TABLE_NAME"
-            },
-            "rightPort": {
-                "actor": "Update LU Schema",
-                "name": "SOURCE_TABLE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "CREATE_DELETE_TABLES"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "CREATE_DELETE_TABLES"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "LU_NAME"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "LU_NAME"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "TARGET_SCHEMA"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "TARGET_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "TARGET_ENVIRONMENT"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "TARGET_ENVIRONMENT"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "CREATE_GENERATE_FLOWS"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "CREATE_GENERATE_FLOWS"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_INTERFACE"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "SOURCE_INTERFACE"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "flowArgs",
-                "name": "SOURCE_SCHEMA"
-            },
-            "rightPort": {
-                "actor": "create All Flows FromTemplates",
-                "name": "SOURCE_SCHEMA"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "End",
-                "name": "value"
-            },
-            "rightPort": {
-                "actor": "flowArgs",
-                "name": "result"
-            }
-        }
-    ]
-}
+tags: TDM
+stages:
+  Stage 1:
+    actors:
+      Check LU and Envs Deploy:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: checkPreRequisite
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: boolean
+      Get Project Folder:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: GetProjectFolder
+        out:
+          PROJECT_FOLDER:
+            schema: string
+      Set Main Table Of LU:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_TABLE_NAME
+            default: false
+          value:
+            const: null
+            external: ROOT_TABLE_NAME
+            default: false
+      Set Key OF Main Table:
+        parent: FabricSet
+        in:
+          key:
+            const: ROOT_COLUMN_NAME
+            default: false
+          value:
+            const: null
+            external: ROOT_COLUMN_NAME
+            default: false
+  Stage 2:
+    actors:
+      TDM_LIBRARY folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/TDM_LIBRARY/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+      LU folder:
+        parent: StringFormat
+        in:
+          format:
+            const: ${projectDir}/LogicalUnits/${LU_NAME}/
+          projectDir:
+            link: Get Project Folder/PROJECT_FOLDER
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+  Stage 3:
+    actors:
+      Copy TDM Tables:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: copyTDMTables
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            mandatory: false
+          TDM_LIBRARY_PATH:
+            link: TDM_LIBRARY folder/string
+            schema: string
+            mandatory: false
+        out:
+          table_id:
+            schema: string
+  Stage 4:
+    actors:
+      Get Tables Info:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: getLUTableCoulumnID
+          TABLE_LIST:
+            link: Copy TDM Tables/table_id
+            schema: '#ref'
+            mandatory: false
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+        out:
+          tables:
+            schema: string
+  Stage 5:
+    actors:
+      Update LU Schema:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: updateLUSchema
+          LU_PATH:
+            link: LU folder/string
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - LOCAL
+              - SFTP
+              - filesystem
+              interfaces:
+              - file://
+            mandatory: false
+          tables_to_add:
+            link: Get Tables Info/tables
+            schema: string
+            mandatory: false
+          TDM_LIBRARY_PAHT:
+            link: TDM_LIBRARY folder/string
+            schema: string
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+          SOURCE_TABLE:
+            external: ROOT_TABLE_NAME
+            schema: string
+            mandatory: false
+          SOURCE_TABLE_KEY:
+            external: ROOT_COLUMN_NAME
+            schema: string
+            mandatory: false
+        out:
+          rootInfo:
+            schema: '#ref'
+  Stage 6:
+    actors:
+      create All Flows FromTemplates:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: createAllFromTemplates
+          CREATE_DELETE_TABLES:
+            external: CREATE_DELETE_TABLES
+            schema: boolean
+            mandatory: false
+          LU_NAME:
+            external: LU_NAME
+            schema: string
+            editor:
+              id: com.k2view.logicalUnit
+              addEmptyEntry: true
+            mandatory: false
+          TARGET_SCHEMA:
+            external: TARGET_SCHEMA
+            schema: string
+            mandatory: false
+          TARGET_INTERFACE:
+            external: TARGET_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          OVERRIDE_EXISTING_FLOWS:
+            const: false
+            schema: boolean
+            mandatory: false
+          TARGET_ENVIRONMENT:
+            external: TARGET_ENVIRONMENT
+            schema: string
+            mandatory: false
+          CREATE_GENERATE_FLOWS:
+            external: CREATE_GENERATE_FLOWS
+            schema: boolean
+            mandatory: false
+          SOURCE_INTERFACE:
+            external: SOURCE_INTERFACE
+            schema: string
+            editor:
+              id: com.k2view.interface
+              interfaceType:
+              - database
+            mandatory: false
+          SOURCE_SCHEMA:
+            external: SOURCE_SCHEMA
+            schema: string
+            mandatory: false
+  Stage 7:
+    actors:
+      End:
+        parent: Const
+        in:
+          value:
+            const: TDM Implementation is created!
+            schema: string
+        out:
+          value:
+            external: result
+            schema: string
+schemas:
+  Get Tables Info.in.TABLE_LIST:
+    type: array
+    items:
+      type: blob
+  Update LU Schema.out.rootInfo:
+    type: array
+    items:
+      type: object
+      properties:
+        table_name:
+          type: string
+        column_name:
+          type: string
+        active:
+          type: boolean
+        population: {
+          }

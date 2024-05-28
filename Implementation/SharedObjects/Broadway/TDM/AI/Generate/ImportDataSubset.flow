@@ -1,0 +1,353 @@
+tags: TDM
+stages:
+  Pre Execution:
+    actors:
+      AI_DB_K2SYSTEM1:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_DB_INTERFACE
+      taskExecutionID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: taskExecutionID
+        out:
+          value:
+            schema: string
+      TDMDB_SCHEMA:
+        parent: FabricSetRead
+        in:
+          key:
+            const: TDMDB_SCHEMA
+            default: false
+      LuID:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: LuID
+        out:
+          value:
+            schema: string
+      AI_ENVIRONMENT:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_ENVIRONMENT
+  Get Inputs:
+    actors:
+      luName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: luName
+        out:
+          value:
+            schema: string
+      dcName:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: dcName
+        out:
+          value:
+            schema: string
+      'loadIndicator   ':
+        parent: Const
+        in:
+          value:
+            const: null
+            external: loadIndicator
+            schema: boolean
+        out:
+          value:
+            schema: boolean
+      TDM_TASK_EXE_ID:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_TASK_EXE_ID
+            default: false
+          value:
+            const: null
+            link: taskExecutionID/value
+            default: false
+      TDM_SOURCE_ENVIRONMENT_NAME:
+        parent: FabricSet
+        in:
+          key:
+            const: TDM_SOURCE_ENVIRONMENT_NAME
+            default: false
+          value:
+            link: AI_ENVIRONMENT/result
+      Set Source Environment:
+        parent: FabricSet
+        height: 106
+        in:
+          key:
+            const: environment
+            default: false
+          value:
+            const: null
+            link: AI_ENVIRONMENT/result
+            default: false
+  Check MDB EXPORT Schema:
+    actors:
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  Entity List:
+    actors:
+      EntityInclusion Command:
+        parent: StringFormat
+        in:
+          format:
+            const: select iid as IID from ${k2system}.entity_list where task_execution_id=${task_execution_id}
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          k2system:
+            link: Get k2system Schema Name/result
+            schema: any
+            mandatory: false
+      Broadway Command Sync And Export:
+        parent: StringFormat
+        in:
+          format:
+            const: broadway ${luName}.ImportFromGenerationJob IID=?,luName=${luName},loadIndicator=${loadIndicator}
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+          loadIndicator:
+            link: loadIndicator   /value
+            schema: boolean
+            mandatory: false
+  Batch:
+    dependsOn: Entity List
+    actors:
+      'Empty  ':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: ''
+            schema: string
+          a:
+            link: dcName/value
+      ErrorHandler 3:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: true
+                flowName: PopulateAITablesWithFailed
+      'Batch and Sync   ':
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch ${@luName} from ${@AI_DB_K2SYSTEM} using (?) FABRIC_COMMAND='${@command}'
+              WITH ASYNC='true';
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+          command:
+            link: Broadway Command Sync And Export/string
+            schema: string
+            mandatory: false
+          AI_DB_K2SYSTEM:
+            link: AI_DB_K2SYSTEM1/result
+            schema: string
+            mandatory: false
+          params:
+            link: EntityInclusion Command/string
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Batch with Affinity:
+    else: true
+    transactional: false
+    dependsOn: Entity List
+    actors:
+      Batch and Sync With Affinity:
+        parent: DbCommand
+        in:
+          interface:
+            const: fabric
+          sql:
+            const: batch ${@luName} from ${@AI_DB_K2SYSTEM} using (?) FABRIC_COMMAND='${@command}'
+              WITH AFFINITY=${dcName} ASYNC='true';
+          luName:
+            link: luName/value
+            schema: string
+            mandatory: false
+          command:
+            link: Broadway Command Sync And Export/string
+            schema: string
+            mandatory: false
+          dcName:
+            link: dcName/value
+            schema: string
+            mandatory: false
+          AI_DB_K2SYSTEM:
+            link: AI_DB_K2SYSTEM1/result
+            schema: any
+            mandatory: false
+          params:
+            link: EntityInclusion Command/string
+        out:
+          result:
+            schema: '#ref'
+  Merge: {
+    }
+  Not Pre Execution:
+    dependsOn: Merge
+    actors:
+      Without Load:
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: false
+            schema: boolean
+          a:
+            link: loadIndicator   /value
+      Error Handle 4:
+        parent: ErrorHandler
+        error: result
+        in:
+          config:
+            const:
+            - exceptionKey: java.lang.Exception
+              conditions:
+                message: ''
+              actions:
+                suppress: false
+                log: false
+                flowName: PopulateAITableErrorsWithFailed
+      Update task_execution_list:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set fabric_execution_id\
+              \ =${fabric_execution_id} where \r\ntask_execution_id =${task_execution_id}\
+              \ and lu_id=${lu_id} "
+          fabric_execution_id:
+            link:
+            - path: Batch and Sync   /result/Batch id
+              iterate: First
+            - path: Batch and Sync With Affinity/result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          lu_id:
+            link: LuID/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+    split: '--------------------'
+  'With Load ':
+    else: true
+    transactional: false
+    dependsOn: Merge
+    actors:
+      Update task_execution_list1:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: "UPDATE ${@TDMDB_SCHEMA}.task_execution_list set fabric_execution_id\
+              \ =${fabric_execution_id} where \r\ntask_execution_id =${task_execution_id}\
+              \ and lu_id=${lu_id} and process_id=-1;"
+          fabric_execution_id:
+            link:
+            - path: Batch and Sync   /result/Batch id
+              iterate: First
+            - path: Batch and Sync With Affinity/result/Batch id
+              iterate: First
+            schema: string
+            mandatory: false
+          task_execution_id:
+            link: taskExecutionID/value
+            schema: string
+            mandatory: false
+          lu_id:
+            link: LuID/value
+            schema: string
+            mandatory: false
+          TDMDB_SCHEMA:
+            link: TDMDB_SCHEMA/result
+            schema: string
+            mandatory: false
+  Output:
+    transactional: false
+    actors:
+      Batch ID:
+        parent: Const
+        in:
+          value:
+            const: null
+            link:
+            - path: Batch and Sync   /result/Batch id
+              iterate: First
+            - path: Batch and Sync With Affinity/result/Batch id
+              iterate: First
+        out:
+          value:
+            external: batchID
+            schema: string
+  End:
+    transactional: false
+schemas:
+  Batch and Sync   .out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string
+  Batch and Sync With Affinity.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        Batch id:
+          type: string
+        Execution id:
+          type: string
+        Notes:
+          type: string

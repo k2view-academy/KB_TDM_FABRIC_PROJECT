@@ -1,4 +1,7 @@
 {
+    "tags": [
+        "TDM"
+    ],
     "levels": [
         {
             "stages": [
@@ -248,6 +251,33 @@
         {
             "stages": [
                 {
+                    "name": "Stage 1",
+                    "dependsOnList": [],
+                    "isLast": 0,
+                    "actors": [
+                        {
+                            "name": "ToNumber1",
+                            "actorType": {
+                                "parentType": "ToNumber",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        },
+                        {
+                            "name": "ToString1",
+                            "actorType": {
+                                "parentType": "ToString",
+                                "inputs": [],
+                                "outputs": []
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "stages": [
+                {
                     "name": "Format the actor's parameters",
                     "dependsOnList": [],
                     "isLast": 0,
@@ -297,7 +327,14 @@
                                         }
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "string"
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -526,8 +563,8 @@
                 "name": "variableValue"
             },
             "rightPort": {
-                "actor": "Load Data To Error Table",
-                "name": "task_execution_id"
+                "actor": "ToNumber1",
+                "name": "value"
             }
         },
         {
@@ -538,16 +575,6 @@
             "rightPort": {
                 "actor": "IfElse1",
                 "name": "test"
-            }
-        },
-        {
-            "leftPort": {
-                "actor": "Get the Error Fields",
-                "name": "errorCode"
-            },
-            "rightPort": {
-                "actor": "Load Data To Error Table",
-                "name": "error_code"
             }
         },
         {
@@ -593,6 +620,16 @@
         {
             "leftPort": {
                 "actor": "Get the Error Fields",
+                "name": "errorCode"
+            },
+            "rightPort": {
+                "actor": "ToString1",
+                "name": "value"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "Get the Error Fields",
                 "name": "inputs"
             },
             "rightPort": {
@@ -611,6 +648,26 @@
             "rightPort": {
                 "actor": "Load Data To Error Table",
                 "name": "creation_date"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ToNumber1",
+                "name": "number"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "task_execution_id"
+            }
+        },
+        {
+            "leftPort": {
+                "actor": "ToString1",
+                "name": "string"
+            },
+            "rightPort": {
+                "actor": "Load Data To Error Table",
+                "name": "error_code"
             }
         },
         {

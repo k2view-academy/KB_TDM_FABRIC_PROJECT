@@ -179,7 +179,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.product_logical_units
     product_name character varying(200),
     lu_parent_name character varying(200),
     product_id bigint,
-    CONSTRAINT product_logical_units_pkey PRIMARY KEY (lu_id)
+    CONSTRAINT product_logical_units_pkey PRIMARY KEY (be_id,lu_id)
 );
 
 -- Table: ${@schema}.products
@@ -208,6 +208,7 @@ Create UNIQUE INDEX IF NOT EXISTS PROD_NAME_FOR_ACTIVE_IX ON ${@schema}.products
 
 -- 31-DEC-18- add new fields to task_execution_list- fabric_execution_id, version_datetime, and version_expiration_date
 -- 17-FEB-19- add task type field
+-- 11-JAN-24- drop column version_datetime, add column version_task_execution_id (TDM9)
 
 --DROP TABLE IF EXISTS ${@schema}.task_execution_list;
 
@@ -235,11 +236,11 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_list
     parent_lu_id bigint,
     source_env_name character varying(300), 
     source_environment_id bigint, 
-    fabric_environment_name character varying(300),
     task_executed_by text,
     fabric_execution_id character varying(200),
-    version_datetime timestamp without time zone,
-    version_expiration_date timestamp without time zone,							
+	subset_task_execution_id bigint DEFAULT 0,
+    version_task_execution_id bigint DEFAULT 0,
+    expiration_date timestamp without time zone,
     synced_to_fabric boolean DEFAULT false, 
     updated_by character varying(100), 
     clean_redis boolean DEFAULT false, -- TDM 5.5
@@ -258,6 +259,13 @@ Create INDEX IF NOT EXISTS TASK_EXEC_IX2 ON ${@schema}.task_execution_list (task
 
 -- 31-Dec-18- add task_type, version_ind, retention_period_type, retention_period_value, selected_version_task_name, selected_version_datetime, scheduling_end_date
 
+-- 11-JAN-24-drop column entity_exclusion_list,
+-- drop column fabric_environment_name,
+-- drop column selected_version_task_name,
+-- drop column selected_version_datetime,
+-- drop column selected_ref_version_task_name,
+-- drop column selected_ref_version_datetime (TDM9)
+
 --DROP TABLE IF EXISTS ${@schema}.tasks;
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tasks
@@ -271,7 +279,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     be_id bigint NOT NULL,
     selection_method character varying(200) NOT NULL,
     selection_param_value text,
-    entity_exclusion_list text,
+    custom_logic_lu_name text,
     parameters text,
     refresh_reference_data boolean,
     delete_before_load boolean NOT NULL DEFAULT false,
@@ -283,19 +291,15 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     task_last_updated_by character varying(200),
     source_env_name character varying(300) NOT NULL,
     source_environment_id bigint, 
-    fabric_environment_name character varying(300), 	
     load_entity boolean,
     task_type character varying(20) NOT NULL,
     version_ind  boolean NOT NULL DEFAULT false,
     retention_period_type character varying(20),
     retention_period_value numeric,
-    selected_version_task_name character varying(200),
-    selected_version_datetime character varying(20),
-    selected_version_task_exe_id bigint, 
+    selected_version_task_exe_id bigint DEFAULT 0, 
+    selected_subset_task_exe_id bigint DEFAULT 0, 
     scheduling_end_date timestamp without time zone, 
-    selected_ref_version_task_name character varying(200), 
-    selected_ref_version_datetime character varying(20), 
-    selected_ref_version_task_exe_id bigint,  
+    selected_ref_version_task_exe_id bigint DEFAULT 0,  
     task_globals boolean,
     sync_mode character varying(20),
     reserve_ind boolean NOT NULL DEFAULT false,
@@ -304,6 +308,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tasks
     reserve_note text, -- TDM 7.5.2
     filterout_reserved boolean DEFAULT true, --TDM 7.6
     mask_sensitive_data boolean default true, -- TDM 8.1
+    task_description text,
+    clone_ind boolean NOT NULL DEFAULT false,
     CONSTRAINT tasks_pkey PRIMARY KEY (task_id)
 );
 
@@ -353,6 +359,7 @@ Create INDEX IF NOT EXISTS TDM_SEQ_MAPPING_IX on ${@schema}.tdm_seq_mapping (tas
 -- Table: ${@schema}.task_execution_entities
 
 -- DROP TABLE IF EXISTS ${@schema}.task_execution_entities;
+-- 11-JAN-24- drop column version_datetime, add column version_task_execution_id (TDM9)
 
 CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
 (
@@ -369,8 +376,8 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   fabric_execution_id text, -- TDM 6.1
   iid text  NOT NULL DEFAULT '', -- TDM 6.1
   source_env text NOT NULL DEFAULT '', -- TDM 6.1
-  version_name text NOT NULL DEFAULT '', -- TDM 6.1
-  version_datetime timestamp without time zone NOT NULL DEFAULT 'epoch', -- TDM 6.1
+  version_task_execution_id bigint DEFAULT 0, --TDM 9.0
+  subset_task_execution_id bigint DEFAULT 0, --TDM 9.0
   fabric_get_time bigint,
   total_processing_time bigint,
   clone_no text DEFAULT '0',
@@ -379,7 +386,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_entities
   CONSTRAINT task_execution_entities_pkey PRIMARY KEY (task_execution_id, lu_name, entity_id, target_entity_id)
 );
 
-CREATE INDEX IF NOT EXISTS task_execution_entities_2ix ON ${@schema}.task_execution_entities (task_execution_id, lu_name, source_env, iid, version_name,version_datetime); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS task_execution_entities_2ix ON ${@schema}.task_execution_entities (task_execution_id, lu_name, source_env, iid, version_task_execution_id); --TDM 9.0
 
 -- Table: ${@schema}.tdm_lu_type_relation_eid
 
@@ -393,13 +400,13 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_lu_type_relation_eid
   lu_type1_eid character varying(50) NOT NULL,
   lu_type2_eid character varying(50) NOT NULL,
   creation_date timestamp without time zone,
-  version_name character varying(200) NOT NULL DEFAULT '', -- TDM 6.1
-  version_datetime timestamp without time zone NOT NULL DEFAULT 'epoch', -- TDM 6.1
-  CONSTRAINT tdm_lu_type_relation_eid_pk PRIMARY KEY (source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,version_name,version_datetime)
+  version_task_execution_id bigint NOT NULL DEFAULT 0, --TDM 9.0 
+  subset_task_execution_id bigint DEFAULT 0,--TDM 9.0
+  CONSTRAINT tdm_lu_type_relation_eid_pk PRIMARY KEY (source_env,lu_type_1,lu_type_2,lu_type1_eid,lu_type2_eid,version_task_execution_id)
 );
 
-CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_1ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_1,lu_type1_eid,version_name,version_datetime); -- TDM 6.1
-CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_2ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_2,lu_type2_eid,version_name,version_datetime); -- TDM 6.1
+CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_1ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_1,lu_type1_eid,version_task_execution_id); -- TDM 9.0
+CREATE INDEX IF NOT EXISTS tdm_lu_type_relation_eid_2ix ON ${@schema}.tdm_lu_type_relation_eid (source_env,lu_type_2,lu_type2_eid,version_task_execution_id); -- TDM 9.0
 
  -- Table: ${@schema}.tdm_lu_type_rel_tar_eid
 				  
@@ -439,8 +446,16 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_tables
   lu_name character varying(100),
   schema_name character varying(200),
   interface_name character varying(200),
- update_date timestamp without time zone,
-CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
+  update_date timestamp without time zone,
+  table_filter text,
+  filter_type text,
+  target_table_prefix text,
+  target_table_suffix text,
+  version_task_execution_id bigint default 0,
+  version_task_name text,
+  gui_filter text,
+  filter_parameters text,
+  CONSTRAINT task_ref_tables_pkey PRIMARY KEY (task_ref_table_id) 
 );
 
 -- Table: ${@schema}.task_ref_exe_stats
@@ -461,7 +476,9 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_ref_exe_stats
   number_of_records_to_process numeric(10,0),
   number_of_processed_records numeric(10,0),
   error_msg text,
-  updated_by character varying(100)	
+  updated_by character varying(100),
+  table_filter text,
+  filter_type text		
   );
 
 Create INDEX IF NOT EXISTS task_ref_exe_stats_IX1 on ${@schema}.task_ref_exe_stats(task_execution_id);
@@ -491,7 +508,7 @@ where not exists (select 1 from ${@schema}.tdm_general_parameters where param_na
     
 INSERT INTO ${@schema}.tdm_general_parameters(
 	   param_name, param_value) 
-    select 'TDM_VERSION', '8.1' 
+    select 'TDM_VERSION', '9.0' 
 where not exists (select 1 from ${@schema}.tdm_general_parameters where param_name = 'TDM_VERSION');
 
 insert into ${@schema}.tdm_general_parameters(
@@ -543,6 +560,7 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_env_globals
 create UNIQUE INDEX IF NOT EXISTS ENV_ID_GLOBAL_NAME_IX on ${@schema}.tdm_env_globals (ENVIRONMENT_ID,GLOBAL_NAME);
 
 -- New Table task_execution_summary, TDM 6.1
+-- 11-JAN-24- drop column version_datetime, add column version_task_execution_id (TDM9)
 --DROP TABLE IF EXISTS ${@schema}.task_execution_summary;
 CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
 (
@@ -563,14 +581,17 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_execution_summary
   tot_num_of_failed_ref_tables numeric(10,0),
   source_env_name character varying(300),
   source_environment_id bigint,
-  fabric_environment_name character varying(300),
   task_executed_by text,
-  version_datetime timestamp without time zone,
-  version_expiration_date timestamp without time zone,
+  version_task_execution_id bigint DEFAULT 0,
+  subset_task_execution_id bigint DEFAULT 0, --TDM 9.0
+  expiration_date timestamp without time zone,
   update_date timestamp without time zone,
   tot_num_of_processed_post_executions numeric(10,0),
   tot_num_of_succeeded_post_executions numeric(10,0),
   tot_num_of_failed_post_executions numeric(10,0),
+  tot_num_of_processed_pre_executions numeric(10,0),
+  tot_num_of_succeeded_pre_executions numeric(10,0),
+  tot_num_of_failed_pre_executions numeric(10,0),
   CONSTRAINT task_execution_summary_pkey PRIMARY KEY (task_execution_id)
 );
 -- DROP INDEX IF EXISTS ${@schema}.task_exec_summary_ix1;
@@ -635,26 +656,29 @@ CREATE TABLE IF NOT EXISTS ${@schema}.task_exe_error_detailed
 CREATE INDEX IF NOT EXISTS task_exe_error_detailed_1ix ON ${@schema}.task_exe_error_detailed (task_execution_id, lu_name, target_entity_id);
 
 -- Support Post Execution Process, TDM 7.0.1
--- Table ${@schema}.tdm_be_post_exe_process
---DROP TABLE IF EXISTS ${@schema}.tdm_be_post_exe_process;
-CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_post_exe_process (
-	process_id bigint NOT NULL DEFAULT nextval('post_exe_process_id_seq'::regclass),
+--  Support Pre Execution Process, TDM 9.0 
+-- Table ${@schema}.tdm_be_exe_process
+--DROP TABLE IF EXISTS ${@schema}.tdm_be_exe_process;
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_be_exe_process (
+	process_id bigint NOT NULL DEFAULT nextval('exe_process_id_seq'::regclass),
 	process_name text,
+    process_type TEXT,
 	process_description text,
 	be_id bigint,
 	execution_order integer NOT NULL,
-	CONSTRAINT be_post_exe_process_pkey PRIMARY KEY (process_id)
+	CONSTRAINT be_exe_process_pkey PRIMARY KEY (process_id,be_id,process_type)
 );
-CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_post_exe_process_ix1 ON ${@schema}.tdm_be_post_exe_process (process_name, be_id);
+CREATE UNIQUE INDEX IF NOT EXISTS tdm_be_exe_process_ix1 ON ${@schema}.tdm_be_exe_process (process_name, be_id);
 
--- Table ${@schema}.tasks_post_exe_process
---DROP TABLE IF EXISTS ${@schema}.tasks_post_exe_process;
-CREATE TABLE IF NOT EXISTS ${@schema}.tasks_post_exe_process (
+-- Table ${@schema}.tasks_exe_process
+--DROP TABLE IF EXISTS ${@schema}.tasks_exe_process;
+CREATE TABLE IF NOT EXISTS ${@schema}.tasks_exe_process (
 	task_id bigint NOT NULL,
 	process_id bigint NOT NULL,
 	process_name text NOT NULL,
 	execution_order integer NOT NULL,
-	CONSTRAINT tasks_post_exe_process_pkey PRIMARY KEY (task_id, process_id)
+    process_type TEXT,
+	CONSTRAINT tasks_exe_pkey PRIMARY KEY (task_id, process_id)
 );
 
 -- Table ${@schema}.task_exe_stats_detailed
@@ -693,6 +717,19 @@ CREATE TABLE IF NOT EXISTS ${@schema}.permission_groups_mapping
     update_date timestamp without time zone,
     CONSTRAINT permission_groups_mapping_pkey PRIMARY KEY (fabric_role)
 );
+
+-- Add initial mapping for admin user
+insert into ${@schema}.permission_groups_mapping (
+	description,
+	fabric_role,
+	permission_group,
+	created_by,
+	updated_by,
+	creation_date,
+	update_date) 
+select'Initial mapping for admin user', 'admin', 'admin', 'admin', 'admin', NOW(), NOW()  
+where not exists (select 1 from ${@schema}.permission_groups_mapping where fabric_role = 'admin');
+
 
 -- Table: ${@schema}.task_execution_override_attrs - TDM 7.2
 
@@ -740,6 +777,7 @@ CREATE TABLE IF NOT EXISTS  ${@schema}.tdm_generate_task_field_mappings
 
 CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values -- New Table TDM 8.1
 (
+    source_environment text NOT NULL,
     lu_name text NOT NULL,
     field_name text NOT NULL,
     number_of_values bigint,
@@ -747,9 +785,20 @@ CREATE TABLE IF NOT EXISTS ${@schema}.tdm_params_distinct_values -- New Table TD
     is_numeric boolean,
     min_value text,
     max_value text,
-    CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (lu_name, field_name)
+    CONSTRAINT tdm_params_distinct_values_pkey PRIMARY KEY (source_environment, lu_name, field_name)
 );
 
+CREATE TABLE IF NOT EXISTS ${@schema}.tdm_ai_gen_iid_mapping (
+ task_execution_id bigint,
+ lu_name text,
+ env_name text,
+ generated_iid text,
+ imported_lui text,
+ root_lu_name text,
+ root_generated_iid text,
+ root_imported_lui text,
+ CONSTRAINT gen_mapping_pkey PRIMARY KEY (lu_name,generated_iid, imported_lui,root_lu_name,root_generated_iid,root_imported_lui)
+);
 -- utils functions (working with parameters)
 -- json_cast function adds changes the format of the json data
 CREATE OR REPLACE FUNCTION ${@schema}.json_cast(data json) RETURNS json IMMUTABLE AS 
@@ -816,3 +865,18 @@ INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_descrip
 	allow_read, allow_write, allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, allowed_number_of_reserved_entities)
 	VALUES (-1,'Synthetic','Role for Synethetic Environment',false,false,false,false,false,0,-1,'admin',NOW(),NOW(),NULL,'admin','Active',
 	false,false,true,false,1000,false,false,0) ON CONFLICT DO NOTHING;
+
+INSERT INTO ${@schema}.environments (environment_name, environment_description, environment_expiration_date, environment_point_of_contact_first_name, 
+	environment_point_of_contact_last_name, environment_point_of_contact_phone1, environment_point_of_contact_phone2, environment_point_of_contact_email, 
+	environment_id,environment_created_by, environment_creation_date, environment_last_updated_date, environment_last_updated_by, environment_status, allow_write, 
+	allow_read, sync_mode,mask_sensitive_data) 
+	VALUES ('AI','This is the AI Generationa and Training environment.',
+        NULL,NULL,NULL,NULL,NULL,NULL,-2,'admin',NOW(),NOW(),'admin','Active',true,true,'OFF', false) ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (-2, -2, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
+INSERT INTO ${@schema}.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
+	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
+	allowed_task_scheduling,allowed_number_of_entities_to_copy, role_id, role_created_by, role_creation_date, 
+	role_last_updated_date,role_last_updated_by,role_status,allowed_refresh_reference_data, allowed_replace_sequences, 
+	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
+	allowed_number_of_reserved_entities) VALUES(-2,'AI','Role for AI Environment',false,false,false,false,false,1000,-2,
+	'admin',NOW(),NOW(),'admin','Active',false,false,true,true,1000,false,false,1000) ON CONFLICT DO NOTHING;

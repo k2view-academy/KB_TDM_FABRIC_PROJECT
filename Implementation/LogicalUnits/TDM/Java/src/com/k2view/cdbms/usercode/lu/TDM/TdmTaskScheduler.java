@@ -15,8 +15,8 @@ import java.time.ZonedDateTime;
 
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.k2view.cdbms.shared.user.UserCode.db;
-import static com.k2view.cdbms.usercode.common.SharedGlobals.TDMDB_SCHEMA;
-import static com.k2view.cdbms.usercode.common.TdmSharedUtils.SharedLogic.fnStartTask;
+import static com.k2view.cdbms.usercode.common.TDM.SharedGlobals.TDMDB_SCHEMA;
+import static com.k2view.cdbms.usercode.common.TDM.TdmSharedUtils.SharedLogic.fnStartTask;
 
 public class TdmTaskScheduler {
     public static final Log log = Log.a(TdmTaskScheduler.class);
@@ -25,7 +25,7 @@ public class TdmTaskScheduler {
     public static void fnTdmTaskScheduler() throws IOException, SQLException {
         log.info("----------------- Starting tdmTaskScheduler -------------------");
 
-        String activeTasksQuery = " WITH task_max_execution_id "+
+        String activeTasksQuery = "WITH task_max_execution_id "+
                 "AS(SELECT task_id AS max_task_id,lu_id AS max_lu_id,max(task_execution_id) AS max_task_execution_id " +
                 "FROM " + TDMDB_SCHEMA + ".TASK_EXECUTION_LIST GROUP BY task_id,lu_id) " +
                 "SELECT  task_id, scheduler, be_id, environment_id, num_of_entities, scheduling_end_date, "+
@@ -57,7 +57,7 @@ public class TdmTaskScheduler {
             //log.info("time to next execution " + timeToNextExecution.getSeconds() + " to minutes " + timeToNextExecution.toMinutes());
             // Check if the task is due to run now
             if(executionTime.isMatch(now) || (timeToNextExecution.toMinutes() == 0 && timeToNextExecution.getSeconds() <= 10)){
-                log.info(" ----------------- calling wsStartTask ----------------- ");
+                //log.info(" ----------------- calling wsStartTask ----------------- ");
                 try {
                     fnStartTask(taskID,true,null,null,null,null,null,null,null,null,null,null);
                 } catch (Exception e) {

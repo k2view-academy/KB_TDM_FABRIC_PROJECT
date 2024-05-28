@@ -423,24 +423,57 @@
                     "dependsOnList": [
                         "Stage 5"
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
                     "actors": [
                         {
-                            "name": "NotEquals1",
+                            "name": "JavaScript1",
                             "condition": "result",
                             "actorType": {
-                                "parentType": "NotEquals",
+                                "parentType": "JavaScript",
                                 "inputs": [
                                     {
-                                        "name": "b",
+                                        "name": "script",
+                                        "const": {
+                                            "userCode": "var result = true;\r\nif(population == null || population == []) {\r\n    result = false;\r\n}\r\nresult;",
+                                            "script": "var result = true;\n\nif (population == null || population == []) {\n  result = false;\n}\n\nresult;"
+                                        }
+                                    },
+                                    {
+                                        "name": "population",
                                         "schema": {
-                                            "type": "array",
-                                            "items": {}
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "size": {
+                                                    "type": "integer"
+                                                },
+                                                "createTime": {
+                                                    "type": "integer"
+                                                },
+                                                "lastModifiedTime": {
+                                                    "type": "integer"
+                                                },
+                                                "lastAccessTime": {
+                                                    "type": "integer"
+                                                },
+                                                "directory": {
+                                                    "type": "boolean"
+                                                }
+                                            }
                                         },
-                                        "const": []
+                                        "mandatory": false
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "result",
+                                        "schema": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -481,7 +514,7 @@
                     "dependsOnList": [
                         "Stage 5"
                     ],
-                    "isLast": 0,
+                    "isLast": 1,
                     "isTransactional": false,
                     "hasElse": true,
                     "actors": [
@@ -498,7 +531,22 @@
                                         "const": "population"
                                     }
                                 ],
-                                "outputs": []
+                                "outputs": [
+                                    {
+                                        "name": "map",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "population": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
                             }
                         }
                     ]
@@ -805,7 +853,7 @@
                 "actor": "MapBuild1",
                 "name": "value"
             },
-            "iterate": "First",
+            "iterate": "Iterate",
             "path": [
                 "name"
             ]
@@ -816,9 +864,10 @@
                 "name": "result"
             },
             "rightPort": {
-                "actor": "NotEquals1",
-                "name": "a"
-            }
+                "actor": "JavaScript1",
+                "name": "population"
+            },
+            "iterate": "Iterate"
         },
         {
             "leftPort": {

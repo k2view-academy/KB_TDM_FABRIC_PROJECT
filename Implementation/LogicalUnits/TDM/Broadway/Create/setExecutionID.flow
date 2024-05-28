@@ -1,0 +1,119 @@
+tags: Create
+stages:
+  Check Flag:
+    actors:
+      is_first_deploy:
+        parent: Const
+        in:
+          value:
+            const: null
+            external: is_first_deploy
+        out:
+          value:
+            schema: string
+      AI_K2SYSTEM_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: AI_K2SYSTEM_INTERFACE
+            default: false
+      Get k2system Schema Name:
+        parent: InnerFlow
+        in:
+          flowName:
+            const: Getk2SystemSchemaName
+        out:
+          result:
+            schema: string
+  'True   ':
+    dependsOn: Check Flag
+    actors:
+      'True':
+        parent: EqualsIgnoreCase
+        condition: result
+        in:
+          b:
+            const: 'true'
+            schema: string
+          a:
+            link: is_first_deploy/value
+    split: '--------------------'
+  'False':
+    transactional: false
+    dependsOn: Check Flag
+  Get Max ID:
+    transactional: false
+    dependsOn: 'True   '
+    actors:
+      task_executions:
+        parent: DbCommand
+        in:
+          interface:
+            const: null
+            link: AI_K2SYSTEM_INTERFACE/result
+          sql:
+            const: select max(id) from ${@k2systemName}.task_executions
+          k2systemName:
+            link: Get k2system Schema Name/result
+            schema: string
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 2:
+    transactional: false
+    dependsOn: 'False'
+  Get the wanted ID:
+    transactional: false
+    dependsOn: Get Max ID
+    actors:
+      MathAdd:
+        parent: MathAdd
+        in:
+          b:
+            const: 100
+          a:
+            link: task_executions/result/max
+    split: '--------------------'
+  Stage 3:
+    transactional: false
+    dependsOn: Stage 2
+  Set Task Execution ID:
+    transactional: false
+    dependsOn: Get the wanted ID
+    actors:
+      DbCommand2:
+        parent: DbCommand
+        in:
+          interface:
+            const: TDM
+          sql:
+            const: SELECT pg_catalog.setval('public.tasks_task_execution_id_seq',
+              ${num});
+          num:
+            link: MathAdd/result
+            schema: integer
+            mandatory: false
+        out:
+          result:
+            schema: '#ref'
+    split: '--------------------'
+  Stage 1:
+    transactional: false
+    dependsOn: Stage 3
+schemas:
+  task_executions.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        max:
+          type: integer
+  DbCommand2.out.result:
+    type: array
+    items:
+      type: object
+      properties:
+        setval:
+          type: integer
