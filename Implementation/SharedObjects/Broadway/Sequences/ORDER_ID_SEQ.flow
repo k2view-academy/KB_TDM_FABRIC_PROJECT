@@ -1,0 +1,86 @@
+tags: TDM,Sequences
+stages:
+  Get Caching Interface:
+    actors:
+      Get SEQ_CACHE_INTERFACE:
+        parent: FabricSetRead
+        in:
+          key:
+            const: SEQ_CACHE_INTERFACE
+            default: false
+  Get Sequence Details:
+    actors:
+      Get Task Exec ID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: execution_id
+            default: false
+      Get Original IID:
+        parent: FabricSetRead
+        in:
+          key:
+            const: INPUT_IID
+            default: false
+      Get LU Type:
+        parent: FabricSetRead
+        in:
+          key:
+            const: LU_TYPE
+            default: false
+      Get next Value of Sequence:
+        parent: MaskingSequence
+        in:
+          maskingId:
+            const: ORDER_ID_SEQ
+          useEnvironment:
+            const: true
+          useExecutionId:
+            const: true
+          hashedInputValue:
+            const: false
+          TTL:
+            const: 0
+          sequenceId:
+            const: ORDER_ID_SEQ
+          sequenceInterface:
+            const: ORDERS_DB
+          initialValue:
+            const: OrderIdInit
+          interface:
+            link: Get SEQ_CACHE_INTERFACE/result
+          value:
+            external: OriginalSeqValue
+        out:
+          value:
+            external: NewSeqValue
+            schema: string
+  Report to TDM_SEQ_MAPPING Table:
+    transactional: false
+    actors:
+      Only If the original value was given:
+        parent: NotNull
+        condition: result
+        in:
+          value:
+            external: OriginalSeqValue
+            schema: string
+      Populate TDM_SEQ_MAPPING:
+        parent: SeqMappingStore
+        in:
+          seq_name:
+            const: ORDER_ID_SEQ
+          task_execution_id:
+            link: Get Task Exec ID/result
+          iid:
+            link: Get Original IID/result
+          lu_type:
+            link: Get LU Type/result
+          target_value:
+            link: Get next Value of Sequence/value
+          column_name:
+            external: columName
+          table_name:
+            external: tableName
+          source_value:
+            external: OriginalSeqValue
