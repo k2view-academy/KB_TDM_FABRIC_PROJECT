@@ -25,8 +25,8 @@ INSERT INTO public.products (product_name, product_description,  product_version
 INSERT INTO public.tdm_be_exe_process (process_id, process_name, process_description, be_id, execution_order,process_type) SELECT nextval('exe_process_id_seq'::regclass), 'postTaskExePrintToLog', 'This is a Post Execution Process Flow.', 1, 1,'post' where not exists (select 1 from public.tdm_be_exe_process where process_name='postTaskExePrintToLog');
 INSERT INTO public.tdm_be_exe_process (process_id, process_name, process_description, be_id, execution_order,process_type) SELECT nextval('exe_process_id_seq'::regclass), 'preTaskExePrintToLog', 'This is a Pre Execution Process Flow.', 1, 1,'pre' where not exists (select 1 from public.tdm_be_exe_process where process_name='preTaskExePrintToLog');
 
-INSERT INTO public.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (1, 1, 'ID', 'ALL', '1') ON CONFLICT DO NOTHING;
-INSERT INTO public.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (2, 2, 'ID', 'ALL', '1') ON CONFLICT DO NOTHING;
+INSERT INTO public.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (1, 1, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
+INSERT INTO public.environment_role_users(environment_id, role_id, user_type, username, user_id)VALUES (2, 2, 'ID', 'ALL', '-1') ON CONFLICT DO NOTHING;
 
 INSERT INTO public.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
 	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
@@ -34,7 +34,7 @@ INSERT INTO public.environment_roles(environment_id, role_name, role_description
 	role_last_updated_date,role_last_updated_by,role_status,allowed_refresh_reference_data, allowed_replace_sequences, 
 	allow_read, allow_write,allowed_number_of_entities_to_read, allowed_entity_versioning, allowed_test_conn_failure, 
 	allowed_number_of_reserved_entities) VALUES(1,'Testers','Permission set used by testers',false,false,false,true,true,0,1,
-	'admin',NOW(),NOW(),'admin','Active',true,false,true,false,100,true,true,100) ON CONFLICT DO NOTHING;
+	'admin',NOW(),NOW(),'admin','Active',true,false,true,false,100,true,true,0) ON CONFLICT DO NOTHING;
 INSERT INTO public.environment_roles(environment_id, role_name, role_description, allowed_delete_before_load, 
 	allowed_creation_of_synthetic_data,allowed_random_entity_selection,allowed_request_of_fresh_data,
 	allowed_task_scheduling,allowed_number_of_entities_to_copy, role_id, role_created_by, role_creation_date, 
